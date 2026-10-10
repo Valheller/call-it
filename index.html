@@ -4227,14 +4227,15 @@ function updateStreakLine(){const e=$('#streakline');if(!e)return;const P=PS();
   e.innerHTML=`Best win streak <b style="color:var(--money)">${P.bestStreak||0}</b>${P.streak?` (current ${P.streak})`:''}`}
 /* the title coin can be flipped for fun */
 let titleBusy=false,titleRun={f:null,n:0};
+let titleTok=0,titleAnim=null;
 async function titleToss(){
   const el=$('.bigcoin'),sp=el&&el.querySelector('.spin');if(!sp||titleBusy)return;titleBusy=true;audioInit();
-  const cur=getComputedStyle(sp).transform;el.classList.add('tossing');
+  const cur=getComputedStyle(sp).transform,tok=++titleTok;if(titleAnim){titleAnim.cancel();titleAnim=null}el.classList.add('tossing');
   const r=Math.random(),face=r<.01?'E':r<.505?'H':'T',end=face==='T'?180:face==='E'?90:0,turns=(3+Math.floor(Math.random()*2))*360+end;
   play('toss');
-  const dur=reduced?10:900;
+  const dur=reduced?10:620;
   const a=sp.animate([{transform:cur==='none'?'rotateY(0deg)':cur},{transform:`translateY(-${Math.round(el.offsetWidth*1.2)}px) rotateY(${turns/2}deg) scale(1.08)`,offset:.5},{transform:`rotateY(${turns}deg)`}],
-    {duration:dur,easing:'cubic-bezier(.3,.7,.5,1)',fill:'forwards'});
+    {duration:dur,easing:'cubic-bezier(.3,.7,.5,1)',fill:'forwards'});titleAnim=a;
   await a.finished.catch(()=>{});
   play('land',2);
   titleRun.n=titleRun.f===face?titleRun.n+1:1;titleRun.f=face;
@@ -4243,8 +4244,9 @@ async function titleToss(){
   if(face!=='E'&&titleRun.n>=3&&!PS().titleCall3){PS().titleCall3=1;saveProf();setTimeout(checkGoals,700)}
   popup(el,face==='E'?'Edge?!':`${face==='H'?'Heads':'Tails'}!${titleRun.n>=3?` x${titleRun.n}`:''}`,face==='E'?'huge':'text');
   if(!reduced)el.animate([{transform:'scale(1.06,.92)'},{transform:'scale(.98,1.03)'},{transform:'scale(1)'}],{duration:240});
-  await new Promise(res=>setTimeout(res,face==='E'?1800:1100));
-  sp.style.animationDelay=`-${(end%360)/360*2.4}s`;a.cancel();el.classList.remove('tossing');titleBusy=false;
+  titleBusy=false;/* tap again straight away; the coin only goes back to idling if nobody does */
+  await new Promise(res=>setTimeout(res,face==='E'?1400:700));
+  if(tok!==titleTok)return;sp.style.animationDelay=`-${(end%360)/360*2.4}s`;a.cancel();titleAnim=null;el.classList.remove('tossing');
 }
 function updateTitle(){updateStreakLine();
   const sv=savedRun(),c=$('#contbtn');if(c){c.hidden=!(sv&&sv.S);if(sv&&sv.S)c.innerHTML=`Continue<small>Stage ${sv.S.ante}${sv.S.daily?' · Daily':''}</small>`}
