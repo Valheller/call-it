@@ -1,0 +1,16 @@
+{
+  "name": "Call it.",
+  "short_name": "Call it.",
+  "description": "A coin-flip roguelike. Call it, toss your purse, chain Points × Mult.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
+  "background_color": "#171512",
+  "theme_color": "#171512",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

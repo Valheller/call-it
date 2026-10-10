@@ -1,8 +1,16 @@
 # Call it.
 
+![Call it. title screen](preview.png)
+
 A coin-flip roguelike. Call Heads or Tails, toss your purse, chain **Points × Mult**, and beat eight stages of wagers in a gambler's limbo run by The House.
 
-The whole game is a single file: [`index.html`](index.html). Open it in any modern browser to play, on desktop or phone. No install, no build step.
+### [▶ Play it in your browser](https://valheller.github.io/call-it/)
+
+Works on desktop and phones. On a phone, use **Add to Home Screen** (Safari's share menu, or Chrome's menu) to play fullscreen without the browser bars.
+
+Prefer Windows? Grab **Call-it.exe** from the [latest release](https://github.com/Valheller/call-it/releases/latest).
+
+The whole game is a single file: [`index.html`](index.html). You can also download it and open it in any modern browser, with no install and no build step.
 
 ## How to play
 
