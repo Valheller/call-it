@@ -569,9 +569,9 @@ img{-webkit-user-drag:none}
 #boot{position:fixed;inset:0;z-index:120;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 45%,#2a2214 0%,#0e0d0b 70%);transition:opacity .6s}
 #boot.gone{opacity:0;pointer-events:none}
 .bootin{display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;padding:16px;position:relative;z-index:2}
-.bootcoin{width:clamp(84px,18vmin,140px);aspect-ratio:1;perspective:600px}
-.bootspin{width:100%;height:100%;animation:bootidle 2.4s ease-in-out infinite;transform-style:preserve-3d}
-.bootface{width:100%;height:100%;background:var(--art) center/100% 100% no-repeat;image-rendering:pixelated;filter:drop-shadow(0 8px 0 rgba(0,0,0,.45))}
+.bootcoin{width:clamp(84px,18vmin,140px);height:clamp(84px,18vmin,140px);perspective:600px;-webkit-perspective:600px;filter:drop-shadow(0 8px 0 rgba(0,0,0,.45))}
+.bootspin{width:100%;height:100%;animation:bootidle 2.4s ease-in-out infinite;-webkit-transform-style:preserve-3d;transform-style:preserve-3d}
+.bootface{width:100%;height:100%}.bootface img{display:block;width:100%;height:100%;image-rendering:pixelated;-webkit-user-drag:none}
 @keyframes bootidle{50%{transform:translateY(-8px) rotateY(18deg)}}
 .boottxt{font-size:clamp(18px,3.4vmin,26px);letter-spacing:.18em;text-transform:uppercase;color:#d9b552;opacity:.85}
 .bootnote{font-size:13px;color:#8a8170}
@@ -907,7 +907,7 @@ html,body,button,a,.pond{touch-action:manipulation}
 <div id="showdown" hidden></div>
 <div id="overlay" hidden></div>
 <div id="boot"><div class="bootin">
-  <div class="bootcoin"><div class="bootspin"><div class="bootface"></div></div></div>
+  <div class="bootcoin"><div class="bootspin"><div class="bootface"><img alt=""></div></div></div>
   <div class="boottxt">The House is open</div>
   <button class="btn big orange" id="bootbtn" data-act="boot">Tap to begin</button>
   <div class="bootnote">Sound on. Best with headphones</div>
@@ -5221,7 +5221,7 @@ let bootStage=0;
 function bootJingle(part){const c=AU.ctx;if(!c)return;const t0=c.currentTime+.02,v=sfxGain()>0?1:0;if(!v)return;
   if(part===0){[69,72,76,79,81].forEach((n,k)=>fm({at:t0+k*.16,f:mtof(n),ratio:3.5,idx:.8,d:.9,v:.03}))}
   else{[57,64,69,72,76].forEach((n,k)=>{tone({at:t0+k*.03,f:mtof(n),type:'sine',a:.04,d:2.2,v:.04});fm({at:t0+k*.05,f:mtof(n+12),ratio:2,idx:.6,d:1.6,v:.012})});tone({at:t0,f:mtof(45),type:'triangle',a:.02,d:1.8,v:.08,lp:500})}}
-function bootInit(){const f=document.querySelector('.bootface');if(f)f.style.setProperty('--art',`url(${coinArt(TITLE_COIN,'H')})`);const b=$('#bootbtn');if(b)setTimeout(()=>b.focus(),50)}
+function bootInit(){const f=document.querySelector('.bootface img');if(f)f.src=coinArt(TITLE_COIN,'H');const b=$('#bootbtn');if(b)setTimeout(()=>b.focus(),50)}
 function bootEnd(){const el=$('#boot');if(!el||bootStage>=2)return;bootStage=2;el.classList.add('gone');setTimeout(()=>el.remove(),650);
   /* the title music fades in only now */
   if(AU.mus){const t=AU.ctx.currentTime;AU.mus.gain.cancelScheduledValues(t);AU.mus.gain.setValueAtTime(0,t);AU.mus.gain.linearRampToValueAtTime(musGain(),t+1.2)}}
