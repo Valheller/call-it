@@ -1991,7 +1991,13 @@ function bossSil(k){if(SIL_IMG[k])return SIL_IMG[k];
     for(const ch of 'M.D.'){const gl=P[ch];gl.forEach((r,y)=>[...r].forEach((c,dx)=>{if(c==='X')g.fillRect(x+dx,6+y,1,1)}));x+=(gl[0].length||1)+1}
     return SIL_IMG[k]=cv.toDataURL()}const g0=BOSS_SIL[k];if(!g0)return null;const cv=document.createElement('canvas');cv.width=cv.height=12;const g=cv.getContext('2d');g.fillStyle='rgba(14,10,16,.86)';
   g0.forEach((r,y)=>[...r].forEach((ch,x)=>{if(ch==='X')g.fillRect(x,y,1,1)}));return SIL_IMG[k]=cv.toDataURL()}
-const blindChip=b=>b.kind==='boss'&&bossSil(b.boss)?`<img class="bsil" src="${bossSil(b.boss)}" alt="">`:blindLetter(b);
+const RIVAL_SIL={"The Railsplitter":["...XXXXXX...","...XXXXXX...","...XXXXXX...","...XXXXXX...","...XXXXXX...","...XXXXXX...","..XXXXXXXX..","XXXXXXXXXXXX",".XXXXXXXXXX.","............",".X.X.XX.X.X.","..X.X..X.X.."],"The Drifter":["...XXXXXX...","..XXXXXXXX..",".XXXXXXXXXX.",".XXXXXXXXXX.",".XXXXXXXXXX.",".X.XXXXXX.X.",".X..XXXX..X.",".X..XXXX..X.","....XXXX....","...XXXXXX...","..XXXXXXXX..",".XXXXXXXXXX."],"Connie Kurrency":[".....XX.....","....XXXX....","...XXXXXX...","...XX..XX...","...XX..XX...","...XXXXXX...","...XXXXXX...","..XXXXXXXX..",".XXXXXXXXXX.",".XX.XXXX.XX.",".....XX.....","....X..X...."],"Uncle Moneybags":["..XXXXXXXX..","..XXXXXXXX..","..XXXXXXXX..","XXXXXXXXXXXX","............","..XX....XXX.","..XX...X...X",".......X...X","........XXX.",".XXXX..XXXX.","XXXXXXXXXXXX",".XX......XX."],"Cap'n Pinchclaw":["X..........X","XX........XX","XXX.X..X.XXX",".XX.X..X.XX.","..XXXXXXXX..",".XXXXXXXXXX.","XXXXXXXXXXXX","XXXXXXXXXXXX",".XXXXXXXXXX.","X.X.X..X.X.X","X..X....X..X","............"],"The Scarred D.A.":["....XXXX....","..XXXXXXXX..",".XXXXX.X.XX.",".XXXXX..X.X.","XXXXXXX.X..X","XXXXXX.X.X.X","XXXXXXX..X.X","XXXXXX.X.X.X",".XXXXX..X.X.",".XXXXX.X..X.","..XXXXXXXX..","....XXXX...."],"Old Moneybin":[".XXXXXXXXXX.","X..........X","X.XXXXXXXX.X","X.X......X.X","X.X..XX..X.X","X.X.X..X.X.X","X.X.X..X.X.X","X.X..XX..X.X","X.X......X.X","X.XXXXXXXX.X","X..........X",".XXXXXXXXXX."],"The Plant Baron":[".....XX.....","....X..X....","............","..XXXXXXXX..","..XXXXXXXX..","...XXXXXX...","...XXXXXX...","...XXXXXX...","..XXXXXXXX..","..XXXXXXXX..",".XXXXXXXXXX.","XXXXXXXXXXXX"]};
+const RIVAL_COL={"The Railsplitter": "#5a4a3a", "The Drifter": "#4a5a50", "Connie Kurrency": "#2a7a6a", "Uncle Moneybags": "#3a6a3a", "Cap'n Pinchclaw": "#a83a2a", "The Scarred D.A.": "#6a6a7a", "Old Moneybin": "#7a6a2a", "The Plant Baron": "#4a6a2a"};
+function rivalSil(n){const k='r:'+n;if(SIL_IMG[k])return SIL_IMG[k];const g0=RIVAL_SIL[n];if(!g0)return null;const cv=document.createElement('canvas');cv.width=cv.height=12;const g=cv.getContext('2d');g.fillStyle='rgba(14,10,16,.86)';
+  g0.forEach((r,y)=>[...r].forEach((ch,x)=>{if(ch==='X')g.fillRect(x,y,1,1)}));return SIL_IMG[k]=cv.toDataURL()}
+const blindChip=b=>b.kind==='boss'&&bossSil(b.boss)?`<img class="bsil" src="${bossSil(b.boss)}" alt="">`:b.kind==='rival'&&S&&S.rival&&rivalSil(S.rival.name)?`<img class="bsil" src="${rivalSil(S.rival.name)}" alt="">`:blindLetter(b);
+/* bosses and rivals you've come across, for the Collection */
+function markSeen(kind,k){const P=PS(),key=kind==='boss'?'seenBoss':'seenRival';P[key]=P[key]||{};if(!P[key][k]){P[key][k]=1;saveProf()}}
 const blindLetter=b=>b.kind==='rival'?'R':b.kind==='elite'?'E':b.kind==='boss'?BOSSES[b.boss].name.replace('The ','')[0]:b.kind==='small'?'S':'B';
 const blindReward=b=>b.kind==='rival'?2:b.kind==='elite'?6:b.kind==='small'?3:b.kind==='big'?4:5;
 const blindTarget=b=>b.kind==='rival'?0:Math.round(anteBase(S.ante)*(b.kind==='small'?1:b.kind==='big'?1.5:b.kind==='elite'?2.5:bossMult(b.boss))*(S.roll==='fusion'?2:S.roll==='glitched'?(b.gx||1.5):S.roll==='oneshot'?.4:1)*(S.stake>=2?1.25:1));
@@ -2508,8 +2514,8 @@ PACK_MUSIC.credits=function(m){
    harpsichord figure that keeps returning to one high note. A nod to a certain trip-hop classic. 32 bars */
 const MD_MEL={0:[2,1,4],6:[1,1,2],8:[0,1,4],12:[1,1,4]},MD_MEL2={0:[3,1,3],3:[2,1,1],4:[1,1,4],10:[0,1,2],12:[2,1,4]};
 PACK_MUSIC.drhouse=function(m){
-  const{s,bar,at,spb,B,up,loop}=m,s16=spb/4,cn=(i,o)=>up[i%up.length]+12*o,sec=loop%4;
-  if(s===0)up.forEach(n=>{tone({at,f:mtof(n),type:'square',lp:1100,a:.05,d:spb*3.8,v:.011,bus:B,wob:true});tone({at,f:mtof(n+12),type:'sawtooth',lp:1500,a:.08,d:spb*3.6,v:.005,bus:B})});
+  const{s,bar,at,spb,B,up,loop}=m,s16=spb/4,cn=(i,o)=>up[i%up.length]+12*o,sec=loop%4,intro=sec===0&&bar<2;
+  if(s===0&&!intro)up.forEach(n=>{tone({at,f:mtof(n),type:'square',lp:1100,a:.05,d:spb*3.8,v:.011,bus:B,wob:true});tone({at,f:mtof(n+12),type:'sawtooth',lp:1500,a:.08,d:spb*3.6,v:.005,bus:B})});
   if(s===0)tone({at,f:mtof(cn(0,-2)),type:'triangle',a:.02,d:spb*2.6,v:.22,lp:480,bus:B});
   if(s===10)tone({at,f:mtof(cn(2,-2)),type:'triangle',a:.02,d:spb*1.4,v:.17,lp:480,bus:B});
   /* the heartbeat: lub-dub, lub-dub */
@@ -2517,9 +2523,10 @@ PACK_MUSIC.drhouse=function(m){
   if(s===2||s===10)tone({at,f:80,f2:40,glide:.1,a:.008,d:.2,v:.15,bus:B});
   if(s===12&&sec!==0){noise({at,ft:'lowpass',ff:2000,q:.6,a:.006,d:.12,v:.05,bus:B});tone({at,f:200,f2:150,glide:.05,a:.005,d:.1,v:.05,bus:B})}
   if(s%4===2&&sec!==2)tone({at,f:1250,f2:980,glide:.02,a:.004,d:.03,v:.006,bus:B});
-  /* the harpsichord figure: a moving voice under one high note it keeps going back to */
-  if(s%2===0&&!(sec===0&&bar<2)){const fig=[3,1,3,0,3,2,3,1],k=fig[(s>>1)%8],n=k===3?cn(3,1):cn(k,1);
-    tone({at,f:mtof(n),type:'sawtooth',lp:2800,a:.002,d:s16*.95,v:.02,bus:B});tone({at,f:mtof(n+12),type:'square',lp:3600,a:.002,d:.05,v:.005,bus:B})}
+  /* the harpsichord: the star of the track. It opens alone over the heartbeat, rocking against one high note
+     while the voice underneath walks down, in a two-bar phrase */
+  {const hp=(n,v)=>{const f=mtof(n);tone({at,f,type:'sawtooth',lp:4400,a:.001,d:s16*1.15,v,bus:B});tone({at,f,type:'sawtooth',lp:4400,a:.001,d:s16*1.05,v:v*.7,det:9,bus:B});tone({at,f:mtof(n+12),type:'square',lp:5200,a:.001,d:.045,v:v*.35,bus:B})};
+   if(s%2===0){const A=[3,2,3,1,3,0,3,1],Bp=[3,1,3,0,3,1,3,2],k=(bar%2?Bp:A)[(s>>1)%8],n=k===3?cn(3,1):cn(k,0);hp(n,sec===2?.016:.024)}}
   if(sec===1||sec===3){const mot=bar%2===0?MD_MEL:MD_MEL2;if(s in mot){const[i,o,l]=mot[s],oc=sec===3?1:0;
     tone({at,f:mtof(cn(i,o+oc)),type:'sawtooth',lp:1700,a:.04,d:s16*l,v:.028,bus:B,vib:l>2});if(sec===3)tone({at,f:mtof(cn(i+2,o-1+oc)),type:'sawtooth',lp:1300,a:.04,d:s16*l,v:.011,bus:B})}}
   if(sec===2&&(s===0||s===8)&&bar%2===1){const n=cn([2,1,3,0][(bar>>1)%4],2);tone({at,f:this.mdv||mtof(n),f2:mtof(n),glide:.22,a:.25,d:spb*2.2,v:.026,bus:B,vib:true});this.mdv=mtof(n)}
@@ -3422,6 +3429,7 @@ function reflipOdds(){
 /* ================= RENDER ================= */
 function render(){
   hideTip();
+  if(S&&S.blinds)S.blinds.forEach(b=>{if(b.boss&&BOSSES[b.boss])markSeen('boss',b.boss);if(b.boss2&&BOSSES[b.boss2])markSeen('boss',b.boss2)});
   $('#title').hidden=!!S;$('#app').hidden=!S;
   if(!S){$('#coach').hidden=true;if(!modal){$('#overlay').hidden=true;$('#overlay').innerHTML=''}updateTitle();musicMood();return}
   $('#app').dataset.screen=S.screen==='shop'&&S.pack?'pack':S.screen==='event'||S.screen==='choose'?'shop':S.screen;
@@ -4254,6 +4262,12 @@ function colItems(){
       ic:`<div class="cpair">${WEARS[k].charmOnly?'':`<div class="cic coinc">${coinIcon('copper',{wear:k})}</div>`}${charmIc(k==='weightless'?'copycat':'jester',k)}</div>`,
       desc:WEARS[k].desc+(WEARS[k].charmOnly?'. Charms only.':'. On a coin it triggers when the coin scores. On a Charm it triggers when the Charm does.'),tag:WEARS[k].charmOnly?'Wear · Charms only':'Wear · Coins and Charms',tc:'#7a8a99'}));
   if(COL.tab==='defects')return Object.keys(DEFECTS).map(k=>({id:'d-'+k,name:DEFECTS[k].name,ic:`<div class="cic coinc">${coinIcon('copper',{defect:k})}</div>`,desc:DEFECTS[k].desc+'.',tag:'Defect · Coins only',tc:DEFECTS[k].col}));
+  if(COL.tab==='bosses'){const seen=PS().seenBoss||{};return Object.keys(BOSSES).sort((a,b)=>(BOSSES[a].final?1:0)-(BOSSES[b].final?1:0)).map(k=>{const d=BOSSES[k],ok=seen[k]||PROF.unlockAll;
+    return ok?{id:'b-'+k,name:d.name,ic:`<div class="cic" style="--jbg:${d.col}">${IMG(bossSil(k))}</div>`,desc:d.desc,tag:d.final?'Final boss':'Boss',tc:d.col}
+      :{id:'b-'+k,name:'???',ic:`<div class="cic locked" style="--jbg:#2a2a2a">${IMG(bossSil(k))}</div>`,desc:'You haven\'t come across this boss yet',tag:d.final?'Final boss · Undiscovered':'Boss · Undiscovered',tc:'var(--grey)'}})}
+  if(COL.tab==='rivals'){const seen=PS().seenRival||{},beat=PS().rivalsBeat||{};return RIVALS.map(k=>{const d=RIVAL_OF[k],ok=seen[k]||beat[k]||PROF.unlockAll;
+    return ok?{id:'r-'+k,name:k,ic:`<div class="cic" style="--jbg:${RIVAL_COL[k]||'#ff8f1f'}">${IMG(rivalSil(k))}</div>`,desc:`${d.habit}. Signature coin: {a:${COINS[d.coin].name}}. Favourite toss: {a:${HAND[d.fav].name}}.${beat[k]?' {d:(Beaten)}':''}`,tag:'Rival',tc:'#ff8f1f'}
+      :{id:'r-'+k,name:'???',ic:`<div class="cic locked" style="--jbg:#2a2a2a">${IMG(rivalSil(k))}</div>`,desc:'You haven\'t duelled this rival yet',tag:'Rival · Undiscovered',tc:'var(--grey)'}})}
   if(COL.tab==='coins')return Object.keys(COINS).map(k=>{const d=COINS[k];return{id:k,name:d.name,ic:`<div class="cic coinc">${IMG(coinArt(k,d.fixed||'H'))}</div>`,
     desc:d.desc+(lkOf('coin',k)?`<div class="lkline">${lkOf('coin',k)}</div>`:''),tag:k==='copper'?'Starting coin':d.relic?'Relic coin':'Special coin',tc:'var(--orange)'}});
   const list=COL.tab==='almanacs'?ALM_POOL():COL.tab==='runes'?Object.keys(RUNES).map(k=>({kind:'rune',key:k})):COL.tab==='fortunes'?Object.keys(FORTUNES).map(k=>({kind:'fortune',key:k})):Object.keys(SPIRITS).map(k=>({kind:'spirit',key:k}));
@@ -4263,7 +4277,7 @@ function colItems(){
 function collectionModal(){COL_RAW=1;try{return collectionInner()}finally{COL_RAW=0}}
 function collectionInner(){
   const items=colItems();const sel=items.find(x=>x.id===COL.sel)||items[0];
-  const tabs=[['charms','Charms',Object.keys(JOKERS).length],['almanacs','Almanacs',ALM_POOL().length],['runes','Runes',Object.keys(RUNES).length],['spirits','Spirits',Object.keys(SPIRITS).length],['fortunes','Fortunes',Object.keys(FORTUNES).length],['coins','Coins',Object.keys(COINS).length],['wears','Wear',Object.keys(WEARS).length],['defects','Defects',Object.keys(DEFECTS).length],['curses','Curses',Object.keys(CURSES).length]];
+  const tabs=[['charms','Charms',Object.keys(JOKERS).length],['almanacs','Almanacs',ALM_POOL().length],['runes','Runes',Object.keys(RUNES).length],['spirits','Spirits',Object.keys(SPIRITS).length],['fortunes','Fortunes',Object.keys(FORTUNES).length],['coins','Coins',Object.keys(COINS).length],['wears','Wear',Object.keys(WEARS).length],['defects','Defects',Object.keys(DEFECTS).length],['curses','Curses',Object.keys(CURSES).length],['bosses','Bosses',Object.keys(BOSSES).length],['rivals','Rivals',RIVALS.length]];
   const rars=COL.tab==='charms'?`<div class="ctabs">${[0,1,2,3,4,5].map(r=>`<button class="btn tiny ${COL.rar===r?(r?'':'orange'):''}" style="${COL.rar===r&&r?`--c:${RAR[r].c};--cd:rgba(0,0,0,.4)`:COL.rar!==r?'--c:var(--grey);--cd:var(--grey-d)':''}" data-act="colrar" data-arg="${r}">${r?RAR[r].n:'All'} <small>${r?Object.values(JOKERS).filter(j=>j.r===r).length:Object.keys(JOKERS).length}</small></button>`).join('')}</div>`:'';
   const wearRow='';
   return `<div class="overlay"><div class="panel modal wide colm"><h2>Collection</h2>
@@ -4791,6 +4805,7 @@ function rivalToss(){
 }
 /* start a duel: a rival detour (3 tosses), or The General, the Rival Roll's final boss (one toss per Flip) */
 function startDuel(boss){
+  if(!boss&&S.rival)markSeen('rival',S.rival.name);if(boss&&S.boss==='tablerivals')RIVALS.forEach(r=>markSeen('rival',r));
   const n=boss?S.flipsLeft:3,base=boss?anteBase(S.ante)*4/n:anteBase(S.ante)*(.45+.12*S.rival.lvl),table=boss&&S.boss==='tablerivals';
   S.duel={shown:0,score:0,sal:0,n,bust:Math.floor(rand()*n),base:base*(S.stake>=2?1.25:1),general:!!boss,table,order:table?[...RIVALS].sort(()=>rand()-.5):null};S.target=0;
 }
