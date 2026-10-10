@@ -879,6 +879,9 @@ img{-webkit-user-drag:none}
 .mfpond.got .mfcatch{opacity:1}.mfcatch img{width:52px;height:52px;image-rendering:pixelated}
 .mfmsg{margin-top:8px;font-size:15px;min-height:20px}.mfhint{font-size:11px;color:var(--ink-dim)}
 .bsil{width:66%;height:66%;image-rendering:pixelated;filter:drop-shadow(0 1px 0 rgba(255,255,255,.18))}
+.gamever{position:fixed;left:calc(12px + env(safe-area-inset-left));bottom:calc(8px + env(safe-area-inset-bottom));font-size:13px;color:var(--ink-dim);opacity:.7;letter-spacing:.06em;pointer-events:none;z-index:2}
+.colfoot{position:sticky;bottom:-14px;margin:10px -14px -14px;padding:10px 14px 14px;border-radius:0 0 14px 14px;text-align:center;background:linear-gradient(transparent,var(--panel) 35%);z-index:3}
+.lkline{margin-top:6px;font-size:13px;color:inherit;opacity:.9}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -926,6 +929,7 @@ img{-webkit-user-drag:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
+  <div class="gamever" aria-label="Version">v1.2.0</div>
 </div>
 
 <script>
@@ -1008,7 +1012,7 @@ Object.assign(COINS,{
  sanddollar:{name:'Sand Dollar',chips:8,sand:1,fishLocked:1,cost:6,desc:'{c:+8} Points. Whenever it lands, it goes {a:fishing}. If it {r:missed}, land a catch and it flips onto your call. If it {a:scored}, land a catch for bonus Mult: {x:X1.25} for an Old Boot up to {x:X5} for The Pit Boss'},
  firstdime:{name:'The First Dime',chips:10,firstDime:.2,loseChance:.25,relic:1,artifact:1,cost:0,desc:'{c:+10} Points. The very first dime ever earned. In your {a:first} slot when a wager starts, the score needed drops by {a:20%}. Anywhere else, each time it scores there is a {r:1 in 4} chance it gets {r:lost} for good. {a:Artifact}: one of a kind'},
  pressed: {name:'Pressed Penny',  chips:3,wild:1,fixed:'H',train:3,flat:1,relic:1,artifact:1,charm:'pressedpenny',cost:0,desc:'{c:+3} Points. A souvenir penny pressed flat with a steam train. It never flips: it always scores, and gives {m:+3} Mult for each scoring coin to its {a:right} (its train cars). {a:Artifact}: drag it up into your Charms and it gives {a:+1} Flip every wager instead'},
- hope:{name:'Hope Diamond Coin',chips:25,money:6,relic:1,cost:0,desc:'{c:+25} Points and earn {$:$6} when it scores. Cursed: {r:-2} Luck while it sits in your purse. {a:Relic}: one of a kind'},
+ hope:{name:'Hope Diamond Coin',chips:25,money:6,relic:1,cost:0,desc:'{c:+25} Points and earn {$:$6} when it scores. {a:Relic}: one of a kind'},
 });
 const SPECIAL=Object.keys(COINS).filter(k=>k!=='copper'&&!COINS[k].relic&&!COINS[k].noShop&&!COINS[k].fishLocked);
 const relicsLeft=()=>Object.keys(COINS).filter(k=>COINS[k].relic&&!COINS[k].quest&&!(S&&S.purse.some(c=>c.type===k))&&!(k==='pressed'&&S&&S.jokers.some(j=>j.key==='pressedpenny')));
@@ -1953,7 +1957,7 @@ const VAGUE=[
  ['{r:-4} Karma: gain a random {r:Rare} Charm','Gain a random {r:Rare} Charm. Something dark takes note','K'],
  ['{$:$9} and {a:+2} Luck','{$:$9}, and a little something extra','L'],
 ];
-const hideLuck=t=>{t=String(t);const L=luckSeen(),K=karmaSeen();if(L&&K)return t;const ok=n=>(!n.includes('L')||L)&&(!n.includes('K')||K);
+const hideLuck=t=>{t=String(t);if(COL_RAW)return t;const L=luckSeen(),K=karmaSeen();if(L&&K)return t;const ok=n=>(!n.includes('L')||L)&&(!n.includes('K')||K);
   for(const[full,vague,need]of VAGUE)if(!ok(need)&&t.includes(full))t=t.split(full).join(vague);
   /* anything left that still names an amount just loses the amount clause */
   return t.replace(/,?\s*(and\s+)?\{[a-z$]:[+\-−]?\d+\}\s+(Luck|Karma)\b/g,(m,a,w)=>ok(w[0])?m:'')
@@ -3724,6 +3728,7 @@ function optionsModal(){
     ${canFS()?`<div class="optrow"><span>Fullscreen</span><button class="btn ${isFS()?'green':''} small" data-act="fullscreen">${isFS()?'On':'Off'}</button></div>`:''}
     <div class="optrow"><span>Game speed</span><button class="btn blue small" data-act="tspeed">X${OPT.speed}</button></div>
     ${S?`<div class="optrow"><span>${abandonArm?'Really abandon this run?':'Start over'}</span><button class="btn red small" data-act="abandon">${abandonArm?'Yes, new run':'New Run'}</button></div>`:''}
+    <div class="optrow"><span>Links</span><a class="btn small" style="--c:#2a2a33;--cd:#111;text-decoration:none;color:#fff" href="https://github.com/Valheller/call-it" target="_blank" rel="noopener">GitHub</a></div>
     <div class="optrow"><span>Credits</span><button class="btn small" style="--c:#c96a8a;--cd:#7a3a55" data-act="credits">Credits</button></div>
     <div style="text-align:center;margin-top:6px"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
 }
@@ -4218,22 +4223,31 @@ function updateTitle(){updateStreakLine();
 /* ================= COLLECTION ================= */
 const COL={tab:'charms',rar:0,sel:null,wear:''};
 const charmIc=(k,w)=>`<div class="cic ${w==='weightless'?'weightless':''}" style="--jbg:${JOKERS[k].bg}">${IMG(icon(k))}${w&&w!=='weightless'?`<i class="wfx w-${w}"></i>`:''}</div>`;
+/* what an item quietly does to your Luck and Karma (shown openly in the Collection) */
+function lkOf(kind,k){let L=0,K=0,note='';
+  if(kind==='charm'){const d=JOKERS[k];L+=d.luck||0;K+=d.karma||0;if(k==='blackcat')L-=2;if(k==='jester')L+=1;if(k==='pickpocket')K-=2;if(k==='tyche')note='Your Luck is always {a:perfect} while you carry it';if(k==='bodhi')note='Your Karma is always {a:perfect} while you carry it'}
+  else if(kind==='coin'){if(k==='lucky')L=1;if(k==='penny')L=2;if(k==='hope')L=-2;if(k==='twohead'||k==='twotail')K=-1}
+  else if(kind==='curse'){if(k==='jinxed')L=-2;K=1}
+  const sg=(v,w)=>v?`{${v>0?'a':'r'}:${v>0?'+':''}${v} ${w}}`:'';const parts=[sg(L,'Luck'),sg(K,'Karma')].filter(Boolean);
+  return note?note:parts.length?`${parts.join(' and ')} while you ${kind==='coin'?'hold it':kind==='curse'?'carry a Charm with it':'carry it'}`:''}
+let COL_RAW=0;
 function colItems(){
   if(COL.tab==='charms')return Object.keys(JOKERS).filter(k=>!COL.rar||JOKERS[k].r===COL.rar).sort((a,b)=>JOKERS[a].r-JOKERS[b].r).map(k=>{const d=JOKERS[k];
     if(!isUnlocked('charm',k))return{id:k,name:'Locked',ic:`<div class="cic locked" style="--jbg:#2a2a2a">${IMG(icon(k))}</div>`,desc:`Unlock it: {a:${GOAL_OF['charm:'+k].desc}}`,tag:RAR[d.r].n+' · Locked',tc:'var(--grey)'};
-    return{id:k,name:d.name,ic:charmIc(k,COL.wear),desc:typeof d.desc==='function'?d.desc(null):d.desc,tag:RAR[d.r].n,tc:RAR[d.r].c}});
-  if(COL.tab==='curses')return Object.keys(CURSES).map(k=>({id:'c-'+k,name:CURSES[k].name,ic:`<div class="cic" style="--jbg:${JOKERS.jester.bg};position:relative">${IMG(icon('jester'))}${curseBadge(k)}</div>`,desc:CURSES[k].desc+'. Cursed Charms cost less in the shop.',tag:'Curse · Charms only',tc:CURSES[k].col}));
+    const lk=lkOf('charm',k);return{id:k,name:d.name,ic:charmIc(k,COL.wear),desc:(typeof d.desc==='function'?d.desc(null):d.desc)+(lk?`<div class="lkline">${lk}</div>`:''),tag:RAR[d.r].n,tc:RAR[d.r].c}});
+  if(COL.tab==='curses')return Object.keys(CURSES).map(k=>({id:'c-'+k,name:CURSES[k].name,ic:`<div class="cic" style="--jbg:${JOKERS.jester.bg};position:relative">${IMG(icon('jester'))}${curseBadge(k)}</div>`,desc:CURSES[k].desc+'. Cursed Charms cost less in the shop.'+`<div class="lkline">${lkOf('curse',k)}</div>`,tag:'Curse · Charms only',tc:CURSES[k].col}));
   if(COL.tab==='wears')return Object.keys(WEARS).map(k=>({id:'w-'+k,name:WEARS[k].name,
       ic:`<div class="cpair">${WEARS[k].charmOnly?'':`<div class="cic coinc">${coinIcon('copper',{wear:k})}</div>`}${charmIc(k==='weightless'?'copycat':'jester',k)}</div>`,
       desc:WEARS[k].desc+(WEARS[k].charmOnly?'. Charms only.':'. On a coin it triggers when the coin scores. On a Charm it triggers when the Charm does.'),tag:WEARS[k].charmOnly?'Wear · Charms only':'Wear · Coins and Charms',tc:'#7a8a99'}));
   if(COL.tab==='defects')return Object.keys(DEFECTS).map(k=>({id:'d-'+k,name:DEFECTS[k].name,ic:`<div class="cic coinc">${coinIcon('copper',{defect:k})}</div>`,desc:DEFECTS[k].desc+'.',tag:'Defect · Coins only',tc:DEFECTS[k].col}));
   if(COL.tab==='coins')return Object.keys(COINS).map(k=>{const d=COINS[k];return{id:k,name:d.name,ic:`<div class="cic coinc">${IMG(coinArt(k,d.fixed||'H'))}</div>`,
-    desc:d.desc,tag:k==='copper'?'Starting coin':d.relic?'Relic coin':'Special coin',tc:'var(--orange)'}});
+    desc:d.desc+(lkOf('coin',k)?`<div class="lkline">${lkOf('coin',k)}</div>`:''),tag:k==='copper'?'Starting coin':d.relic?'Relic coin':'Special coin',tc:'var(--orange)'}});
   const list=COL.tab==='almanacs'?ALM_POOL():COL.tab==='runes'?Object.keys(RUNES).map(k=>({kind:'rune',key:k})):COL.tab==='fortunes'?Object.keys(FORTUNES).map(k=>({kind:'fortune',key:k})):Object.keys(SPIRITS).map(k=>({kind:'spirit',key:k}));
   return list.map(c=>{const ci=consInfo(c);return{id:c.key||c.hand,name:ci.name.replace('Almanac: ',''),ic:`<div class="cic tile" style="--jbg:${ci.bg}">${IMG(ci.icon)}</div>`,
     desc:c.kind==='almanac'&&c.hand?`Level up {a:${HAND[c.hand].name}}: {c:+${HAND[c.hand].lc}} Points, {m:+${HAND[c.hand].lm}} Mult. ${HAND[c.hand].desc}.`:ci.desc,note:coinNote(coinRef(c)),tag:ci.badge,tc:ci.bc}});
 }
-function collectionModal(){
+function collectionModal(){COL_RAW=1;try{return collectionInner()}finally{COL_RAW=0}}
+function collectionInner(){
   const items=colItems();const sel=items.find(x=>x.id===COL.sel)||items[0];
   const tabs=[['charms','Charms',Object.keys(JOKERS).length],['almanacs','Almanacs',ALM_POOL().length],['runes','Runes',Object.keys(RUNES).length],['spirits','Spirits',Object.keys(SPIRITS).length],['fortunes','Fortunes',Object.keys(FORTUNES).length],['coins','Coins',Object.keys(COINS).length],['wears','Wear',Object.keys(WEARS).length],['defects','Defects',Object.keys(DEFECTS).length],['curses','Curses',Object.keys(CURSES).length]];
   const rars=COL.tab==='charms'?`<div class="ctabs">${[0,1,2,3,4,5].map(r=>`<button class="btn tiny ${COL.rar===r?(r?'':'orange'):''}" style="${COL.rar===r&&r?`--c:${RAR[r].c};--cd:rgba(0,0,0,.4)`:COL.rar!==r?'--c:var(--grey);--cd:var(--grey-d)':''}" data-act="colrar" data-arg="${r}">${r?RAR[r].n:'All'} <small>${r?Object.values(JOKERS).filter(j=>j.r===r).length:Object.keys(JOKERS).length}</small></button>`).join('')}</div>`:'';
@@ -4244,7 +4258,7 @@ function collectionModal(){
     ${sel?`<div class="cdetail anim ${COL.tab}" data-k="${sel.id}">${COL.tab==='coins'&&COINS[sel.id]?`<div class="cic coinc cflip"><div class="cfi"><img src="${coinArt(sel.id,COINS[sel.id].fixed||'H')}" alt=""><img class="cft" src="${coinArt(sel.id,COINS[sel.id].fixed||'T')}" alt=""></div></div>`:sel.ic}<div class="cbody"><div class="cname">${sel.name}<span class="ctag" style="background:${sel.tc}">${sel.tag}</span></div><div class="cdesc">${fmt(sel.desc)}</div>${sel.note||''}</div></div>`:''}
     ${({almanacs:KIND_INFO.almanac,runes:KIND_INFO.rune,spirits:KIND_INFO.spirit,coins:KIND_INFO.coin,wears:'Wear is a finish on a coin or Charm that adds Points, Mult or a Charm slot. Each item can have one.',defects:'A Defect is a minting flaw on a coin that pays out money, retriggers it, or creates items. Each coin can have one.'})[COL.tab]?`<div class="cblurb">${fmt(({almanacs:KIND_INFO.almanac,runes:KIND_INFO.rune,spirits:KIND_INFO.spirit,coins:KIND_INFO.coin,wears:'Wear is a finish on a coin or Charm that adds Points, Mult or a Charm slot. Each item can have one.',defects:'A Defect is a minting flaw on a coin that pays out money, retriggers it, or creates items. Each coin can have one.'})[COL.tab])}</div>`:''}
     <div class="cgrid ${COL.tab==='wears'?'wide':''}">${items.map(x=>`<button class="citem ${sel&&x.id===sel.id?'on':''}" data-act="colsel" data-arg="${x.id}">${x.ic}<span>${x.name}</span></button>`).join('')}</div>
-    <div style="text-align:center;margin-top:10px"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
+    <div class="colfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
 }
 /* ================= FX ================= */
 function popup(el,text,cls){
