@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <title>Call it.</title>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="description" content="A coin-flip roguelike. Call it, toss your purse, chain Points × Mult, and beat eight stages of wagers.">
 <meta name="theme-color" content="#171512">
 <meta property="og:title" content="Call it.">
@@ -885,6 +885,9 @@ img{-webkit-user-drag:none}
 html.pwa,html.pwa body{background:#171512}
 html.pwa #bg,html.pwa #crt{bottom:auto;height:var(--vh,100%)}
 html.pwa #fsbtn{display:none}
+/* a game, not a page: no double-tap zoom on phones */
+html,body,button,a,.pond{touch-action:manipulation}
+[data-drag]{touch-action:none}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -5233,6 +5236,9 @@ function bootGo(){
 $('#boot').addEventListener('click',e=>{if(!e.target.closest('#bootbtn'))bootGo()});
 addEventListener('keydown',e=>{if($('#boot')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.stopPropagation();bootGo()}},true);
 /* phones: keep the game sized to the visible part of the screen, and offer real fullscreen where the browser allows it */
+/* stop iOS zooming on double taps and pinches (it ignores the viewport hint in places) */
+document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
+['gesturestart','gesturechange'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
 /* launched from the home screen: iOS leaves the page short by the status bar's height, so grow it to fill the screen */
 const PWA=!!(navigator.standalone||(window.matchMedia&&(matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches)));
 if(PWA)document.documentElement.classList.add('pwa');
