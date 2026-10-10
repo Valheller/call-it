@@ -888,6 +888,8 @@ html.pwa #fsbtn{display:none}
 /* a game, not a page: no double-tap zoom on phones */
 html,body,button,a,.pond{touch-action:manipulation}
 [data-drag]{touch-action:none}
+/* the Collection scrolls as one page (one scrollbar), with the Back button pinned */
+.colm .cgrid{max-height:none;overflow:visible}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -4258,7 +4260,7 @@ function collectionInner(){
   const tabs=[['charms','Charms',Object.keys(JOKERS).length],['almanacs','Almanacs',ALM_POOL().length],['runes','Runes',Object.keys(RUNES).length],['spirits','Spirits',Object.keys(SPIRITS).length],['fortunes','Fortunes',Object.keys(FORTUNES).length],['coins','Coins',Object.keys(COINS).length],['wears','Wear',Object.keys(WEARS).length],['defects','Defects',Object.keys(DEFECTS).length],['curses','Curses',Object.keys(CURSES).length]];
   const rars=COL.tab==='charms'?`<div class="ctabs">${[0,1,2,3,4,5].map(r=>`<button class="btn tiny ${COL.rar===r?(r?'':'orange'):''}" style="${COL.rar===r&&r?`--c:${RAR[r].c};--cd:rgba(0,0,0,.4)`:COL.rar!==r?'--c:var(--grey);--cd:var(--grey-d)':''}" data-act="colrar" data-arg="${r}">${r?RAR[r].n:'All'} <small>${r?Object.values(JOKERS).filter(j=>j.r===r).length:Object.keys(JOKERS).length}</small></button>`).join('')}</div>`:'';
   const wearRow=COL.tab==='charms'?`<div class="ctabs"><span class="lbl" style="align-self:center">Preview Wear:</span>${['',...Object.keys(WEARS)].map(w=>`<button class="btn tiny ${COL.wear===w?'purple':''}" style="${COL.wear===w?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="colwear" data-arg="${w}">${w?WEARS[w].name:'None'}</button>`).join('')}</div>`:'';
-  return `<div class="overlay"><div class="panel modal wide"><h2>Collection</h2>
+  return `<div class="overlay"><div class="panel modal wide colm"><h2>Collection</h2>
     <div class="ctabs">${tabs.map(([k,n,c])=>`<button class="btn small ${COL.tab===k?'orange':''}" style="${COL.tab===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="coltab" data-arg="${k}">${n} <small>${c}</small></button>`).join('')}</div>
     ${rars}${wearRow}
     ${sel?`<div class="cdetail anim ${COL.tab}" data-k="${sel.id}">${COL.tab==='coins'&&COINS[sel.id]?`<div class="cic coinc cflip"><div class="cfi"><img src="${coinArt(sel.id,COINS[sel.id].fixed||'H')}" alt=""><img class="cft" src="${coinArt(sel.id,COINS[sel.id].fixed||'T')}" alt=""></div></div>`:sel.ic}<div class="cbody"><div class="cname">${sel.name}<span class="ctag" style="background:${sel.tc}">${sel.tag}</span></div><div class="cdesc">${fmt(sel.desc)}</div>${sel.note||''}</div></div>`:''}
