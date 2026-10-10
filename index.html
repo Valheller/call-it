@@ -882,6 +882,9 @@ img{-webkit-user-drag:none}
 .gamever{position:fixed;left:calc(12px + env(safe-area-inset-left));bottom:calc(8px + env(safe-area-inset-bottom));font-size:13px;color:var(--ink-dim);opacity:.7;letter-spacing:.06em;pointer-events:none;z-index:2}
 .colfoot{position:sticky;bottom:-14px;margin:10px -14px -14px;padding:10px 14px 14px;border-radius:0 0 14px 14px;text-align:center;background:linear-gradient(transparent,var(--panel) 35%);z-index:3}
 .lkline{margin-top:6px;font-size:13px;color:inherit;opacity:.9}
+html.pwa,html.pwa body{background:#171512}
+html.pwa #bg,html.pwa #crt{bottom:auto;height:var(--vh,100%)}
+html.pwa #fsbtn{display:none}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -5230,7 +5233,13 @@ function bootGo(){
 $('#boot').addEventListener('click',e=>{if(!e.target.closest('#bootbtn'))bootGo()});
 addEventListener('keydown',e=>{if($('#boot')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.stopPropagation();bootGo()}},true);
 /* phones: keep the game sized to the visible part of the screen, and offer real fullscreen where the browser allows it */
-function setVH(){const h=window.visualViewport?visualViewport.height:innerHeight;document.documentElement.style.setProperty('--vh',Math.round(h)+'px');if(innerWidth<=760&&(scrollY||scrollX))scrollTo(0,0)}
+/* launched from the home screen: iOS leaves the page short by the status bar's height, so grow it to fill the screen */
+const PWA=!!(navigator.standalone||(window.matchMedia&&(matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches)));
+if(PWA)document.documentElement.classList.add('pwa');
+const safeTop=()=>{const d=document.createElement('div');d.style.cssText='position:fixed;top:0;height:0;padding-top:env(safe-area-inset-top);visibility:hidden';document.body.appendChild(d);const v=d.offsetHeight;d.remove();return v};
+function setVH(){let h=window.visualViewport?visualViewport.height:innerHeight;
+  if(PWA){const full=innerWidth<innerHeight?Math.max(screen.height,screen.width):Math.min(screen.height,screen.width);h=Math.min(Math.max(h,innerHeight)+safeTop(),full||Infinity)}
+  document.documentElement.style.setProperty('--vh',Math.round(h)+'px');if(innerWidth<=760&&(scrollY||scrollX))scrollTo(0,0)}
 if(window.visualViewport){visualViewport.addEventListener('resize',()=>{setVH();sizeCoins()});visualViewport.addEventListener('scroll',setVH)}
 addEventListener('resize',setVH);addEventListener('orientationchange',()=>setTimeout(()=>{setVH();fitScale();sizeCoins()},250));setVH();
 const canFS=()=>!!(document.fullscreenEnabled||document.webkitFullscreenEnabled);
