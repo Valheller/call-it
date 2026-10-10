@@ -4242,7 +4242,7 @@ let COL_RAW=0;
 function colItems(){
   if(COL.tab==='charms')return Object.keys(JOKERS).filter(k=>!COL.rar||JOKERS[k].r===COL.rar).sort((a,b)=>JOKERS[a].r-JOKERS[b].r).map(k=>{const d=JOKERS[k];
     if(!isUnlocked('charm',k))return{id:k,name:'Locked',ic:`<div class="cic locked" style="--jbg:#2a2a2a">${IMG(icon(k))}</div>`,desc:`Unlock it: {a:${GOAL_OF['charm:'+k].desc}}`,tag:RAR[d.r].n+' · Locked',tc:'var(--grey)'};
-    const lk=lkOf('charm',k);return{id:k,name:d.name,ic:charmIc(k,COL.wear),desc:(typeof d.desc==='function'?d.desc(null):d.desc)+(lk?`<div class="lkline">${lk}</div>`:''),tag:RAR[d.r].n,tc:RAR[d.r].c}});
+    const lk=lkOf('charm',k);return{id:k,name:d.name,ic:charmIc(k,''),desc:(typeof d.desc==='function'?d.desc(null):d.desc)+(lk?`<div class="lkline">${lk}</div>`:''),tag:RAR[d.r].n,tc:RAR[d.r].c}});
   if(COL.tab==='curses')return Object.keys(CURSES).map(k=>({id:'c-'+k,name:CURSES[k].name,ic:`<div class="cic" style="--jbg:${JOKERS.jester.bg};position:relative">${IMG(icon('jester'))}${curseBadge(k)}</div>`,desc:CURSES[k].desc+'. Cursed Charms cost less in the shop.'+`<div class="lkline">${lkOf('curse',k)}</div>`,tag:'Curse · Charms only',tc:CURSES[k].col}));
   if(COL.tab==='wears')return Object.keys(WEARS).map(k=>({id:'w-'+k,name:WEARS[k].name,
       ic:`<div class="cpair">${WEARS[k].charmOnly?'':`<div class="cic coinc">${coinIcon('copper',{wear:k})}</div>`}${charmIc(k==='weightless'?'copycat':'jester',k)}</div>`,
@@ -4259,7 +4259,7 @@ function collectionInner(){
   const items=colItems();const sel=items.find(x=>x.id===COL.sel)||items[0];
   const tabs=[['charms','Charms',Object.keys(JOKERS).length],['almanacs','Almanacs',ALM_POOL().length],['runes','Runes',Object.keys(RUNES).length],['spirits','Spirits',Object.keys(SPIRITS).length],['fortunes','Fortunes',Object.keys(FORTUNES).length],['coins','Coins',Object.keys(COINS).length],['wears','Wear',Object.keys(WEARS).length],['defects','Defects',Object.keys(DEFECTS).length],['curses','Curses',Object.keys(CURSES).length]];
   const rars=COL.tab==='charms'?`<div class="ctabs">${[0,1,2,3,4,5].map(r=>`<button class="btn tiny ${COL.rar===r?(r?'':'orange'):''}" style="${COL.rar===r&&r?`--c:${RAR[r].c};--cd:rgba(0,0,0,.4)`:COL.rar!==r?'--c:var(--grey);--cd:var(--grey-d)':''}" data-act="colrar" data-arg="${r}">${r?RAR[r].n:'All'} <small>${r?Object.values(JOKERS).filter(j=>j.r===r).length:Object.keys(JOKERS).length}</small></button>`).join('')}</div>`:'';
-  const wearRow=COL.tab==='charms'?`<div class="ctabs"><span class="lbl" style="align-self:center">Preview Wear:</span>${['',...Object.keys(WEARS)].map(w=>`<button class="btn tiny ${COL.wear===w?'purple':''}" style="${COL.wear===w?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="colwear" data-arg="${w}">${w?WEARS[w].name:'None'}</button>`).join('')}</div>`:'';
+  const wearRow='';
   return `<div class="overlay"><div class="panel modal wide colm"><h2>Collection</h2>
     <div class="ctabs">${tabs.map(([k,n,c])=>`<button class="btn small ${COL.tab===k?'orange':''}" style="${COL.tab===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="coltab" data-arg="${k}">${n} <small>${c}</small></button>`).join('')}</div>
     ${rars}${wearRow}
@@ -5012,7 +5012,6 @@ const ACT={
   collection(){audioInit();COL.sel=null;showModal(collectionModal)},
   coltab(a){COL.tab=a;COL.sel=null;COL.rar=0;showModal(collectionModal);const g=document.querySelector('.cgrid');if(g)g.scrollTop=0},
   colrar(a){COL.rar=+a;COL.sel=null;showModal(collectionModal)},
-  colwear(a){const g=document.querySelector('.cgrid'),st=g?g.scrollTop:0;COL.wear=a||'';showModal(collectionModal);const g2=document.querySelector('.cgrid');if(g2)g2.scrollTop=st},
   colsel(a){const g=document.querySelector('.cgrid'),st=g?g.scrollTop:0;COL.sel=a;showModal(collectionModal);const g2=document.querySelector('.cgrid');if(g2)g2.scrollTop=st},
   options(){resetArm=false;showModal(optionsModal)},
   async sumcard(){const cv=await makeSummaryCard();SUMCARD={url:cv.toDataURL('image/png'),cv};showModal(summaryModal)},
