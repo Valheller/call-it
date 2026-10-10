@@ -166,6 +166,7 @@ input.vol{width:150px;accent-color:var(--orange)}
 .fanrar{font-size:12px}
 .fanname{font-size:24px;font-weight:700;margin:4px 0}
 .fandesc{font-size:14px;color:var(--ink-dim)}
+.fanhow{font-size:13px;color:var(--money);margin-top:10px;padding:6px 10px;border:1px solid rgba(255,214,120,.35);border-radius:8px;background:rgba(255,214,120,.07)}.fanhow b{color:var(--ink-dim);font-weight:normal}
 .fanhint{font-size:11px;color:var(--ink-dim);opacity:.7;margin-top:10px}
 #wincine{position:fixed;inset:0;z-index:96;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(ellipse at center,rgba(60,40,8,.9),rgba(8,6,4,.96));animation:wcin .6s ease-out;overflow:hidden;cursor:default;padding:16px;text-align:center}
 #wincine.ready{cursor:pointer}#wincine.out{animation:fanout .45s ease-in forwards}
@@ -3175,9 +3176,9 @@ async function nextFanfare(){
   const el=document.createElement('div');el.className='fanfare';el.setAttribute('role','status');
   el.innerHTML=`<div class="fanrays"></div><div class="fancard"><div class="fantag">${roll?'New Roll':pk?'New Pack':cn?'New Coin':'New Charm'} unlocked</div>
     ${cn?`<div class="fanic" style="--jbg:#1a2a3a;border-radius:50%">${IMG(coinArt(g.key,'H'))}</div>`:pk?`<div class="fanic" style="--jbg:${d.bg};border-radius:24%">${IMG(packIconFor(g.key))}</div>`:roll?`<div class="fanroll">${rollHTML(g.key,170,56)}</div>`:`<div class="fanic" style="--jbg:${d.bg}">${IMG(icon(g.key))}</div><div class="fanrar" style="color:${RAR[d.r].c}">${RAR[d.r].n}</div>`}
-    <div class="fanname">${roll?rollName(g.key):d.name}</div>${cn?'<div class="fanrar" style="color:var(--ink-dim)">Now turns up in the shop and Coin Pouches</div>':''}${pk?'<div class="fanrar" style="color:var(--ink-dim)">Now appears in the shop</div>':''}<div class="fandesc">${fmt(desc)}</div><div class="fanhint">Tap to continue</div></div>`;
+    <div class="fanname">${roll?rollName(g.key):d.name}</div>${cn?'<div class="fanrar" style="color:var(--ink-dim)">Now turns up in the shop and Coin Pouches</div>':''}${pk?'<div class="fanrar" style="color:var(--ink-dim)">Now appears in the shop</div>':''}<div class="fandesc">${fmt(desc)}</div>${g.desc?`<div class="fanhow"><b>How you unlocked it:</b> ${g.desc}</div>`:''}<div class="fanhint">Tap to continue</div></div>`;
   document.body.appendChild(el);play('unlock');
-  let done;const pr=new Promise(r=>done=r);el.addEventListener('click',()=>done());const tm=setTimeout(done,3400);await pr;clearTimeout(tm);
+  let done;const pr=new Promise(r=>done=r);el.addEventListener('click',()=>done());const tm=setTimeout(done,5200);await pr;clearTimeout(tm);
   el.classList.add('out');setTimeout(()=>el.remove(),320);setTimeout(nextFanfare,260);
 }
 function toast(html,ms=3800,raw){const t=document.createElement('div');t.className='toast';t.innerHTML=raw?html:hideLuck(html);$('#toasts').appendChild(t);setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),400)},ms)}
