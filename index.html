@@ -982,13 +982,13 @@ const COINS={
  silver: {name:'Loonie',            chips:15,grow:5,cost:3, desc:'{c:+15} Points, and it gains {c:+5} Points {a:permanently} every time it scores. Canada\'s eleven-sided dollar'},
  platinum:{name:'Krugerrand',       chips:30,heavy:1,cost:5, desc:'{c:+30} Points. {a:Heavy}: it always lands on the same face as the coin to its left'},
  ruby:   {name:'Casino Chip',       chips:5, mult:12, betX:2, missMoney:-1, cost:4, desc:'{m:+12} Mult when it scores, or {x:X2} Mult on a {$:bet} toss. Each one that lands on your call adds {$:$3} to a winning bet. Lose {$:$1} when it misses'},
- gold:   {name:'Doubloon',          chips:5, money:1, bossMoney:4, cost:4, desc:'{c:+5} Points. Earn {$:$1} when it scores, or {$:$4} during a {a:Boss} wager. Pirate treasure'},
+ gold:{name:'Doubloon',          chips:10, money:2, bossMoney:5, cost:4, desc:'{c:+10} Points. Earn {$:$2} when it scores, or {$:$5} during a {a:Boss} wager. Pirate treasure'},
  jade:   {name:'Cash Coin',         chips:5, held:2, string:10, cost:4, desc:'{c:+5} Points. Earn {$:$2} at the end of each wager while it sits in your purse. Coins {a:next to it} give {c:+10} Points when they score'},
- lucky:  {name:'5 Yen Coin',        chips:5, lucky:1, cost:4, desc:'{c:+5} Points. {a:1 in 4} chance for {m:+15} Mult, {a:1 in 12} chance for {$:$8}. Both chances {a:double} while it sits in the {a:middle} of your purse'},
+ lucky:{name:'5 Yen Coin',        chips:10, lucky:1, cost:4, desc:'{c:+10} Points. {a:1 in 3} chance for {m:+15} Mult, {a:1 in 8} chance for {$:$8}. Both chances {a:double} while it sits in the {a:middle} of your purse'},
  steel:  {name:'2 Euro Coin',       chips:5, missX:1.5, cost:5, desc:'{c:+5} Points when it scores. {x:X1.5} Mult when it does {a:not} score'},
  glass:  {name:'Chocolate Coin',    chips:5, xmult:2, glass:1, cost:5, desc:'{c:+5} Points, {x:X2} Mult. {a:1 in 4} chance to get eaten when it scores, leaving a {a:Crumpled Gold Foil} coin behind'},
  bronze: {name:'Wooden Nickel',     chips:1, missMult:8, cost:4, desc:'{c:+1} Point when it scores, but {m:+8} Mult when it {a:misses}. Don\'t take any wooden nickels'},
- loaded: {name:"Magician's Coin",   chips:8, bias:.75, freeFlip:1, cost:5, desc:'{c:+8} Points. Lands on your call {a:3 in 4} times. Re-flipping only Magician\'s Coins is {a:free}'},
+ loaded:{name:"Magician's Coin",   chips:15, bias:.8, freeFlip:1, cost:5, desc:'{c:+15} Points. Lands on your call {a:4 in 5} times. Re-flipping only Magician\'s Coins is {a:free}'},
  quicksilver:{name:'Arcade Token',  chips:5, wild:1, arcade:2, cost:6, desc:'{c:+5} Points. Always scores, whatever face it lands on. {m:+2} Mult for each Re-flip you\'ve used this wager. {a:Continue?} If you would run out of Flips short of the target, it gets used up for {a:+1} Flip and {a:+1} Re-flip'},
  twohead:{name:'Two-Headed Fake',   chips:5, fixed:'H', fakeBonus:25, cost:4, desc:'{c:+5} Points. A counterfeit quarter that always lands {a:Heads}, and gives {c:+25} more when it scores. Crooks don\'t sleep well'},
  twotail:{name:'Two-Tailed Fake',   chips:5, fixed:'T', fakeBonus:25, cost:4, desc:'{c:+5} Points. A counterfeit quarter that always lands {a:Tails}, and gives {c:+25} more when it scores. Crooks don\'t sleep well'},
@@ -996,25 +996,27 @@ const COINS={
 Object.assign(COINS,{
  sixpence:{name:'Silver Sixpence', chips:5, luckmoney:1, cost:4, desc:'{c:+5} Points. {a:1 in 3} chance to earn {$:$4}. Brides keep one in their shoe for good fortune'},
  drachma:{name:'Greek Drachma',     chips:20,owl:1, cost:5, desc:'{c:+20} Points. {a:Wise}: when it misses on a toss, it re-flips itself once, for free. It has an owl on the back'},
- peso:   {name:'Mexican Peso',      chips:5, pesoMult:2, cost:4, desc:'{c:+5} Points. {m:+2} Mult for each Mexican Peso in your purse (including this one)'},
- krona:  {name:'Swedish Krona',     chips:15,tailsWild:1, cost:4, desc:'{c:+15} Points. It always scores when it lands on {a:Tails}, whatever you called. Three crowns on the back'},
+ peso:{name:'Mexican Peso',      chips:10, pesoMult:4, cost:4, desc:'{c:+10} Points. {m:+4} Mult for each Mexican Peso in your purse (including this one)'},
+ krona:{name:'Swedish Krona',     chips:20,tailsWild:1,tailsMult:5, cost:4, desc:'{c:+20} Points. It always scores when it lands on {a:Tails}, whatever you called, and gives {m:+5} Mult when it does. Three crowns on the back'},
  pog:    {name:'Slammer Pog',       chips:5, slam:1, cost:5, desc:'{c:+5} Points. {a:Slam}: when it scores, the coin to its {a:right} scores too, whatever face it shows. A heavy playground slammer'},
  crypto: {name:'Crypto Coin',       chips:5, crypto:1, cost:5, desc:'{c:+5} Points. Earn anywhere from {r:-$2} to {$:$6} when it scores. Very volatile'},
  sealed:  {name:'Sealed Coin',     chips:10,relic:1,quest:1,cost:0,desc:'{c:+10} Points. A courier\'s sealed coin. Keep it in your purse until the delivery stage'},
  penny:   {name:'Lucky Penny',     chips:1, wild:1, relic:1, cost:0, desc:'{c:+1} Point. Always scores, whatever face it lands on. {a:Relic}: one of a kind'},
- denarius:{name:'Roman Denarius',  chips:10,tribute:3,relic:1, cost:0, desc:'{c:+10} Points. {a:Tribute}: gains {m:+3} Mult {a:permanently} every time you beat a Boss. {a:Relic}: one of a kind'},
+ denarius:{name:'Roman Denarius',  chips:15,mult:5,tribute:5,relic:1, cost:0, desc:'{c:+15} Points and {m:+5} Mult. {a:Tribute}: gains another {m:+5} Mult {a:permanently} every time you beat a Boss. {a:Relic}: one of a kind'},
  ecu:     {name:'Gold Ecu',       chips:5,xmult:1.5,euro:1,relic:1,cost:0,desc:'{c:+5} Points, {x:X1.5} Mult when it scores, or {x:X2} when it sits next to another {a:foreign} coin. The coin before the Euro. {a:Relic}: one of a kind'},
  foil:    {name:'Crumpled Gold Foil',chips:3,money:1,meltVal:3,noShop:1,cost:0,desc:'{c:+3} Points. Earn {$:$1} when it scores. Melts down for {$:$3}. All that\'s left of an eaten Chocolate Coin'},
  sanddollar:{name:'Sand Dollar',chips:8,sand:1,fishLocked:1,cost:6,desc:'{c:+8} Points. Whenever it lands, it goes {a:fishing}. If it {r:missed}, land a catch and it flips onto your call. If it {a:scored}, land a catch for bonus Mult: {x:X1.25} for an Old Boot up to {x:X5} for The Pit Boss'},
  firstdime:{name:'The First Dime',chips:10,firstDime:.2,loseChance:.25,relic:1,artifact:1,cost:0,desc:'{c:+10} Points. The very first dime ever earned. In your {a:first} slot when a wager starts, the score needed drops by {a:20%}. Anywhere else, each time it scores there is a {r:1 in 4} chance it gets {r:lost} for good. {a:Artifact}: one of a kind'},
  pressed: {name:'Pressed Penny',  chips:3,wild:1,fixed:'H',train:3,flat:1,relic:1,artifact:1,charm:'pressedpenny',cost:0,desc:'{c:+3} Points. A souvenir penny pressed flat with a steam train. It never flips: it always scores, and gives {m:+3} Mult for each scoring coin to its {a:right} (its train cars). {a:Artifact}: drag it up into your Charms and it gives {a:+1} Flip every wager instead'},
- hope:    {name:'Hope Diamond Coin',chips:5,money:6,mult:-3,relic:1,cost:0,desc:'{c:+5} Points, earn {$:$6}, but {m:-3} Mult when it scores. {a:Relic}: one of a kind'},
+ hope:{name:'Hope Diamond Coin',chips:25,money:6,relic:1,cost:0,desc:'{c:+25} Points and earn {$:$6} when it scores. Cursed: {r:-2} Luck while it sits in your purse. {a:Relic}: one of a kind'},
 });
 const SPECIAL=Object.keys(COINS).filter(k=>k!=='copper'&&!COINS[k].relic&&!COINS[k].noShop&&!COINS[k].fishLocked);
 const relicsLeft=()=>Object.keys(COINS).filter(k=>COINS[k].relic&&!COINS[k].quest&&!(S&&S.purse.some(c=>c.type===k))&&!(k==='pressed'&&S&&S.jokers.some(j=>j.key==='pressedpenny')));
 const PURSE_MIN=3;
 /* stacked coins: two coins share a stack id. They always land on the same face, can't be re-flipped,
    and the pair only takes up one space in your purse */
+/* pairs of same-kind coins that aren't stacked yet (for the Poltergeist) */
+const polterPairs=()=>{const free={},out=[];S.purse.forEach((c,i)=>{if(stkGroup(c))return;if(c.type in free){out.push([free[c.type],i]);delete free[c.type]}else free[c.type]=i});return out};
 const stkGroup=c=>!!S&&!!c&&!!c.stk&&S.purse.filter(x=>x.stk===c.stk).length>=2?c.stk:null;
 const purseUsed=()=>S.purse.length-new Set(S.purse.filter(c=>stkGroup(c)).map(c=>c.stk)).size;
 function applyStacks(){const seen={};S.purse.forEach((c,i)=>{const g=stkGroup(c);if(!g)return;if(g in seen)S.results[i]=S.results[seen[g]];else seen[g]=i})}
@@ -1606,16 +1608,16 @@ const ALM_ART={
 const almIcon=k=>sprite('almart-'+k,ALM_ART[k]||SPR_ALM);
 const ALMS={
  grand:{name:'Grand Almanac',col:'#ffd34d',desc:'Level up your {a:most played} toss type twice',use:async()=>levelUp(mostPlayed(),2)},
- dawn:{name:'Almanac of Dawn',col:'#ffb84d',desc:'Level up {a:Lone Hit}, {a:Double} and {a:Triple}',use:async()=>levelMany(['single','pair','triple'])},
- dusk:{name:'Almanac of Dusk',col:'#c97a5a',desc:'Level up {a:Four Streak}, {a:Five Streak} and {a:Six Streak}',use:async()=>levelMany(['four','five','six'])},
- patterns:{name:'Almanac of Patterns',col:'#9a6fdc',desc:'Level up {a:Zigzag}, {a:Mirror} and {a:Bookends}',use:async()=>levelMany(['zigzag','mirror','bookends'])},
+ dawn:{name:'Almanac of Dawn',col:'#ffb84d',desc:'Level up {a:Lone Hit}, {a:Double} and {a:Triple} twice each',use:async()=>levelMany(['single','pair','triple'],2)},
+ dusk:{name:'Almanac of Dusk',col:'#c97a5a',desc:'Level up {a:Four Streak}, {a:Five Streak} and {a:Six Streak} twice each',use:async()=>levelMany(['four','five','six'],2)},
+ patterns:{name:'Almanac of Patterns',col:'#9a6fdc',desc:'Level up {a:Zigzag}, {a:Mirror} and {a:Bookends} twice each',use:async()=>levelMany(['zigzag','mirror','bookends'],2)},
  fortune:{name:'Almanac of Fortune',col:'#4bd18f',desc:'Level up a {a:random} toss type 3 times',use:async()=>levelUp(randHand(),3)},
- ruin:{name:'Almanac of Ruin',col:'#8a8a8a',desc:'Level up {a:Bust} and {a:Whiff} twice each',use:async()=>{await levelUp('bust',2);await levelUp('whiff',2)}},
- balance:{name:'Almanac of Balance',col:'#bfe6ff',desc:'Level up your {a:least played} toss type twice',
-  use:async()=>levelUp(HANDS.filter(h=>h.key!=='bust').reduce((a,h)=>S.hands[h.key].played<S.hands[a].played?h.key:a,'sweep'),2)},
+ ruin:{name:'Almanac of Ruin',col:'#8a8a8a',desc:'Level up {a:Bust} and {a:Whiff} 4 times each',use:async()=>{await levelUp('bust',4);await levelUp('whiff',4)}},
+ balance:{name:'Almanac of Balance',col:'#bfe6ff',desc:'Level up your {a:least played} toss type 3 times',
+  use:async()=>levelUp(HANDS.filter(h=>h.key!=='bust').reduce((a,h)=>S.hands[h.key].played<S.hands[a].played?h.key:a,'sweep'),3)},
  saros:{name:'Saros Almanac',col:'#5d6bd6',desc:'Level up {a:every} toss type you have scored this run',ok:()=>HANDS.some(h=>S.hands[h.key].played),why:'Score a toss first',
   use:async()=>levelMany(HANDS.filter(h=>S.hands[h.key].played).map(h=>h.key))},
- leap:{name:'Leap Year Almanac',col:'#3fbf8b',desc:'Level up the toss type you scored {a:last} twice',ok:()=>!!S.lastType,why:'Score a toss first',use:async()=>levelUp(S.lastType,2)},
+ leap:{name:'Leap Year Almanac',col:'#3fbf8b',desc:'Level up the toss type you scored {a:last} 3 times',ok:()=>!!S.lastType,why:'Score a toss first',use:async()=>levelUp(S.lastType,3)},
 };
 const ALM_POOL=()=>[...HANDS.filter(h=>h.key!=='bust').map(h=>({kind:'almanac',hand:h.key})),...Object.keys(ALMS).map(k=>({kind:'almanac',key:k}))];
 const randAlmanac=()=>({...pick(ALM_POOL())});
@@ -1652,6 +1654,7 @@ const SPIRIT_ART={
  poltergeist:{p:{1:'#b9a4ff',2:'#e6eefc',3:'#222222'},s:["..1111....",".111111...",".1311311..",".111111.22","1111111..2",".111111..2","..1.1.1.2.","........2.","..2222....",".........."]},
  banshee:{p:{1:'#e6eefc',2:'#222222'},s:["..111111..",".11111111.",".12111121.",".12111121.",".11122111.",".11222211.",".11222211.",".11122111.","1.1.11.1.1",".........."]},
  specter:{p:{1:'#a8b4ba',2:'#222222'},s:["...1111...","..111111..",".11211211.",".11211211.",".11111111.",".11111111.",".11111111.",".11111111.",".1.11.1.1.",".........."]},
+ poltergeist:{p:{1:'#c9b6ff',2:'#2a1a3a',3:'#ffd34d'},s:["..111111..",".11111111.","1121111211","1111111111","1111221111","..333333..",".33333333.","..333333..",".1.1..1.1.",".........."]},
  wisp:{p:{1:'#9be7ff',2:'#ffffff',3:'#27b3d6'},s:["..........","....3.....","...333....","..32223...","..32223...","...333....","....3.....","...3......","..3.......",".........."]},
  doppelganger:{p:{1:'#4bd18f',2:'#2e7d4f'},s:[".11....22.","1111..2222","1111..2222",".11....22.","1111..2222","1111..2222","1111..2222",".1.1..2.2.",".1.1..2.2.",".........."]},
  wraith:{p:{1:'#ff9de2',2:'#2a1a3a',3:'#ffffff'},s:["...1111...","..111111..",".11211211.",".11311311.",".11111111.","1111221111","1111111111","111.11.111","11...1..11","1........1"]},
@@ -1715,8 +1718,8 @@ const RUNES={
   use:async sel=>{sel.forEach(i=>{const el=$('#c'+i);if(el)el.classList.add('shatter')});play('shatter');await wait(380);sel.sort((a,b)=>b-a).forEach(i=>S.purse.splice(i,1));render()}},
  wealth:{name:'Rune of Wealth',col:'#f5b744',desc:'Double your money (max {$:+$20})',
   use:async()=>{const g=Math.min(S.money,20);S.money+=g;play('money');render();popup($('#smoney'),'+$'+g,'money')}},
- fate:{name:'Rune of Fate',col:'#e8443a',desc:'{a:1 in 3} chance to gain a random Charm',ok:()=>S.jokers.length<slots(),why:'No room for a Charm',
-  use:async()=>{if(rand()<odds(1/3)){const k=rollJokerKey();addJoker(k,JOKERS[k].cost);render();juice($('#jk'+(S.jokers.length-1)));play('win')}else{render();popup($('#jokerbar'),'Nope!','text');play('miss')}}},
+ fate:{name:'Rune of Fate',col:'#e8443a',desc:'{a:1 in 2} chance to gain a random {a:Uncommon or better} Charm. Otherwise, earn {$:$4}',ok:()=>S.jokers.length<slots(),why:'No room for a Charm',
+  use:async()=>{if(rand()<odds(1/2)){const k=rollJokerKey(rand()<.3?3:2);addJoker(k,JOKERS[k].cost);render();juice($('#jk'+(S.jokers.length-1)));play('win')}else{S.money+=4;render();popup($('#smoney'),'Consolation +$4','money');play('money')}}},
  stars:{name:'Rune of Stars',col:'#27b3d6',desc:'Create up to {a:2} random Almanacs',ok:consRoomAfter,why:'No room for items',
   use:async()=>{for(let k=0;k<2&&S.cons.length<S.consSlots;k++)S.cons.push(randAlmanac());play('buy');render()}},
  echo:{name:'Rune of Echoes',col:'#f2f2f2',desc:()=>`Create a copy of the last Rune or Almanac you used {d:(${S&&S.lastUsed?consInfo(S.lastUsed).name:'none yet'})}`,
@@ -1745,12 +1748,12 @@ const SPIRITS={
   use:async()=>{const t=pick(SPECIAL);S.purse.forEach(c=>c.type=t);S.baseFlips--;play('xmult');render();juiceAll()}},
  poltergeist:{name:'Poltergeist',col:'#b9a4ff',desc:'Swap {a:every} Charm for a random Charm of the same rarity',ok:()=>S.jokers.length>0,why:'You need a Charm',
   use:async()=>{const own=new Set();S.jokers=S.jokers.map(j=>{const r=JOKERS[j.key].r;const pool=Object.keys(JOKERS).filter(k=>JOKERS[k].r===r&&!JOKERS[k].prize&&!JOKERS[k].artifact&&k!==j.key&&!own.has(k)&&isUnlocked('charm',k));const k=pool.length?pick(pool):j.key;own.add(k);const d=JOKERS[k];return{id:uid++,key:k,st:d.init?{...d.init}:{},cost:d.cost,wear:j.wear,curse:j.curse,left:j.left}});play('reroll');render()}},
- banshee:{name:'Banshee',col:'#e6eefc',desc:'Level up {a:every} toss type twice. {r:Destroy} a random Charm',ok:()=>S.jokers.length>0,why:'You need a Charm',
-  use:async()=>{{const c=S.jokers.filter(x=>x.curse!=='rusted');if(c.length)S.jokers.splice(S.jokers.indexOf(pick(c)),1)}play('shatter');render();await levelMany(HANDS.map(h=>h.key),2)}},
+ banshee:{name:'Banshee',col:'#e6eefc',desc:'Level up {a:every} toss type {a:3 times}. {r:Destroy} a random Charm',ok:()=>S.jokers.length>0,why:'You need a Charm',
+  use:async()=>{{const c=S.jokers.filter(x=>x.curse!=='rusted');if(c.length)S.jokers.splice(S.jokers.indexOf(pick(c)),1)}play('shatter');render();await levelMany(HANDS.map(h=>h.key),3)}},
  specter:{name:'Specter',col:'#a8b4ba',desc:'Turn every special coin back into a Quarter. Earn {$:$4} for each one',ok:()=>specialCount()>0,why:'No special coins',
   use:async()=>{const n=specialCount();S.purse.forEach(c=>c.type='copper');S.money+=4*n;play('money');render();juiceAll()}},
- wisp:{name:'Will-o-Wisp',col:'#9be7ff',min:1,max:1,desc:'Turn {a:1} selected coin into an {a:Arcade Token}',
-  use:async sel=>{S.purse[sel[0]].type='quicksilver';render();juiceCoin(sel[0],'Transmuted!');play('levelup')}},
+ wisp:{name:'Will-o-Wisp',col:'#9be7ff',min:1,max:2,desc:'Turn up to {a:2} selected coins into {a:Arcade Tokens}',
+  use:async sel=>{sel.forEach(i=>S.purse[i].type='quicksilver');render();sel.forEach(i=>juiceCoin(i,'Transmuted!'));play('levelup')}},
  doppelganger:{name:'Doppelganger',col:'#4bd18f',desc:'Copy a random Charm. Lose {$:$10}',ok:()=>S.jokers.length>0&&S.jokers.length<slots(),why:'You need a Charm and room for another',
   use:async()=>{const j=pick(S.jokers);S.jokers.push({id:uid++,key:j.key,st:{...j.st},cost:j.cost});S.money=Math.max(0,S.money-10);play('xmult');render()}},
  wraith:{name:'Wraith',col:'#ff9de2',desc:'Summon a random {f:Fabled} Charm. It carries a random {r:Curse}, and you lose {r:all} your money',ok:()=>S.jokers.length<slots()&&wraithPool().length>0,why:'No room for a Charm',
@@ -1764,8 +1767,10 @@ const SPIRITS={
  wanderer:{name:'Wanderer',col:'#3d8fe0',min:1,max:1,desc:'Add an {a:Off-Center} defect to {a:1} selected coin (makes Almanacs)',use:async sel=>setCoinMod(sel[0],'defect','offcenter')},
  cracker:{name:'Cracker',col:'#9a6fdc',min:1,max:1,desc:'Add a {a:Die Crack} defect to {a:1} selected coin (makes Runes)',use:async sel=>setCoinMod(sel[0],'defect','diecrack')},
  aura:{name:'Aura',col:'#fff27a',min:1,max:1,desc:'Add random {a:Wear} (Polished, Patina or Proof Finish) to {a:1} selected coin',use:async sel=>setCoinMod(sel[0],'wear',pick(COIN_WEARS))},
- hex:{name:'Hex',col:'#c8102e',desc:'Add {a:Proof Finish} to a random Charm. {r:Destroy} all your other Charms',ok:()=>S.jokers.length>0,why:'You need a Charm',
-  use:async()=>{const j=pick(S.jokers);j.wear='proof';S.jokers=[j,...S.jokers.filter(x=>x!==j&&x.curse==='rusted')];play('xmult');render();juice($('#jk0'))}},
+ poltergeist:{name:'Poltergeist',col:'#c9b6ff',desc:'Stack {a:every} pair of matching coins in your purse: each pair always lands on the same face and shares {a:one} purse space',ok:()=>polterPairs().length>0,why:'You need two coins of the same kind',
+  use:async()=>{const pr=polterPairs();pr.forEach(([a,b])=>{const g=uid++;S.purse[a].stk=g;S.purse[b].stk=g});const P=S.purse,ids=new Set();const out=[];P.forEach(c=>{if(ids.has(c.id))return;ids.add(c.id);out.push(c);if(c.stk){const m=P.find(x=>x!==c&&x.stk===c.stk&&!ids.has(x.id));if(m){ids.add(m.id);out.push(m)}}});S.purse=out;play('spirit');render();juiceAll();toast(`The <b>Poltergeist</b> stacks ${pr.length} pair${pr.length>1?'s':''} of coins`)}},
+ hex:{name:'Hex',col:'#c8102e',desc:'Add {a:Proof Finish} to a random Charm. {r:Destroy} all your other Charms, but earn {a:double} their sell value',ok:()=>S.jokers.length>0,why:'You need a Charm',
+  use:async()=>{const j=pick(S.jokers),gone=S.jokers.filter(x=>x!==j&&x.curse!=='rusted'),pay=2*gone.reduce((a,x)=>a+sellVal(x),0);j.wear='proof';S.jokers=[j,...S.jokers.filter(x=>x!==j&&x.curse==='rusted')];S.money+=pay;if(pay)setTimeout(()=>popup($('#smoney'),'+$'+pay,'money'),200);play('xmult');render();juice($('#jk0'))}},
  phantasm:{name:'Phantasm',col:'#9be7ff',desc:'Add {a:Weightless} (+1 Charm slot) to a random Charm without Wear. Your purse holds {r:1} fewer coin',
   ok:()=>S.jokers.some(j=>!j.wear)&&S.purse.length<=S.purseMax-1,why:'Needs a Charm without Wear and a free purse spot',
   use:async()=>{const j=pick(S.jokers.filter(x=>!x.wear));j.wear='weightless';S.purseMax--;play('spirit');render();juice($('#jk'+S.jokers.indexOf(j)))}},
@@ -3350,8 +3355,9 @@ function computeHand(){
       if(d.money)e('money',ctx.boss&&d.bossMoney?d.bossMoney:d.money);
       if(S.purse[i].defect==='misprint')e('money',3);
       applyWear(S.purse[i].wear,e);
-      if(d.lucky){const mid=i===Math.floor(res.length/2)?2:1;if(rand()<odds(.25)*mid)e('mult',15);if(rand()<odds(1/12)*mid)e('money',8)}
+      if(d.lucky){const mid=i===Math.floor(res.length/2)?2:1;if(rand()<odds(1/3)*mid)e('mult',15);if(rand()<odds(1/8)*mid)e('money',8)}
       if(d.luckmoney&&rand()<odds(1/3))e('money',4);
+      if(d.tailsMult&&res[i]==='T')e('mult',d.tailsMult);
       if(d.pesoMult)e('mult',d.pesoMult*S.purse.filter(c=>ctype(c)==='peso').length);
       if(d.crypto)e('money',Math.floor(rand()*9)-2);
       if(S.purse[i].defect==='filled'&&rand()<odds(1/6)&&consRoom()){S.cons.push({kind:'fortune',key:pick(Object.keys(FORTUNES))});e('text','+Fortune')}
@@ -3628,7 +3634,7 @@ function packHTML(){
     let face,btns,name,why=null;
     if(PX[o.kind]){const X=PX[o.kind];name=X.name(o);why=X.block(o);face=X.face(o);
       btns=`<button class="btn green small" data-act="ppick" data-arg="${i},take" ${why?'disabled':''}>${o.kind==='myst'?'Reveal':'Take'}</button>`}
-    else if(o.kind==='coin'){const full=purseUsed()>=S.purseMax;name=COINS[o.type].name+(modName(o)?`<br><small style="color:var(--money)">${modName(o)}</small>`:'');
+    else if(o.kind==='coin'){const full=purseUsed()>=S.purseMax;name=(o.pair?'Stack of 2 ':'')+COINS[o.type].name+(o.pair?`<br><small style="color:var(--money)">Pre-stacked: one purse space</small>`:modName(o)?`<br><small style="color:var(--money)">${modName(o)}</small>`:'');
       face=`<div class="jin" style="--jbg:#2b3a3d">${coinIcon(o.type,o)}</div>`;
       btns=`<button class="btn green small" data-act="ppick" data-arg="${i},take" ${full?'disabled':''}>${full?'Purse full':'Take'}</button>`}
     else{const ci=consInfo(o);name=ci.name;why=consBlock(o);
@@ -4890,7 +4896,7 @@ function buyPack(i){
   else for(let k=0;k<n;k++){
     if(pk.kind==='coin'&&S.roll==='pennyroll'&&S.ante<4)opts.push({kind:'coin',type:'penny'});
     else if(pk.kind==='coin'){const rl=relicsLeft().filter(t=>!opts.some(o=>o.type===t));const mods=!(S.tutorial&&S.ante<3);
-      const L=luckNow();if(rl.length&&rand()<.06+L*.004)opts.push({kind:'coin',type:pick(rl)});else opts.push({kind:'coin',type:pick(SPECIAL),wear:mods&&rand()<.2+L*.01?pick(COIN_WEARS):null,defect:mods&&rand()<.15+L*.01?pick(Object.keys(DEFECTS)):null})}
+      const L=luckNow();if(rl.length&&rand()<.06+L*.004)opts.push({kind:'coin',type:pick(rl)});else if(mods&&rand()<.12)opts.push({kind:'coin',type:pick(SPECIAL),pair:true});else opts.push({kind:'coin',type:pick(SPECIAL),wear:mods&&rand()<.2+L*.01?pick(COIN_WEARS):null,defect:mods&&rand()<.15+L*.01?pick(Object.keys(DEFECTS)):null})}
     else if(pk.kind==='almanac'){let a;do a=randAlmanac();while(opts.some(o=>(o.hand||o.key)===(a.hand||a.key)));opts.push(a)}
     else if(pk.kind==='rune'){let r;do r=pick(Object.keys(RUNES));while(opts.some(o=>o.key===r));opts.push({kind:'rune',key:r})}
     else{let s;do s=rand()<.05?'soul':pick(Object.keys(SPIRITS).filter(x=>x!=='soul'));while(opts.some(o=>o.key===s));opts.push({kind:'spirit',key:s})}
@@ -4902,7 +4908,7 @@ function buyPack(i){
 async function packPick(i,mode){
   const P=S.pack;if(!P)return;const o=P.opts[i];if(!o||o.taken)return;
   if(PX[o.kind]){const X=PX[o.kind];if(X.block(o))return;o.taken=true;P.picks--;await X.take(o)}
-  else if(o.kind==='coin'){if(purseUsed()>=S.purseMax)return;o.taken=true;P.picks--;S.purse.push({...mkCoin(o.type),wear:o.wear||null,defect:o.defect||null});play('buy')}
+  else if(o.kind==='coin'){if(purseUsed()>=S.purseMax)return;o.taken=true;P.picks--;if(o.pair){const g=uid++;S.purse.push({...mkCoin(o.type),stk:g},{...mkCoin(o.type),stk:g})}else S.purse.push({...mkCoin(o.type),wear:o.wear||null,defect:o.defect||null});play('buy')}
   else if(mode==='keep'){if(!consRoom())return;o.taken=true;P.picks--;const kc={kind:o.kind,key:o.key,hand:o.hand};if(!kc.key)delete kc.key;if(!kc.hand)delete kc.hand;S.cons.push(kc);play('buy')}
   else{const c={kind:o.kind,key:o.key,hand:o.hand};if(!c.key)delete c.key;if(!c.hand)delete c.hand;if(consBlock(c))return;o.taken=true;P.picks--;render();await applyCons(c)}
   if(S.pack&&S.pack.picks<=0)S.pack=null;
