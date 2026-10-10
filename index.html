@@ -2514,23 +2514,29 @@ PACK_MUSIC.credits=function(m){
    harpsichord figure that keeps returning to one high note. A nod to a certain trip-hop classic. 32 bars */
 const MD_MEL={0:[2,1,4],6:[1,1,2],8:[0,1,4],12:[1,1,4]},MD_MEL2={0:[3,1,3],3:[2,1,1],4:[1,1,4],10:[0,1,2],12:[2,1,4]};
 PACK_MUSIC.drhouse=function(m){
-  const{s,bar,at,spb,B,up,loop}=m,s16=spb/4,cn=(i,o)=>up[i%up.length]+12*o,sec=loop%4,intro=sec===0&&bar<2;
-  if(s===0&&!intro)up.forEach(n=>{tone({at,f:mtof(n),type:'square',lp:1100,a:.05,d:spb*3.8,v:.011,bus:B,wob:true});tone({at,f:mtof(n+12),type:'sawtooth',lp:1500,a:.08,d:spb*3.6,v:.005,bus:B})});
-  if(s===0)tone({at,f:mtof(cn(0,-2)),type:'triangle',a:.02,d:spb*2.6,v:.22,lp:480,bus:B});
-  if(s===10)tone({at,f:mtof(cn(2,-2)),type:'triangle',a:.02,d:spb*1.4,v:.17,lp:480,bus:B});
-  /* the heartbeat: lub-dub, lub-dub */
-  if(s===0||s===8)tone({at,f:96,f2:40,glide:.12,a:.008,d:.26,v:.27,bus:B});
-  if(s===2||s===10)tone({at,f:80,f2:40,glide:.1,a:.008,d:.2,v:.15,bus:B});
-  if(s===12&&sec!==0){noise({at,ft:'lowpass',ff:2000,q:.6,a:.006,d:.12,v:.05,bus:B});tone({at,f:200,f2:150,glide:.05,a:.005,d:.1,v:.05,bus:B})}
-  if(s%4===2&&sec!==2)tone({at,f:1250,f2:980,glide:.02,a:.004,d:.03,v:.006,bus:B});
-  /* the harpsichord: the star of the track. It opens alone over the heartbeat, rocking against one high note
-     while the voice underneath walks down, in a two-bar phrase */
+  /* the trap remix: booming 808 slides, a half-time clap, rattling hi-hat rolls and vocal chops,
+     all under the same harpsichord figure. 32 bars */
+  const{s,bar,at,spb,B,up,loop}=m,s16=spb/4,cn=(i,o)=>up[i%up.length]+12*o,sec=loop%4,intro=sec===0&&bar<2,drop=!intro;
+  /* dark pad */
+  if(s===0&&drop)up.forEach(n=>tone({at,f:mtof(n),type:'sawtooth',lp:700,a:spb*.6,d:spb*3.6,v:.01,bus:B,wob:true}));
+  /* 808s: long sub notes that slide down into the root */
+  const P808={0:[0,1.9],7:[0,.7],10:[2,1.1],14:[1,.5]};
+  if(drop&&s in P808&&!(sec===2&&s===7)){const[k,l]=P808[s],f=mtof(cn(k,-2));tone({at,f:f*1.5,f2:f,glide:.07,a:.004,d:spb*l,v:.3,bus:B});tone({at,f:f*2,a:.004,d:spb*l*.6,v:.05,type:'triangle',lp:500,bus:B})}
+  /* kick punch on the 808s, clap on the half-time backbeat */
+  if(drop&&(s===0||s===10))tone({at,f:150,f2:45,glide:.06,a:.003,d:.12,v:.24,bus:B});
+  if(drop&&s===8){noise({at,ft:'bandpass',ff:1500,q:.8,a:.002,d:.16,v:.09,bus:B});noise({at:at+.012,ft:'bandpass',ff:1700,q:.8,a:.002,d:.14,v:.06,bus:B});tone({at,f:230,f2:170,glide:.04,a:.003,d:.08,v:.06,bus:B})}
+  /* hi-hats: straight 8ths, then 16ths, with triplet and 32nd rolls into the next bar */
+  const hat=(t,v)=>tone({at:t,f:6400,a:.001,d:.018,v,type:'square',lp:9000,bus:B});
+  if(drop){if(s%2===0||sec>=1)hat(at,s%4===0?.006:.0045);
+    if(bar%2===1&&s>=12){if(s%2===0){for(let k=1;k<3;k++)hat(at+k*s16*2/3/2,.004)}}
+    if(bar%4===3&&s>=14){hat(at+s16/2,.005)}}
+  /* the harpsichord, unchanged: the hook of the song */
   {const hp=(n,v)=>{const f=mtof(n);tone({at,f,type:'sawtooth',lp:4400,a:.001,d:s16*1.15,v,bus:B});tone({at,f,type:'sawtooth',lp:4400,a:.001,d:s16*1.05,v:v*.7,det:9,bus:B});tone({at,f:mtof(n+12),type:'square',lp:5200,a:.001,d:.045,v:v*.35,bus:B})};
-   if(s%2===0){const A=[3,2,3,1,3,0,3,1],Bp=[3,1,3,0,3,1,3,2],k=(bar%2?Bp:A)[(s>>1)%8],n=k===3?cn(3,1):cn(k,0);hp(n,sec===2?.016:.024)}}
-  if(sec===1||sec===3){const mot=bar%2===0?MD_MEL:MD_MEL2;if(s in mot){const[i,o,l]=mot[s],oc=sec===3?1:0;
-    tone({at,f:mtof(cn(i,o+oc)),type:'sawtooth',lp:1700,a:.04,d:s16*l,v:.028,bus:B,vib:l>2});if(sec===3)tone({at,f:mtof(cn(i+2,o-1+oc)),type:'sawtooth',lp:1300,a:.04,d:s16*l,v:.011,bus:B})}}
-  if(sec===2&&(s===0||s===8)&&bar%2===1){const n=cn([2,1,3,0][(bar>>1)%4],2);tone({at,f:this.mdv||mtof(n),f2:mtof(n),glide:.22,a:.25,d:spb*2.2,v:.026,bus:B,vib:true});this.mdv=mtof(n)}
-  if(bar%4===3&&s>=12)tone({at,f:mtof(cn(15-s,2)),type:'square',lp:2400,a:.004,d:s16*.7,v:.018,bus:B});
+   if(s%2===0){const A=[3,2,3,1,3,0,3,1],Bp=[3,1,3,0,3,1,3,2],k=(bar%2?Bp:A)[(s>>1)%8],n=k===3?cn(3,1):cn(k,0);hp(n,sec===2?.014:.02)}}
+  /* chopped vocal stabs on the second and fourth passes */
+  if((sec===1||sec===3)&&[3,6,11].includes(s)&&bar%2===1){const n=cn([1,2,3][[3,6,11].indexOf(s)],1);tone({at,f:mtof(n),f2:mtof(n)*.985,glide:.08,a:.004,d:s16*.9,v:.022,bus:B,vib:true});tone({at,f:mtof(n+12),a:.004,d:s16*.5,v:.008,bus:B})}
+  /* tape-stop riser into the turnaround */
+  if(bar===7&&s===12&&sec===3)tone({at,f:mtof(cn(3,1)),f2:mtof(cn(0,-1)),glide:spb,type:'sawtooth',lp:1400,a:.01,d:spb*.95,v:.02,bus:B});
 };
 /* The Table of Rivals: a smoky big-band showdown. Walking bass, ride, backbeat, brass stabs and a trumpet line. 32 bars */
 const TBL_MEL={0:[2,1,3],4:[3,1,1],6:[2,1,1],8:[1,1,4],14:[0,1,2]},TBL_MEL2={0:[0,2,2],3:[3,1,1],4:[2,1,4],10:[1,1,2],12:[0,1,4]};
