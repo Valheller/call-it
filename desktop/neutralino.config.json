@@ -1,0 +1,39 @@
+{
+  "applicationId": "com.callit.game",
+  "version": "1.0.0",
+  "defaultMode": "window",
+  "documentRoot": "/resources/",
+  "url": "/",
+  "enableServer": true,
+  "enableNativeAPI": false,
+  "tokenSecurity": "one-time",
+  "logging": {
+    "enabled": false,
+    "writeToLogFile": false
+  },
+  "nativeAllowList": [],
+  "modes": {
+    "window": {
+      "title": "Call it.",
+      "width": 1366,
+      "height": 820,
+      "minWidth": 900,
+      "minHeight": 600,
+      "center": true,
+      "resizable": true,
+      "fullScreen": false,
+      "icon": "/resources/icon.png",
+      "enableInspector": false,
+      "borderless": false,
+      "maximize": false,
+      "hidden": false,
+      "exitProcessOnClose": true
+    }
+  },
+  "cli": {
+    "binaryName": "Call-it",
+    "resourcesPath": "/resources/",
+    "binaryVersion": "6.5.0"
+  },
+  "port": 47823
+}

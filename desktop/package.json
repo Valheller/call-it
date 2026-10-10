@@ -1,0 +1,14 @@
+{
+  "name": "call-it-desktop",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Windows build of Call it. using Neutralinojs",
+  "scripts": {
+    "build": "python3 build_html.py && neu update && neu build --embed-resources --release && node seticon.mjs"
+  },
+  "dependencies": {
+    "@neutralinojs/neu": "^11.8.0",
+    "pe-library": "^2.0.1",
+    "resedit": "^3.1.0"
+  }
+}

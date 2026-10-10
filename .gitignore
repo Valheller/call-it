@@ -1,0 +1,7 @@
+node_modules/
+desktop/bin/
+desktop/dist/
+desktop/resources/index.html
+desktop/Call-it.exe
+desktop/.tmp/
+.DS_Store
