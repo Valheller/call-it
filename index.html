@@ -3145,7 +3145,8 @@ const GOALS=[
  {kind:'charm',key:'moirai',desc:'Win 3 runs',test:()=>PS().wins>=3},
 ];
 const GOAL_OF=Object.fromEntries(GOALS.map(g=>[g.kind+':'+g.key,g]));
-const isUnlocked=(kind,key)=>PROF.unlockAll||!GOAL_OF[kind+':'+key]||!!PROF.unlocked[kind+':'+key];
+/* challenge rolls stay sealed until you have won a run */
+const isUnlocked=(kind,key)=>PROF.unlockAll||(kind==='roll'&&typeof ROLLS!=='undefined'&&ROLLS[key]&&ROLLS[key].challenge?(PROF.stats.wins||0)>=1:(!GOAL_OF[kind+':'+key]||!!PROF.unlocked[kind+':'+key]));
 const goalName=g=>g.kind==='roll'?ROLLS[g.key].name:g.kind==='pack'?PACKS[g.key].name:g.kind==='coin'?COINS[g.key].name:JOKERS[g.key].name;
 function checkGoals(){
   let any=false;
@@ -3190,6 +3191,7 @@ const savedRun=()=>{try{return JSON.parse(localStorage.getItem('hwr-run')||'null
 const clearSave=()=>{try{localStorage.removeItem('hwr-run')}catch(e){}};
 function recordRun(won){
   if(!S||S.recorded)return;S.recorded=true;const st=PS();
+  if(won&&(st.wins||0)===0)setTimeout(()=>toast('<b>Challenge Rolls unlocked!</b> Find them at the bottom of the roll list',6000),2500);
   if(S.daily){st.dailyPlayed=(st.dailyPlayed||0)+1;if(won)st.dailyWins=(st.dailyWins||0)+1}
   st.runs++;st.streak=won?(st.streak||0)+1:0;st.bestStreak=Math.max(st.bestStreak||0,st.streak);if(won){st.wins++;const L=luckNow(),K=karmaNow();if(L>=4)st.winLuck++;if(K<=-4)st.winBadKarma++;if(K>=4)st.winGoodKarma++}st.bestStage=Math.max(st.bestStage,S.ante);
   if(won){const prev=PROF.stakes[S.roll]||0;if(S.stake>prev){PROF.stakes[S.roll]=S.stake;if(S.stake<6)S.flags.newStake=S.stake+1}}
@@ -3716,7 +3718,7 @@ function runInfoModal(){
 function lkMeters(note='Revealed by your Crystal Ball',showL=true,showK=true){const L=luckNow(),K=karmaNow(),bar=(v,c)=>`<div class="lkbar"><i style="left:${50+Math.min(0,v)*5}%;width:${Math.abs(v)*5}%;background:${c}"></i></div>`;
   return `<div class="lkm">${showL?`<div><span>Luck</span>${bar(L,'#4bd18f')}<b>${fmtSign(L)} · ${luckWord(L)}</b></div>`:''}${showK?`<div><span>Karma</span>${bar(K,'#ffd34d')}<b>${fmtSign(K)} · ${karmaWord(K)}</b></div>`:''}<div class="lbl">${note}</div></div>`}
 /* in the order you meet them: menu, the run, its packs, then the endings */
-const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','main',{lp:1}],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['Glitch Pack','glitch',{sub:'Unlocked by beating FATAL ERROR'}],['The House','thehouse',{sub:'First Endless final boss'}],['Endless','endless',{sub:'Below the House'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
+const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','main',{lp:1}],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Glitch Pack','glitch',{sub:'Unlocked by beating House'}],['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['The House','thehouse',{sub:'First Endless final boss'}],['Endless','endless',{sub:'Below the House'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
 let SOUNDTEST=null;
 function soundTestModal(){
   return `<div class="overlay"><div class="panel modal" style="width:min(440px,100%)"><h2>Sound Test</h2>
@@ -3788,9 +3790,9 @@ const ROLLS={
  bankrupt:{name:'Bankrupt Roll',challenge:1,paper:'#5a4a3a',band:'#c9b48a',cap:'bronze',desc:'{a:Challenge.} {r:No} wager rewards, and Remaining Flips pay {r:nothing}. Start with {$:$10}',apply:()=>{S.money=10}},
  pennyroll:{name:'Penny Roll',challenge:1,paper:'#b0602a',band:'#ffd9b0',cap:'penny',desc:'{a:Challenge.} Start with just {a:3 Lucky Pennies} ({c:+1} Point, always score). Coin Packs only hold Lucky Pennies until stage 4',apply:()=>{S.purse=[mkCoin('penny'),mkCoin('penny'),mkCoin('penny')]}},
  hoarder:{name:'Hoarder Roll',challenge:1,paper:'#4a3a6a',band:'#ffd34d',cap:'gold',desc:'{a:Challenge.} You can\'t sell Charms or Consumables, or melt coins. {a:+1} Charm slot and {a:+1} Consumable slot',apply:()=>{S.jokerSlots++;S.consSlots++}},
+ invisible:{name:'Invisible Roll',challenge:1,paper:'#000000',band:'#ffffff',cap:'copper',desc:'{a:Challenge.} Every coin lands face down until it scores, so you toss and re-flip blind. Start with {$:$10}',apply:()=>{S.money=10}},
  rivalroll:{name:'Rival Roll',challenge:1,paper:'#3a2210',band:'#ff8f1f',cap:'platinum',desc:'{a:Challenge.} Your rival shows up after almost every boss and wager until you duel them, and you face a {a:new rival} every stage. The final boss is {r:The General}: the face on the Quarter himself'},
  boss:{name:'Boss Roll',challenge:1,paper:'#3a0a10',band:'#c8102e',cap:'loaded',desc:'{a:Challenge.} Every wager has a random boss effect, Small and Big included, and boss wagers have two'},
- invisible:{name:'Invisible Roll',challenge:1,paper:'#000000',band:'#ffffff',cap:'copper',desc:'{a:Challenge.} Every coin lands face down until it scores, so you toss and re-flip blind. Start with {$:$10}',apply:()=>{S.money=10}},
  glitched:{name:'Glitched Roll',challenge:1,paper:'#ff1aa8',band:'#00f0e0',cap:'quicksilver',desc:'{a:Challenge.} Everything is glitched, right up to a final boss you won\'t meet anywhere else. Every toss, each coin acts like a random coin and one Charm acts like a random Charm. Shop prices shift, wager targets ({r:X1.2} to {r:X1.8}) stay hidden until you play, and used items sometimes glitch back into your slots'},
  chaos:{name:'Chaos Roll',paper:'#3a3a3a',band:'#ff5f6d',cap:'quicksilver',desc:'Start with {a:6} random coins, most carrying random Wear or a Defect',
   apply:()=>{S.purse=Array.from({length:6},()=>({...mkCoin(pick(Object.keys(COINS))),wear:rand()<.5?pick(COIN_WEARS):null,defect:rand()<.5?pick(Object.keys(DEFECTS)):null}))}},
@@ -3979,7 +3981,7 @@ function rollModal(){
   const r=ROLLS[ROLLSEL],lock=!isUnlocked('roll',ROLLSEL),ms=maxStake(ROLLSEL);STAKESEL=Math.min(STAKESEL,ms);
   return `<div class="overlay"><div class="panel modal wide"><h2>Choose a Roll</h2>
     <div class="rolldetail ${lock?'locked':''}">${rollHTML(ROLLSEL,190,64)}<div class="cbody"><div class="cname" style="font-size:24px;font-weight:600">${rollName(ROLLSEL)}</div>
-      <div class="cdesc">${lock?`<b>Locked.</b> Unlock it: ${GOAL_OF['roll:'+ROLLSEL].desc}`:fmt(r.desc)}</div>
+      <div class="cdesc">${lock?`<b>Locked.</b> Unlock it: ${r.challenge?'Win any run to open the Challenge Rolls':GOAL_OF['roll:'+ROLLSEL].desc}`:fmt(r.desc)}</div>
       ${ROLL_UNLOCK[ROLLSEL]?(()=>{const k=ROLL_UNLOCK[ROLLSEL],J=JOKERS[k],got=(PROF.stakes[ROLLSEL]||0)>=1;return `<div class="lbl" style="margin-top:6px">${got?'Beaten · unlocked':'First win unlocks'} <b style="color:${RAR[J.r].c}">${J.name}</b>${J.r===5?' (Fabled)':''}</div>`})():''}
       ${lock||r.challenge?'':`<div class="stakes"><span class="lbl">Stake</span>${[1,2,3,4,5,6].map(n=>`<button class="btn tiny" style="--c:${n<=ms?STAKES[n].col:'var(--grey)'};--cd:rgba(0,0,0,.45);${n===STAKESEL?'outline:2px solid #fff;outline-offset:1px':''}" data-act="stakesel" data-arg="${n}" ${n>ms?'disabled':''} title="${STAKES[n].name}">${n}</button>`).join('')}</div>
       <div class="stakedesc">${stakeDesc(STAKESEL)}${ms<6?`<div class="k-d">Win a run on ${STAKES[ms].name} to unlock ${STAKES[ms+1].name}</div>`:''}</div>`}
