@@ -3753,7 +3753,11 @@ function creditsModal(){
     </div></div>
     <div style="text-align:center;margin-top:12px"><button class="btn orange" data-act="credback">Back</button></div></div></div>`;
 }
-function showModal(fn){modal=fn;if(S)renderOverlay();else{const o=$('#overlay');o.innerHTML=fn();o.hidden=false}}
+function showModal(fn){
+  /* re-rendering the same window keeps every scrolled area where it was */
+  const same=modal===fn,sc=same?[...document.querySelectorAll('#overlay .modal,#overlay .sttracks,#overlay .cgrid,#overlay .rollgrid')].map(e=>e.scrollTop):null;
+  modal=fn;if(S)renderOverlay();else{const o=$('#overlay');o.innerHTML=fn();o.hidden=false}
+  if(sc)[...document.querySelectorAll('#overlay .modal,#overlay .sttracks,#overlay .cgrid,#overlay .rollgrid')].forEach((e,i)=>{if(sc[i]!=null)e.scrollTop=sc[i]})}
 function closeModal(){const wasFish=modal===fishModal,wasCred=modal===creditsModal;modal=null;if(wasFish){fishStop();FISH.st='idle';FISH.streak=0;setTimeout(musicMood,0)}if(wasCred)setTimeout(musicMood,0);abandonArm=false;resetArm=false;if(SOUNDTEST!=null){SOUNDTEST=null;musicMood()}const o=$('#overlay');if(S&&(S.screen==='over'||S.screen==='win'))renderOverlay();else{o.hidden=true;o.innerHTML=''}}
 
 
@@ -3994,7 +3998,7 @@ async function openRoll(key,o={}){
   if(o.daily){PS().dailyPlayed=Math.max(PS().dailyPlayed||0,1);saveProf();setTimeout(checkGoals,1500)}
   newRun(key,{stake:o.daily?1:STAKESEL,seed:o.daily?o.seed:hashStr(seedStr),daily:o.daily,seedStr:o.daily?'DAILY '+o.daily:seedStr,custom});render();
   if(reduced){return}
-  const r=ROLLS[key],W=360,D=122;
+  const r=ROLLS[key],W=Math.round(Math.min(360,innerWidth*.6)),D=Math.round(W*122/360);
   const st=document.createElement('div');st.id='ripstage';
   st.innerHTML=`<div class="ripbox">${rollHTML(key,W,D)}<div class="ripname">${rollName(key)}</div><div class="ripsub">${fmt(r.desc)}</div></div>`;
   document.body.appendChild(st);
