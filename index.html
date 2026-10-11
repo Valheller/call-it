@@ -939,7 +939,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.2</div>
+  <div class="gamever" aria-label="Version">v1.2.3</div>
 </div>
 
 <script>
@@ -4232,7 +4232,7 @@ let titleTok=0,titleAnim=null;
 async function titleToss(){
   const el=$('.bigcoin'),sp=el&&el.querySelector('.spin');if(!sp||titleBusy)return;titleBusy=true;audioInit();
   const cur=getComputedStyle(sp).transform,tok=++titleTok;if(titleAnim){titleAnim.cancel();titleAnim=null}el.classList.add('tossing');
-  const r=Math.random(),face=r<.01?'E':r<.505?'H':'T',end=face==='T'?180:face==='E'?90:0,turns=(3+Math.floor(Math.random()*2))*360+end;
+  const r=Math.random(),face=r<.05?'E':r<.525?'H':'T',end=face==='T'?180:face==='E'?90:0,turns=(3+Math.floor(Math.random()*2))*360+end;
   play('toss');
   const dur=reduced?10:620;
   const a=sp.animate([{transform:cur==='none'?'rotateY(0deg)':cur},{transform:`translateY(-${Math.round(el.offsetWidth*1.2)}px) rotateY(${turns/2}deg) scale(1.08)`,offset:.5},{transform:`rotateY(${turns}deg)`}],
