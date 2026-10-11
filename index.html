@@ -1030,7 +1030,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.43</div>
+  <div class="gamever" aria-label="Version">v1.2.44</div>
 </div>
 
 <script>
@@ -2622,7 +2622,38 @@ PACK_MUSIC.showdown=function(m){
 const END_MEL={0:[3,2,4],4:[2,2,4],8:[1,2,6],14:[0,2,2]};
 const END_MEL2={0:[2,2,3],3:[1,2,1],4:[0,2,4],8:[1,2,3],11:[2,2,1],12:[3,1,4]};
 PACK_MUSIC.endless=function(m){
-  const{s,bar,at,spb,B,up,loop}=m,s16=spb/4,cn=(i,o)=>up[i%up.length]+12*o,sec=loop%4;
+  /* Endless: each sub-basement before the final boss adds a layer; the final boss's stage plays a 64-bar extended form */
+  const E=Math.max(1,(m.L||9)-STAGES),{s,bar,at,spb,B,up}=m,s16=spb/4,cn=(i,o)=>up[i%up.length]+12*o;
+  const L8=m.loop%8;
+  if(E>=4&&L8>=4){endlessExt(m,L8,cn,s16);return}
+  if(E>=2&&s%2===1)noise({at,ft:'highpass',ff:7500,a:.003,d:.03,v:.007,bus:B});
+  if(E>=2&&s%4===3)noise({at,ft:'bandpass',ff:5200,q:.8,a:.008,d:.05,v:.009,bus:B});
+  if(E>=3&&s%2===0)tone({at,f:mtof(cn(0,-1)+(s%4===2?12:0)),type:'square',lp:600,a:.004,d:spb*.22,v:.03,bus:B});
+  if(E>=3&&s%2===1)tone({at,f:mtof(cn([0,2,1,3,2,0,3,1][(s>>1)%8],1)),type:'triangle',a:.004,d:s16*.8,v:.016,bus:B});
+  if(E>=4&&s===0&&bar%4===0)noise({at,ft:'highpass',ff:3000,a:.005,d:1.2,v:.03,bus:B});
+  endlessBase(m,cn,s16);
+};
+function endlessExt(m,L8,cn,s16){const{s,bar,at,spb,B,up}=m,X=L8-4;
+  if(s===0)up.forEach((n,k)=>tone({at,f:mtof(n-12),type:'sawtooth',lp:X===0?380:900,a:spb*.9,d:spb*3.4,v:.02,bus:B,wob:true,det:k%2?16:-16}));
+  if(X===0){ /* breakdown: pads, a lone bell motif, sub hits */
+    if(s===0)tone({at,f:mtof(cn(0,-2)),d:spb*3.6,v:.16,bus:B});
+    const mot=bar%2===0?END_MEL:END_MEL2;if(s in mot){const[i,o,l]=mot[s];fm({at,f:mtof(cn(i,o+1)),ratio:3.5,idx:1.6,d:s16*l*2,v:.022,bus:B})}return}
+  if(X===1){ /* build: snare roll that speeds up, rising kicks, riser */
+    const rate=bar<4?4:bar<6?2:1;if(s%rate===0)noise({at,ft:'bandpass',ff:1500+bar*300+s*40,q:1,a:.002,d:.07,v:.015+bar*.005,bus:B});
+    if(s%4===0)tone({at,f:92,f2:44,glide:.12,a:.008,d:.2,v:.12+bar*.02,bus:B});
+    if(bar===7&&s===0)noise({at,ft:'lowpass',ff:400,ff2:6000,a:spb*3.6,d:.2,v:.05,bus:B});return}
+  /* finale (X 2..3): everything, motif doubled in octaves, claps */
+  if(s===0&&bar===0&&X===2)noise({at,ft:'highpass',ff:3000,a:.005,d:1.6,v:.05,bus:B});
+  if(s===0||s===3||s===8||s===11)tone({at,f:92,f2:44,glide:.12,a:.008,d:.22,v:.22,bus:B});
+  if(s===4||s===12){noise({at,ft:'bandpass',ff:1800,q:1.2,a:.002,d:.09,v:.05,bus:B});noise({at:at+.012,ft:'bandpass',ff:2400,q:1,a:.002,d:.06,v:.03,bus:B})}
+  if(s%2===1)noise({at,ft:'highpass',ff:7500,a:.003,d:.03,v:.008,bus:B});
+  if(s%2===0)tone({at,f:mtof(cn(0,-1)+(s%4===2?12:0)),type:'square',lp:700,a:.004,d:spb*.22,v:.032,bus:B});
+  const mot=bar%2===0?END_MEL:END_MEL2;if(s in mot){const[i,o,l]=mot[s];fm({at,f:mtof(cn(i,o)),ratio:3.5,idx:1.1,d:s16*l*1.4,v:.034,bus:B});fm({at,f:mtof(cn(i,o+1)),ratio:3.5,idx:.9,d:s16*l*1.2,v:.02,bus:B})}
+  if(s%2===1)tone({at,f:mtof(cn([0,2,1,3,2,0,3,1][(s>>1)%8],2)),type:'triangle',a:.004,d:s16*.8,v:.016,bus:B});
+  if(X===3&&bar===7&&s>=8&&s%2===0)tone({at,f:mtof(cn([3,2,1,0][(s-8)/2],0)),d:.18,v:.12,bus:B});
+}
+function endlessBase(m,cn,s16){
+  const{s,bar,at,spb,B,up,loop}=m,sec=loop%4;
   if(s===0)up.forEach((n,k)=>tone({at,f:mtof(n-12),type:'sawtooth',lp:520,a:spb*.9,d:spb*3.2,v:.016,bus:B,wob:true,det:k%2?16:-16}));
   if(s===0||s===3)tone({at,f:mtof(cn(0,-2)),type:'triangle',a:.008,d:spb*(s?.5:1.2),v:s?.12:.2,lp:420,bus:B});
   if(sec!==2&&(s===0||s===3))tone({at,f:92,f2:44,glide:.12,a:.008,d:.22,v:s?.14:.22,bus:B});
@@ -2791,7 +2822,7 @@ const Music={step:0,next:0,timer:null,bpm:90,intense:false,mode:'main',prevLead:
   play(step,at){
     if((SOUNDTEST!=null?ST.glitch:S&&S.roll==='glitched')&&!this.offline&&this.mode!=='fatal'){const x=Math.random();if(x<.025)step=Math.max(0,step-1);else if(x<.035)return;else if(x<.045)step+=4}
     const bar=Math.floor(step/16)%8,s=step%16,ch=CHORDS[bar],spb=60/this.bpm,loop=Math.floor(step/128),B=AU.mus;
-    if(PACK_MUSIC[this.mode]){PACK_MUSIC[this.mode]({s,bar,ch,at,spb,B,loop,up:[...ch.n].sort((a,b)=>a-b)});return}
+    if(PACK_MUSIC[this.mode]){PACK_MUSIC[this.mode]({L:this.stage||1,s,bar,ch,at,spb,B,loop,up:[...ch.n].sort((a,b)=>a-b)});return}
     if(this.mode==='menu'){
       /* title theme: a fixed music-box melody over rolling EP arpeggios, soft bass and brushes */
       const mel=MENU_MEL[bar][s];
@@ -2900,7 +2931,7 @@ function wager32(s,bar,ch,at,spb,B,loop){
 }
 function musicMood(){
   if(!AU.ctx)return;const t=AU.ctx.currentTime;
-  if(SOUNDTEST!=null){const tr=TRACKS[SOUNDTEST],o=tr[2]||{};Music.mode=tr[1];Music.intense=!!o.intense;Music.var=o.v||0;Music.bpm=({fish:72,credits:104})[tr[1]]||90;Music.stage=ST.stage;AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(o.lp?750:16000,t,.25);return}
+  if(SOUNDTEST!=null){const tr=TRACKS[SOUNDTEST],o=tr[2]||{};Music.mode=tr[1];Music.intense=!!o.intense;Music.var=o.v||0;Music.bpm=({fish:72,credits:104})[tr[1]]||90;Music.stage=tr[1]==='endless'?ST.estage:ST.stage;AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(o.lp?750:16000,t,.25);return}
   const shop=S&&(S.screen==='shop'||S.screen==='cashout'||S.screen==='over'||S.screen==='event');
   AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(shop&&!S.pack?750:16000,t,.25);
   if(modal===creditsModal){AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(16000,t,.25);Music.mode='credits';Music.intense=false;Music.bpm=104;return}
@@ -2909,7 +2940,7 @@ function musicMood(){
    if(sp){AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(16000,t,.25);Music.mode=sp[0];Music.intense=false;Music.bpm=sp[1];return}}
   Music.intense=!!(S&&S.screen==='play'&&S.boss);
   Music.var=S&&S.boss?bossTheme(S.boss):0;
-  Music.bpm=90;Music.stage=S?Math.min(8,S.ante):1;
+  Music.bpm=90;Music.stage=S?S.ante:1;
   Music.mode=!S?'menu':S.screen==='choose'?'map':S.screen==='play'&&S.inElite?(S.eliteBlind&&S.eliteBlind.kind==='rival'?'rival':'elite'):S.screen==='play'&&S.boss&&BOSSES[S.boss].final?(S.boss==='fatal'?'fatal':S.boss==='general'?'general':S.boss==='house'?'thehouse':S.boss==='drhouse'?'drhouse':S.boss==='tablerivals'?'tablerivals':'showdown'):S.screen==='shop'&&S.pack?S.pack.kind:S.endless&&S.ante>STAGES?'endless':'main';
 }
 
@@ -4116,12 +4147,13 @@ function lkMeters(note='Revealed by your Crystal Ball',showL=true,showK=true){co
   return `<div class="lkm">${showL?`<div><span>Luck</span>${bar(L,'#4bd18f')}<b>${fmtSign(L)} · ${luckWord(L)}</b></div>`:''}${showK?`<div><span>Karma</span>${bar(K,'#ffd34d')}<b>${fmtSign(K)} · ${karmaWord(K)}</b></div>`:''}<div class="lbl">${note}</div></div>`}
 /* in the order you meet them: menu, the run, its packs, then the endings */
 const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','main',{lp:1}],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Glitch Pack','glitch',{sub:'Unlocked by beating House'}],['Prize Counter','prize',{sub:'Spend your Tickets'}],['The Bazaar','bazaar',{sub:'A rare detour'}],['The Chapel','chapel',{sub:'For those with good Karma'}],['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['Endless','endless',{sub:'Below the House'}],['The House','thehouse',{sub:'Endless final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
-let SOUNDTEST=null;const ST={glitch:false,stage:1};
+let SOUNDTEST=null;const ST={glitch:false,stage:1,estage:9};
 function soundTestModal(){
   return `<div class="overlay"><div class="panel modal stm" style="width:min(660px,100%)"><h2>Sound Test</h2>
     ${OPT.mvol>0?'':'<div class="lbl" style="text-align:center;margin-bottom:8px">Music volume is at 0 in Options</div>'}
     <div class="stctl"><div class="optrow"><span>Glitched audio<small>How music sounds on the Glitched Roll</small></span><button class="btn small ${ST.glitch?'green':''}" data-act="stglitch">${ST.glitch?'On':'Off'}</button></div>
-      <div class="optrow"><span>Stage<small>Music adds layers as a run goes on</small></span><div class="stsg">${[1,2,3,4,5,6,7,8].map(n=>`<button class="btn small" style="${ST.stage===n?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ststage" data-arg="${n}" aria-pressed="${ST.stage===n}">${n}</button>`).join('')}</div></div></div>
+      ${(()=>{const tr=SOUNDTEST!=null&&TRACKS[SOUNDTEST],en=tr&&tr[1]==='endless',wg=tr&&tr[0]==='Wager';if(!en&&!wg)return '';const L=en?[9,10,11,12]:[1,2,3,4,5,6,7,8],cur=en?ST.estage:ST.stage;
+        return `<div class="optrow"><span>Stage<small>${en?'Layers build toward the final boss; 12 is the extended version':'Music adds layers as a run goes on'}</small></span><div class="stsg">${L.map(n=>`<button class="btn small" style="${cur===n?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ststage" data-arg="${n}" aria-pressed="${cur===n}">${n}</button>`).join('')}</div></div>`})()}</div>
     <div class="sttracks">${TRACKS.map((t,i)=>`<button class="btn small ${SOUNDTEST===i?'green':''}" style="${SOUNDTEST===i?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="sttrack" data-arg="${i}"><span class="stn">${String(i+1).padStart(2,'0')}</span>${t[0]}${SOUNDTEST===i?'<small>Now playing</small>':t[2]&&t[2].sub?`<small>${t[2].sub}</small>`:''}</button>`).join('')}</div>
     <div style="text-align:center;margin-top:12px;display:flex;gap:10px;justify-content:center">${SOUNDTEST!=null?'<button class="btn red" data-act="ststop">Stop</button>':''}<button class="btn orange" data-act="stback">Back</button></div></div></div>`}
 let abandonArm=false,resetArm=false;
@@ -5469,7 +5501,7 @@ const ACT={
   soundtest(){audioInit();showModal(soundTestModal)},
   sttrack(a){audioInit();SOUNDTEST=+a;Music.prevLead=0;musicMood();play('click');showModal(soundTestModal)},
   stglitch(){ST.glitch=!ST.glitch;play('click');showModal(soundTestModal)},
-  ststage(a){ST.stage=+a;play('click');musicMood();showModal(soundTestModal)},
+  ststage(a){if(+a>8)ST.estage=+a;else ST.stage=+a;play('click');musicMood();showModal(soundTestModal)},
   ststop(){SOUNDTEST=null;musicMood();showModal(soundTestModal)},
   stback(){closeModal()},
   copyseed(){if(!S||!S.seed)return;navigator.clipboard.writeText(S.seed).then(()=>toast('Seed copied')).catch(()=>toast('Seed: <b>'+S.seed+'</b>'))},
