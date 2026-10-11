@@ -963,7 +963,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.14</div>
+  <div class="gamever" aria-label="Version">v1.2.15</div>
 </div>
 
 <script>
@@ -1048,6 +1048,7 @@ Object.assign(COINS,{
  pressed: {name:'Pressed Penny',  chips:3,wild:1,fixed:'H',train:3,flat:1,relic:1,artifact:1,charm:'pressedpenny',cost:0,desc:'{c:+3} Points. A souvenir penny pressed flat with a steam train. It never flips: it always scores, and gives {m:+3} Mult for each scoring coin to its {a:right} (its train cars). {a:Artifact}: drag it up into your Charms and it gives {a:+1} Flip every wager instead'},
  hope:{name:'Hope Diamond Coin',chips:25,money:6,relic:1,cost:0,desc:'{c:+25} Points and earn {$:$6} when it scores. {a:Relic}: one of a kind'},
 });
+const SPC=()=>S&&S.roll==='locked'?SPECIAL.filter(t=>!GOAL_OF['coin:'+t]):SPECIAL;
 const SPECIAL=Object.keys(COINS).filter(k=>k!=='copper'&&!COINS[k].relic&&!COINS[k].noShop&&!COINS[k].fishLocked);
 const relicsLeft=()=>Object.keys(COINS).filter(k=>COINS[k].relic&&!COINS[k].quest&&!(S&&S.purse.some(c=>c.type===k))&&!(k==='pressed'&&S&&S.jokers.some(j=>j.key==='pressedpenny')));
 const PURSE_MIN=3;
@@ -1778,7 +1779,7 @@ const RUNES={
 /* Spirits: rare, powerful, often with a cost */
 const SPIRITS={
  forge:{name:'Forge Spirit',col:'#ff8a3d',desc:'Melt {a:1} random coin, then add {a:3} random special coins',ok:()=>S.purse.length+2<=S.purseMax,why:'Purse is too full',
-  use:async()=>{S.purse.splice(Math.floor(rand()*S.purse.length),1);for(let k=0;k<3;k++)S.purse.push(mkCoin(pick(SPECIAL)));play('levelup');render();juiceAll()}},
+  use:async()=>{S.purse.splice(Math.floor(rand()*S.purse.length),1);for(let k=0;k<3;k++)S.purse.push(mkCoin(pick(SPC())));play('levelup');render();juiceAll()}},
  ankh:{name:'Ankh',col:'#ffd34d',desc:'Copy a random Charm. {r:Destroy} all your other Charms',ok:()=>S.jokers.length>0,why:'You need a Charm',
   use:async()=>{const j=pick(S.jokers);S.jokers=[j,{id:uid++,key:j.key,st:{...j.st},cost:j.cost},...S.jokers.filter(x=>x!==j&&x.curse==='rusted')];play('xmult');render()}},
  soul:{name:'The Soul',col:'#e6eefc',desc:'Create a {p:Legendary} Charm',ok:()=>S.jokers.length<slots(),why:'No room for a Charm',
@@ -1794,7 +1795,7 @@ const SPIRITS={
  ectoplasm:{name:'Ectoplasm',col:'#9be7ff',desc:'{a:+1} Charm slot. {r:-1} Re-flip every wager',
   use:async()=>{S.jokerSlots++;S.baseReflips=Math.max(0,S.baseReflips-1);play('xmult');render()}},
  unison:{name:'Unison',col:'#9a6fdc',desc:'Turn every coin into the same random special coin. {r:-1} Flip every wager',ok:()=>S.baseFlips>1,why:'You need 2+ Flips',
-  use:async()=>{const t=pick(SPECIAL);S.purse.forEach(c=>c.type=t);S.baseFlips--;play('xmult');render();juiceAll()}},
+  use:async()=>{const t=pick(SPC());S.purse.forEach(c=>c.type=t);S.baseFlips--;play('xmult');render();juiceAll()}},
  poltergeist:{name:'Poltergeist',col:'#b9a4ff',desc:'Swap {a:every} Charm for a random Charm of the same rarity',ok:()=>S.jokers.length>0,why:'You need a Charm',
   use:async()=>{const own=new Set();S.jokers=S.jokers.map(j=>{const r=JOKERS[j.key].r;const pool=Object.keys(JOKERS).filter(k=>JOKERS[k].r===r&&!JOKERS[k].prize&&!JOKERS[k].artifact&&k!==j.key&&!own.has(k)&&isUnlocked('charm',k));const k=pool.length?pick(pool):j.key;own.add(k);const d=JOKERS[k];return{id:uid++,key:k,st:d.init?{...d.init}:{},cost:d.cost,wear:j.wear,curse:j.curse,left:j.left}});play('reroll');render()}},
  banshee:{name:'Banshee',col:'#e6eefc',desc:'Level up {a:every} toss type {a:3 times}. {r:Destroy} a random Charm',ok:()=>S.jokers.length>0,why:'You need a Charm',
@@ -3041,7 +3042,7 @@ const PX={
   take:o=>{const old=BOSSES[S.blinds[2].boss].name;S.blinds[2].boss=o.key;if(S.blinds[2].boss2===o.key)S.blinds[2].boss2=null;toast(`${old} is out. <b>${BOSSES[o.key].name}</b> is your next boss`);play('boss')}},
 };
 function mysteryInner(){const x=rand();
-  if(x<.16)return{kind:'coin',type:pick(SPECIAL),wear:rand()<.3?pick(COIN_WEARS):null};
+  if(x<.16)return{kind:'coin',type:pick(SPC()),wear:rand()<.3?pick(COIN_WEARS):null};
   if(x<.30)return{kind:'charm',key:rollJokerKey()};
   if(x<.44)return{kind:'rune',key:pick(Object.keys(RUNES))};
   if(x<.56)return randAlmanac();
@@ -3065,14 +3066,14 @@ function genPackOpts(pk,n){
     else if(k==='contract')uniq(()=>({kind:'contract',key:pick(Object.keys(CONTRACTS))}),'key');
     else if(k==='mint')uniq(()=>rand()<.55?{kind:'mod',mod:'wear',key:pick(COIN_WEARS)}:{kind:'mod',mod:'defect',key:pick(Object.keys(DEFECTS))},'key');
     else if(k==='workshop')uniq(()=>({kind:'cwear',key:pick(Object.keys(WEARS))}),'key');
-    else if(k==='exchange')uniq(()=>({kind:'swap',type:rand()<.12&&relicsLeft().length?pick(relicsLeft()):pick(SPECIAL.filter(t=>COINS[t].cost>=4))}),'type');
+    else if(k==='exchange')uniq(()=>({kind:'swap',type:rand()<.12&&relicsLeft().length?pick(relicsLeft()):pick(SPC().filter(t=>COINS[t].cost>=4))}),'type');
     else if(k==='mystery')opts.push({kind:'myst',inner:mysteryInner()});
     else if(k==='cursed')uniq(()=>{const legs=Object.keys(JOKERS).filter(x=>JOKERS[x].r===4&&isUnlocked('charm',x));const key=legs.length&&rand()<.12?pick(legs):rollJokerKey(rand()<.4?3:2);return{kind:'charm',key,curse:pick(Object.keys(CURSES))}},'key');
-    else if(k==='relic')uniq(()=>{const rl=relicsLeft().filter(t=>!opts.some(o=>o.type===t));return{kind:'coin',type:rl.length?pick(rl):pick(SPECIAL)}},'type');
-    else if(k==='chest'){[{kind:'coin',type:pick(SPECIAL),wear:rand()<.3?pick(COIN_WEARS):null},{kind:'charm',key:rollJokerKey()},{kind:'rune',key:pick(Object.keys(RUNES))},randAlmanac()].forEach(o=>opts.push(o));break}
+    else if(k==='relic')uniq(()=>{const rl=relicsLeft().filter(t=>!opts.some(o=>o.type===t));return{kind:'coin',type:rl.length?pick(rl):pick(SPC())}},'type');
+    else if(k==='chest'){[{kind:'coin',type:pick(SPC()),wear:rand()<.3?pick(COIN_WEARS):null},{kind:'charm',key:rollJokerKey()},{kind:'rune',key:pick(Object.keys(RUNES))},randAlmanac()].forEach(o=>opts.push(o));break}
     else if(k==='glitch')uniq(()=>{const x=rand();
       if(x<.25){const gl=Object.keys(JOKERS).filter(q=>JOKERS[q].glitchOnly&&!S.jokers.some(j=>j.key===q));if(gl.length)return{kind:'charm',key:pick(gl)}}
-      if(x<.45)return{kind:'coin',type:pick(SPECIAL),wear:pick(COIN_WEARS),defect:pick(Object.keys(DEFECTS))};
+      if(x<.45)return{kind:'coin',type:pick(SPC()),wear:pick(COIN_WEARS),defect:pick(Object.keys(DEFECTS))};
       if(x<.65)return{kind:'charm',key:rollJokerKey(rand()<.5?3:2),wear:pick(COIN_WEARS)};
       const y=rand(),it=y<.3?{kind:'rune',key:pick(Object.keys(RUNES))}:y<.5?{kind:'spirit',key:pick(Object.keys(SPIRITS).filter(q=>q!=='soul'))}:y<.75?{kind:'fortune',key:pick(Object.keys(FORTUNES))}:randAlmanac();
       return{kind:'gdup',item:it,key:'d'+(it.key||it.hand)}},'key');
@@ -3216,7 +3217,7 @@ const GOALS=[
 const GOAL_OF=Object.fromEntries(GOALS.map(g=>[g.kind+':'+g.key,g]));
 /* challenge rolls stay sealed until you have won a run */
 const curtainN=()=>Math.floor(Object.keys(PROF.unlocked||{}).length/3);
-const isUnlocked=(kind,key)=>PROF.unlockAll||(kind==='roll'&&typeof ROLLS!=='undefined'&&ROLLS[key]&&ROLLS[key].challenge?(PROF.stats.wins||0)>=1:(!GOAL_OF[kind+':'+key]||!!PROF.unlocked[kind+':'+key]));
+const isUnlocked=(kind,key)=>kind!=='roll'&&S&&S.roll==='locked'?!GOAL_OF[kind+':'+key]:PROF.unlockAll||(kind==='roll'&&typeof ROLLS!=='undefined'&&ROLLS[key]&&ROLLS[key].challenge?(PROF.stats.wins||0)>=1:(!GOAL_OF[kind+':'+key]||!!PROF.unlocked[kind+':'+key]));
 const goalName=g=>g.kind==='roll'?ROLLS[g.key].name:g.kind==='pack'?PACKS[g.key].name:g.kind==='coin'?COINS[g.key].name:JOKERS[g.key].name;
 function checkGoals(){
   let any=false;
@@ -3849,7 +3850,7 @@ const ROLLS={
  mystic:{name:'Mystic Roll',paper:'#6a3fb0',band:'#e6d6ff',cap:'lucky',desc:'Start with {a:2} random Runes and {a:+1} Consumable slot',apply:()=>{S.consSlots++;for(let k=0;k<2;k++)S.cons.push({kind:'rune',key:pick(Object.keys(RUNES))})}},
  star:{name:'Star Roll',paper:'#1e2a5a',band:'#ffd34d',cap:'platinum',desc:'Every toss type starts at {a:level 2}. Start with {$:$0}',apply:()=>{HANDS.forEach(h=>S.hands[h.key].level=2);S.money=0}},
  haunted:{name:'Haunted Roll',paper:'#5a6a70',band:'#c4f5ea',cap:'twotail',desc:'Spirit Packs show up {a:5x} as often. Start with a random Spirit',apply:()=>{S.cons.push({kind:'spirit',key:pick(Object.keys(SPIRITS).filter(k=>k!=='soul'))})}},
- mint:{name:'Mint Roll',paper:'#2fa38a',band:'#e8fff6',cap:'jade',desc:'Start with {a:3} random special coins and 2 Quarters',apply:()=>{S.purse=[...Array.from({length:3},()=>mkCoin(pick(SPECIAL))),mkCoin('copper'),mkCoin('copper')]}},
+ mint:{name:'Mint Roll',paper:'#2fa38a',band:'#e8fff6',cap:'jade',desc:'Start with {a:3} random special coins and 2 Quarters',apply:()=>{S.purse=[...Array.from({length:3},()=>mkCoin(pick(SPC()))),mkCoin('copper'),mkCoin('copper')]}},
  lopsided:{name:'Lopsided Roll',paper:'#d9a020',band:'#4a2a0a',cap:'twohead',desc:'Two of your five coins are {a:Two-Headed Fakes}',apply:()=>{S.purse[1].type='twohead';S.purse[3].type='twohead'}},
  bargain:{name:'Bargain Roll',paper:'#7a9a2a',band:'#f5f0c0',cap:'bronze',desc:'Start with the {a:Clearance Sale} and {a:Reroll Surplus} upgrades',apply:()=>{['clearance','surplus'].forEach(u=>{S.upgrades.push(u);UPGRADES[u].apply()})}},
  wide:{name:'Wide Roll',paper:'#c96a8a',band:'#ffe0ea',cap:'silver',desc:'Start with {a:7} Quarters. Your purse holds {a:3} more coins. {r:-1} Charm slot',apply:()=>{S.purseMax+=3;S.purse.push(mkCoin('copper'),mkCoin('copper'));S.jokerSlots--}},
@@ -3869,6 +3870,7 @@ const ROLLS={
  rivalroll:{name:'Rival Roll',challenge:1,paper:'#3a2210',band:'#ff8f1f',cap:'platinum',desc:'{a:Challenge.} Your rival shows up after almost every boss and wager until you duel them, and you face a {a:new rival} every stage. The final boss is {r:The General}: the face on the Quarter himself'},
  boss:{name:'Boss Roll',challenge:1,paper:'#3a0a10',band:'#c8102e',cap:'loaded',desc:'{a:Challenge.} Every wager has a random boss effect, Small and Big included, and boss wagers have two'},
  glitched:{name:'Glitched Roll',challenge:1,paper:'#ff1aa8',band:'#00f0e0',cap:'quicksilver',desc:'{a:Challenge.} Everything is glitched, right up to a final boss you won\'t meet anywhere else. Every toss, each coin acts like a random coin and one Charm acts like a random Charm. Shop prices shift, wager targets ({r:X1.2} to {r:X1.8}) stay hidden until you play, and used items sometimes glitch back into your slots'},
+ locked:{name:'Locked Roll',fake:1,paper:'#4a4a4a',band:'#9a9a9a',cap:'copper',desc:'It only {a:looks} locked. Inside, nothing you\'ve unlocked shows up: just the {a:base} Charms, coins and packs, as if it were your very first run'},
  chaos:{name:'Chaos Roll',paper:'#3a3a3a',band:'#ff5f6d',cap:'quicksilver',desc:'Start with {a:6} random coins, most carrying random Wear or a Defect',
   apply:()=>{S.purse=Array.from({length:6},()=>({...mkCoin(pick(Object.keys(COINS))),wear:rand()<.5?pick(COIN_WEARS):null,defect:rand()<.5?pick(Object.keys(DEFECTS)):null}))}},
 };
@@ -4055,14 +4057,14 @@ const maxStake=k=>ROLLS[k].challenge?1:Math.min(6,(PROF.stakes[k]||0)+1);
 function rollModal(){
   const r=ROLLS[ROLLSEL],lock=!isUnlocked('roll',ROLLSEL),ms=maxStake(ROLLSEL);STAKESEL=Math.min(STAKESEL,ms);
   return `<div class="overlay"><div class="panel modal wide"><h2>Choose a Roll</h2>
-    <div class="rolldetail ${lock?'locked':''}">${rollHTML(ROLLSEL,190,64)}<div class="cbody"><div class="cname" style="font-size:24px;font-weight:600">${rollName(ROLLSEL)}</div>
-      <div class="cdesc">${lock?`<b>Locked.</b> Unlock it: ${r.challenge?'Win any run to open the Challenge Rolls':GOAL_OF['roll:'+ROLLSEL].desc}`:fmt(r.desc)}</div>
+    <div class="rolldetail ${lock||r.fake?'locked':''}">${rollHTML(ROLLSEL,190,64)}<div class="cbody"><div class="cname" style="font-size:24px;font-weight:600">${r.fake?'Locked':rollName(ROLLSEL)}</div>
+      <div class="cdesc">${r.fake?`<b>Locked.</b> Unlock it: open it. ${fmt(r.desc)}`:lock?`<b>Locked.</b> Unlock it: ${r.challenge?'Win any run to open the Challenge Rolls':GOAL_OF['roll:'+ROLLSEL].desc}`:fmt(r.desc)}</div>
       ${ROLL_UNLOCK[ROLLSEL]?(()=>{const k=ROLL_UNLOCK[ROLLSEL],J=JOKERS[k],got=(PROF.stakes[ROLLSEL]||0)>=1;return `<div class="lbl" style="margin-top:6px">${got?'Beaten · unlocked':'First win unlocks'} <b style="color:${RAR[J.r].c}">${J.name}</b>${J.r===5?' (Fabled)':''}</div>`})():''}
       ${lock||r.challenge?'':`<div class="stakes"><span class="lbl">Stake</span>${[1,2,3,4,5,6].map(n=>`<button class="btn tiny" style="--c:${n<=ms?STAKES[n].col:'var(--grey)'};--cd:rgba(0,0,0,.45);${n===STAKESEL?'outline:2px solid #fff;outline-offset:1px':''}" data-act="stakesel" data-arg="${n}" ${n>ms?'disabled':''} title="${STAKES[n].name}">${n}</button>`).join('')}</div>
       <div class="stakedesc">${stakeDesc(STAKESEL)}${ms<6?`<div class="k-d">Win a run on ${STAKES[ms].name} to unlock ${STAKES[ms+1].name}</div>`:''}</div>`}
       ${lock?'':`<div class="seedrow"><span class="lbl">Seed</span><input id="seedin" maxlength="12" placeholder="Random" value="${SEEDTXT}" autocomplete="off" spellcheck="false" aria-label="Seed (leave blank for a random run)"><span class="lbl">Same seed, same run</span></div>`}
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn blue big" data-act="rollstart" ${lock?'disabled':''}>Open Roll</button><button class="btn orange" data-act="closemodal">Back</button></div></div></div>
-    <div class="rollgrid">${Object.keys(ROLLS).sort((a,b)=>(ROLLS[a].challenge?1:0)-(ROLLS[b].challenge?1:0)).map((k,ix,ks)=>`${ROLLS[k].challenge&&!ROLLS[ks[ix-1]].challenge?'<div class="rollsect">Challenge Rolls</div>':''}<button class="rollcard ${k===ROLLSEL?'on':''} ${isUnlocked('roll',k)?'':'locked'}" data-act="rollsel" data-arg="${k}">${rollHTML(k,92,32)}<span>${isUnlocked('roll',k)?rollName(k):'Locked'}${(PROF.stakes[k]||0)?` <small style="color:${STAKES[PROF.stakes[k]].col}">★${PROF.stakes[k]}</small>`:''}</span></button>`).join('')}</div>
+    <div class="rollgrid">${Object.keys(ROLLS).sort((a,b)=>(ROLLS[a].challenge?1:0)-(ROLLS[b].challenge?1:0)).map((k,ix,ks)=>`${ROLLS[k].challenge&&!ROLLS[ks[ix-1]].challenge?'<div class="rollsect">Challenge Rolls</div>':''}<button class="rollcard ${k===ROLLSEL?'on':''} ${isUnlocked('roll',k)&&!ROLLS[k].fake?'':'locked'}" data-act="rollsel" data-arg="${k}">${rollHTML(k,92,32)}<span>${isUnlocked('roll',k)&&!ROLLS[k].fake?rollName(k):'Locked'}${(PROF.stakes[k]||0)?` <small style="color:${STAKES[PROF.stakes[k]].col}">★${PROF.stakes[k]}</small>`:''}</span></button>`).join('')}</div>
   </div></div>`;
 }
 let SEEDTXT='';
@@ -4119,13 +4121,13 @@ const HOUSE_DEALS={
  money:{label:'All your money for a Legendary Charm',ok:()=>S.money>=10&&S.jokers.length<slots(),run:()=>{const own=new Set(S.jokers.map(j=>j.key)),k=pick(Object.keys(JOKERS).filter(x=>JOKERS[x].r===4&&!own.has(x)));S.money=0;addJoker(k,JOKERS[k].cost);return `Every coin you had is gone. You hold {p:${JOKERS[k].name}}.`}},
  reflip:{label:'Give up a Re-flip every wager: every toss type +1 level',ok:()=>S.baseReflips>1,run:()=>{S.baseReflips--;HANDS.forEach(h=>S.hands[h.key].level++);return 'Your fingers stiffen: {r:-1 Re-flip} every wager. But every toss type rises {a:one level}.'}},
 };
-const evOffer=()=>S.event.offer||(S.event.offer={k:rollJokerKey(rand()<.4?2:1),c:pick(SPECIAL),w:pick(COIN_WEARS)});
+const evOffer=()=>S.event.offer||(S.event.offer={k:rollJokerKey(rand()<.4?2:1),c:pick(SPC()),w:pick(COIN_WEARS)});
 const declineC=t=>({label:'Decline',run:()=>t});
 function hustle(c){addKarma(-1);const amt=Math.min(S.money,30),r=rand()<.5?'H':'T';if(r===c){S.money+=amt;play('win');return `It lands ${callName(r)}! You win {$:$${amt}}.`}S.money-=amt;play('lose');return `It lands ${callName(r)}. You lose {$:$${amt}}.`}
 const EVENTS={
  stranger:{title:'The Faceless Dealer',text:'At an empty table, a dealer with no face slides a coin toward you. It is warm, as if someone only just let go of it.',
-  choices:[{label:'Trade him a Quarter',ok:()=>S.purse.some(c=>c.type==='copper'),why:'You have no Quarters',run:()=>{const c=pick(S.purse.filter(x=>x.type==='copper')),i=S.purse.indexOf(c),t=pick(SPECIAL);S.purse[i]={...mkCoin(t),wear:pick(COIN_WEARS),defect:rand()<.4?pick(Object.keys(DEFECTS)):null};return `Your Quarter slides across the felt and comes back a {a:${COINS[t].name}}, gleaming like it remembers better days.`}},
-   {label:'Buy the warm coin ($5)',ok:()=>S.money>=5&&purseUsed()<S.purseMax,why:'Needs $5 and room in your purse',run:()=>{S.money-=5;const t=pick(SPECIAL);S.purse.push({...mkCoin(t),wear:pick(COIN_WEARS),defect:pick(Object.keys(DEFECTS))});play('buy');return `The coin is a {a:${COINS[t].name}}, worn smooth and struck oddly. It has a Wear and a Defect.`}},declineC('You leave the table. The dealer does not look up. It has no eyes to look up with.')]},
+  choices:[{label:'Trade him a Quarter',ok:()=>S.purse.some(c=>c.type==='copper'),why:'You have no Quarters',run:()=>{const c=pick(S.purse.filter(x=>x.type==='copper')),i=S.purse.indexOf(c),t=pick(SPC());S.purse[i]={...mkCoin(t),wear:pick(COIN_WEARS),defect:rand()<.4?pick(Object.keys(DEFECTS)):null};return `Your Quarter slides across the felt and comes back a {a:${COINS[t].name}}, gleaming like it remembers better days.`}},
+   {label:'Buy the warm coin ($5)',ok:()=>S.money>=5&&purseUsed()<S.purseMax,why:'Needs $5 and room in your purse',run:()=>{S.money-=5;const t=pick(SPC());S.purse.push({...mkCoin(t),wear:pick(COIN_WEARS),defect:pick(Object.keys(DEFECTS))});play('buy');return `The coin is a {a:${COINS[t].name}}, worn smooth and struck oddly. It has a Wear and a Defect.`}},declineC('You leave the table. The dealer does not look up. It has no eyes to look up with.')]},
  fortune:{title:'The Cartomancer',text:'A woman deals cards onto a table that is not there. "The one waiting for you at the end of this floor," she says, "need not be the one you meet."',
   choices:[{label:'Reshuffle the boss',ok:()=>S.blinds[2].state!=='defeated',why:'No boss ahead',run:()=>{const b=S.blinds[2],old=BOSSES[b.boss].name;let nb=b.boss;for(let k=0;k<8&&nb===b.boss;k++)nb=pickBoss(S.ante);b.boss=nb;b.boss2=b.boss2&&b.boss2!==nb?b.boss2:(S.stake>=3?pick(SECOND_BOSS.filter(k=>k!==nb)):null);return `${old} dissolves back into the deck. {a:${BOSSES[nb].name}} rises in its place.`}},
    {label:'Ask what the cards hold',ok:()=>consRoom(),why:'No room for consumables',run:()=>{for(let k=0;k<2&&consRoom();k++)S.cons.push({kind:'fortune',key:pick(Object.keys(FORTUNES))});play('spirit');return 'She turns two cards face up and presses them into your hand: {a:Fortunes}, for when you need them.'}}]},
@@ -4581,7 +4583,7 @@ async function doCashIn(){
    if(R.type==='bust'||R.type==='whiff')addLuck(1);else if(R.type==='sweep')addLuck(-1);if(S.results.includes('E'))addLuck(-1);
    if(S.hands[R.type].played%(S.mastN||10)===0){toast(`<b>${HAND[R.type].name}</b> mastery: +1 Mult${S.mast2?' and +15 Points':''} forever this run`)}}
   const phil=countEff('philosopher');
-  if(phil)R.matched.forEach((m,i)=>{if(m&&S.purse[i]&&S.purse[i].type==='copper'&&!R.shattered.includes(i)){for(let k=0;k<phil;k++)if(S.purse[i].type==='copper'&&rand()<odds(1/3)){S.purse[i].type=pick(SPECIAL);
+  if(phil)R.matched.forEach((m,i)=>{if(m&&S.purse[i]&&S.purse[i].type==='copper'&&!R.shattered.includes(i)){for(let k=0;k<phil;k++)if(S.purse[i].type==='copper'&&rand()<odds(1/3)){S.purse[i].type=pick(SPC());
     const el=$('#c'+i);if(el){el.outerHTML=coinHTML(S.purse[i],i);sizeCoins();juiceCoin(i,'Transmuted!');play('levelup')}}}});
   if(!S.usedTypes.includes(R.type))S.usedTypes.push(R.type);
   if(bossIs('house')&&R.matched&&S.roundScore<S.target){const face=rand()<.5?'H':'T',took=[];S.purse.forEach((c,i)=>{if(took.length<2&&!R.matched[i]&&S.results[i]===face&&!S.houseOwned.includes(c.id)){S.houseOwned.push(c.id);took.push(i)}});
@@ -4686,7 +4688,7 @@ function enterCashout(){
   for(let k=0;k<countEff('wishingcoin');k++)if(consRoom()&&rand()<odds(1/3)){S.cons.push(randAlmanac());toast('<b>Wishing Coin</b>: your wish comes true')}
   const egg=bk||b.kind==='elite'||b.kind==='rival'?0:(S.eggBonus||0);if(egg)lines.push({l:'Nest Egg',v:egg});
   for(const j of S.jokers)if(j.key==='savings'){j.st.v=(j.st.v||0)+2}
-  for(let k=0;k<countEff('clawmachine');k++)if(purseUsed()<S.purseMax&&rand()<odds(1/3)){const t=pick(SPECIAL);S.purse.push(mkCoin(t));toast(`<b>Claw Machine</b> grabs a <b>${COINS[t].name}</b>`)}
+  for(let k=0;k<countEff('clawmachine');k++)if(purseUsed()<S.purseMax&&rand()<odds(1/3)){const t=pick(SPC());S.purse.push(mkCoin(t));toast(`<b>Claw Machine</b> grabs a <b>${COINS[t].name}</b>`)}
   {const H=S.jokers.filter(j=>j.key==='dragonhoard');if(H.length&&S.money+lines.reduce((a,l)=>a+l.v,0)>=25)H.forEach(j=>{j.st.x=Math.round((j.st.x+.25)*100)/100;toast("<b>Dragon's Hoard</b> grows")})}
   {const cut=houseCut(S.money);if(cut){lines.push({l:`The House's cut (15% of money over $${HOARD_FREE})`,v:-cut});if(!PS().houseCutSeen){PS().houseCutSeen=1;setTimeout(()=>houseSay('Carrying that much? I\'ll take a little off the top. Spend it, or lose it.',6500),700)}}}
   S.cash={lines,total:lines.reduce((a,l)=>a+l.v,0),shown:0};S.screen='cashout';S.phase='idle';render();animateCashout();
@@ -5012,7 +5014,7 @@ function buyPack(i){
   else for(let k=0;k<n;k++){
     if(pk.kind==='coin'&&S.roll==='pennyroll'&&S.ante<4)opts.push({kind:'coin',type:'penny'});
     else if(pk.kind==='coin'){const rl=relicsLeft().filter(t=>!opts.some(o=>o.type===t));const mods=!(S.tutorial&&S.ante<3);
-      const L=luckNow();if(rl.length&&rand()<.06+L*.004)opts.push({kind:'coin',type:pick(rl)});else if(mods&&rand()<.12)opts.push({kind:'coin',type:pick(SPECIAL),pair:true});else opts.push({kind:'coin',type:pick(SPECIAL),wear:mods&&rand()<.2+L*.01?pick(COIN_WEARS):null,defect:mods&&rand()<.15+L*.01?pick(Object.keys(DEFECTS)):null})}
+      const L=luckNow();if(rl.length&&rand()<.06+L*.004)opts.push({kind:'coin',type:pick(rl)});else if(mods&&rand()<.12)opts.push({kind:'coin',type:pick(SPC()),pair:true});else opts.push({kind:'coin',type:pick(SPC()),wear:mods&&rand()<.2+L*.01?pick(COIN_WEARS):null,defect:mods&&rand()<.15+L*.01?pick(Object.keys(DEFECTS)):null})}
     else if(pk.kind==='almanac'){let a;do a=randAlmanac();while(opts.some(o=>(o.hand||o.key)===(a.hand||a.key)));opts.push(a)}
     else if(pk.kind==='rune'){let r;do r=pick(Object.keys(RUNES));while(opts.some(o=>o.key===r));opts.push({kind:'rune',key:r})}
     else{let s;do s=rand()<.05?'soul':pick(Object.keys(SPIRITS).filter(x=>x!=='soul'));while(opts.some(o=>o.key===s));opts.push({kind:'spirit',key:s})}
