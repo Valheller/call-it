@@ -667,8 +667,9 @@ img{-webkit-user-drag:none}
   #app{height:var(--vh,100dvh);min-height:0;padding:calc(8px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));gap:6px;overflow:hidden}
   :root{--jw:34px}
   #side{grid-template-columns:1fr 1fr auto;grid-template-areas:"blind blind btns" "score hand hand" "stats stats stats";gap:6px;padding:6px}
-  .s-blind{display:flex;align-items:center;min-width:0}
-  .s-bname{font-size:15px;padding:5px 8px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:none}
+  .s-blind{display:flex;align-items:stretch;min-width:0}
+  .s-bname{font-size:15px;padding:5px 8px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:none;display:flex;align-items:center;justify-content:center}
+  .s-binfo{align-self:center}
   .s-binfo{padding:2px 8px;gap:4px}
   .s-binfo .bchip,.s-binfo .lbl,.s-bdesc{display:none}
   .s-binfo:not(:has(.s-target)){display:none}
@@ -980,8 +981,10 @@ html,body,button,a,.pond{touch-action:manipulation}
 .overlay>.optm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) / var(--k,1))}
 .optm>h2{flex:none;margin-bottom:8px}.optm>.ctabs{flex:none}.optm .optbody{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:2px}
 .optm .optfoot{flex:none;text-align:center;padding-top:8px}.optm .optver{margin-top:4px}
-.optm .optrow{padding:3px 10px;margin-bottom:4px;min-height:34px}
-body:has(#overlay:not([hidden])) #saybox{display:none}.optm .optrow .btn.small{padding:5px 10px;font-size:14px}
+.optm .optrow{padding:4px 6px 4px 10px;margin-bottom:4px;min-height:36px}.optm .optrow .btn.small,.optm .optrow a.btn.small{padding:3px 10px;font-size:13px;box-shadow:0 2px 0 var(--cd);line-height:1.2}
+.optm .optbody{padding-top:4px}
+.overlay>.endpanel{align-self:center;margin:auto 0}
+body:has(#overlay:not([hidden])) #saybox{display:none}
 .colm .cgrid,.rollm .rollgrid{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden}
 </style>
 
@@ -1034,7 +1037,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}.optm .optrow .btn.small{p
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.57</div>
+  <div class="gamever" aria-label="Version">v1.2.58</div>
 </div>
 
 <script>
@@ -4156,7 +4159,7 @@ let RI_TAB='scores';
 function runInfoModal(){
   const tabs=`<div class="ctabs">${[['scores','Toss scores'],['howto','How to Play']].map(([k,n])=>`<button class="btn small ${RI_TAB===k?'orange':''}" style="${RI_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ritab" data-arg="${k}">${n}</button>`).join('')}</div>`;
   if(RI_TAB==='howto')return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${RULES}</div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
-  return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${S?questsHTML():''}${S&&S.seed?`<div class="lbl" style="text-align:center;margin:-6px 0 6px">Seed <b style="color:#fff;letter-spacing:.08em">${S.seed}</b> <button class="btn tiny" data-act="copyseed">Copy</button></div>`:''}${S&&(hasK('crystalball')||hasK('mirroroftruth'))?lkMeters(hasK('crystalball')?'Revealed by your Crystal Ball':'Revealed by your Mirror of Truth',hasK('crystalball'),true):''}${S&&ROLLS[S.roll]?`<div class="lbl" style="text-align:center;margin:-6px 0 8px">Playing the <b style="color:#fff">${rollName(S.roll)}</b> on <b style="color:${STAKES[S.stake].col}">${STAKES[S.stake].name}</b>${S.daily?' (Daily Toss)':''}: ${fmt(ROLLS[S.roll].desc)}</div>`:''}<div class="lbl" style="text-align:center;margin:-4px 0 10px">Collection: ${Object.keys(JOKERS).length} Charms · ${ALM_POOL().length} Almanacs · ${Object.keys(RUNES).length} Runes · ${Object.keys(SPIRITS).length} Spirits</div>
+  return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${S?questsHTML():''}${S&&S.seed?`<div class="lbl" style="text-align:center;margin:2px 0 6px">Seed <b style="color:#fff;letter-spacing:.08em">${S.seed}</b> <button class="btn tiny" data-act="copyseed">Copy</button></div>`:''}${S&&(hasK('crystalball')||hasK('mirroroftruth'))?lkMeters(hasK('crystalball')?'Revealed by your Crystal Ball':'Revealed by your Mirror of Truth',hasK('crystalball'),true):''}${S&&ROLLS[S.roll]?`<div class="lbl" style="text-align:center;margin:-6px 0 8px">Playing the <b style="color:#fff">${rollName(S.roll)}</b> on <b style="color:${STAKES[S.stake].col}">${STAKES[S.stake].name}</b>${S.daily?' (Daily Toss)':''}: ${fmt(ROLLS[S.roll].desc)}</div>`:''}<div class="lbl" style="text-align:center;margin:-4px 0 10px">Collection: ${Object.keys(JOKERS).length} Charms · ${ALM_POOL().length} Almanacs · ${Object.keys(RUNES).length} Runes · ${Object.keys(SPIRITS).length} Spirits</div>
     <table class="htable">${HANDS.map(h=>{const pl=S?S.hands[h.key].played:0;const hv=S?handLv(h.key):{chips:h.chips,mult:h.mult,lv:1,mast:0};const lv=hv.lv,c=hv.chips,m=hv.mult;
     return `<tr><td class="lv">lvl.${lv}</td><td><div>${h.name}</div><div class="ds">${h.desc}${hv.mast?` · <span class="k-m">Mastery +${hv.mast} Mult</span>`:''}</div></td><td class="cmv"><span class="c">${c}</span> X <span class="m">${m}</span></td><td class="lv">#${pl}</td></tr>`}).join('')}</table>
     </div><div class="optfoot" style="display:flex;gap:10px;justify-content:center"><button class="btn green" data-act="collection">Collection</button><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
