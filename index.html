@@ -888,6 +888,11 @@ img{-webkit-user-drag:none}
 .credroll .cnote{font-size:13px;color:#dfe8e9;max-width:34ch;line-height:1.4;margin-top:16px}
 .credroll .cend{margin-top:40px;font-size:15px;color:var(--money)}
 @media (prefers-reduced-motion:reduce){.credroll{animation:none;position:static;padding:16px}.credwin{height:auto;-webkit-mask-image:none;mask-image:none}}
+.dzone{position:fixed;z-index:69;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:16px;background:color-mix(in srgb,var(--zc) 78%,transparent);box-shadow:0 6px 0 rgba(0,0,0,.35),inset 0 0 0 3px rgba(255,255,255,.25);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35);pointer-events:none;opacity:0;transform:scale(.94);transition:opacity .12s,transform .12s,filter .12s}
+#dzones.on .dzone{opacity:.92;transform:none}
+.dzone b{font-size:clamp(20px,2.6vw,36px);line-height:1;text-align:center}.dzone span{font-size:clamp(18px,2.2vw,30px)}.dzone small{font-size:12px;opacity:.9}
+.dzone.hot{opacity:1;transform:scale(1.04);filter:brightness(1.15);box-shadow:0 6px 0 rgba(0,0,0,.35),inset 0 0 0 4px #fff}
+.dzone.off{filter:grayscale(.7) brightness(.7)}
 .droptarget{box-shadow:inset 0 0 0 3px #d9824a,0 0 18px rgba(217,130,74,.55)!important;border-radius:14px}
 
 #minifish{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(5,15,20,.45);animation:pop .2s ease-out;touch-action:none;cursor:pointer}
@@ -963,7 +968,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.16</div>
+  <div class="gamever" aria-label="Version">v1.2.17</div>
 </div>
 
 <script>
@@ -3682,25 +3687,25 @@ function charmCardHTML(o,i){
   const p=slotPrice(o),full=S.jokers.length>=slots();
   if(o.kind==='spirit'){const ci=consInfo(o),room=consRoom();
     return `<div class="scard ${o.bought?'gone':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">$${p}</div>
-      <button class="jcard tile" data-tip="shopj:${i}" aria-label="${ci.name}"><div class="jin" style="--jbg:${ci.bg};--dl:${-i*.9}s">${IMG(ci.icon)}<span class="lab">${ci.short}</span></div></button>
+      <button class="jcard tile" data-tip="shopj:${i}" data-drag="shop" data-sk="j:${i}" aria-label="${ci.name}"><div class="jin" style="--jbg:${ci.bg};--dl:${-i*.9}s">${IMG(ci.icon)}<span class="lab">${ci.short}</span></div></button>
       <button class="btn green small" data-act="buyjoker" data-arg="${i}" ${o.bought||S.money<p||!room?'disabled':''}>${room?'Buy':'No room'}</button></div>`}
   if(o.kind==='almanac'){const ci=consInfo(o),dis=o.bought||S.money<p?'disabled':'';
     return `<div class="scard ${o.bought?'gone':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">$${p}</div>
-      <button class="jcard tile" data-tip="shopj:${i}" aria-label="${ci.name}"><div class="jin" style="--jbg:${ci.bg};--dl:${-i*.9}s">${IMG(ci.icon)}<span class="lab">${ci.short}</span></div></button>
+      <button class="jcard tile" data-tip="shopj:${i}" data-drag="shop" data-sk="j:${i}" aria-label="${ci.name}"><div class="jin" style="--jbg:${ci.bg};--dl:${-i*.9}s">${IMG(ci.icon)}<span class="lab">${ci.short}</span></div></button>
       <div class="sbuys">${consRoom()?`<button class="btn green small" data-act="buyjoker" data-arg="${i}" ${dis}>Buy</button>`:''}<button class="btn small" style="--c:var(--purple);--cd:var(--purple-d)" data-act="buyuse" data-arg="${i}" ${dis}>Buy &amp; Use</button></div></div>`}
   const d=JOKERS[o.key];
   return `<div class="scard ${o.bought?'gone':''} ${d.r===5?'fabled':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">$${p}</div>
-    <button class="jcard" data-tip="shopj:${i}" aria-label="${d.name}"><div class="jin" style="--jbg:${d.bg};--dl:${-i*.9}s;${rarVars(o.key)}">${IMG(icon(o.key))}</div>${o.curse?curseBadge(o.curse):''}</button>
+    <button class="jcard" data-tip="shopj:${i}" data-drag="shop" data-sk="j:${i}" aria-label="${d.name}"><div class="jin" style="--jbg:${d.bg};--dl:${-i*.9}s;${rarVars(o.key)}">${IMG(icon(o.key))}</div>${o.curse?curseBadge(o.curse):''}</button>
     <button class="btn green small" data-act="buyjoker" data-arg="${i}" ${o.bought||S.money<p||full?'disabled':''}>${full?'No room':'Buy'}</button></div>`;
 }
 function shopHTML(){
   const sh=S.shop;
   const u=sh.upgrade;
-  const uc=upgLocked()?`<div class="soldout" role="img" aria-label="Sold out: one Upgrade per stage"><b>SOLD OUT</b><small>Back next stage</small></div>`:u?`<div class="scard ${u.bought?'gone':''}"><div class="price">$${gp(u,upgCost(u))}</div><button class="jcard tile" data-tip="upg"><div class="jin" style="--jbg:#5d3d94">${IMG(sprite('upg',SPR_UPG))}<span class="lab">Upgrade</span></div></button>
+  const uc=upgLocked()?`<div class="soldout" role="img" aria-label="Sold out: one Upgrade per stage"><b>SOLD OUT</b><small>Back next stage</small></div>`:u?`<div class="scard ${u.bought?'gone':''}"><div class="price">$${gp(u,upgCost(u))}</div><button class="jcard tile" data-tip="upg" data-drag="shop" data-sk="u"><div class="jin" style="--jbg:#5d3d94">${IMG(sprite('upg',SPR_UPG))}<span class="lab">Upgrade</span></div></button>
       <button class="btn purple small" data-act="buyupg" ${u.bought||upgLocked()||S.money<gp(u,upgCost(u))?'disabled':''}>${upgLocked()&&!u.bought?'1 per stage':'Redeem'}</button></div>`:'<div class="lbl">Sold out</div>';
   const pc=sh.packs.map((pk,i)=>{const p=packPrice(pk),info=PACKS[pk.kind];
     return `<div class="scard ${pk.bought?'gone':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">${p?'$'+p:'Free'}</div>
-      <button class="jcard tile ${pk.kind==='glitch'?'gpk':''}" data-tip="pack:${i}" aria-label="${packName(pk)}"><div class="jin" style="--jbg:${info.bg};--dl:${-i*.8}s">${IMG(packIconFor(pk.kind,pk.size))}<span class="lab">${PACKS[pk.kind].word}</span></div></button>
+      <button class="jcard tile ${pk.kind==='glitch'?'gpk':''}" data-tip="pack:${i}" data-drag="shop" data-sk="p:${i}" aria-label="${packName(pk)}"><div class="jin" style="--jbg:${info.bg};--dl:${-i*.8}s">${IMG(packIconFor(pk.kind,pk.size))}<span class="lab">${PACKS[pk.kind].word}</span></div></button>
       <button class="btn green small" data-act="buypack" data-arg="${i}" ${pk.bought||S.money<p?'disabled':''}>Open</button><div class="pcap">${packName(pk)}</div></div>`}).join('');
   return `<div class="panel shop"><div class="shophead"><div class="shopbtns">
       <button class="btn red big" data-act="nextround">Next Round</button>
@@ -5192,8 +5197,47 @@ function artTarget(d,x,y){
   if(d.kind==='charm'){const j=S.jokers[+d.item.dataset.idx];if(j&&JOKERS[j.key].artifact){const t=$('.purse');return inRect(t,x,y,24)?t:null}}
   return null}
 let drag=null,suppressClick=false;
+/* ---- shop drag & drop: drop zones for Buy, Buy & Use, Sell, Use and Melt ---- */
+function shopItemOf(sk){const [t,i]=sk.split(':');const sh=S.shop;if(t==='j')return{t,i:+i,o:sh.jokers[+i]};if(t==='p')return{t,i:+i,o:sh.packs[+i]};return{t:'u',o:sh.upgrade}}
+function dropZones(d){
+  if(!S||S.pack)return[];const Z=[],money=S.money;
+  if(d.kind==='shop'){if(S.screen!=='shop')return[];const it=shopItemOf(d.el.dataset.sk),o=it.o;if(!o||o.bought)return[];
+    if(it.t==='p'){const p=packPrice(o);Z.push({act:'buy',pos:'top',label:'Open',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':''})}
+    else if(it.t==='u'){const p=gp(o,upgCost(o));Z.push({act:'buy',pos:'top',label:'Redeem',sub:`$${p}`,col:'var(--purple)',why:upgLocked()?'One Upgrade per stage':money<p?'Not enough money':''})}
+    else{const p=slotPrice(o);
+      if(o.kind==='almanac'){if(consRoom())Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':''});Z.push({act:'buyuse',pos:'side',label:'Buy and Use',sub:`$${p}`,col:'var(--orange)',why:money<p?'Not enough money':''})}
+      else if(o.kind==='spirit')Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':!consRoom()?'No room':''});
+      else Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':S.jokers.length>=slots()?'No free Charm slot':''})}}
+  else if(d.kind==='charm'){const j=S.jokers[+d.item.dataset.idx];if(j&&canEdit()&&S.roll!=='hoarder'&&j.curse!=='bound'&&!JOKERS[j.key].artifact)Z.push({act:'sell',pos:'side',label:'Sell',sub:`$${sellVal(j)}`,col:'var(--money-d)'})}
+  else if(d.kind==='cons'){const c=S.cons[+d.item.dataset.idx];if(c&&canEdit()){const why=consBlock(c,true);Z.push({act:'use',pos:'side',label:'Use',col:'var(--chips-d)',why:why||''});if(S.roll!=='hoarder')Z.push({act:'sell',pos:'side',label:'Sell',sub:`$${consInfo(c).sell}`,col:'var(--money-d)'})}}
+  else if(d.kind==='coin'&&S.screen==='shop'){const c=S.purse[+d.item.dataset.idx];if(c&&S.roll!=='hoarder')Z.push({act:'melt',pos:'side',label:'Melt',sub:`$${(coinDef(c).meltVal||1)+3*countEff('recycler')}`,col:'var(--mult-d)',why:S.purse.length<=PURSE_MIN?`Purse needs ${PURSE_MIN} coins`:''})}
+  return Z}
+function showZones(d){
+  const Z=dropZones(d);d.zones=[];if(!Z.length)return;
+  const box=document.createElement('div');box.id='dzones';
+  const jb=$('#jokerbar'),jr=jb?jb.getBoundingClientRect():{left:innerWidth*.25,top:8,width:innerWidth*.5,height:innerHeight*.2};
+  const side=Z.filter(z=>z.pos==='side'),narrow=innerWidth<700;
+  Z.forEach(z=>{const e=document.createElement('div');e.className='dzone'+(z.why?' off':'');e.style.setProperty('--zc',z.col);
+    e.innerHTML=`<b>${z.label}</b>${z.sub?`<span>${z.sub}</span>`:''}${z.why?`<small>${z.why}</small>`:''}`;
+    if(z.pos==='top')Object.assign(e.style,{left:jr.left+'px',top:jr.top+'px',width:jr.width+'px',height:Math.max(90,jr.height)+'px'});
+    else{const k=side.indexOf(z),n=side.length;
+      if(narrow){const h=Math.min(130,innerHeight*.16);Object.assign(e.style,{left:(8+k*(innerWidth-16)/n)+'px',width:((innerWidth-16)/n-6)+'px',bottom:'calc(8px + env(safe-area-inset-bottom))',height:h+'px'})}
+      else{const w=Math.min(240,innerWidth*.2),top=innerHeight*.22,H=innerHeight*.56;Object.assign(e.style,{right:'16px',width:w+'px',top:(top+k*H/n)+'px',height:(H/n-10)+'px'})}}
+    box.appendChild(e);d.zones.push({z,e})});
+  document.body.appendChild(box);requestAnimationFrame(()=>box.classList.add('on'))}
+function zoneAt(d,x,y){return d.zones&&d.zones.find(q=>inRect(q.e,x,y,0))}
+function hideZones(){const b=$('#dzones');if(b)b.remove()}
+function dropOnZone(d,q){
+  if(q.z.why){toast(q.z.why);render();return}
+  const a=q.z.act;
+  if(d.kind==='shop'){const it=shopItemOf(d.el.dataset.sk);if(a==='buyuse')buyJoker(it.i,true);else if(it.t==='p')buyPack(it.i);else if(it.t==='u')buyUpg();else buyJoker(it.i);render();return}
+  const i=+d.item.dataset.idx;
+  if(d.kind==='charm'){ACT.sell(String(i));render();return}
+  if(d.kind==='cons'){renderJokers();if(a==='use')ACT.usecons(String(i));else ACT.sellcons(String(i));return}
+  if(d.kind==='coin'){S.csel=[i];ACT.melt()}}
 function canDrag(kind){
   if(!S||modal)return false;
+  if(kind==='shop')return S.screen==='shop'&&!S.pack&&!!S.shop;
   if(kind==='charm'||kind==='cons')return canEdit()&&S.screen!=='win';
   return S.screen==='shop'||(S.screen==='play'&&S.phase==='call');
 }
@@ -5201,7 +5245,7 @@ document.addEventListener('pointerdown',e=>{
   if(e.button>0)return;const el=e.target.closest('[data-drag]');if(!el)return;
   const kind=el.dataset.drag;if(!canDrag(kind))return;
   if(kind==='charm'){const jj=S.jokers[+el.closest('.jslot').dataset.idx];if(jj&&jj.curse==='bound')return}
-  const item=kind==='coin'?el:el.closest('.jslot');
+  const item=kind==='coin'||kind==='shop'?el:el.closest('.jslot');
   drag={el,item,kind,list:item.parentElement,x0:e.clientX,y0:e.clientY,id:e.pointerId,active:false,tilt:0,lx:e.clientX};
 });
 function beginDrag(){
@@ -5220,8 +5264,8 @@ function beginDrag(){
   $('#fx').appendChild(g);
   drag.ghost=g;drag.ox=drag.x0-r.left;drag.oy=drag.y0-r.top;drag.px=drag.x0;drag.py=drag.y0;
   // slot centres are measured once; reordering only swaps which item sits in which slot
-  drag.centers=[...drag.list.children].filter(c=>c.dataset.idx!=null).map(c=>{const q=c.getBoundingClientRect();return q.left+q.width/2});
-  drag.item.classList.add('dragging');play('pick');
+  drag.centers=drag.kind==='shop'?[]:[...drag.list.children].filter(c=>c.dataset.idx!=null).map(c=>{const q=c.getBoundingClientRect();return q.left+q.width/2});
+  drag.item.classList.add('dragging');play('pick');showZones(drag);
   dragFrame();
 }
 function dragFrame(){
@@ -5230,6 +5274,7 @@ function dragFrame(){
   {const t=artTarget(drag,x,y);document.querySelectorAll('.droptarget').forEach(e=>{if(e!==t)e.classList.remove('droptarget')});if(t){t.classList.add('droptarget');return}}
   drag.tilt=clamp(drag.tilt*.75+vx*.9,-20,20);
   drag.ghost.style.transform=`translate3d(${x-drag.ox}px,${y-drag.oy}px,0) rotate(${reduced?0:drag.tilt}deg) scale(1.12)`;
+  {const q=zoneAt(drag,x,y);(drag.zones||[]).forEach(o=>o.e.classList.toggle('hot',o===q));if(q||drag.kind==='shop')return}
   const kids=[...drag.list.children].filter(c=>c.dataset.idx!=null),cur=kids.indexOf(drag.item);
   let j=0,best=1e9;drag.centers.forEach((cx,k)=>{const d=Math.abs(x-cx);if(d<best){best=d;j=k}});
   if(j!==cur){
@@ -5251,6 +5296,7 @@ function endDrag(e){
   const d=drag;drag=null;if(!d.active)return;
   suppressClick=true;setTimeout(()=>suppressClick=false,60);
   d.ghost.remove();d.item.classList.remove('dragging');document.querySelectorAll('.droptarget').forEach(e=>e.classList.remove('droptarget'));
+  {const q=zoneAt(d,e.clientX,e.clientY);hideZones();if(q){play('drop');dropOnZone(d,q);return}if(d.kind==='shop')return}
   if(artTarget(d,e.clientX,e.clientY)){const ok=d.kind==='coin'?artToCharm(+d.item.dataset.idx):artToCoin(+d.item.dataset.idx);if(!ok)render();play('drop');return}
   const order=[...d.list.children].filter(c=>c.dataset.idx!=null).map(c=>+c.dataset.idx);
   const from=+d.item.dataset.idx,to=order.indexOf(from);
