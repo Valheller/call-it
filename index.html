@@ -1005,7 +1005,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.24</div>
+  <div class="gamever" aria-label="Version">v1.2.25</div>
 </div>
 
 <script>
@@ -4670,7 +4670,7 @@ function tipContent(spec){
   return null;
 }
 function showTip(el){
-  if(!S){hideTip();return}
+  if(!S&&!el.dataset.tip.startsWith('goal:')){hideTip();return}
   const html=tipContent(el.dataset.tip);if(!html){hideTip();return}
   const t=$('#tip');t.innerHTML=html;t.hidden=false;
   const k=+getComputedStyle(document.documentElement).getPropertyValue('--k')||1;const r=el.getBoundingClientRect(),tw=t.offsetWidth*k,th=t.offsetHeight*k;
