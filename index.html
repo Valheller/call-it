@@ -1038,7 +1038,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.68</div>
+  <div class="gamever" aria-label="Version">v1.2.69</div>
 </div>
 
 <script>
@@ -2952,15 +2952,23 @@ function wager32(s,bar,ch,at,spb,B,loop){
     if(bar===7&&s>=8&&s%2===0)tone({at,f:mtof(ch.r+[12,7,5,0][(s-8)/2])*1,f2:mtof(ch.r+[12,7,5,0][(s-8)/2])*.6,glide:.12,d:.18,v:.16,bus:B});
   }
 }
+/* the music lowpass only moves when its target changes: re-issuing ramps on every render made Safari snap the filter (ticks) */
+let LP_T=16000;
+function setLP(v){if(!AU.ctx||v===LP_T)return;LP_T=v;const f=AU.lp.frequency,t=AU.ctx.currentTime;try{if(f.cancelAndHoldAtTime)f.cancelAndHoldAtTime(t);else{f.cancelScheduledValues(t);f.setValueAtTime(f.value,t)}}catch(e){}f.setTargetAtTime(v,t,.25)}
+/* leaving the app: fade out and pause audio so nothing blares; fade back in on return */
+document.addEventListener('visibilitychange',()=>{const c=AU.ctx;if(!c)return;const t=c.currentTime;
+  if(document.hidden){try{AU.master.gain.cancelScheduledValues(t);AU.master.gain.setValueAtTime(AU.master.gain.value,t);AU.master.gain.linearRampToValueAtTime(0,t+.05)}catch(e){}setTimeout(()=>{if(document.hidden)c.suspend()},80)}
+  else{c.resume().then(()=>{const t2=c.currentTime;Music.next=t2+.1;AU.master.gain.cancelScheduledValues(t2);AU.master.gain.setValueAtTime(0,t2);AU.master.gain.linearRampToValueAtTime(.9,t2+.4)})}});
+addEventListener('pagehide',()=>{try{AU.master.gain.value=0;AU.ctx&&AU.ctx.suspend()}catch(e){}});
 function musicMood(){
   if(!AU.ctx)return;const t=AU.ctx.currentTime;
-  if(SOUNDTEST!=null){const tr=TRACKS[SOUNDTEST],o=tr[2]||{};Music.mode=tr[1];Music.intense=!!o.intense;Music.var=o.v||0;Music.bpm=({fish:72,credits:104})[tr[1]]||90;Music.stage=tr[1]==='endless'?ST.estage:ST.stage;AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(o.lp?750:16000,t,.25);return}
+  if(SOUNDTEST!=null){const tr=TRACKS[SOUNDTEST],o=tr[2]||{};Music.mode=tr[1];Music.intense=!!o.intense;Music.var=o.v||0;Music.bpm=({fish:72,credits:104})[tr[1]]||90;Music.stage=tr[1]==='endless'?ST.estage:ST.stage;setLP(o.lp?750:16000);return}
   const shop=S&&(S.screen==='shop'||S.screen==='cashout'||S.screen==='over'||S.screen==='event');
-  AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(shop&&!S.pack?750:16000,t,.25);
-  if(modal===creditsModal){AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(16000,t,.25);Music.mode='credits';Music.intense=false;Music.bpm=104;return}
+  setLP(shop&&!S.pack&&!S.bazaar&&!(S.event&&['prizecounter','chapel'].includes(S.event.key))&&modal!==creditsModal?750:16000);
+  if(modal===creditsModal){setLP(16000);Music.mode='credits';Music.intense=false;Music.bpm=104;return}
   if(!S&&modal===fishModal){Music.mode='fish';Music.intense=false;Music.bpm=72;return}
   {const sp=S&&S.screen==='event'&&S.event&&S.event.key==='prizecounter'?['prize',90]:S&&S.screen==='event'&&S.event&&S.event.key==='chapel'?['chapel',90]:S&&S.screen==='shop'&&S.bazaar&&!S.pack?['bazaar',90]:null;
-   if(sp){AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(16000,t,.25);Music.mode=sp[0];Music.intense=false;Music.bpm=sp[1];return}}
+   if(sp){setLP(16000);Music.mode=sp[0];Music.intense=false;Music.bpm=sp[1];return}}
   Music.intense=!!(S&&S.screen==='play'&&S.boss);
   Music.var=S&&S.boss?bossTheme(S.boss):0;
   Music.bpm=90;Music.stage=S?S.ante:1;
