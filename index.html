@@ -1034,7 +1034,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}.optm .optrow .btn.small{p
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.56</div>
+  <div class="gamever" aria-label="Version">v1.2.57</div>
 </div>
 
 <script>
@@ -5884,7 +5884,7 @@ function syncFSBtn(){const b=$('#fsbtn');if(b){b.hidden=!canFS();b.textContent=i
 fitScale();
 document.body.classList.toggle('badges',!!OPT.badges);
 /* the title coin (and the intro coin) is a random coin every time the game boots */
-const TITLE_COIN=vpick(Object.keys(COINS).filter(k=>!COINS[k].quest));
+const TITLE_COIN=vpick(Object.keys(COINS).filter(k=>!COINS[k].quest&&!['pressed','twohead','twotail','foil'].includes(k)));
 {const bc=$('.bigcoin');bc.classList.remove('t-copper');bc.classList.add('t-'+TITLE_COIN);const sp=$('.bigcoin .spin');sp.insertAdjacentHTML('afterbegin',SLABS);sp.style.setProperty('--shape',`url(${coinArt(TITLE_COIN,'H')})`)}
 document.querySelectorAll('.bigcoin .face').forEach((f,i)=>f.style.setProperty('--art',`url(${coinArt(TITLE_COIN,i?'T':'H')})`));
 /* the game's icon is the Quarter */
