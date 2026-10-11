@@ -1037,7 +1037,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.62</div>
+  <div class="gamever" aria-label="Version">v1.2.63</div>
 </div>
 
 <script>
@@ -3096,11 +3096,11 @@ function coinArt(type,side){
     case 'bellwether':{disc(15.6,'#5a3a14');disc(14.5,'#b8873a');ring(12.6,'#8a5f22');reed(14.6,'#7a5420');
       poly([[16,6],[12,9],[11,17],[9,21],[23,21],[21,17],[20,9]],h?'#ffe08a':'#5a3a14');rect(10,21,12,2,h?'#e8c14a':'#4a2e10');disc(2,h?'#ffe08a':'#5a3a14',16,24.5);rect(15,4,2,3,h?'#e8c14a':'#4a2e10');if(h)poly([[14,9],[13,17],[15,17],[15.5,9]],'#fff6d0');break}
     case 'firstdime':{lumpy(15.7,'#3a3828',1.2,20);lumpy(14.6,'#6f6c4e',1.1,20);
-      for(let k=0;k<70;k++){const x=4+(k*29)%25,y=4+(k*41+7)%25;rect(x,y,1,1,k%4?'#5a5840':'#8a8a62')}
+      for(let k=0;k<70;k++){const x=4+(k*29)%25,y=4+(k*41+7)%25;if(Math.hypot(x+.5-C,y+.5-C)<13)rect(x,y,1,1,k%4?'#5a5840':'#8a8a62')}
       g.globalCompositeOperation='source-atop';poly([[25,4],[30,10],[31,20],[27,27],[24,26],[27,19],[26,10]],'#b8b48a');poly([[26,6],[29,11],[29,19],[27,24],[26,19],[27,11]],'#d8d4a8');g.globalCompositeOperation='source-over';
       const hole=(x,y,w,h2)=>{rect(x,y,w,h2,'#1a1a12');rect(x,y+h2-1,w,1,'#d8d4a8')};
       hole(10,8,3,4);hole(6,13,3,3);hole(20,10,3,3);hole(7,20,4,2);hole(19,17,4,2);hole(15,21,3,3);
-      poly([[13,13],[17,12],[19,15],[16,18],[14,17]],'#1a1a12');poly([[14,15],[16,14],[17,16],[16,17]],'#d8d4a8');
+      disc(4.4,'#3a3828');disc(3.6,'#8a8a62',15.6,15.6);cut(()=>disc(3.2,'#000'));
       g.strokeStyle='#2a2a1a';g.lineWidth=1;g.beginPath();g.moveTo(12,22);g.lineTo(13,25);g.lineTo(12,28);g.moveTo(13,25);g.lineTo(15,26);g.stroke()}break;
     case 'foil':lumpy(15.6,'#8a6a14',1.6,14);lumpy(14.2,'#e8c14a',1.4,14);
       [[6,9,24,13],[9,22,22,8],[14,5,12,27],[4,17,27,19],[19,6,25,24]].forEach(([a,b,c,d2])=>{g.strokeStyle='#a87c1c';g.lineWidth=1;g.beginPath();g.moveTo(a,b);g.lineTo(c,d2);g.stroke()});
