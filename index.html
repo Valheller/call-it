@@ -930,6 +930,7 @@ body.hzpaused .hzghost,body.hzpaused .hzghost *,body.hzpaused .hzscorp,body.hzpa
 .ucell .unum{position:absolute;top:3px;left:6px;font-size:10px;opacity:.7;font-variant-numeric:tabular-nums}
 .ucell img{width:38px;height:38px;image-rendering:pixelated;filter:grayscale(1) brightness(.25)}.ucell .unm{line-height:1.1;text-align:center;overflow-wrap:anywhere}
 .ucell.got{color:#fff;box-shadow:inset 0 0 0 2px rgba(63,191,139,.6)}.ucell.got img{filter:none}.ucell.got .unum{color:var(--green);opacity:1}
+body.rewinding #app{animation:rewindfx .9s steps(9) both}@keyframes rewindfx{0%{filter:none;transform:none}30%{filter:hue-rotate(180deg) saturate(2) contrast(1.4);transform:skewX(6deg)}60%{filter:invert(1);transform:skewX(-6deg) translateX(-8px)}100%{filter:grayscale(1) brightness(1.6);transform:none}}
 .droptarget{box-shadow:inset 0 0 0 3px #d9824a,0 0 18px rgba(217,130,74,.55)!important;border-radius:14px}
 
 #minifish{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(5,15,20,.45);animation:pop .2s ease-out;touch-action:none;cursor:pointer}
@@ -1008,7 +1009,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.27</div>
+  <div class="gamever" aria-label="Version">v1.2.28</div>
 </div>
 
 <script>
@@ -1697,6 +1698,8 @@ Object.assign(JOKERS,{
   desc:'Crumpled Gold Foil coins give {m:+8} Mult when they score',coin:(c,i,e)=>{if(ctype(c.purse[i])==='foil')e('mult',8)}},
  stopwatch:{name:'Stopwatch',r:3,cost:8,bg:'#3a0a10',p:{1:'#e8eef2',2:'#c8102e',3:'#222222',4:'#ffd34d'},s:["....44....","...1111...","..122221..",".12223321.",".12223221.",".12232221.",".12222221.","..122221..","...1111...",".........."],
   desc:'{x:X2} Mult on tosses you call within {a:3 seconds}',end:(c,e)=>{if(S.fastCall)e('xmult',2)}},
+ rewind:{name:'Rewind Tape',r:3,cost:9,bg:'#1a1a2a',init:{u:3},p:{1:'#3a3a4a',2:'#e8eef2',3:'#c8102e',4:'#111111'},s:["1111111111","1222222221","1244224421","1244224421","1222222221","1233333321","1111111111",".1.1..1.1.","..........",".........."],
+  desc:j=>`If you would {r:lose} a wager, rewind time to the moment it began. {a:${j&&j.st?j.st.u:3}} rewind${(j&&j.st?j.st.u:3)===1?'':'s'} left, then it breaks`},
  sundial:{name:'Sundial',r:3,cost:8,bg:'#3a2a10',p:{1:'#c9a06a',2:'#ffd34d',3:'#3a2a1a'},s:["....22....","..2.22.2..","...2222...",".22222222.","...2222...","..2.22.2..","....22....","1111111111",".11111131.","..111111.."],
   desc:()=>{const x=sunX();return `Mult that follows your clock: {x:X1} at midnight, rising to {x:X3} at noon {d:(Right now X${x.toFixed(2)})}`},end:(c,e)=>{const x=sunX();if(x>1)e('xmult',Math.round(x*100)/100)}},
 });
@@ -1806,6 +1809,7 @@ const SPIRIT_ART={
  poltergeist:{p:{1:'#c9b6ff',2:'#2a1a3a',3:'#ffd34d'},s:["..111111..",".11111111.","1121111211","1111111111","1111221111","..333333..",".33333333.","..333333..",".1.1..1.1.",".........."]},
  wisp:{p:{1:'#9be7ff',2:'#ffffff',3:'#27b3d6'},s:["..........","....3.....","...333....","..32223...","..32223...","...333....","....3.....","...3......","..3.......",".........."]},
  doppelganger:{p:{1:'#4bd18f',2:'#2e7d4f'},s:[".11....22.","1111..2222","1111..2222",".11....22.","1111..2222","1111..2222","1111..2222",".1.1..2.2.",".1.1..2.2.",".........."]},
+ rkey:{p:{1:'#e8eef2',2:'#c8102e',3:'#222222'},s:["..1111....",".133331...",".131131...",".133331...","..1111....","...11.....","...1111...","...11.....","...111....","...11....."]},
  wraith:{p:{1:'#ff9de2',2:'#2a1a3a',3:'#ffffff'},s:["...1111...","..111111..",".11211211.",".11311311.",".11111111.","1111221111","1111111111","111.11.111","11...1..11","1........1"]},
  shade:{p:{1:'#4a4a5e',2:'#fe5f55'},s:["...1111...","..111111..",".11111111.",".12111121.",".11111111.","1111111111","1111111111","1111111111","1.1.1.1.1.",".........."]},
  lich:{p:{1:'#3fae8a',2:'#222222',3:'#ffd34d'},s:["3.3.33.3.3","3333333333","..111111..",".11111111.","1122112211","1111221111",".11111111.","..1.11.1..","..........",".........."]},
@@ -1905,6 +1909,9 @@ const SPIRITS={
   use:async sel=>{sel.forEach(i=>S.purse[i].type='quicksilver');render();sel.forEach(i=>juiceCoin(i,'Transmuted!'));play('levelup')}},
  doppelganger:{name:'Doppelganger',col:'#4bd18f',desc:'Copy a random Charm. Lose {$:$10}',ok:()=>S.jokers.length>0&&S.jokers.length<slots(),why:'You need a Charm and room for another',
   use:async()=>{const j=pick(S.jokers);S.jokers.push({id:uid++,key:j.key,st:{...j.st},cost:j.cost});S.money=Math.max(0,S.money-10);play('xmult');render()}},
+ rkey:{name:'R Key',col:'#e8eef2',desc:'{r:Restart} the run from Stage 1, Small Wager. You keep {a:everything}: Charms, coins, Consumables, money, upgrades and toss levels',ok:()=>!S.pack&&S.screen!=='play'&&!(S.ante===1&&S.blindIdx===0),why:'Use it between wagers, after Stage 1 has begun',
+  use:async()=>{S.ante=1;S.blindIdx=0;S.round=1;S.endless=false;S.boss=null;S.boss2=null;S.weather=null;S.blinds=makeAnteBlinds(1);S.shop=null;S.event=null;S.screen='blind';PS().rkeys=(PS().rkeys||0)+1;
+    play('levelup');shake(8);toast('<b>R Key.</b> Back to the start, with everything you own',4500);houseSay('Again? Fine. From the top.');render()}},
  wraith:{name:'Wraith',col:'#ff9de2',desc:'Summon a random {f:Fabled} Charm. It carries a random {r:Curse}, and you lose {r:all} your money',ok:()=>S.jokers.length<slots()&&wraithPool().length>0,why:'No room for a Charm',
   use:async()=>{const k=pick(wraithPool());addJoker(k,0);const j=S.jokers[S.jokers.length-1];j.curse=pickCurse(k,Object.keys(CURSES).filter(c=>c!=='rented'));if(j.curse==='fleeting')j.left=5;S.money=Math.min(S.money,0);play('unlock');shake(6);render();juice($('#jk'+(S.jokers.length-1)));toast(`The <b>Wraith</b> leaves you <b style="color:#ff9de2">${JOKERS[k].name}</b>, cursed <b>${CURSES[j.curse].name}</b>`)}},
  shade:{name:'Shade',col:'#5a5a6a',desc:'Your purse holds {a:2} more coins. Melt {a:2} random coins',ok:()=>S.purse.length-2>=PURSE_MIN,why:`Purse needs ${PURSE_MIN+2}+ coins`,
@@ -4708,7 +4715,9 @@ document.addEventListener('pointerover',e=>{if(drag&&drag.active)return;const t=
 addEventListener('scroll',hideTip,true);
 
 /* ================= GAME FLOW ================= */
+let REWIND_SNAP=null;
 function startBlind(){
+  REWIND_SNAP=S.jokers.some(j=>j.key==='rewind')&&!S.inElite?JSON.stringify({S,uid}):null;
   hazardsOff();S.wagerTime=0;S.turnTime=0;S.ghostWarned=false;S.ghost=false;S.scorp=false;
   const b=curBlind();S.boss=b.boss||null;S.target=blindTarget(b);S.screen='play';
   if(S.purse[0]&&coinDef(S.purse[0]).firstDime){S.target=Math.ceil(S.target*(1-coinDef(S.purse[0]).firstDime));setTimeout(()=>{const el=$('#c0');if(el)popup(el,'The First Dime: -20% target','text')},500)}
@@ -4899,6 +4908,10 @@ async function doCashIn(){
   if(S.flipsLeft<=0&&S.inElite){await wait(400);endElite(false);return}
   if(S.flipsLeft<=0){
     const lastLife=k=>{const ks=ownKeys(),c=ks.findIndex((x,i)=>x===k&&COPYK[S.jokers[i].key]);return c>=0?c:ks.indexOf(k)};
+    if(REWIND_SNAP&&!S.duel){const snap=JSON.parse(REWIND_SNAP);REWIND_SNAP=null;const R2=migrate(snap.S),rj=R2.jokers.find(j=>j.key==='rewind');
+      if(rj){rj.st.u=(rj.st.u??3)-1;const broke=rj.st.u<=0;if(broke)R2.jokers.splice(R2.jokers.indexOf(rj),1);
+        popup($('#callb'),'REWIND','huge');play('reroll');shake(6);document.body.classList.add('rewinding');await wait(900);document.body.classList.remove('rewinding');
+        S=R2;uid=Math.max(uid,snap.uid||0);startBlind();toast(broke?'<b>Rewind Tape</b> snaps. That was its last rewind':`<b>Rewind Tape</b>: back to the start of the wager. ${rj.st.u} left`,4500);return}}
     const ph=lastLife('phoenix');
     if(ph>=0){S.jokers.splice(ph,1);renderJokers();popup($('#callb'),'The Phoenix rises!','huge');play('unlock');shake(10);coinRain(30,{types:['ruby','gold']});await wait(1300);await blindWon();return}
     const ins=lastLife('insurance');
