@@ -905,10 +905,10 @@ img{-webkit-user-drag:none}
 .bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
 .bitem{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--panel-deep);border-radius:12px;padding:10px 6px;text-align:center;font-size:14px}
 .bitem.on{box-shadow:inset 0 0 0 2px var(--green)}.bitem img{width:64px;height:64px;image-rendering:pixelated}
-.bitem .fprev{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#e8b830 0 25%,#3fbf8b 25% 50%,#0b9bff 50% 75%,#fe5f55 75%);box-shadow:inset 0 0 0 3px rgba(255,255,255,.2)}
+.bitem .fprev{width:64px;height:64px;border-radius:12px;background:linear-gradient(var(--a),var(--a)) 0 0/100% 50% no-repeat,linear-gradient(90deg,var(--b) 0 33%,var(--c2) 33% 66%,var(--d) 66%) 0 100%/100% 50% no-repeat;box-shadow:inset 0 0 0 3px rgba(255,255,255,.2)}
 .bitem .swatch{width:64px;height:64px;border-radius:50%;box-shadow:inset 0 0 0 3px rgba(255,255,255,.2)}
-#ffbtn{position:fixed;right:calc(14px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));z-index:57;display:flex;align-items:center;gap:6px;padding:8px 12px;border:0;border-radius:12px;background:var(--panel-deep);color:var(--ink-dim);font:inherit;font-size:16px;cursor:pointer;box-shadow:0 4px 0 var(--edge),inset 0 0 0 2px var(--grey,#666)}
-#ffbtn[hidden]{display:none}@media (max-width:700px){#ffbtn{padding:6px 10px;font-size:14px}body:has(#coach:not([hidden])) #ffbtn{display:none}body:has(#ffbtn:not([hidden])):not(:has(#coach:not([hidden]))) #app{padding-bottom:calc(50px + env(safe-area-inset-bottom))}}#ffbtn .ffi{letter-spacing:-4px;font-size:13px;padding-right:4px}#ffbtn b{min-width:26px;text-align:left}
+#ffbtn{position:fixed;right:calc(14px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));z-index:57;display:flex;align-items:center;gap:8px;padding:11px 16px;border:0;border-radius:12px;background:var(--panel-deep);color:var(--ink-dim);font:inherit;font-size:20px;cursor:pointer;box-shadow:0 4px 0 var(--edge),inset 0 0 0 2px var(--grey,#666)}
+#ffbtn[hidden]{display:none}@media (max-width:700px){#ffbtn{padding:6px 10px;font-size:14px}body:has(#coach:not([hidden])) #ffbtn{display:none}body:has(#ffbtn:not([hidden])):not(:has(#coach:not([hidden]))) #app{padding-bottom:calc(50px + env(safe-area-inset-bottom))}}#ffbtn .ffi{letter-spacing:-4px;font-size:16px;padding-right:4px}#ffbtn b{min-width:26px;text-align:left}
 #ffbtn.on{background:var(--chips-d);color:#fff;box-shadow:0 4px 0 var(--edge),inset 0 0 0 2px var(--chips)}#ffbtn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
 #hazards{position:fixed;inset:0;pointer-events:none;z-index:56;overflow:hidden}
 .hzghost{position:absolute;width:320px;transition:left 1.2s linear,top 1.2s linear;filter:drop-shadow(0 0 24px rgba(180,220,255,.55));opacity:.88}
@@ -934,6 +934,18 @@ body.hzpaused .hzghost,body.hzpaused .hzghost *,body.hzpaused .hzscorp,body.hzpa
 .ucell img{width:38px;height:38px;image-rendering:pixelated;filter:grayscale(1) brightness(.25)}.ucell .unm{line-height:1.1;text-align:center;overflow-wrap:anywhere}
 .ucell.got{color:#fff;box-shadow:inset 0 0 0 2px rgba(63,191,139,.6)}.ucell.got img{filter:none}.ucell.got .unum{color:var(--green);opacity:1}
 body.rewinding #app{animation:rewindfx .9s steps(9) both}@keyframes rewindfx{0%{filter:none;transform:none}30%{filter:hue-rotate(180deg) saturate(2) contrast(1.4);transform:skewX(6deg)}60%{filter:invert(1);transform:skewX(-6deg) translateX(-8px)}100%{filter:grayscale(1) brightness(1.6);transform:none}}
+#stageintro{position:fixed;inset:0;z-index:66;display:grid;place-items:center;background:rgba(8,6,6,.88);transition:opacity .45s;cursor:pointer;padding:16px}
+#stageintro[hidden]{display:none}#stageintro.out{opacity:0;pointer-events:none}
+.sibox{text-align:center;zoom:var(--k,1);display:flex;flex-direction:column;align-items:center;gap:6px;max-width:760px}
+.sistage{font-size:15px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-dim);animation:sifade .4s ease-out both}
+.siname{font-size:clamp(40px,6vw,72px);line-height:1;text-shadow:0 4px 0 rgba(0,0,0,.5);animation:dropin .55s cubic-bezier(.3,1.4,.5,1) .1s both}
+.siline{font-style:italic;color:var(--ink-dim);font-size:15px;margin-bottom:8px;animation:sifade .4s ease-out .35s both}
+.sirow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.sicard{display:flex;gap:10px;align-items:center;text-align:left;background:var(--panel-deep);border-radius:12px;padding:10px 14px;max-width:360px;box-shadow:0 4px 0 var(--edge);animation:sifade .4s ease-out .5s both}
+.sicard+.sicard{animation-delay:.65s}.sicard b{font-size:20px}.silbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim)}.sidesc{font-size:13px;color:#fff;margin-top:2px}
+.sicon{width:48px;height:48px;border-radius:10px;flex:none;display:grid;place-items:center}.sicon img{width:36px;height:36px;image-rendering:pixelated}.sicon.wxi{color:#1a1a1a;font-size:13px;font-weight:700}
+.sitap{font-size:11px;color:var(--ink-dim);opacity:.6;margin-top:6px}
+@keyframes sifade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .droptarget{box-shadow:inset 0 0 0 3px #d9824a,0 0 18px rgba(217,130,74,.55)!important;border-radius:14px}
 
 #minifish{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(5,15,20,.45);animation:pop .2s ease-out;touch-action:none;cursor:pointer}
@@ -1013,7 +1025,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.31</div>
+  <div class="gamever" aria-label="Version">v1.2.32</div>
 </div>
 
 <script>
@@ -1053,16 +1065,15 @@ const THEMES={
  sakura:{name:'Sakura',cost:20,A:[.95,.55,.7],B:[.4,.2,.3]},
  vapor:{name:'Vaporwave',cost:30,A:[.95,.3,.8],B:[.1,.6,.7]}};
 const FILTERS={
- none:{name:'No filter',cost:0,css:''},
- oldphoto:{name:'Old Photo',cost:10,css:'sepia(.75) contrast(1.05)'},
- noir:{name:'Noir',cost:10,css:'grayscale(1) contrast(1.15)'},
- sunset:{name:'Sunset',cost:15,css:'sepia(.3) saturate(1.4) hue-rotate(-12deg)'},
- moonlight:{name:'Moonlight',cost:15,css:'saturate(.7) hue-rotate(195deg) brightness(.95) sepia(.15)'},
- technicolor:{name:'Technicolor',cost:20,css:'saturate(1.8) contrast(1.1)'},
- handheld:{name:'Handheld',cost:25,css:'grayscale(1) sepia(1) hue-rotate(45deg) saturate(2.2) contrast(1.2) brightness(.9)'},
- vhs:{name:'VHS',cost:25,css:'saturate(1.35) contrast(1.15) blur(.4px) hue-rotate(-6deg)'}};
-const COS=()=>{PROF.cos=PROF.cos||{owned:{},skin:'classic',theme:'classic'};if(!PROF.cos.filter)PROF.cos.filter='none';return PROF.cos};
-function applyFilter(){const f=FILTERS[COS().filter]||FILTERS.none;document.documentElement.style.filter=f.css||''}
+ none:{name:'Card Table',cost:0,v:{}},
+ navy:{name:'Navy Casino',cost:10,v:{panel:'#2e3a52','panel-hi':'#3e4c68','panel-deep':'#1a2232',edge:'#0c111a','ink-dim':'#b4c2dc',grey:'#4e5a72','grey-d':'#2e3648'}},
+ felt:{name:'Green Felt',cost:10,v:{panel:'#2c4a38','panel-hi':'#3c604a','panel-deep':'#18291f',edge:'#0b140f','ink-dim':'#b8d4c0',grey:'#4a6656','grey-d':'#2a3c32'}},
+ velvet:{name:'Red Velvet',cost:15,v:{panel:'#56282c','panel-hi':'#6e363a','panel-deep':'#2c1214',edge:'#160809','ink-dim':'#e0b8b8',grey:'#6e4a4c','grey-d':'#40282a'}},
+ pastel:{name:'Pastel',cost:20,v:{chips:'#6ab8ff','chips-d':'#3a7ac0',mult:'#ff8fa0','mult-d':'#c0506a',green:'#7ad8a8','green-d':'#3e9a6c',orange:'#ffb870','orange-d':'#c07a30',money:'#ffd88a','money-d':'#b8902a',purple:'#c0a0f0','purple-d':'#7a5cb0'}},
+ neon:{name:'Neon Nights',cost:25,v:{panel:'#1e1a2e','panel-hi':'#2c2644','panel-deep':'#100c1c',edge:'#06040c',chips:'#00e0ff','chips-d':'#0088aa',mult:'#ff2a8a','mult-d':'#a01a58',green:'#3aff9a','green-d':'#1aa060',orange:'#ffb000','orange-d':'#a87000',purple:'#b06aff','purple-d':'#6a30b0','ink-dim':'#c8b8ff'}},
+ mono:{name:'Monochrome',cost:25,v:{panel:'#3a3a3a','panel-hi':'#505050','panel-deep':'#1e1e1e',edge:'#0a0a0a',chips:'#d8d8d8','chips-d':'#7a7a7a',mult:'#a8a8a8','mult-d':'#555555',green:'#c0c0c0','green-d':'#666666',orange:'#e8e8e8','orange-d':'#8a8a8a',money:'#f0f0f0','money-d':'#9a9a9a',purple:'#b0b0b0','purple-d':'#5a5a5a','ink-dim':'#bdbdbd'}}};
+const COS=()=>{PROF.cos=PROF.cos||{owned:{},skin:'classic',theme:'classic'};if(!PROF.cos.filter||!FILTERS[PROF.cos.filter])PROF.cos.filter='none';return PROF.cos};
+function applyFilter(){const f=FILTERS[COS().filter]||FILTERS.none,st=document.documentElement.style;st.filter='';Object.values(FILTERS).forEach(t=>Object.keys(t.v).forEach(k=>st.removeProperty('--'+k)));Object.entries(f.v).forEach(([k,v])=>st.setProperty('--'+k,v))}
 const skinNow=()=>SKINS[COS().skin]||SKINS.classic;
 function applySkin(){const k=skinNow();document.documentElement.style.setProperty('--skrim',k.rim);document.documentElement.style.setProperty('--skhi',k.hi);Object.keys(ART).forEach(x=>{if(x.startsWith('copper'))delete ART[x]})}
 if(PROF.tix==null){PROF.tix=5;saveProf()}applySkin();applyFilter();
@@ -4067,11 +4078,11 @@ function optionsModal(){
 let BOOTH_TAB='skin';
 function boothModal(){const C=COS(),tix=PROF.tix||0,isSkin=BOOTH_TAB==='skin',isF=BOOTH_TAB==='filter',L=isSkin?SKINS:isF?FILTERS:THEMES;
   const card=k=>{const it=L[k],own=!it.cost||C.owned[BOOTH_TAB+':'+k],on=C[BOOTH_TAB]===k;
-    const pv=isSkin?`<img src="${coinArt('copper','H').replace(/^/,'')}" alt="" data-skin="${k}">`:isF?`<i class="fprev" style="filter:${it.css||'none'}"></i>`:`<i class="swatch" style="background:radial-gradient(circle at 35% 35%,rgb(${it.A.map(v=>v*255|0)}),rgb(${it.B.map(v=>v*255|0)}))"></i>`;
+    const pv=isSkin?`<img src="${coinArt('copper','H').replace(/^/,'')}" alt="" data-skin="${k}">`:isF?`<i class="fprev" style="--a:${it.v.panel||'#47423b'};--b:${it.v.chips||'#0b9bff'};--c2:${it.v.mult||'#fe5f55'};--d:${it.v.orange||'#ff9a1f'}"></i>`:`<i class="swatch" style="background:radial-gradient(circle at 35% 35%,rgb(${it.A.map(v=>v*255|0)}),rgb(${it.B.map(v=>v*255|0)}))"></i>`;
     return `<div class="bitem ${on?'on':''}">${pv}<b>${it.name}</b>${on?'<span class="btn small green" aria-disabled="true">Equipped</span>':own?`<button class="btn small" data-act="boothequip" data-arg="${k}">Equip</button>`:`<button class="btn small" style="--c:#ff6f9a;--cd:#a8335a" data-act="boothbuy" data-arg="${k}" ${tix<it.cost?'disabled':''}>${it.cost} tickets</button>`}</div>`};
   return `<div class="overlay"><div class="panel modal" style="width:min(620px,100%)"><h2>Prize Booth</h2>
     <div class="lbl" style="text-align:center;margin-bottom:8px">Every Ticket you earn in a run is also banked here. You have <b style="color:#ff8fab">${tix} ticket${tix===1?'':'s'}</b></div>
-    <div class="ctabs">${[['skin','Quarter skins'],['theme','Title themes'],['filter','Filters']].map(([k,n])=>`<button class="btn small ${BOOTH_TAB===k?'orange':''}" style="${BOOTH_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="boothtab" data-arg="${k}">${n}</button>`).join('')}</div>
+    <div class="ctabs">${[['skin','Quarter skins'],['theme','Title themes'],['filter','Colour themes']].map(([k,n])=>`<button class="btn small ${BOOTH_TAB===k?'orange':''}" style="${BOOTH_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="boothtab" data-arg="${k}">${n}</button>`).join('')}</div>
     <div class="bgrid">${Object.keys(L).map(card).join('')}</div>
     <div style="text-align:center;margin-top:12px"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`}
 function boothPreviews(){document.querySelectorAll('[data-skin]').forEach(img=>{const cur=COS().skin;COS().skin=img.dataset.skin;img.src=coinArt('copper','H');COS().skin=cur})}
@@ -4574,6 +4585,15 @@ function recordsModal(){
   return `<div class="overlay"><div class="panel modal wide"><h2>Records</h2><div class="ctabs">${[['stats','Stats'],['history','History'],['goals','Unlocks']].map(([k,n])=>`<button class="btn small ${REC_TAB===k?'orange':''}" style="${REC_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="rectab" data-arg="${k}">${n}</button>`).join('')}</div>
     <div class="recbody">${body}</div><div style="text-align:center;margin-top:10px"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
 }
+/* new stage: a short title card with the floor name, its boss and any weather */
+function stageIntro(){if(!S)return;const F=floorOf(S.ante),bb=(S.blinds||[]).find(b=>b.kind==='boss'),W=S.weather&&WEATHER[S.weather];
+  let el=$('#stageintro');if(!el){el=document.createElement('div');el.id='stageintro';document.body.appendChild(el)}
+  const boss=bb&&BOSSES[bb.boss]?`<div class="sicard"><div class="sicon" style="background:${BOSSES[bb.boss].col}">${bossSil(bb.boss)?`<img src="${bossSil(bb.boss)}" alt="">`:''}</div><div><div class="silbl">Boss</div><b style="color:${BOSSES[bb.boss].col}">${BOSSES[bb.boss].name}</b><div class="sidesc">${bossDesc(bb)}</div></div></div>`:'';
+  const wx=W?`<div class="sicard"><div class="sicon wxi" style="background:${W.col}">${W.short||''}</div><div><div class="silbl">Weather</div><b style="color:${W.col}">${W.name}</b><div class="sidesc">${fmt(W.desc)}</div></div></div>`:'';
+  el.innerHTML=`<div class="sibox"><div class="sistage">Stage ${S.ante}${S.ante<=STAGES?` of ${STAGES}`:''}</div><div class="siname" style="color:${F.col}">${F.name}</div><div class="siline">${F.line||''}</div><div class="sirow">${boss}${wx}</div><div class="sitap">Tap to continue</div></div>`;
+  el.hidden=false;el.classList.remove('out');play('levelup');
+  const close=()=>{if(el.hidden)return;el.classList.add('out');setTimeout(()=>{el.hidden=true},450);el.onclick=null};
+  el.onclick=close;clearTimeout(stageIntro.t);stageIntro.t=setTimeout(close,3600/OPT.speed)}
 function showdownIntro(){
   const B=BOSSES[S.boss],el=$('#showdown');
   el.innerHTML=`<div class="sdbox ${S.boss==='fatal'?'sdfatal':''}"><div class="sdlbl">Showdown</div><div class="sdname" style="color:${B.col}" data-t="${B.name}">${B.name}</div><div class="sddesc">${bossDesc(curBlind())}</div></div>`;
@@ -5027,7 +5047,7 @@ function stageUpgrades(){
   if(msg.length)setTimeout(()=>toast(msg.join('<br>'),5000),1100);
 }
 function advanceBlind(boss){
-  if(boss){if(S.luck)S.luck-=Math.sign(S.luck);S.ante++;{const F=floorOf(S.ante);setTimeout(()=>{toast(`<b style="color:${F.col}">Floor ${S.ante}: ${F.name}</b>`,4000);houseSay(F.line)},300)}if(S.roll==='rivalroll'){const left=RIVALS.filter(n=>!(S.rivalsMet||[]).includes(n)&&n!==S.rival.name);if(left.length)S.rival.name=pick(left)}stageUpgrades();setTimeout(()=>{if(S)questStage()},700);{const w=rollWeather(S.ante);S.weather=w;if(w){PS().wx[w]=1;setTimeout(()=>toast(`Weather for stage ${S.ante}: <b style="color:${WEATHER[w].col}">${WEATHER[w].name}</b>`),500)}}S.blinds=makeAnteBlinds(S.ante);S.blindIdx=0;PS().bestStage=Math.max(PS().bestStage,S.ante);if(S.ante===2)setTimeout(()=>coach('stage2'),400);if(S.ante===3)setTimeout(()=>coach('stage3'),400)}
+  if(boss){if(S.luck)S.luck-=Math.sign(S.luck);S.ante++;if(S.roll==='rivalroll'){const left=RIVALS.filter(n=>!(S.rivalsMet||[]).includes(n)&&n!==S.rival.name);if(left.length)S.rival.name=pick(left)}stageUpgrades();setTimeout(()=>{if(S)questStage()},700);{const w=rollWeather(S.ante);S.weather=w;if(w){PS().wx[w]=1}}S.blinds=makeAnteBlinds(S.ante);S.blindIdx=0;setTimeout(stageIntro,250);PS().bestStage=Math.max(PS().bestStage,S.ante);if(S.ante===2)setTimeout(()=>coach('stage2'),400);if(S.ante===3)setTimeout(()=>coach('stage3'),400)}
   else{S.blindIdx++;S.blinds[S.blindIdx].state='select'}
 }
 function gameOver(){hazardsOff();S.screen='over';S.phase='idle';play('lose');shake(8);saveBest();recordRun(false);render();houseSay(pick(['The House always wins. Sit down again soon.','Back to the penny slots with you.','You were so close. You always are.']),6000)}
