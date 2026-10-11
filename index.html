@@ -396,7 +396,7 @@ body.badges .face::before{display:block}
 .tkind{margin-top:7px;font-size:13px;line-height:1.3;color:var(--ink-dim);max-width:30ch;margin-inline:auto}
 .cblurb{text-align:center;color:var(--ink-dim);font-size:14px;margin:-2px auto 10px;max-width:70ch;line-height:1.35}
 .scard .pcap{font-size:12px;color:var(--ink-dim);text-align:center;white-space:nowrap;line-height:1.2}
-.meltbar:not(:has(.btn)){display:none}
+.meltbar:not(:has(.btn,.k-d)){display:none}
 /* the melt bar floats over the bottom edge instead of pushing the page into a scrollbar */
 :has(>.purse.shopp+.meltbar){position:relative}.purse.shopp+.meltbar{position:absolute;left:0;right:0;bottom:0;min-height:0;pointer-events:none;z-index:3}.purse.shopp+.meltbar>*{pointer-events:auto}.purse.shopp+.meltbar>span{background:rgba(20,18,16,.8);padding:2px 8px;border-radius:6px}
 .shop{gap:10px}
@@ -756,7 +756,7 @@ img{-webkit-user-drag:none}
   .purse.shopp{padding-top:10px;padding-bottom:8px}
   .meltbar{font-size:11px;min-height:0;gap:6px}
   .meltbar .btn{font-size:11px;padding:4px 8px}
-  .meltbar:not(:has(.btn)){display:none}
+  .meltbar:not(:has(.btn,.k-d)){display:none}
   .purse.shopp{padding-top:6px;padding-bottom:4px}
   /* opened pack */
   .packview{gap:6px;padding:8px}
@@ -1030,7 +1030,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.35</div>
+  <div class="gamever" aria-label="Version">v1.2.36</div>
 </div>
 
 <script>
@@ -1091,7 +1091,8 @@ try{Object.assign(OPT,JSON.parse(localStorage.getItem('hwr-opts')||'{}'))}catch(
 /* the volume sliders replaced the on/off switches: a muted setting from before carries over as volume 0 */
 if(OPT.music===false){OPT.mvol=0}if(OPT.sfx===false){OPT.svol=0}OPT.music=true;OPT.sfx=true;
 const saveOpt=()=>{try{localStorage.setItem('hwr-opts',JSON.stringify(OPT))}catch(e){}};
-const wait=ms=>new Promise(r=>setTimeout(r,ms/OPT.speed));
+const SPD=()=>S&&S.screen==='play'?(OPT.speed||1):1;
+const wait=ms=>new Promise(r=>setTimeout(r,ms/SPD()));
 
 /* ================= DATA ================= */
 const HANDS=[
@@ -1720,6 +1721,8 @@ Object.assign(JOKERS,{
   desc:'{x:X2} Mult on tosses you call within {a:3 seconds}',end:(c,e)=>{if(S.fastCall)e('xmult',2)}},
  rewind:{name:'Rewind Tape',r:3,cost:9,bg:'#1a1a2a',init:{u:3},p:{1:'#3a3a4a',2:'#e8eef2',3:'#c8102e',4:'#111111'},s:["1111111111","1222222221","1244224421","1244224421","1222222221","1233333321","1111111111",".1.1..1.1.","..........",".........."],
   desc:j=>`If you would {r:lose} a wager, rewind time to the moment it began. {a:${j&&j.st?j.st.u:3}} rewind${(j&&j.st?j.st.u:3)===1?'':'s'} left, then it breaks`},
+ smelter:{name:'Smelter',r:2,cost:6,bg:'#3a1a0a',p:{1:'#6a6a72',2:'#ff6a1a',3:'#ffd34d',4:'#2a2a30'},s:["..........","1........1","11......11","111111111.",".12233221.",".12333321.","..122221..","...1111...","...4444...","..444444.."],
+  desc:'Lets you {a:melt} coins from your purse whenever you like, for money (select a coin in the shop)'},
  sundial:{name:'Sundial',r:3,cost:8,bg:'#3a2a10',p:{1:'#c9a06a',2:'#ffd34d',3:'#3a2a1a'},s:["....22....","..2.22.2..","...2222...",".22222222.","...2222...","..2.22.2..","....22....","1111111111",".11111131.","..111111.."],
   desc:()=>{const x=sunX();return `Mult that follows your clock: {x:X1} at midnight, rising to {x:X3} at noon {d:(Right now X${x.toFixed(2)})}`},end:(c,e)=>{const x=sunX();if(x>1)e('xmult',Math.round(x*100)/100)}},
 });
@@ -1888,7 +1891,7 @@ const RUNES={
   ok:()=>S.csel.every(i=>!stkGroup(S.purse[i])),why:'One of them is already stacked',
   use:async sel=>{const g=uid++,[a,b]=sel.slice().sort((x,y)=>x-y),cb=S.purse[b];S.purse[a].stk=g;cb.stk=g;S.purse.splice(b,1);S.purse.splice(a+1,0,cb);play('levelup');render();juiceCoin(a,'Stacked!')}},
  ruin:{name:'Rune of Ruin',col:'#b0564f',min:1,max:2,desc:'Melt up to {a:2} selected coins',ok:()=>S.purse.length-S.csel.length>=PURSE_MIN,why:`Purse needs ${PURSE_MIN}+ coins`,
-  use:async sel=>{sel.forEach(i=>{const el=$('#c'+i);if(el)el.classList.add('shatter')});play('shatter');await wait(380);sel.sort((a,b)=>b-a).forEach(i=>S.purse.splice(i,1));render()}},
+  use:async sel=>{sel.forEach(i=>{const el=$('#c'+i);if(el)el.classList.add('shatter')});play('shatter');await wait(380);sel.sort((a,b)=>b-a).forEach(i=>S.purse.splice(i,1));PS().melts=(PS().melts||0)+sel.length;render()}},
  wealth:{name:'Rune of Wealth',col:'#f5b744',desc:'Double your money (max {$:+$20})',
   use:async()=>{const g=Math.min(S.money,20);S.money+=g;play('money');render();popup($('#smoney'),'+$'+g,'money')}},
  fate:{name:'Rune of Fate',col:'#e8443a',desc:'{a:1 in 2} chance to gain a random {a:Uncommon or better} Charm. Otherwise, earn {$:$4}',ok:()=>S.jokers.length<slots(),why:'No room for a Charm',
@@ -3405,6 +3408,7 @@ const GOALS=[
 const GOAL_OF=Object.fromEntries(GOALS.map(g=>[g.kind+':'+g.key,g]));
 /* challenge rolls stay sealed until you have won a run */
 const curtainN=()=>Math.floor(Object.keys(PROF.unlocked||{}).length/3);
+const canMelt=()=>!!S&&S.roll!=='hoarder'&&countEff('smelter')>0;
 const isUnlocked=(kind,key)=>kind!=='roll'&&S&&S.roll==='locked'?!GOAL_OF[kind+':'+key]:PROF.unlockAll||(kind==='roll'&&typeof ROLLS!=='undefined'&&ROLLS[key]&&ROLLS[key].challenge?(PROF.stats.wins||0)>=1:(!GOAL_OF[kind+':'+key]||!!PROF.unlocked[kind+':'+key]));
 const goalIcon=g=>{let src='';try{src=g.kind==='charm'?icon(g.key):g.kind==='coin'?coinArt(g.key,'H'):g.kind==='pack'?packIconFor(g.key):coinArt(ROLLS[g.key].cap||'copper','T')}catch(e){}return src?`<img src="${src}" alt="">`:''};
 const goalName=g=>g.kind==='roll'?ROLLS[g.key].name:g.kind==='pack'?PACKS[g.key].name:g.kind==='coin'?COINS[g.key].name:JOKERS[g.key].name;
@@ -3980,6 +3984,7 @@ function purseHTML(){
   let bar;const n=S.csel.length;
   if(S.pack)bar=`<span>${n?`${n} coin${n>1?'s':''} selected. `:''}Some Runes and Spirits act on coins you select here.</span>`;
   else if(n===1&&S.roll==='hoarder')bar=`<span>Hoarder Roll: coins can't be melted</span>`;
+  else if(n===1&&!canMelt())bar=`<span>${COINS[S.purse[S.csel[0]].type].name}</span><span class="k-d">Melting needs a Rune of Ruin or the Smelter Charm</span>`;
   else if(n===1)bar=(S.purse.length>PURSE_MIN?`<span>${COINS[S.purse[S.csel[0]].type].name}</span><button class="btn red small" data-act="melt">Melt for $${(coinDef(S.purse[S.csel[0]]).meltVal||1)+3*countEff('recycler')}</button>`:`<span>Your purse needs at least ${PURSE_MIN} coins</span>`)+(coinDef(S.purse[S.csel[0]]).charm?`<span class="k-d">Drag it up to your Charms to hang it there</span>`:'');
   else if(n>1)bar=`<span>${n} coins selected for a Rune or Spirit</span>`;
   else bar=`<span>Your purse: ${S.purse.length}/${S.purseMax} coins. Drag to rearrange, tap to select.</span>`;
@@ -4405,7 +4410,7 @@ async function openRoll(key,o={}){
     const x0=rc.left+rc.width*(i+.5)/n,x1=row0+gap*i,peak=cy-(140+Math.random()*90)*k;
     el.animate([{transform:`translate(${x0}px,${cy}px) rotateY(84deg) scale(.7)`},{transform:`translate(${(x0+x1)/2}px,${peak}px) rotateY(400deg) scale(1.15)`,offset:.45},{transform:`translate(${x1}px,${landY}px) rotateY(720deg) scale(1)`}],
       {duration:900,delay:120+i*70,easing:'cubic-bezier(.3,.6,.4,1)',fill:'forwards'});
-    setTimeout(()=>play('land',i),(120+i*70+900)/OPT.speed);
+    setTimeout(()=>play('land',i),(120+i*70+900)/SPD());
     return el});
   setTimeout(()=>play('toss'),140);
   await wait(1250+n*70);
@@ -4619,12 +4624,12 @@ function stageIntro(){if(!S)return;const F=floorOf(S.ante),bb=(S.blinds||[]).fin
   el.innerHTML=`<div class="sibox"><div class="sistage">Stage ${S.ante}${S.ante<=STAGES?` of ${STAGES}`:''}</div><div class="siname" style="color:${F.col}">${F.name}</div><div class="siline">${F.line||''}</div><div class="sirow">${boss}${wx}</div><div class="sitap">Tap to continue</div></div>`;
   el.hidden=false;el.classList.remove('out');play('levelup');
   const close=()=>{if(el.hidden)return;el.classList.add('out');setTimeout(()=>{el.hidden=true},450);el.onclick=null};
-  el.onclick=close;clearTimeout(stageIntro.t);stageIntro.t=setTimeout(close,3600/OPT.speed)}
+  el.onclick=close;clearTimeout(stageIntro.t);stageIntro.t=setTimeout(close,3600/SPD())}
 function showdownIntro(){
   const B=BOSSES[S.boss],el=$('#showdown');
   el.innerHTML=`<div class="sdbox ${S.boss==='fatal'?'sdfatal':''}"><div class="sdlbl">Showdown</div><div class="sdname" style="color:${B.col}" data-t="${B.name}">${B.name}</div><div class="sddesc">${bossDesc(curBlind())}</div></div>`;
   el.hidden=false;el.classList.remove('out');play('xmult');shake(10);
-  setTimeout(()=>el.classList.add('out'),2300/OPT.speed);setTimeout(()=>{el.hidden=true},2800/OPT.speed);
+  setTimeout(()=>el.classList.add('out'),2300/SPD());setTimeout(()=>{el.hidden=true},2800/SPD());
 }
 function updateStreakLine(){const e=$('#streakline');if(!e)return;const P=PS();
   e.innerHTML=`Best win streak <b style="color:var(--money)">${P.bestStreak||0}</b>${P.streak?` (current ${P.streak})`:''}`}
@@ -4704,7 +4709,7 @@ function collectionInner(){
 function popup(el,text,cls){
   if(!el)return;const r=el.getBoundingClientRect();const p=document.createElement('div');
   p.className='pop '+cls;p.textContent=text;p.style.left=(r.left+r.width/2)+'px';p.style.top=(r.top+2)+'px';
-  const dur=1000/OPT.speed;p.style.animationDuration=dur+'ms';$('#fx').appendChild(p);setTimeout(()=>p.remove(),dur+60);
+  const dur=1000/SPD();p.style.animationDuration=dur+'ms';$('#fx').appendChild(p);setTimeout(()=>p.remove(),dur+60);
 }
 /* scoring coins rock side to side; added on top of the juice squash so the two blend */
 /* a shower of coins across the screen (cash-out, big wins) */
@@ -4718,10 +4723,10 @@ function coinRain(n,o={}){if(reduced||n<=0)return;const box=document.createEleme
     if(i<12)setTimeout(()=>play('chip',i%8),del+d*.75)}
   setTimeout(()=>box.remove(),maxT+150)}
 function wobble(el){if(!el||reduced)return;const a=(Math.random()<.5?-1:1)*(10+Math.random()*5);
-  try{el.animate([{transform:'rotate(0deg)'},{transform:`rotate(${a}deg)`},{transform:`rotate(${-a*.75}deg)`},{transform:`rotate(${a*.45}deg)`},{transform:`rotate(${-a*.2}deg)`},{transform:'rotate(0deg)'}],{duration:520/Math.sqrt(OPT.speed),easing:'ease-out',composite:'add'})}catch(_){}}
+  try{el.animate([{transform:'rotate(0deg)'},{transform:`rotate(${a}deg)`},{transform:`rotate(${-a*.75}deg)`},{transform:`rotate(${a*.45}deg)`},{transform:`rotate(${-a*.2}deg)`},{transform:'rotate(0deg)'}],{duration:520/Math.sqrt(SPD()),easing:'ease-out',composite:'add'})}catch(_){}}
 function juice(el){if(!el)return;el.classList.remove('juice');void el.offsetWidth;el.classList.add('juice')}
 function shake(px){if(reduced)return;const a=$('#app');a.style.setProperty('--amp',px+'px');a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake')}
-function tween(from,to,ms,fn){return new Promise(res=>{const t0=performance.now();ms/=OPT.speed;
+function tween(from,to,ms,fn){return new Promise(res=>{const t0=performance.now();ms/=SPD();
   const step=t=>{const k=Math.min(1,(t-t0)/ms),e=1-Math.pow(1-k,3);fn(from+(to-from)*e);k<1?requestAnimationFrame(step):res()};requestAnimationFrame(step)})}
 
 /* ================= TOOLTIP ================= */
@@ -4860,23 +4865,23 @@ function animateToss(i,delay){
   const el=$('#c'+i);const c=S.purse[i],r=S.results[i];
   if(!el){c.face=r;return Promise.resolve()}
   const spin=el.querySelector('.spin'),lift=el.querySelector('.lift');
-  if(coinDef(c).flat){c.face=r;el.classList.remove('edge','miss','sel');const hh=Math.round((parseFloat(getComputedStyle(el).width)||70)*.5),du=480/Math.sqrt(OPT.speed);
-    setTimeout(()=>play('tick'),delay/OPT.speed);return lift.animate([{transform:'translateY(0)'},{transform:`translateY(-${hh}px)`,offset:.45},{transform:'translateY(0)'}],{duration:du,delay:delay/OPT.speed,easing:'ease-in-out'}).finished.catch(()=>{})}
+  if(coinDef(c).flat){c.face=r;el.classList.remove('edge','miss','sel');const hh=Math.round((parseFloat(getComputedStyle(el).width)||70)*.5),du=480/Math.sqrt(SPD());
+    setTimeout(()=>play('tick'),delay/SPD());return lift.animate([{transform:'translateY(0)'},{transform:`translateY(-${hh}px)`,offset:.45},{transform:'translateY(0)'}],{duration:du,delay:delay/SPD(),easing:'ease-in-out'}).finished.catch(()=>{})}
   const ang=f=>f==='T'?180:f==='E'?56:0;
   const from=ang(c.face),to=ang(r),fin=(2+Math.floor(Math.random()*2))*360+to;
   el.classList.remove('edge','miss','sel');
   const cs=parseFloat(getComputedStyle(el).width)||70,h=Math.round(cs*1.7);
-  const dur=640/Math.sqrt(OPT.speed);
+  const dur=640/Math.sqrt(SPD());
   spin.style.transform=`rotateX(${to}deg)`;
-  setTimeout(()=>play('toss'),delay/OPT.speed);
+  setTimeout(()=>play('toss'),delay/SPD());
   const a=spin.animate([
     {transform:`translateY(0) rotateX(${from}deg)`,easing:'cubic-bezier(.25,.75,.45,1)'},
     {transform:`translateY(-${h}px) rotateX(${(from+fin)/2}deg)`,offset:.5,easing:'cubic-bezier(.55,0,.8,.35)'},
-    {transform:`translateY(0) rotateX(${fin}deg)`}],{duration:dur,delay:delay/OPT.speed,fill:'backwards'});
-  el.querySelector('.shadow').animate([{transform:'scale(1)',opacity:1},{transform:'scale(.45)',opacity:.4,offset:.5},{transform:'scale(1)',opacity:1}],{duration:dur,delay:delay/OPT.speed});
+    {transform:`translateY(0) rotateX(${fin}deg)`}],{duration:dur,delay:delay/SPD(),fill:'backwards'});
+  el.querySelector('.shadow').animate([{transform:'scale(1)',opacity:1},{transform:'scale(.45)',opacity:.4,offset:.5},{transform:'scale(1)',opacity:1}],{duration:dur,delay:delay/SPD()});
   return a.finished.then(()=>{
     c.face=r;play('land',i);
-    lift.animate([{transform:'translateY(0) scale(1.08,.9)'},{transform:'translateY(-6px) scale(.97,1.04)'},{transform:'translateY(0)'}],{duration:220/OPT.speed});
+    lift.animate([{transform:'translateY(0) scale(1.08,.9)'},{transform:'translateY(-6px) scale(.97,1.04)'},{transform:'translateY(0)'}],{duration:220/SPD()});
     if(r==='E'){el.classList.add('edge');play('edge');popup(el,'Edge!','text');shake(4)}
   }).catch(()=>{c.face=r});
 }
@@ -5464,7 +5469,7 @@ const ACT={
   buypack(a){buyPack(+a)},
   ppick(a){const[i,m]=a.split(',');packPick(+i,m)},
   skippack(){S.pack=null;S.csel=[];if(S.treasure){goNext();return}render()},
-  melt(){if(S.csel.length!==1||S.purse.length<=PURSE_MIN||S.roll==='hoarder')return;PS().melts++;addKarma(-1);const i=S.csel[0];const el=$('#c'+i);if(el)el.classList.add('shatter');play('shatter');
+  melt(){if(S.csel.length!==1||S.purse.length<=PURSE_MIN||!canMelt())return;PS().melts++;addKarma(-1);const i=S.csel[0];const el=$('#c'+i);if(el)el.classList.add('shatter');play('shatter');
     setTimeout(()=>{const mv=coinDef(S.purse[i]).meltVal||1;S.purse.splice(i,1);S.money+=mv+3*countEff('recycler');S.csel=[];render()},380)},
   way(a){chooseWay(+a)},
   nextround(){goNext()},
@@ -5583,7 +5588,7 @@ function dropZones(d){
       else Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':S.jokers.length>=slots()?'No free Charm slot':''})}}
   else if(d.kind==='charm'){const j=S.jokers[+d.item.dataset.idx];if(j&&canEdit()&&S.roll!=='hoarder'&&j.curse!=='bound'&&!JOKERS[j.key].artifact)Z.push({act:'sell',pos:'side',label:'Sell',sub:`$${sellVal(j)}`,col:'var(--money-d)'})}
   else if(d.kind==='cons'){const c=S.cons[+d.item.dataset.idx];if(c&&canEdit()){const why=consBlock(c,true);Z.push({act:'use',pos:'side',label:'Use',col:'var(--chips-d)',why:why||''});if(S.roll!=='hoarder')Z.push({act:'sell',pos:'side',label:'Sell',sub:`$${consInfo(c).sell}`,col:'var(--money-d)'})}}
-  else if(d.kind==='coin'&&S.screen==='shop'){const c=S.purse[+d.item.dataset.idx];if(c&&S.roll!=='hoarder')Z.push({act:'melt',pos:'side',label:'Melt',sub:`$${(coinDef(c).meltVal||1)+3*countEff('recycler')}`,col:'var(--mult-d)',why:S.purse.length<=PURSE_MIN?`Purse needs ${PURSE_MIN} coins`:''})}
+  else if(d.kind==='coin'&&S.screen==='shop'){const c=S.purse[+d.item.dataset.idx];if(c&&canMelt())Z.push({act:'melt',pos:'side',label:'Melt',sub:`$${(coinDef(c).meltVal||1)+3*countEff('recycler')}`,col:'var(--mult-d)',why:S.purse.length<=PURSE_MIN?`Purse needs ${PURSE_MIN} coins`:''})}
   return Z}
 function showZones(d){
   const Z=dropZones(d);d.zones=[];if(!Z.length)return;
