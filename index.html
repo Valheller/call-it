@@ -905,11 +905,12 @@ img{-webkit-user-drag:none}
 #ffbtn[hidden]{display:none}@media (max-width:700px){#ffbtn{padding:6px 10px;font-size:14px}body:has(#coach:not([hidden])) #ffbtn{display:none}body:has(#ffbtn:not([hidden])):not(:has(#coach:not([hidden]))) #app{padding-bottom:calc(50px + env(safe-area-inset-bottom))}}#ffbtn .ffi{letter-spacing:-4px;font-size:16px;padding-right:4px}#ffbtn b{min-width:26px;text-align:left}
 #ffbtn.on{background:var(--chips-d);color:#fff;box-shadow:0 4px 0 var(--edge),inset 0 0 0 2px var(--chips)}#ffbtn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
 #hazards{position:fixed;inset:0;pointer-events:none;z-index:56;overflow:hidden}
-.hzghost{position:absolute;width:320px;transition:left 1.2s linear,top 1.2s linear;filter:drop-shadow(0 0 24px rgba(180,220,255,.55));opacity:.88;animation:ghostbob 2.4s steps(6) infinite}
+.hzghost{position:absolute;width:320px;transition:left .5s linear,top .5s linear;filter:drop-shadow(0 0 24px rgba(180,220,255,.55));opacity:.88;animation:ghostbob 2.4s steps(6) infinite}
 .hzghost img,.hzscorp img,.hztrail img{width:100%;display:block;image-rendering:pixelated}.hzghost img+img,.hzscorp img+img,.hztrail img+img{position:absolute;inset:0}
 
-.hzghost .f2,.hzscorp .f2{animation:fr2 .9s steps(1) infinite}.hzscorp .f2{animation-duration:.2s}.hztrail .f2{display:none}
-@keyframes fr2{0%{opacity:0}50%{opacity:1}}
+/* two-frame flipbook: exactly one frame visible at a time */
+.hzghost .f1,.hzscorp .f1{animation:fr1 .9s step-end infinite}.hzghost .f2,.hzscorp .f2{animation:fr2 .9s step-end infinite}.hzscorp .f1,.hzscorp .f2{animation-duration:.2s}.hztrail .f2{display:none}
+@keyframes fr1{0%{opacity:1}50%{opacity:0}100%{opacity:0}}@keyframes fr2{0%{opacity:0}50%{opacity:1}100%{opacity:1}}
 @keyframes ghostbob{0%,100%{translate:0 0}50%{translate:0 -20px}}
 body.haunted #bg{filter:saturate(.4) brightness(.8) hue-rotate(160deg)}
 .hzscorp,.hztrail{position:absolute;width:144px;transition:left .11s linear,top .11s linear;image-rendering:pixelated}
@@ -1037,7 +1038,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.63</div>
+  <div class="gamever" aria-label="Version">v1.2.64</div>
 </div>
 
 <script>
