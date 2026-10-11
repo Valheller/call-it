@@ -1059,7 +1059,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.110</div>
+  <div class="gamever" aria-label="Version">v1.2.111</div>
 </div>
 
 <script>
@@ -4990,7 +4990,7 @@ let lastHover=null;
 const touchUI=()=>matchMedia('(hover: none)').matches;
 document.addEventListener('contextmenu',e=>{if(e.target.closest('img,canvas,[data-drag],[data-tip],.jcard,.coin'))e.preventDefault()});
 /* coins and Charms: the description shows only while a finger is held on them (and while dragging them) */
-const holdKind=t=>{const[k,a]=t.dataset.tip.split(':');if(['joker','coin','shopj','prize','ctype','ctypep'].includes(k))return true;if(k==='popt'){const o=S&&S.pack&&S.pack.opts[+a];return !!o&&(o.kind==='charm'||o.kind==='coin')}return false};
+const holdKind=t=>{const[k,a]=t.dataset.tip.split(':');if(['joker','coin','prize','ctype','ctypep'].includes(k))return true; /* shop goods (shopj) pin on tap instead */if(k==='popt'){const o=S&&S.pack&&S.pack.opts[+a];return !!o&&(o.kind==='charm'||o.kind==='coin')}return false};
 let holdTip=null;
 document.addEventListener('pointerup',()=>{if(holdTip){holdTip=null;hideTip()}},true);
 document.addEventListener('pointercancel',()=>{if(holdTip){holdTip=null;hideTip()}},true);
