@@ -1026,7 +1026,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.33</div>
+  <div class="gamever" aria-label="Version">v1.2.34</div>
 </div>
 
 <script>
@@ -3749,6 +3749,7 @@ setInterval(()=>{
 function updateFF(){const b=$('#ffbtn');if(!b)return;b.hidden=!(S&&S.screen==='play');const v=OPT.speed||1;b.classList.toggle('on',v>1);
   b.innerHTML=`<span class="ffi">${v>=4?'&#9654;&#9654;&#9654;':'&#9654;&#9654;'}</span><b>${v>1?'X'+v:'Off'}</b>`;b.title=`Fast forward: ${v>1?'X'+v:'off'} (tap to change)`}
 function render(){
+  if(S&&S.stageIntroDue&&S.screen==='blind'&&!S.pack){S.stageIntroDue=false;setTimeout(stageIntro,200)}
   hideTip();setTimeout(updateFF,0);if(!S||S.screen!=='play')hazardsOff();
   if(S&&S.blinds)S.blinds.forEach(b=>{if(b.boss&&BOSSES[b.boss])markSeen('boss',b.boss);if(b.boss2&&BOSSES[b.boss2])markSeen('boss',b.boss2)});
   $('#title').hidden=!!S;$('#app').hidden=!S;
@@ -5060,7 +5061,7 @@ function stageUpgrades(){
   if(msg.length)setTimeout(()=>toast(msg.join('<br>'),5000),1100);
 }
 function advanceBlind(boss){
-  if(boss){if(S.luck)S.luck-=Math.sign(S.luck);S.ante++;if(S.roll==='rivalroll'){const left=RIVALS.filter(n=>!(S.rivalsMet||[]).includes(n)&&n!==S.rival.name);if(left.length)S.rival.name=pick(left)}stageUpgrades();setTimeout(()=>{if(S)questStage()},700);{const w=rollWeather(S.ante);S.weather=w;if(w){PS().wx[w]=1}}S.blinds=makeAnteBlinds(S.ante);S.blindIdx=0;setTimeout(stageIntro,250);PS().bestStage=Math.max(PS().bestStage,S.ante);if(S.ante===2)setTimeout(()=>coach('stage2'),400);if(S.ante===3)setTimeout(()=>coach('stage3'),400)}
+  if(boss){if(S.luck)S.luck-=Math.sign(S.luck);S.ante++;if(S.roll==='rivalroll'){const left=RIVALS.filter(n=>!(S.rivalsMet||[]).includes(n)&&n!==S.rival.name);if(left.length)S.rival.name=pick(left)}stageUpgrades();setTimeout(()=>{if(S)questStage()},700);{const w=rollWeather(S.ante);S.weather=w;if(w){PS().wx[w]=1}}S.blinds=makeAnteBlinds(S.ante);S.blindIdx=0;S.stageIntroDue=true;PS().bestStage=Math.max(PS().bestStage,S.ante);if(S.ante===2)setTimeout(()=>coach('stage2'),400);if(S.ante===3)setTimeout(()=>coach('stage3'),400)}
   else{S.blindIdx++;S.blinds[S.blindIdx].state='select'}
 }
 function gameOver(){hazardsOff();S.screen='over';S.phase='idle';play('lose');shake(8);saveBest();recordRun(false);render();houseSay(pick(['The House always wins. Sit down again soon.','Back to the penny slots with you.','You were so close. You always are.']),6000)}
