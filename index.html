@@ -152,6 +152,7 @@ input.vol{width:150px;accent-color:var(--orange)}
   .stm{display:flex;flex-direction:column;overflow:hidden}
   .stm .sttracks{grid-template-columns:1fr;flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--ink-dim) transparent}
   .stm .sttracks::-webkit-scrollbar{width:6px}.stm .sttracks::-webkit-scrollbar-thumb{background:var(--ink-dim);border-radius:3px}}
+.sbuys{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}.sbuys .btn{white-space:nowrap}
 .sttracks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .sttracks .btn{min-width:0;white-space:normal;line-height:1.15}.sttracks small{white-space:normal;min-width:0}
 .sttracks .btn{justify-content:flex-start;text-align:left;gap:8px;display:flex;align-items:center;flex-wrap:wrap}
@@ -955,7 +956,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.8</div>
+  <div class="gamever" aria-label="Version">v1.2.9</div>
 </div>
 
 <script>
@@ -3642,10 +3643,10 @@ function charmCardHTML(o,i){
     return `<div class="scard ${o.bought?'gone':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">$${p}</div>
       <button class="jcard tile" data-tip="shopj:${i}" aria-label="${ci.name}"><div class="jin" style="--jbg:${ci.bg};--dl:${-i*.9}s">${IMG(ci.icon)}<span class="lab">${ci.short}</span></div></button>
       <button class="btn green small" data-act="buyjoker" data-arg="${i}" ${o.bought||S.money<p||!room?'disabled':''}>${room?'Buy':'No room'}</button></div>`}
-  if(o.kind==='almanac'){const ci=consInfo(o);const lab=consRoom()?'Buy':'Buy & Use';
+  if(o.kind==='almanac'){const ci=consInfo(o),dis=o.bought||S.money<p?'disabled':'';
     return `<div class="scard ${o.bought?'gone':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">$${p}</div>
       <button class="jcard tile" data-tip="shopj:${i}" aria-label="${ci.name}"><div class="jin" style="--jbg:${ci.bg};--dl:${-i*.9}s">${IMG(ci.icon)}<span class="lab">${ci.short}</span></div></button>
-      <button class="btn green small" data-act="buyjoker" data-arg="${i}" ${o.bought||S.money<p?'disabled':''}>${lab}</button></div>`}
+      <div class="sbuys">${consRoom()?`<button class="btn green small" data-act="buyjoker" data-arg="${i}" ${dis}>Buy</button>`:''}<button class="btn small" style="--c:var(--purple);--cd:var(--purple-d)" data-act="buyuse" data-arg="${i}" ${dis}>Buy &amp; Use</button></div></div>`}
   const d=JOKERS[o.key];
   return `<div class="scard ${o.bought?'gone':''} ${d.r===5?'fabled':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">$${p}</div>
     <button class="jcard" data-tip="shopj:${i}" aria-label="${d.name}"><div class="jin" style="--jbg:${d.bg};--dl:${-i*.9}s;${rarVars(o.key)}">${IMG(icon(o.key))}</div>${o.curse?curseBadge(o.curse):''}</button>
@@ -4933,12 +4934,12 @@ function reroll(){
   sh.jokers=[];sh.jokers=charmRow();if(S.roll==='glitched')sh.jokers.forEach(glitchPrice);play('reroll');render();
 }
 function addJoker(key,cost){const d=JOKERS[key],j={id:uid++,key,st:d.init?{...d.init}:{},cost};if(S.roll==='cursed'){j.curse=pick(Object.keys(CURSES));if(j.curse==='fleeting')j.left=5}S.jokers.push(j)}
-function buyJoker(i){
+function buyJoker(i,useNow){
   const o=S.shop.jokers[i],p=slotPrice(o);if(o.bought||S.money<p)return;
   if(o.kind==='spirit'){if(!consRoom())return;spend(p);o.bought=true;play('buy');S.cons.push({kind:'spirit',key:o.key});render();juice($('#cs'+(S.cons.length-1)));return}
   if(o.kind==='almanac'){spend(p);o.bought=true;play('buy');
     const al=o.key?{kind:'almanac',key:o.key}:{kind:'almanac',hand:o.hand};
-    if(consRoom()){S.cons.push(al);render();juice($('#cs'+(S.cons.length-1)))}
+    if(consRoom()&&!useNow){S.cons.push(al);render();juice($('#cs'+(S.cons.length-1)))}
     else{render();applyCons(al)}
     return}
   if(S.jokers.length>=slots())return;
@@ -5054,6 +5055,7 @@ const ACT={
   cashout(){doCashout()},
   reroll(){reroll()},
   buyjoker(a){buyJoker(+a)},
+  buyuse(a){buyJoker(+a,true)},
   buyupg(){buyUpg()},
   buypack(a){buyPack(+a)},
   ppick(a){const[i,m]=a.split(',');packPick(+i,m)},
