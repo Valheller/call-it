@@ -1039,7 +1039,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.76</div>
+  <div class="gamever" aria-label="Version">v1.2.77</div>
 </div>
 
 <script>
@@ -5253,7 +5253,7 @@ function advanceBlind(boss){
   if(boss){if(S.luck)S.luck-=Math.sign(S.luck);S.ante++;if(S.roll==='rivalroll'){const left=RIVALS.filter(n=>!(S.rivalsMet||[]).includes(n)&&n!==S.rival.name);if(left.length)S.rival.name=pick(left)}stageUpgrades();setTimeout(()=>{if(S)questStage()},700);{const w=rollWeather(S.ante);S.weather=w;if(w){PS().wx[w]=1}}S.blinds=makeAnteBlinds(S.ante);S.blindIdx=0;S.stageIntroDue=true;S.bossRR=0;S.bossRRfree=0;PS().bestStage=Math.max(PS().bestStage,S.ante);if(S.ante===2)setTimeout(()=>coach('stage2'),400);if(S.ante===3)setTimeout(()=>coach('stage3'),400)}
   else{S.blindIdx++;S.blinds[S.blindIdx].state='select'}
 }
-function gameOver(){hazardsOff();{const e=$('#stageintro');if(e)e.hidden=true}S.screen='over';S.phase='idle';play('lose');shake(8);saveBest();recordRun(false);render();houseSay(pick(['The House always wins. Sit down again soon.','Back to the penny slots with you.','You were so close. You always are.']),6000)}
+function gameOver(){hazardsOff();{const e=$('#stageintro');if(e)e.hidden=true}S.screen='over';S.phase='idle';play('lose');shake(8);saveBest();recordRun(false);clearSave();render();houseSay(pick(['The House always wins. Sit down again soon.','Back to the penny slots with you.','You were so close. You always are.']),6000)}
 function saveBest(){try{const b=+localStorage.getItem('hwr-best')||0;if(S.ante>b)localStorage.setItem('hwr-best',S.ante)}catch(e){}}
 
 /* ================= SHOP ================= */
