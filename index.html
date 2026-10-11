@@ -1038,7 +1038,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.67</div>
+  <div class="gamever" aria-label="Version">v1.2.68</div>
 </div>
 
 <script>
@@ -3997,7 +3997,7 @@ function refreshTable(){
   if(cb)cb.innerHTML=S.call&&S.phase!=='call'?`${S.roll==='majority'?'Majority':'Calling'}<b class="${S.call}">${callName(S.call)}</b>`:'Make your call';
   const h=$('#hint'),ct=$('#controls');if(!ct)return;
   if(S.phase==='call'){
-    h.innerHTML=(S.boss==='fatal'&&S.boss2?`<b class="fataltxt">FATAL ERROR</b> · next toss: <b>${BOSSES[S.boss2].name}</b>: ${fmt(BOSSES[S.boss2].desc)}.`:S.boss?bossDesc(curBlind())+'.':S.roll==='majority'?'No calls: each toss scores whichever face came up most.':'Every coin that lands on your call scores. Drag coins to rearrange them, or tap them to target a Rune.');
+    h.innerHTML=(S.boss==='fatal'&&S.boss2?`<b class="fataltxt">FATAL ERROR</b> · next toss: <b>${BOSSES[S.boss2].name}</b>: ${fmt(BOSSES[S.boss2].desc)}.`:S.duel&&!S.duel.general&&!S.duel.table&&S.rival?`<b style="color:var(--orange)">${isRematch()?'Rematch: ':''}${S.rival.name}</b> · ${fmt(rivalInfo().habit)}. Be ahead after your 3rd Flip.`:S.boss?bossDesc(curBlind())+'.':S.roll==='majority'?'No calls: each toss scores whichever face came up most.':'Every coin that lands on your call scores. Drag coins to rearrange them, or tap them to target a Rune.');
     const stake=betStake(),capped=stake<S.money,lim=`Table limit $${tableLimit()} this stage`;
     const betBtn=S.tossNo>0?'':S.roll==='highroller'&&S.money>0?`<button class="btn tiny gold betting" disabled title="High Roller: the first toss of every wager bets all your money, up to the table limit (${lim})">All-in: $${stake}</button>`:S.money>0?`<button class="btn tiny ${S.bet?'gold betting':''}" style="${S.bet?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="bet" aria-pressed="${!!S.bet}" title="Double or nothing with ${capped?`$${stake} (${lim})`:'all your money'}. No re-flips on a toss you bet on">${S.bet?`Betting ${capped?'':'all '}$${stake}`:`Bet ${capped?'':'all '}$${stake}`}${capped?' (max)':''}</button>`:'';
     const mid=`<div class="mid"><div class="lbl">Flips left</div><div class="num blue">${S.flipsLeft}</div>${betBtn}<div class="lbl" style="font-size:10px">on ${Math.min(4,S.purse.length)}+ hits · no re-flips</div></div>`;
