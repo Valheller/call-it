@@ -1034,7 +1034,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}.optm .optrow .btn.small{p
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.54</div>
+  <div class="gamever" aria-label="Version">v1.2.55</div>
 </div>
 
 <script>
@@ -4117,7 +4117,8 @@ function renderOverlay(){
       ${S.seed?`<div class="row"><span>Seed${S.customSeed?' (custom)':''}</span><b class="seedv">${S.seed} <button class="btn tiny" data-act="copyseed">Copy</button></b></div>`:''}
       ${S.daily?shareBox():''}
       <button class="btn green" data-act="sumcard">Summary card</button>
-      <button class="btn blue big" data-act="newrun">New Run</button></div></div>`;o.hidden=false;
+      ${S.daily?'':`<button class="btn blue big" data-act="retry" title="Same roll and stake, new seed">Retry</button>`}
+      <button class="btn" style="--c:var(--grey);--cd:var(--grey-d)" data-act="tomenu">Main Menu</button></div></div>`;o.hidden=false;
   }else if(S&&S.screen==='win'){
     o.innerHTML=`<div class="overlay"><div class="panel endpanel"><h1 style="color:var(--money)">You Win!</h1>
       <div class="lbl">You cleared all ${STAGES} stages on ${STAKES[S.stake].name}.</div>
@@ -5179,7 +5180,7 @@ function advanceBlind(boss){
   if(boss){if(S.luck)S.luck-=Math.sign(S.luck);S.ante++;if(S.roll==='rivalroll'){const left=RIVALS.filter(n=>!(S.rivalsMet||[]).includes(n)&&n!==S.rival.name);if(left.length)S.rival.name=pick(left)}stageUpgrades();setTimeout(()=>{if(S)questStage()},700);{const w=rollWeather(S.ante);S.weather=w;if(w){PS().wx[w]=1}}S.blinds=makeAnteBlinds(S.ante);S.blindIdx=0;S.stageIntroDue=true;S.bossRR=0;S.bossRRfree=0;PS().bestStage=Math.max(PS().bestStage,S.ante);if(S.ante===2)setTimeout(()=>coach('stage2'),400);if(S.ante===3)setTimeout(()=>coach('stage3'),400)}
   else{S.blindIdx++;S.blinds[S.blindIdx].state='select'}
 }
-function gameOver(){hazardsOff();S.screen='over';S.phase='idle';play('lose');shake(8);saveBest();recordRun(false);render();houseSay(pick(['The House always wins. Sit down again soon.','Back to the penny slots with you.','You were so close. You always are.']),6000)}
+function gameOver(){hazardsOff();{const e=$('#stageintro');if(e)e.hidden=true}S.screen='over';S.phase='idle';play('lose');shake(8);saveBest();recordRun(false);render();houseSay(pick(['The House always wins. Sit down again soon.','Back to the penny slots with you.','You were so close. You always are.']),6000)}
 function saveBest(){try{const b=+localStorage.getItem('hwr-best')||0;if(S.ante>b)localStorage.setItem('hwr-best',S.ante)}catch(e){}}
 
 /* ================= SHOP ================= */
@@ -5610,6 +5611,8 @@ const ACT={
   abandon(){if(!abandonArm){abandonArm=true;showModal(optionsModal);return}abandonArm=false;modal=null;if(S&&!S.recorded)recordRun(false);S=null;clearSave();hazardsOff();$('#overlay').hidden=true;render()},
   mainmenu(){if(!S)return;try{if(!['over','win'].includes(S.screen)&&S.phase!=='scoring'&&S.phase!=='tossing')localStorage.setItem('hwr-run',JSON.stringify({S,uid}))}catch(e){}modal=null;hazardsOff();S=null;$('#overlay').hidden=true;render()},
   newrun(){modal=null;S=null;render();showRollPick()},
+  retry(){if(!S)return;const k=S.roll,st=S.stake;modal=null;S=null;$('#overlay').hidden=true;$('#overlay').innerHTML='';ROLLSEL=k;STAKESEL=st;SEEDTXT='';openRoll(k)},
+  tomenu(){modal=null;S=null;$('#overlay').hidden=true;$('#overlay').innerHTML='';render()},
   endless(){S.endless=true;enterCashout()},
 };
 document.addEventListener('click',e=>{
