@@ -1057,7 +1057,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.105</div>
+  <div class="gamever" aria-label="Version">v1.2.106</div>
 </div>
 
 <script>
@@ -4038,7 +4038,7 @@ function jokerSlot(j,i){
   const gj=(S.roll==='glitched'||j.key==='missingno')&&S.screen==='play'&&S.glitchJ&&S.glitchJ[j.id];
   return `<div class="jslot ${sel?'sel':''} ${gj?'jglitch':''} ${!jOn(j)?'stolen':''} ${d.r===5?'fabled':d.r===4?'legend':''}" data-idx="${i}"><button class="jcard" id="jk${i}" data-act="joker" data-arg="${i}" data-drag="charm" data-tip="joker:${i}" aria-label="${d.name}">
    <div class="jin ${j.wear==='weightless'?'weightless':''}" style="--jbg:${d.bg};--dl:${-(i*.7)}s;${rarVars(j.key)}">${IMG(icon(j.key))}${j.wear&&j.wear!=='weightless'?`<i class="wfx w-${j.wear}"></i>`:''}</div>${j.curse?curseBadge(j.curse,j.left):''}</button>
-   ${sel?`<div class="jacts">${noSell(j)?`<span class="why">${CURSES[j.curse].name}</span>`:`${S.roll==='hoarder'?'':`<button class="btn green tiny" data-act="sell" data-arg="${i}">Sell $${sellVal(j)}</button>`}`}
+   ${sel&&!touchUI()?`<div class="jacts">${noSell(j)?`<span class="why">${CURSES[j.curse].name}</span>`:`${S.roll==='hoarder'?'':`<button class="btn green tiny" data-act="sell" data-arg="${i}">Sell $${sellVal(j)}</button>`}`}
    <div class="mv"><button class="btn tiny" data-act="move" data-arg="${i},-1" ${i===0||j.curse==='bound'?'disabled':''} aria-label="Move left">&lt;</button><button class="btn tiny" data-act="move" data-arg="${i},1" ${i===n-1||j.curse==='bound'?'disabled':''} aria-label="Move right">&gt;</button></div></div>`:''}</div>`;
 }
 function consSlot(c,i){
@@ -4984,7 +4984,12 @@ function showTip(el){
 }
 function hideTip(){tipFor=null;const t=$('#tip');if(t)t.hidden=true}
 let lastHover=null;
-document.addEventListener('pointerover',e=>{if(drag&&drag.active)return;const t=e.target.closest('[data-tip]');if(t!==tipFor){tipFor=t;t?showTip(t):hideTip()}
+/* touch screens: tap something to pin its tooltip; it stays until you tap anywhere else */
+const touchUI=()=>matchMedia('(hover: none)').matches;
+document.addEventListener('pointerdown',e=>{if(!touchUI())return;if(S&&!S.pack&&S.selJoker!=null&&!e.target.closest('.jslot')){S.selJoker=null;renderJokers()}if(!tipFor)return;const t=e.target.closest('[data-tip]');if(!t||t.dataset.tip!==tipFor.dataset.tip)hideTip()},true);
+document.addEventListener('click',e=>{if(!touchUI()||(drag&&drag.active))return;const t=e.target.closest('[data-tip]');if(!t)return;const spec=t.dataset.tip;
+  requestAnimationFrame(()=>{const el=t.isConnected?t:document.querySelector(`[data-tip="${spec}"]`);if(el){tipFor=el;showTip(el)}})},true);
+document.addEventListener('pointerover',e=>{if(drag&&drag.active)return;const t=e.target.closest('[data-tip]');if(e.pointerType==='mouse'&&t!==tipFor){tipFor=t;t?showTip(t):hideTip()}
   const b=e.target.closest('button');
   if(e.pointerType==='mouse'&&b&&!b.disabled&&b!==lastHover){lastHover=b;play('hover')}
   else if(!b)lastHover=null});
