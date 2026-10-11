@@ -963,7 +963,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.15</div>
+  <div class="gamever" aria-label="Version">v1.2.16</div>
 </div>
 
 <script>
@@ -1598,6 +1598,9 @@ Object.assign(JOKERS,{
  paradox:{name:'Paradox',r:4,cost:14,bg:'#140a24',p:{1:'#b48cff',2:'#00f0e0',3:'#ffffff'},s:["....11....","...1..1...","..1.22.1..",".1.2..2.1.","1.2.33.2.1","1.2.33.2.1",".1.2..2.1.","..1.22.1..","...1..1...","....11...."],
   desc:()=>{const n=S?S.jokers.filter(j=>COPYK[j.key]).length:0;return `{x:X2} Mult, plus {x:X1} more for every copy Charm you own (Copycat, Mimic, Understudy) {d:(Currently X${2+n})}`},
   end:(c,e)=>e('xmult',2+S.jokers.filter(j=>COPYK[j.key]).length)},
+ skeletonkey:{name:'Skeleton Key',r:3,cost:8,bg:'#1c1a24',p:{1:'#e8e2d0',2:'#9a948a',3:'#222222'},s:["...1111...","..112211..","..12..21..","..12..21..","..112211..","...1111...","....12....","....1211..","....12....","....1211.."],
+  desc:()=>{const n=S?S.jokers.filter(j=>!GOAL_OF['charm:'+j.key]).length:0;return `{m:+5} Mult for every {a:base} Charm you own (one that was never locked) {d:(Currently +${5*n} Mult)}`},
+  end:(c,e)=>{const n=S.jokers.filter(j=>!GOAL_OF['charm:'+j.key]).length;if(n)e('mult',5*n)}},
  sundial:{name:'Sundial',r:3,cost:8,bg:'#3a2a10',p:{1:'#c9a06a',2:'#ffd34d',3:'#3a2a1a'},s:["....22....","..2.22.2..","...2222...",".22222222.","...2222...","..2.22.2..","....22....","1111111111",".11111131.","..111111.."],
   desc:()=>{const x=sunX();return `Mult that follows your clock: {x:X1} at midnight, rising to {x:X3} at noon {d:(Right now X${x.toFixed(2)})}`},end:(c,e)=>{const x=sunX();if(x>1)e('xmult',Math.round(x*100)/100)}},
 });
@@ -3877,7 +3880,7 @@ const ROLLS={
 /* winning a roll for the first time unlocks its own Charm (challenge rolls unlock Fabled ones) */
 const RA_POOL=()=>Object.keys(JOKERS).filter(k=>{const d=JOKERS[k];return d.end&&d.end.length<=2&&!d.init&&!d.prize&&!d.artifact&&!d.glitchOnly&&k!=='randomaccess'});
 JOKERS.randomaccess.end=(c,e)=>{const k=pick(RA_POOL());e('text',JOKERS[k].name);JOKERS[k].end(c,e)};
-const ROLL_UNLOCK={standard:'rollquarters',thrift:'ledger',sapphire:'deepblue',ruby:'rubyslippers',onyx:'onyxidol',mystic:'moonstone',star:'constellation',haunted:'ouija',
+const ROLL_UNLOCK={locked:'skeletonkey',standard:'rollquarters',thrift:'ledger',sapphire:'deepblue',ruby:'rubyslippers',onyx:'onyxidol',mystic:'moonstone',star:'constellation',haunted:'ouija',
  mint:'diecast',lopsided:'grin',bargain:'loyalty',wide:'wideload',gilded:'goldleaf',fusion:'alloy',stormchaser:'barometer',majority:'landslide',chaos:'wildcard',
  mirror:'mirrorimage',oneshot:'quickdraw',highroller:'whale',cursed:'cauldron',ghost:'lantern',bankrupt:'ragsriches',pennyroll:'everypenny',hoarder:'packrat',
  rivalroll:'cherrytree',boss:'giantslayer',invisible:'blindfaith',glitched:'randomaccess'};
