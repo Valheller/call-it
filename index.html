@@ -922,8 +922,9 @@ body.haunted #bg{filter:saturate(.4) brightness(.8) hue-rotate(160deg)}
 body.hzpaused .hzghost,body.hzpaused .hzghost *,body.hzpaused .hzscorp,body.hzpaused .hzscorp *{animation-play-state:paused!important;transition:none}
 .poof{position:fixed;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:radial-gradient(circle,var(--c) 0 35%,transparent 70%);pointer-events:none;z-index:71;animation:poof .85s ease-out forwards}
 @keyframes poof{0%{transform:translate(0,0) scale(.4);opacity:.95}100%{transform:translate(var(--dx),var(--dy)) scale(2.4);opacity:0}}
-#turnclock{position:fixed;top:calc(10px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:57;padding:4px 14px;border-radius:999px;background:var(--panel-deep);color:#fff;font-size:22px;box-shadow:0 4px 0 var(--edge),inset 0 0 0 2px var(--orange);font-variant-numeric:tabular-nums}
-#turnclock[hidden]{display:none}#turnclock.hurry{color:#fff;background:var(--mult-d);box-shadow:0 4px 0 var(--edge),inset 0 0 0 2px var(--mult);animation:hurry .5s ease-in-out infinite}
+#turnclock{position:fixed;transform:translateX(-50%);z-index:57;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 18px 8px;border-radius:14px;background:rgba(20,18,16,.88);color:#fff;box-shadow:0 4px 0 var(--edge),inset 0 0 0 3px var(--orange);pointer-events:none;transition:top .2s,left .2s}
+#turnclock b{font-size:38px;line-height:1;font-variant-numeric:tabular-nums}#turnclock i{display:block;width:150px;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--orange) calc(var(--f)*100%),rgba(255,255,255,.12) 0)}
+#turnclock[hidden]{display:none}#turnclock.hurry{box-shadow:0 4px 0 var(--edge),inset 0 0 0 3px var(--mult);animation:hurry .5s ease-in-out infinite}#turnclock.hurry b{color:#ff6a5a}#turnclock.hurry i{background:linear-gradient(90deg,var(--mult) calc(var(--f)*100%),rgba(255,255,255,.12) 0)}
 @keyframes hurry{50%{transform:translateX(-50%) scale(1.12)}}
 .ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px}
 .ucell{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:16px 4px 6px;border:0;border-radius:10px;background:var(--panel-deep);color:var(--ink-dim);font:inherit;font-size:11px;cursor:pointer;min-width:0}
@@ -1009,7 +1010,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.28</div>
+  <div class="gamever" aria-label="Version">v1.2.29</div>
 </div>
 
 <script>
@@ -3713,7 +3714,7 @@ setInterval(()=>{
   if(!S.ghost&&!S.ghostWarned&&S.wagerTime>=GHOST_AFTER-20){S.ghostWarned=true;toast('<i>You feel a chill. Something is drifting this way...</i>',4500)}
   if(!S.ghost&&S.wagerTime>=GHOST_AFTER)summonGhost();
   /* Speedrun Roll: the turn clock */
-  if(S.roll==='speedrun'&&clk){const left=Math.max(0,TURN_LIMIT-(S.turnTime||0));clk.hidden=!turn||S.scorp;clk.textContent=left.toFixed(1);clk.classList.toggle('hurry',left<=4);
+  if(S.roll==='speedrun'&&clk){const left=Math.max(0,TURN_LIMIT-(S.turnTime||0));clk.hidden=!turn||S.scorp;clk.innerHTML=`<b>${left.toFixed(1)}</b><i style="--f:${(left/TURN_LIMIT).toFixed(3)}"></i>`;clk.classList.toggle('hurry',left<=4);{const pu=$('#purse');if(pu){const q=pu.getBoundingClientRect();clk.style.left=(q.left+q.width/2)+'px';clk.style.top=Math.max(8,q.top-78)+'px'}}
     if(turn&&!S.scorp&&left<=0)summonScorp()}
   else if(clk)clk.hidden=true;
   const gh=$('.hzghost'),sc=$('.hzscorp');
