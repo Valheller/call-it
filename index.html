@@ -1030,7 +1030,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.41</div>
+  <div class="gamever" aria-label="Version">v1.2.42</div>
 </div>
 
 <script>
@@ -2080,7 +2080,7 @@ const curseBadge=(c,left)=>`<i class="cbadge" style="--cc:${CURSES[c].col}">${c=
 const STAKES=[null,
  {name:'Copper Stake',col:'#c87533',desc:'Base difficulty'},
  {name:'Silver Stake',col:'#9aa3ab',desc:'Wager targets are {a:25%} higher'},
- {name:'Gold Stake',col:'#e0b030',desc:'Bosses have a {a:second} effect from stage 1 (normally from stage 6)'},
+ {name:'Gold Stake',col:'#e0b030',desc:'Every boss has a {a:second} effect'},
  {name:'Platinum Stake',col:'#b8c6d8',desc:'Shop Charms can be {a:Rented} ($1 to buy, lose $3 each wager)'},
  {name:'Diamond Stake',col:'#7fd6ff',desc:'One random coin lands {a:face down} every toss'},
  {name:'Obsidian Stake',col:'#6a4a8a',desc:'Remaining Flips pay {r:nothing} at cash-out'},
@@ -2233,7 +2233,7 @@ function pickBoss(ante){
 const randTag=()=>pick(Object.keys(TAGS));
 function makeAnteBlinds(ante){const bl=makeAnteBlinds0(ante);if(S&&S.roll==='glitched')bl.forEach(b=>b.gx=Math.round((1.2+rand()*.6)*100)/100);return bl}
 function makeAnteBlinds0(ante){
-  const boss=pickBoss(ante),boss2=S&&(S.stake>=3||S.roll==='boss'||ante>=6)?pick(SECOND_BOSS.filter(k=>k!==boss)):null;
+  const boss=pickBoss(ante),boss2=S&&(S.stake>=3||S.roll==='boss')?pick(SECOND_BOSS.filter(k=>k!==boss)):null;
   if(S&&S.roll==='boss'){const nb=()=>pickBoss(finalAnte(ante)?ante-1:ante);const bs=nb(),bb=nb();
     return [{kind:'small',state:'select',tag:randTag(),boss:bs},{kind:'big',state:'upcoming',tag:randTag(),boss:bb},{kind:'boss',boss,boss2,state:'upcoming'}]}
   return [{kind:'small',state:'select',tag:randTag()},{kind:'big',state:'upcoming',tag:randTag()},{kind:'boss',boss,boss2,state:'upcoming'}];
