@@ -1059,7 +1059,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.112</div>
+  <div class="gamever" aria-label="Version">v1.2.113</div>
 </div>
 
 <script>
@@ -4992,14 +4992,15 @@ let lastHover=null;
 const touchUI=()=>matchMedia('(hover: none)').matches;
 document.addEventListener('contextmenu',e=>{if(e.target.closest('img,canvas,[data-drag],[data-tip],.jcard,.coin'))e.preventDefault()});
 /* coins and Charms: the description shows only while a finger is held on them (and while dragging them) */
-const holdKind=t=>{const[k,a]=t.dataset.tip.split(':');if(['joker','coin','prize','ctype','ctypep'].includes(k))return true; /* shop goods (shopj) pin on tap instead */if(k==='popt'){const o=S&&S.pack&&S.pack.opts[+a];return !!o&&(o.kind==='charm'||o.kind==='coin')}return false};
+const holdKind=t=>{const[k,a]=t.dataset.tip.split(':');if(k==='coin')return true; /* Charms and shop goods pin on tap instead */if(k==='popt'){const o=S&&S.pack&&S.pack.opts[+a];return !!o&&o.kind==='coin'}return false};
 let holdTip=null;
 document.addEventListener('pointerup',()=>{if(holdTip){holdTip=null;hideTip()}},true);
 document.addEventListener('pointercancel',()=>{if(holdTip){holdTip=null;hideTip()}},true);
-document.addEventListener('pointerdown',e=>{if(!touchUI())return;if(S&&!S.pack&&S.selJoker!=null&&!e.target.closest('.jslot')){S.selJoker=null;renderJokers()}
+document.addEventListener('pointerdown',e=>{if(!touchUI())return;
   {const t=e.target.closest('[data-tip]');if(t&&holdKind(t)){holdTip=t;tipFor=t;showTip(t);return}}if(!tipFor)return;const t=e.target.closest('[data-tip]');if(!t||t.dataset.tip!==tipFor.dataset.tip)hideTip()},true);
 document.addEventListener('click',e=>{if(!touchUI()||(drag&&drag.active))return;const t=e.target.closest('[data-tip]');if(!t||holdKind(t))return;const spec=t.dataset.tip;
-  requestAnimationFrame(()=>{const el=t.isConnected?t:document.querySelector(`[data-tip="${spec}"]`);if(el){tipFor=el;showTip(el)}})},true);
+  /* tapping your selected Charm again deselects it and hides its description */
+  requestAnimationFrame(()=>{const[k,a]=spec.split(':');if(k==='joker'&&S&&canEdit()&&S.selJoker!==+a){hideTip();return}const el=t.isConnected?t:document.querySelector(`[data-tip="${spec}"]`);if(el){tipFor=el;showTip(el)}})},true);
 document.addEventListener('pointerover',e=>{if(drag&&drag.active)return;const t=e.target.closest('[data-tip]');if(e.pointerType==='mouse'&&t!==tipFor){tipFor=t;t?showTip(t):hideTip()}
   const b=e.target.closest('button');
   if(e.pointerType==='mouse'&&b&&!b.disabled&&b!==lastHover){lastHover=b;play('hover')}
