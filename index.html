@@ -113,7 +113,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .citem.on>.cic{animation:colbob 1.4s ease-in-out infinite}
 @keyframes colbob{50%{transform:translateY(-3px)}}
 .gpopt .jcard,.gpk{animation:glitchjit 1.3s steps(1) infinite}
-.bcol{position:relative}
+
 .blinds .bcol:not(:last-child)::after{content:'';position:absolute;right:-11px;top:50%;width:10px;height:3px;border-radius:2px;background:rgba(255,236,190,.35)}
 .waysbox{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
 .waysbox .ptitle{color:#e9d9a8;text-align:center}
@@ -153,8 +153,8 @@ input.vol{width:150px;accent-color:var(--orange)}
   .stm .sttracks::-webkit-scrollbar{width:6px}.stm .sttracks::-webkit-scrollbar-thumb{background:var(--ink-dim);border-radius:3px}}
 .sbuys{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}.sbuys .btn{white-space:nowrap}
 .sttracks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.sttracks .btn{min-width:0;white-space:normal;line-height:1.15}.sttracks small{white-space:normal;min-width:0}
-.sttracks .btn{justify-content:flex-start;text-align:left;gap:8px;display:flex;align-items:center;flex-wrap:wrap}
+.sttracks .btn{min-width:0;white-space:normal;line-height:1.15;justify-content:flex-start;text-align:left;gap:8px;display:flex;align-items:center;flex-wrap:wrap}.sttracks small{white-space:normal;min-width:0}
+
 .sttracks .stn{opacity:.6;font-variant-numeric:tabular-nums}
 .sttracks small{flex-basis:100%;font-size:10px;opacity:.85}
 .rain{position:fixed;inset:0;pointer-events:none;z-index:85;overflow:hidden}
@@ -244,8 +244,8 @@ input.vol{width:150px;accent-color:var(--orange)}
 .jcard{width:var(--jw);aspect-ratio:1;border-radius:50%;position:relative;display:block}
 .jin{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.35),transparent 45%),var(--jbg);display:grid;place-items:center;
   box-shadow:0 4px 0 rgba(0,0,0,.45),inset 0 0 0 3px var(--rc,#e9d9a8),inset 0 0 0 5px var(--rcd,#8a6a2a),inset 0 0 0 7px rgba(0,0,0,.2);transform-origin:50% -8px;
-  animation:wob 3.4s ease-in-out infinite;animation-delay:var(--dl,0s);transition:transform .15s}
-.jin{transform:perspective(320px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .18s ease-out}
+  animation:wob 3.4s ease-in-out infinite;animation-delay:var(--dl,0s);transition:transform .15s;transform:perspective(320px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .18s ease-out}
+
 .jcard.hov .jin{transform:perspective(320px) translateY(-4px) scale(1.06) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .06s linear;animation-play-state:paused}
 .jin::before{content:'';position:absolute;top:-9px;left:50%;width:12px;height:12px;margin-left:-6px;border-radius:50%;box-shadow:inset 0 0 0 3px var(--rc,#e9d9a8),0 2px 0 rgba(0,0,0,.35)}
 .jin img{width:62%;image-rendering:pixelated;filter:drop-shadow(0 2px 0 rgba(0,0,0,.35))}
@@ -262,7 +262,7 @@ input.vol{width:150px;accent-color:var(--orange)}
 .callbanner b{font-size:26px;padding:2px 10px;border-radius:8px;margin-left:6px;color:#fff}
 .callbanner b.H{background:var(--orange)} .callbanner b.T{background:var(--chips)}
 .purse{display:flex;gap:calc(var(--cs)*.2);justify-content:center;align-items:flex-end;padding-top:clamp(70px,13vh,120px);padding-bottom:16px;width:100%}
-.purse.shopp{padding-top:22px}
+
 .coin{width:var(--cs);position:relative;display:block;perspective:520px;--t:calc(var(--cs)*.11)}
 .coin .lift{position:relative;transition:transform .15s;transform-style:preserve-3d}
 .housesay{color:#d9b552;letter-spacing:.04em}
@@ -277,7 +277,7 @@ input.vol{width:150px;accent-color:var(--orange)}
 .coin.sel .shadow{opacity:.5}
 .spin{position:relative;width:100%;aspect-ratio:1;transform-style:preserve-3d}
 .face{position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--art) center/100% 100% no-repeat}
-.face::before{content:attr(data-l);position:absolute;right:-6%;bottom:-6%;min-width:30%;text-align:center;font-size:calc(var(--cs)*.2);font-weight:700;line-height:1.25;color:#fff;background:rgba(14,20,22,.8);border-radius:calc(var(--cs)*.07);text-shadow:none;box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.face::before{content:attr(data-l);position:absolute;right:-6%;bottom:-6%;min-width:30%;text-align:center;font-size:calc(var(--cs)*.2);font-weight:700;line-height:1.25;color:#fff;background:rgba(14,20,22,.8);border-radius:calc(var(--cs)*.07);text-shadow:none;box-shadow:0 2px 0 rgba(0,0,0,.35);display:none}
 .face.heads{transform:translateZ(calc(var(--t)/2))}
 .face.tails{transform:rotateX(180deg) translateZ(calc(var(--t)/2))}
 .coin.t-pressed .tilt{transform:none;animation:none}.coin.t-pressed .slab,.coin.t-pressed .face.tails{display:none}.coin.t-pressed .spin{transform:none!important}
@@ -289,10 +289,8 @@ input.vol{width:150px;accent-color:var(--orange)}
 .coin.fog .slab{background:#4a5358}
 .coin .shadow{position:absolute;left:14%;right:14%;bottom:-12px;height:9px;border-radius:50%;background:rgba(0,0,0,.4);transition:opacity .15s}
 .coin.miss .face{filter:saturate(.3) brightness(.55)}
-.edgebar{position:absolute;left:0;right:0;top:44%;height:12%;border-radius:4px;background:var(--rim);box-shadow:inset 0 2px 0 var(--hi);opacity:0;transition:opacity .1s}
-.coin.edge .edgebar{opacity:0}
 .coin.fog .face{background:radial-gradient(circle at 34% 30%,#a8b4ba 0 14%,#6c787e 52%,#3c464c 100%);border-radius:50%}
-.face::before{display:none}
+
 body.badges .face::before{display:block}
 .coin.fog .face::before,body.badges .coin.fog .face::before{content:'?';inset:0;width:100%;min-width:0;display:grid;place-items:center;font-size:calc(var(--cs)*.46);background:none;box-shadow:none;color:#d6dde0}
 .coin.enter .lift{animation:dropin .45s cubic-bezier(.3,1.4,.5,1) backwards;animation-delay:var(--d)}
@@ -313,7 +311,7 @@ body.badges .face::before{display:block}
 /* panels for blind select / cashout / shop */
 .panel{background:var(--panel);border-radius:14px;padding:14px;box-shadow:0 5px 0 var(--edge),inset 0 0 0 2px rgba(255,255,255,.06)}
 .blinds{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;width:100%;max-width:820px}
-.bcol{flex:1 1 170px;max-width:260px;background:var(--panel);border-radius:14px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;
+.bcol{position:relative;flex:1 1 170px;max-width:260px;background:var(--panel);border-radius:14px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;
   box-shadow:0 5px 0 var(--edge),inset 0 0 0 2px rgba(255,255,255,.06);transition:transform .2s}
 .bcol.select{transform:translateY(-8px);box-shadow:0 5px 0 var(--edge),inset 0 0 0 3px var(--bc)}
 .bcol.upcoming,.bcol.defeated,.bcol.skipped{opacity:.72}
@@ -335,7 +333,7 @@ body.badges .face::before{display:block}
 .cline .v{color:var(--money);font-size:22px;font-weight:700;white-space:nowrap}
 .cline .l{min-width:0}
 
-.shop{width:min(820px,100%);display:flex;flex-direction:column;gap:14px}
+.shop{width:min(820px,100%);display:flex;flex-direction:column;gap:10px}
 .shophead{display:flex;gap:14px;align-items:stretch;flex-wrap:wrap}
 .shopbtns{display:flex;flex-direction:column;gap:10px;justify-content:center}
 .shelf{flex:1;min-width:0;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;background:var(--panel-deep);border-radius:12px;padding:12px}
@@ -349,8 +347,6 @@ body.badges .face::before{display:block}
 @keyframes soldin{0%{transform:rotate(-10deg) scale(1.8);opacity:0}100%{transform:rotate(-10deg) scale(1);opacity:1}}
 .scard .jcard{width:clamp(56px,7vw,72px)}
 .shop .lbl.c{text-align:center}
-.coinicon{width:58%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 34% 30%,var(--hi) 0 14%,var(--fc) 52%,var(--rim) 100%);
-  box-shadow:inset 0 0 0 4px var(--rim);display:grid;place-items:center;font-weight:700;font-size:22px;color:var(--ink2);text-shadow:none}
 .meltbar{display:flex;gap:10px;align-items:center;justify-content:center;min-height:36px;flex-wrap:wrap;color:var(--ink-dim);font-size:14px}
 
 /* consumables, shop sections, packs */
@@ -398,7 +394,6 @@ body.badges .face::before{display:block}
 .meltbar:not(:has(.btn)){display:none}
 /* the melt bar floats over the bottom edge instead of pushing the page into a scrollbar */
 :has(>.purse.shopp+.meltbar){position:relative}.purse.shopp+.meltbar{position:absolute;left:0;right:0;bottom:0;min-height:0;pointer-events:none;z-index:3}.purse.shopp+.meltbar>*{pointer-events:auto}.purse.shopp+.meltbar>span{background:rgba(20,18,16,.8);padding:2px 8px;border-radius:6px}
-.shop{gap:10px}
 .shop .shelf{padding:8px 10px}
 .purse.shopp{padding-top:14px;padding-bottom:10px}
 .tmod{margin-top:6px;background:#fff;color:#4f6367;border-radius:8px;padding:5px 8px;font-size:14px;text-shadow:none;line-height:1.25;border-left:6px solid var(--mc);text-align:left}
@@ -475,15 +470,11 @@ body.badges .face::before{display:block}
 .share{display:flex;gap:6px;align-items:center;margin-top:6px}
 .share input{flex:1;min-width:0;background:#fff;color:#333;border:0;border-radius:8px;padding:8px;font:inherit;font-size:13px;text-shadow:none}
 .recbody{max-height:min(56vh,480px);overflow:auto}
-.recstats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.recstats .row{display:flex;justify-content:space-between;gap:8px;background:var(--panel-deep);border-radius:8px;padding:7px 10px}
-.recstats .row b{color:var(--money)}
 .histch{display:flex;gap:2px}
 .histch img{width:20px;image-rendering:pixelated}
 @media (max-width:760px){
   .controls.three{gap:5px}
   .controls.three .btn.big{font-size:15px;padding:9px 8px}
-  .recstats{grid-template-columns:1fr}
   .sdname{font-size:34px}
   #coach{left:12px;right:12px;top:8px;bottom:auto;width:auto;font-size:12px;flex-direction:row;align-items:center}
 }
@@ -520,10 +511,10 @@ img{-webkit-user-drag:none}
 .dragging{opacity:.22}
 .dragging .jin,.dragging .lift{animation:none}
 .ghost{position:fixed;left:0;top:0;margin:0;pointer-events:none;z-index:72;transform-origin:50% 40%;transition:none!important;will-change:transform;animation:none!important}
-.ghost .jin{box-shadow:0 4px 0 rgba(0,0,0,.45),inset 0 0 0 3px #e9d9a8,inset 0 0 0 5px #8a6a2a,0 16px 18px rgba(0,0,0,.45)}
+.ghost .jin{box-shadow:0 4px 0 rgba(0,0,0,.45),inset 0 0 0 3px #e9d9a8,inset 0 0 0 5px #8a6a2a,0 16px 18px rgba(0,0,0,.45);animation:none}
 .coinghost{border-radius:50%;background:var(--art) center/100% 100% no-repeat;box-shadow:0 16px 18px -4px rgba(0,0,0,.5)}
 .coinghost .wfx{border-radius:50%}
-.ghost .jin{animation:none}
+
 .ghost .shadow{display:none}
 .jslot,.coin{transition:transform .15s}
 /* popups & tooltip */
@@ -580,7 +571,7 @@ img{-webkit-user-drag:none}
 .cic img{width:66%;image-rendering:pixelated}
 .cic.coinc img{width:100%;image-rendering:auto;filter:drop-shadow(0 3px 0 rgba(0,0,0,.4))}
 .cdetail .cic{--sz:84px}
-.cic .rd{position:absolute}
+
 .rules{margin:0 0 12px;padding-left:20px;line-height:1.4;color:#dfe8e9}
 .rules li+li{margin-top:4px}
 .optrow{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel-deep);border-radius:10px;padding:8px 10px;margin-bottom:8px}
@@ -617,13 +608,13 @@ img{-webkit-user-drag:none}
 .logo span{display:inline-block;animation:lwob 2.6s ease-in-out infinite;animation-delay:calc(var(--i)*-.18s);
   text-shadow:0 4px 0 var(--sh),0 8px 0 var(--sh2),0 12px 18px rgba(0,0,0,.5)}
 @keyframes lwob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
-.bigcoin{--cs:clamp(90px,16vw,150px);width:var(--cs);perspective:600px}
+.bigcoin{--cs:clamp(90px,16vw,150px);width:var(--cs);perspective:600px;--t:calc(var(--cs)*.11)}
 .bigcoin .spin{animation:bigspin 2.4s linear infinite}
 .bigcoin[data-act]{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .bigcoin[data-act]:focus-visible{outline:3px solid var(--orange);outline-offset:6px;border-radius:50%}
 .bigcoin.tossing .spin{animation:none}
 @keyframes bigspin{from{transform:rotateY(0)}to{transform:rotateY(360deg)}}
-.bigcoin{--t:calc(var(--cs)*.11)}
+
 .bigcoin .face.tails{transform:rotateY(180deg) translateZ(calc(var(--t)/2))}
 .tagline{color:#e3eef0;font-size:18px;max-width:40ch}
 .titlebtns{display:flex;flex-direction:column;gap:12px;align-items:center}
@@ -910,15 +901,15 @@ img{-webkit-user-drag:none}
 #ffbtn[hidden]{display:none}@media (max-width:700px){#ffbtn{padding:6px 10px;font-size:14px}body:has(#coach:not([hidden])) #ffbtn{display:none}body:has(#ffbtn:not([hidden])):not(:has(#coach:not([hidden]))) #app{padding-bottom:calc(50px + env(safe-area-inset-bottom))}}#ffbtn .ffi{letter-spacing:-4px;font-size:16px;padding-right:4px}#ffbtn b{min-width:26px;text-align:left}
 #ffbtn.on{background:var(--chips-d);color:#fff;box-shadow:0 4px 0 var(--edge),inset 0 0 0 2px var(--chips)}#ffbtn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
 #hazards{position:fixed;inset:0;pointer-events:none;z-index:56;overflow:hidden}
-.hzghost{position:absolute;width:320px;transition:left 1.2s linear,top 1.2s linear;filter:drop-shadow(0 0 24px rgba(180,220,255,.55));opacity:.88}
+.hzghost{position:absolute;width:320px;transition:left 1.2s linear,top 1.2s linear;filter:drop-shadow(0 0 24px rgba(180,220,255,.55));opacity:.88;animation:ghostbob 2.4s steps(6) infinite}
 .hzghost img,.hzscorp img,.hztrail img{width:100%;display:block;image-rendering:pixelated}.hzghost img+img,.hzscorp img+img,.hztrail img+img{position:absolute;inset:0}
-.hzghost{animation:ghostbob 2.4s steps(6) infinite}
+
 .hzghost .f2,.hzscorp .f2{animation:fr2 .9s steps(1) infinite}.hzscorp .f2{animation-duration:.2s}.hztrail .f2{display:none}
 @keyframes fr2{0%{opacity:0}50%{opacity:1}}
 @keyframes ghostbob{0%,100%{translate:0 0}50%{translate:0 -20px}}
 body.haunted #bg{filter:saturate(.4) brightness(.8) hue-rotate(160deg)}
-.hzscorp,.hztrail{position:absolute;width:144px;transition:left .11s linear,top .11s linear}
-.hzscorp,.hztrail{image-rendering:pixelated}
+.hzscorp,.hztrail{position:absolute;width:144px;transition:left .11s linear,top .11s linear;image-rendering:pixelated}
+
 .hztrail{opacity:.35;transition:none;animation:trailfade .3s linear forwards}@keyframes trailfade{to{opacity:0}}
 body.hzpaused .hzghost,body.hzpaused .hzghost *,body.hzpaused .hzscorp,body.hzpaused .hzscorp *{animation-play-state:paused!important;transition:none}
 .poof{position:fixed;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:radial-gradient(circle,var(--c) 0 35%,transparent 70%);pointer-events:none;z-index:71;animation:poof .85s ease-out forwards}
@@ -1038,7 +1029,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.49</div>
+  <div class="gamever" aria-label="Version">v1.2.50</div>
 </div>
 
 <script>
@@ -2784,7 +2775,6 @@ PACK_MUSIC.credits=function(m){
 };
 /* House: the game's usual pad, bass and lead, over a half-time "lub-dub" heartbeat and a plucked
    harpsichord figure that keeps returning to one high note. A nod to a certain trip-hop classic. 32 bars */
-const MD_MEL={0:[2,1,4],6:[1,1,2],8:[0,1,4],12:[1,1,4]},MD_MEL2={0:[3,1,3],3:[2,1,1],4:[1,1,4],10:[0,1,2],12:[2,1,4]};
 PACK_MUSIC.drhouse=function(m){
   /* the trap remix: booming 808 slides, a half-time clap, rattling hi-hat rolls and vocal chops,
      all under the same harpsichord figure. 32 bars */
@@ -3793,10 +3783,6 @@ function reflipOdds(){
 /* ================= RENDER ================= */
 /* ================= HAZARDS: the wager ghost and the Speedrun scorpion man ================= */
 const GHOST_AFTER=120,TURN_LIMIT=12;
-function pixArt(rows,pal,sc){const h=rows.length,w=rows[0].length,cv=document.createElement('canvas');cv.width=w*sc;cv.height=h*sc;const g=cv.getContext('2d');
-  rows.forEach((row,y)=>[...row].forEach((ch,x)=>{if(pal[ch]){g.fillStyle=pal[ch];g.fillRect(x*sc,y*sc,sc,sc)}}));return cv.toDataURL()}
-const GHOST_PX=["....11111111....","..111111111111..",".11111111111111.",".11111111111111.","1112221111222111","1122223111222231","1122223111222231","1112221111222111","1111111111111111","1111111222111111","1111112222211111","1111111222111111","1311111111111131","1111111111111111","11.1111..1111.11","1...11....11...1"];
-const SCORP_PX=["..........4.....","..........22....","...........2....","......11....2...",".....1331...2...","22...1111..2....","2.2..1111.2.....",".22.11111122....","...11111111.....","....111111......","....11..11......","...11....11.....","..11......11....",".22........22...","................","................"];
 const GHOST_SVG=`<svg viewBox="0 0 300 290" xmlns="http://www.w3.org/2000/svg"><g stroke="#111" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><g class="garm gl"><path d="M96,138 C78,120 66,96 58,70 C54,58 66,50 76,58 C86,80 98,104 116,122 Z" fill="#f4f6f8"/><path d="M40,58 C38,40 50,30 60,36 L62,28 C66,18 78,20 80,30 L84,26 C92,22 100,30 96,40 C102,44 102,58 92,64 C80,72 62,74 50,68 C42,66 40,62 40,58 Z" fill="#fff"/><path d="M62,38 L64,56 M78,34 L80,54" fill="none" stroke-width="5"/></g><g class="garm gr"><path d="M214,140 C230,128 240,112 246,96 C250,86 262,90 260,102 C254,122 242,140 226,156 Z" fill="#f4f6f8"/><path d="M240,92 C236,76 246,66 256,70 L260,64 C266,56 278,60 278,70 L284,68 C292,68 296,78 290,86 C296,92 292,104 282,106 C270,110 254,108 246,102 C240,100 240,96 240,92 Z" fill="#fff"/><path d="M260,72 L262,90 M276,72 L276,90" fill="none" stroke-width="5"/></g><path d="M150,14 C206,12 238,56 236,118 C234,170 226,206 210,236 C200,256 180,266 164,260 C154,274 132,276 120,264 C102,272 82,264 78,248 C60,250 48,234 58,220 C72,198 82,168 84,128 C86,66 100,16 150,14 Z" fill="#fff"/><path d="M200,40 C226,62 232,110 226,160 C222,196 212,226 196,246 C206,214 214,180 214,140 C214,100 210,66 200,40 Z" fill="#cfd6dd" stroke="none"/><path d="M92,210 C100,230 104,246 98,258 C112,252 118,240 118,226 Z" fill="#dde3e8" stroke="none"/><ellipse cx="122" cy="98" rx="14" ry="26" transform="rotate(-8 122 98)" fill="#111"/><ellipse cx="180" cy="96" rx="15" ry="27" transform="rotate(8 180 96)" fill="#111"/><ellipse cx="118" cy="88" rx="4" ry="6" fill="#fff" stroke="none"/><ellipse cx="176" cy="86" rx="4" ry="6" fill="#fff" stroke="none"/><path class="gmouth" d="M150,128 C176,128 184,170 180,206 C176,236 164,248 150,248 C136,248 124,236 120,206 C116,170 124,128 150,128 Z" fill="#111"/><path d="M150,150 C164,150 168,178 166,204 C164,226 158,234 150,234 C142,234 136,226 134,204 C132,178 136,150 150,150 Z" fill="#2a2f36" stroke="none"/><path d="M104,72 C110,64 122,62 130,68 M170,66 C178,60 192,62 198,70" fill="none" stroke-width="5"/></g></svg>`;
 const SCORP_SVG=`<svg viewBox="0 0 340 320" xmlns="http://www.w3.org/2000/svg"><g stroke="#2a0406" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"><g class="stail"><path d="M205,200 C250,190 278,150 276,100 C274,60 250,30 215,32" fill="none" stroke="#2a0406" stroke-width="34"/><path d="M205,200 C250,190 278,150 276,100 C274,60 250,30 215,32" fill="none" stroke="#8a3a2a" stroke-width="24" stroke-dasharray="20 6"/><path d="M215,32 C200,30 186,40 182,56 C192,48 204,46 214,50 Z" fill="#e8d8b8"/><path d="M182,56 L174,70 L190,60 Z" fill="#111"/></g><g fill="#7a2a20"><path d="M140,220 L96,236 L70,290 L84,292 L106,248 L146,236 Z"/><path d="M150,228 L124,262 L118,306 L132,306 L140,268 L160,240 Z"/><path d="M190,220 L236,232 L268,286 L254,290 L228,246 L186,238 Z"/><path d="M178,228 L206,258 L216,302 L202,304 L194,266 L170,240 Z"/></g><ellipse cx="166" cy="214" rx="66" ry="32" fill="#b81c1c"/><path d="M118,206 C140,196 192,196 214,206 M112,220 C140,232 192,232 220,220" fill="none" stroke="#5a0a0a" stroke-width="4"/><ellipse cx="166" cy="236" rx="22" ry="12" fill="#e8d8b8"/><path d="M152,236 L156,246 L160,236 L164,246 L168,236 L172,246 L176,236 L180,246" fill="none" stroke="#2a0406" stroke-width="3"/><g class="sarm sl"><path d="M120,110 C96,120 84,138 80,156 L100,164 C104,148 114,136 132,128 Z" fill="#6a2a26"/><path d="M92,150 C60,140 28,150 14,176 C34,168 54,166 70,172 C52,178 36,192 30,210 C54,196 80,188 102,178 Z" fill="#c8201c"/><path d="M14,176 L22,180 M30,210 L38,204" stroke="#111" stroke-width="6"/></g><g class="sarm sr"><path d="M212,110 C236,120 248,138 252,156 L232,164 C228,148 218,136 200,128 Z" fill="#6a2a26"/><path d="M240,150 C272,140 304,150 318,176 C298,168 278,166 262,172 C280,178 296,192 302,210 C278,196 252,188 230,178 Z" fill="#c8201c"/><path d="M318,176 L310,180 M302,210 L294,204" stroke="#111" stroke-width="6"/></g><path d="M118,104 C140,94 192,94 214,104 L200,192 C186,200 146,200 132,192 Z" fill="#c8201c"/><path d="M134,110 L166,128 L198,110 M140,140 L192,140 M144,164 L188,164 M166,128 L166,190" fill="none" stroke="#5a0a0a" stroke-width="4"/><path d="M118,104 C106,98 102,86 110,80 L132,96 Z M214,104 C226,98 230,86 222,80 L200,96 Z" fill="#8a1414"/><path d="M140,62 C140,40 152,28 166,28 C180,28 192,40 192,62 L188,86 C180,96 152,96 144,86 Z" fill="#b81c1c"/><path d="M148,40 L166,34 L184,40 M166,34 L166,52" fill="none" stroke="#5a0a0a" stroke-width="3"/><path d="M148,60 L160,64 L158,70 Z M184,60 L172,64 L174,70 Z" fill="#ffd34d" stroke="#ffd34d" stroke-width="2"/><path d="M148,78 C156,96 176,96 184,78 L178,90 L172,82 L166,92 L160,82 L154,90 Z" fill="#f4ecd8" stroke-width="3"/></g></svg>`;
 /* the vector drawings are crushed down to a small pixel grid with a fixed palette: two frames each */
@@ -3815,7 +3801,6 @@ function hzFrames(){if(HZ_FR)return HZ_FR;
   HZ_FR=Promise.all([pixelize(gA,64,62,HZ_PAL.ghost),pixelize(gB,64,62,HZ_PAL.ghost),pixelize(sA,48,45,HZ_PAL.scorp),pixelize(sB,48,45,HZ_PAL.scorp)]).then(([a,b,c,d])=>({ghost:[a,b],scorp:[c,d]}));return HZ_FR}
 const hzSprite=(el,kind)=>{el.innerHTML='<img class="f1" alt=""><img class="f2" alt="">';hzFrames().then(F=>{const im=el.querySelectorAll('img');im[0].src=F[kind][0];im[1].src=F[kind][1]})};
 setTimeout(()=>{try{hzFrames()}catch(e){}},3000);
-let HZ_IMG=null;const hzImg=()=>HZ_IMG||(HZ_IMG={ghost:pixArt(GHOST_PX,{1:'#eaf4ff',2:'#14202e',3:'#9fb8d4'},8),scorp:pixArt(SCORP_PX,{1:'#e8201a',2:'#8a0a0a',3:'#ffd34d',4:'#ffffff'},6)});
 let hzLast=performance.now(),hzPhase=null,hzEatT=0;
 const hzPlayerTurn=()=>S&&S.screen==='play'&&(S.phase==='call'||S.phase==='tossed');
 function hazardsOff(){const h=$('#hazards');if(h)h.innerHTML='';const c=$('#turnclock');if(c)c.hidden=true;document.body.classList.remove('haunted');if(S){S.ghost=false;S.scorp=false}}
@@ -5611,9 +5596,7 @@ const ACT={
     if(FISH.taps>=3){FISH.taps=0;audioInit();FISH.st='idle';showModal(fishModal);pondInit();musicMood();toast('You found the <b>Drowned Fountain</b>')}},
   fishtap(){if(modal!==fishModal)return;if(FISH.st==='idle'||FISH.st==='got')fishCast();else if(FISH.st==='wait'){fishLose('Too early. You spooked it. Tap to cast again.')}else if(FISH.st==='bite')fishReel();else if(FISH.st==='reel')fishHook()},
   fishback(){closeModal()},
-  tmusic(){OPT.music=!OPT.music;saveOpt();if(AU.mus)AU.mus.gain.setTargetAtTime(musGain(),AU.ctx.currentTime,.1);showModal(optionsModal)},
   tbadges(){OPT.badges=!OPT.badges;saveOpt();document.body.classList.toggle('badges',OPT.badges);showModal(optionsModal)},
-  tsfx(){OPT.sfx=!OPT.sfx;saveOpt();if(AU.sfx)AU.sfx.gain.value=sfxGain();showModal(optionsModal)},
   ffwd(){OPT.speed=OPT.speed===1?2:OPT.speed===2?4:1;saveOpt();play('click');updateFF()},
   abandon(){if(!abandonArm){abandonArm=true;showModal(optionsModal);return}abandonArm=false;modal=null;if(S&&!S.recorded)recordRun(false);S=null;clearSave();render();showRollPick()},
   newrun(){modal=null;S=null;render();showRollPick()},
