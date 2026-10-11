@@ -1038,7 +1038,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.69</div>
+  <div class="gamever" aria-label="Version">v1.2.70</div>
 </div>
 
 <script>
@@ -2279,22 +2279,24 @@ function audioInit(){
 }
 function env(g,at,v,a,d){g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(v,at+a);g.gain.exponentialRampToValueAtTime(.0001,at+a+d)}
 function tone(o){
-  const c=AU.ctx;if(!c)return;
+  if(AU.rec){AU.rec.push(['tone',o]);return}
+  const c=AU.ctx;if(!c)return;const LG=AU.lfoG,VG=AU.vibG;
   const at=Math.max(o.at??c.currentTime+(o.t||0),c.currentTime+.004), a=o.a??.004, d=o.d??.2;
   const osc=c.createOscillator();osc.type=o.type||'sine';
   osc.frequency.setValueAtTime(o.f,at);
   if(o.f2)osc.frequency.exponentialRampToValueAtTime(o.f2,at+(o.glide||d));
   if(o.det)osc.detune.value=o.det;
-  if(o.wob)AU.lfoG.connect(osc.detune);
-  if(o.vib)AU.vibG.connect(osc.detune);
+  if(o.wob)LG.connect(osc.detune);
+  if(o.vib)VG.connect(osc.detune);
   const g=c.createGain();env(g,at,o.v??.2,a,d);
   let n=osc;
   if(o.lp){const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=o.lp;f.Q.value=o.q||.7;osc.connect(f);n=f}
   n.connect(g);g.connect(o.bus||AU.sfx);
   osc.start(at);osc.stop(at+a+d+.05);
-  osc.onended=()=>{try{if(o.wob)AU.lfoG.disconnect(osc.detune)}catch(e){}try{if(o.vib)AU.vibG.disconnect(osc.detune)}catch(e){}g.disconnect()};
+  osc.onended=()=>{try{if(o.wob)LG.disconnect(osc.detune)}catch(e){}try{if(o.vib)VG.disconnect(osc.detune)}catch(e){}g.disconnect()};
 }
 function noise(o){
+  if(AU.rec){AU.rec.push(['noise',o]);return}
   const c=AU.ctx;if(!c)return;
   const at=Math.max(o.at??c.currentTime+(o.t||0),c.currentTime+.004), a=o.a??.002, d=o.d??.1;
   const s=c.createBufferSource();s.buffer=AU.noise;
@@ -2302,19 +2304,20 @@ function noise(o){
   if(o.ff2)f.frequency.exponentialRampToValueAtTime(o.ff2,at+a+d);
   const g=c.createGain();env(g,at,o.v??.2,a,d);
   s.connect(f);f.connect(g);g.connect(o.bus||AU.sfx);
-  s.start(at,Math.random()*.5);s.stop(at+a+d+.05);s.onended=()=>g.disconnect();
+  s.loop=true;s.start(at,Math.random()*.5);s.stop(at+a+d+.05);s.onended=()=>g.disconnect();
 }
 function fm(o){
-  const c=AU.ctx;if(!c)return;
+  if(AU.rec){AU.rec.push(['fm',o]);return}
+  const c=AU.ctx;if(!c)return;const LG=AU.lfoG;
   const at=Math.max(o.at??c.currentTime+(o.t||0),c.currentTime+.004), d=o.d??.5;
   const car=c.createOscillator(),mod=c.createOscillator(),mg=c.createGain(),g=c.createGain();
   car.frequency.value=o.f;mod.frequency.value=o.f*(o.ratio||2);
   mg.gain.setValueAtTime(o.f*(o.idx||2),at);mg.gain.exponentialRampToValueAtTime(o.f*.05+1,at+d);
   mod.connect(mg);mg.connect(car.frequency);
-  if(o.wob)AU.lfoG.connect(car.detune);
+  if(o.wob)LG.connect(car.detune);
   env(g,at,o.v??.15,o.a??.004,d);car.connect(g);g.connect(o.bus||AU.sfx);
   car.start(at);mod.start(at);car.stop(at+d+.1);mod.stop(at+d+.1);
-  car.onended=()=>{try{if(o.wob)AU.lfoG.disconnect(car.detune)}catch(e){}g.disconnect()};
+  car.onended=()=>{try{if(o.wob)LG.disconnect(car.detune)}catch(e){}g.disconnect()};
 }
 const mtof=m=>440*Math.pow(2,(m-69)/12);
 const sfx={
@@ -2839,9 +2842,32 @@ function extend64(orig,m){const L8=m.loop%8;if(L8<4){orig(m);return}
     if(X===3&&bar===7&&s>=8&&s%2===0)T({at,f:mtof(up[[3,2,1,0][(s-8)/2]%up.length]),d:.18,v:.12,bus:B})}}
 ['thehouse','tablerivals','drhouse'].forEach(k=>{const o=PACK_MUSIC[k];PACK_MUSIC[k]=m=>extend64(o,m)});
 const Music={step:0,next:0,timer:null,bpm:90,intense:false,mode:'main',prevLead:0,
+  chunks:[],tl:[],gen:0,sig:null,busy:false,live:!(window.OfflineAudioContext),
   start(){if(this.timer)return;this.next=AU.ctx.currentTime+.1;this.timer=setInterval(()=>this.sched(),25)},
-  sched(){const c=AU.ctx;if(!c||!OPT.music)return;if(bootStage<2){this.next=c.currentTime+.05;this.step=0;return}if(this.next<c.currentTime-.2)this.next=c.currentTime+.05;
-    while(this.next<c.currentTime+.3){if(this.next>c.currentTime+.01)this.play(this.step,this.next);const s16=60/this.bpm/4;this.next+=s16*(this.step%2?.88:1.12);this.step++}},
+  sched(){const c=AU.ctx;if(!c||!OPT.music)return;if(bootStage<2){this.next=c.currentTime+.05;this.step=0;return}
+    if(this.live){if(this.next<c.currentTime-.2)this.next=c.currentTime+.05;
+      while(this.next<c.currentTime+.3){if(this.next>c.currentTime+.01)this.play(this.step,this.next);const s16=60/this.bpm/4;this.next+=s16*(this.step%2?.88:1.12);this.step++}return}
+    /* each bar is rendered offline and played back as one buffer: far fewer live nodes, so no crackle on phones */
+    const now=c.currentTime,sig=[this.mode,this.intense,this.var,this.bpm,this.stage,SOUNDTEST!=null&&ST.glitch].join();
+    if(this.next<now-.2){this.next=now+.15;this.tl=[]}
+    if(sig!==this.sig){if(this.sig!=null){const e=this.tl.find(e=>e.t>=now+.2);if(e){this.step=e.step;this.next=e.t}else this.next=Math.max(this.next,now+.2);this.cut(this.next)}
+      this.sig=sig;this.gen++;this.busy=false;this.tl=[]}
+    if(!this.busy&&this.next<now+1.2)this.render()},
+  cut(t){this.chunks.forEach(k=>{if(k.end<=t)return;try{k.g.gain.setValueAtTime(1,t);k.g.gain.linearRampToValueAtTime(0,t+.08);k.src.stop(t+.1)}catch(e){}})},
+  render(){const c=AU.ctx,gen=this.gen,t0=this.next,step0=this.step,OFF=.01,n=16;let t=OFF;const rel=[];
+    for(let i=0;i<n;i++){rel.push(t);t+=60/this.bpm/4*((step0+i)%2?.88:1.12)}
+    const dur=t-OFF;this.step+=n;this.next+=dur;this.tl=this.tl.filter(e=>e.t>c.currentTime-1);rel.forEach((r,i)=>this.tl.push({step:step0+i,t:t0+r-OFF}));
+    const B=AU.mus;AU.rec=[];try{for(let i=0;i<n;i++)this.play(step0+i,rel[i])}catch(e){}const notes=AU.rec;AU.rec=null;
+    let end=OFF+dur;for(const[k,o]of notes){const at=o.at??(o.t||0),a=o.a??(k==='noise'?.002:.004),d=o.d??(k==='tone'?.2:k==='noise'?.1:.5);end=Math.max(end,at+a+d+.15)}
+    let oc;try{oc=new OfflineAudioContext(1,Math.ceil(end*c.sampleRate),c.sampleRate)}catch(e){this.live=true;this.next=t0;this.step=step0;return}
+    const sv={ctx:AU.ctx,lfoG:AU.lfoG,vibG:AU.vibG};
+    AU.ctx=oc;AU.vibG=oc.createGain();AU.vibG.gain.value=28;const v=oc.createOscillator();v.frequency.value=5.5;v.connect(AU.vibG);v.start();
+    AU.lfoG=oc.createGain();AU.lfoG.gain.value=10;const l=oc.createOscillator();l.frequency.value=.5;l.connect(AU.lfoG);l.start(0);
+    try{for(const[k,o]of notes)({tone,noise,fm})[k](o.bus===B?{...o,bus:oc.destination}:o)}finally{Object.assign(AU,sv)}
+    this.busy=true;
+    oc.startRendering().then(buf=>{if(gen!==this.gen)return;this.busy=false;const c=AU.ctx,src=c.createBufferSource(),g=c.createGain();src.buffer=buf;src.connect(g);g.connect(AU.mus);
+      const T=t0-OFF,now=c.currentTime;if(T>=now)src.start(T);else if(now-T<buf.duration)src.start(now,now-T);
+      const k={src,g,end:T+buf.duration};this.chunks.push(k);src.onended=()=>{g.disconnect();this.chunks=this.chunks.filter(x=>x!==k)}}).catch(()=>{this.live=true;this.busy=false})},
   play(step,at){
     if((SOUNDTEST!=null?ST.glitch:S&&S.roll==='glitched')&&!this.offline&&this.mode!=='fatal'){const x=Math.random();if(x<.025)step=Math.max(0,step-1);else if(x<.035)return;else if(x<.045)step+=4}
     const bar=Math.floor(step/16)%8,s=step%16,ch=CHORDS[bar],spb=60/this.bpm,loop=Math.floor(step/128),B=AU.mus;
@@ -2958,7 +2984,7 @@ function setLP(v){if(!AU.ctx||v===LP_T)return;LP_T=v;const f=AU.lp.frequency,t=A
 /* leaving the app: fade out and pause audio so nothing blares; fade back in on return */
 document.addEventListener('visibilitychange',()=>{const c=AU.ctx;if(!c)return;const t=c.currentTime;
   if(document.hidden){try{AU.master.gain.cancelScheduledValues(t);AU.master.gain.setValueAtTime(AU.master.gain.value,t);AU.master.gain.linearRampToValueAtTime(0,t+.05)}catch(e){}setTimeout(()=>{if(document.hidden)c.suspend()},80)}
-  else{c.resume().then(()=>{const t2=c.currentTime;Music.next=t2+.1;AU.master.gain.cancelScheduledValues(t2);AU.master.gain.setValueAtTime(0,t2);AU.master.gain.linearRampToValueAtTime(.9,t2+.4)})}});
+  else{c.resume().then(()=>{const t2=c.currentTime;if(Music.live)Music.next=t2+.1;AU.master.gain.cancelScheduledValues(t2);AU.master.gain.setValueAtTime(0,t2);AU.master.gain.linearRampToValueAtTime(.9,t2+.4)})}});
 addEventListener('pagehide',()=>{try{AU.master.gain.value=0;AU.ctx&&AU.ctx.suspend()}catch(e){}});
 function musicMood(){
   if(!AU.ctx)return;const t=AU.ctx.currentTime;
