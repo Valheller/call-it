@@ -1039,7 +1039,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.78</div>
+  <div class="gamever" aria-label="Version">v1.2.79</div>
 </div>
 
 <script>
@@ -1061,6 +1061,8 @@ try{const L=JSON.parse(localStorage.getItem('hwr-profile')||'null');if(L){Object
   else if(localStorage.getItem('hwr-best'))PROF.tutorialDone=true}catch(e){}
 const saveProf=()=>{try{localStorage.setItem('hwr-profile',JSON.stringify(PROF))}catch(e){}};
 const PS=()=>PROF.stats;
+/* lifetime flips per coin type, for the Records screen */
+const tallyFlips=ix=>{const t=PS().coinFlips||(PS().coinFlips={});ix.forEach(i=>{const c=S.purse[i];if(c&&COINS[c.type])t[c.type]=(t[c.type]||0)+1})};
 const ART={};
 /* Prize Booth cosmetics, bought with banked Tickets */
 const SKINS={
@@ -4773,6 +4775,7 @@ function recordsModal(){
       ${sec('Money and betting',[['Money earned at cash-out','$'+fmtN(st.moneyEarned||0)],['Most money held','$'+fmtN(st.maxMoney||0)],['Bets placed',bets],['Bets won',`${st.betsWon||0} (${pct(st.betsWon||0,bets)})`],['Big bets won ($30+)',st.bigBet||0],['Tickets earned',st.ticketsTotal||0],['Prize Booth tickets',PROF.tix||0]])}
       ${sec('Items',[['Charms sold',st.sold],['Runes used',st.runes],['Spirits used',st.spirits],['Almanacs used',st.almanacs||0],['Wagers skipped',st.skips||0],['Events visited',st.events||0],['Unlocks',`${Object.keys(PROF.unlocked).length}/${GOALS.length}`]])}
       ${sec('Fortune',[['Highest Luck',st.luckHi||0],['Lowest Luck',st.luckLo||0],['Highest Karma',st.karmaHi||0],['Lowest Karma',st.karmaLo||0],['Fish caught',(PROF.fish&&PROF.fish.n)||0],['Rivals beaten',Object.keys(st.rivalsBeat||{}).length+'/'+RIVALS.length],['Rematches won',st.rematchWins||0]])}
+      ${list('Most flipped coins',fav(st.coinFlips,5),(k,v)=>COINS[k]?`<div class="row"><span class="srow"><img src="${coinArt(k,COINS[k].fixed||'H')}" alt="">${COINS[k].name}</span><b>${fmtN(v)}</b></div>`:'')}
       ${list('Most bought Charms',fav(st.buys,5),chRow)}
       ${list('Charms in finished runs',fav(charmUse,5),chRow)}
       ${list('Rolls played',fav(rollsPlayed,6),(k,v)=>ROLLS[k]?`<div class="row"><span>${ROLLS[k].name}</span><b>${v}${rollsWon[k]?` · ${rollsWon[k]} won`:''}${PROF.stakes[k]?` <small style="color:${STAKES[PROF.stakes[k]].col}">★${PROF.stakes[k]}</small>`:''}</b></div>`:'')}
@@ -4998,7 +5001,7 @@ async function doCall(call){
   S.purse.forEach(c=>{c.fog=!dowse&&(bossHas('fog')||S.roll==='invisible'||(countEff('blindfaith')&&charmsOn())||(wx('mist')&&S.tossNo===0));c.flips=(c.flips||0)+1});
   if(S.stake>=5&&!dowse&&!bossHas('fog')&&S.purse.length)S.purse[Math.floor(rand()*S.purse.length)].fog=true;
   if(S.roll==='majority')setMajority();
-  PS().flips+=S.purse.length;PS().edges+=S.results.filter(r=>r==='E').length;S.wedges=(S.wedges||0)+S.results.filter(r=>r==='E').length;
+  PS().flips+=S.purse.length;tallyFlips(S.purse.map((_,i)=>i));PS().edges+=S.results.filter(r=>r==='E').length;S.wedges=(S.wedges||0)+S.results.filter(r=>r==='E').length;
   renderJokers();refreshTable();setHB('&nbsp;',0,0);
   owls.forEach(i=>{const el=$('#c'+i);if(el)setTimeout(()=>popup(el,'Owl re-flip','text'),i*70+500)});
   if(bossIs('whim'))popup($('#callb'),call==='H'?'Heads!':'Tails!','text');
@@ -5024,7 +5027,7 @@ async function doReflip(){
   idx.forEach(i=>{S.results[i]=tossOne(S.purse[i],S.call,true);S.purse[i].flips=(S.purse[i].flips||0)+1;if(!(S.rfd=S.rfd||[]).includes(i))S.rfd.push(i)});
   applyHeavy().forEach(i=>{if(!idx.includes(i))idx.push(i)});applyStacks();
   if(S.roll==='majority')setMajority();
-  S.wedges=(S.wedges||0)+idx.filter(i=>S.results[i]==='E').length;PS().flips+=idx.length;PS().reflips++;PS().edges+=idx.filter(i=>S.results[i]==='E').length;
+  S.wedges=(S.wedges||0)+idx.filter(i=>S.results[i]==='E').length;PS().flips+=idx.length;tallyFlips(idx);PS().reflips++;PS().edges+=idx.filter(i=>S.results[i]==='E').length;
   idx.forEach(i=>{if(S.purse[i].defect==='diecrack'&&consRoom()){S.cons.push({kind:'rune',key:pick(Object.keys(RUNES))});popup($('#c'+i),'+Rune','text')}});
   if(idx.some(i=>S.purse[i].defect==='diecrack'))renderJokers();
   refreshTable();
