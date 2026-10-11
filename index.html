@@ -442,6 +442,8 @@ body.badges .face::before{display:block}
 .betting{animation:betpulse 1s ease-in-out infinite alternate}
 @keyframes betpulse{from{box-shadow:0 3px 0 var(--cd),0 0 0 0 rgba(245,183,68,.0)}to{box-shadow:0 3px 0 var(--cd),0 0 10px 3px rgba(245,183,68,.75)}}
 .callbanner b.E{background:var(--purple)}
+#saybox{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column-reverse;gap:6px;align-items:center;pointer-events:none;zoom:var(--k,1);max-width:min(640px,70vw)}
+#saybox .saytoast{font-size:16px;padding:9px 18px;text-align:center}
 #toasts{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;zoom:var(--k,1)}
 .toast{background:var(--panel-deep);border-radius:10px;padding:8px 14px;box-shadow:0 4px 0 var(--edge),inset 0 0 0 2px var(--money);font-size:15px;animation:dropin .35s cubic-bezier(.3,1.4,.5,1);transition:opacity .4s,transform .4s;max-width:min(90vw,420px);text-align:center}
 .toast.out{opacity:0;transform:translateY(-10px)}
@@ -978,6 +980,7 @@ html,body,button,a,.pond{touch-action:manipulation}
 <button id="ffbtn" data-act="ffwd" hidden aria-label="Fast forward"></button>
 <div id="coach" hidden></div>
 <div id="toasts"></div>
+<div id="saybox" aria-live="polite"></div>
 <div id="showdown" hidden></div>
 <div id="overlay" hidden></div>
 <div id="boot"><div class="bootin">
@@ -1010,7 +1013,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.30</div>
+  <div class="gamever" aria-label="Version">v1.2.31</div>
 </div>
 
 <script>
@@ -2086,9 +2089,9 @@ const FLOORS=[
  {name:'The High Tables',col:'#5d3d94',line:'Few get this far. Fewer leave.'},
  {name:'The House Itself',col:'#6a6a7a',line:'You have come all this way to see me. Good.'}];
 const floorOf=a=>a<=STAGES?FLOORS[a-1]:{name:`Sub-basement ${a-STAGES}`,col:'#3a1a1a',line:'Below the House, there is only more House.'};
-function houseSay(t,ms=5000){toast(`<b class="housesay">The House</b> · ${t}`,ms)}
+function houseSay(t,ms=5000){toast(`<b class="housesay">The House</b> · ${t}`,ms,false,'say')}
 const HOUSE_MD=['Did you try the medicine drug?','you are stupid','don\'t care','more mouse bites!','I am very smart.'];
-function drSay(t,ms=4200){toast(`<b style="color:#7fb0ff">House</b> · ${t||pick(HOUSE_MD)}`,ms)}
+function drSay(t,ms=4200){toast(`<b style="color:#7fb0ff">House</b> · ${t||pick(HOUSE_MD)}`,ms,false,'say')}
 const ANTE_BASE=[300,1100,4000,13000,40000,120000,300000,700000];
 const anteBase=a=>a<=STAGES?ANTE_BASE[a-1]:Math.round(ANTE_BASE[STAGES-1]*Math.pow(2.5,a-STAGES));
 
@@ -3401,7 +3404,11 @@ async function nextFanfare(){
   let done;const pr=new Promise(r=>done=r);el.addEventListener('click',()=>done());const tm=setTimeout(done,5200);await pr;clearTimeout(tm);
   el.classList.add('out');setTimeout(()=>el.remove(),320);setTimeout(nextFanfare,260);
 }
-function toast(html,ms=3800,raw){const t=document.createElement('div');t.className='toast';t.innerHTML=raw?html:hideLuck(html);$('#toasts').appendChild(t);setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),400)},ms)}
+/* the House talks from the bottom of the screen, centred on the play area (right of the side bar) */
+function sayPos(){const b=$('#saybox');if(!b)return;const side=$('#side'),app=$('#app');let cx=innerWidth/2;
+  if(S&&app&&!app.hidden&&side){const r=side.getBoundingClientRect();if(r.width&&r.width<innerWidth*.5&&r.height>innerHeight*.5)cx=(r.right+innerWidth)/2}const k=parseFloat(getComputedStyle(b).zoom)||1;b.style.left=(cx/k)+'px'}
+addEventListener('resize',sayPos);
+function toast(html,ms=3800,raw,box){const say=box==='say'&&innerWidth>700;if(say){sayPos();document.querySelectorAll('#saybox .toast').forEach(o=>{o.classList.add('out');setTimeout(()=>o.remove(),300)})}const t=document.createElement('div');t.className='toast'+(say?' saytoast':'');t.innerHTML=raw?html:hideLuck(html);$(say?'#saybox':'#toasts').appendChild(t);setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),400)},ms)}
 /* tutorial coach */
 const COACH={
  choose:'After each wager you pick where to go: the <b>shop</b>, or a detour in its place. Each detour is shown with its card, and some only open for certain kinds of people.',
