@@ -1030,7 +1030,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.38</div>
+  <div class="gamever" aria-label="Version">v1.2.39</div>
 </div>
 
 <script>
@@ -2886,18 +2886,17 @@ function wager32(s,bar,ch,at,spb,B,loop){
 }
 function musicMood(){
   if(!AU.ctx)return;const t=AU.ctx.currentTime;
-  if(SOUNDTEST!=null){const tr=TRACKS[SOUNDTEST],o=tr[2]||{};Music.mode=tr[1];Music.intense=!!o.intense;Music.var=o.v||0;Music.bpm=({tablerivals:112,fish:72,credits:104,menu:90,prize:118,bazaar:100,chapel:66})[tr[1]]||90;Music.stage=ST.stage;AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(o.lp?750:16000,t,.25);return}
+  if(SOUNDTEST!=null){const tr=TRACKS[SOUNDTEST],o=tr[2]||{};Music.mode=tr[1];Music.intense=!!o.intense;Music.var=o.v||0;Music.bpm=({fish:72,credits:104})[tr[1]]||90;Music.stage=ST.stage;AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(o.lp?750:16000,t,.25);return}
   const shop=S&&(S.screen==='shop'||S.screen==='cashout'||S.screen==='over'||S.screen==='event');
   AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(shop&&!S.pack?750:16000,t,.25);
   if(modal===creditsModal){AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(16000,t,.25);Music.mode='credits';Music.intense=false;Music.bpm=104;return}
   if(!S&&modal===fishModal){Music.mode='fish';Music.intense=false;Music.bpm=72;return}
-  {const sp=S&&S.screen==='event'&&S.event&&S.event.key==='prizecounter'?['prize',118]:S&&S.screen==='event'&&S.event&&S.event.key==='chapel'?['chapel',66]:S&&S.screen==='shop'&&S.bazaar&&!S.pack?['bazaar',100]:null;
+  {const sp=S&&S.screen==='event'&&S.event&&S.event.key==='prizecounter'?['prize',90]:S&&S.screen==='event'&&S.event&&S.event.key==='chapel'?['chapel',90]:S&&S.screen==='shop'&&S.bazaar&&!S.pack?['bazaar',90]:null;
    if(sp){AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(16000,t,.25);Music.mode=sp[0];Music.intense=false;Music.bpm=sp[1];return}}
   Music.intense=!!(S&&S.screen==='play'&&S.boss);
   Music.var=S&&S.boss?bossTheme(S.boss):0;
   Music.bpm=90;Music.stage=S?Math.min(8,S.ante):1;
   Music.mode=!S?'menu':S.screen==='choose'?'map':S.screen==='play'&&S.inElite?(S.eliteBlind&&S.eliteBlind.kind==='rival'?'rival':'elite'):S.screen==='play'&&S.boss&&BOSSES[S.boss].final?(S.boss==='fatal'?'fatal':S.boss==='general'?'general':S.boss==='house'?'thehouse':S.boss==='drhouse'?'drhouse':S.boss==='tablerivals'?'tablerivals':'showdown'):S.screen==='shop'&&S.pack?S.pack.kind:S.endless&&S.ante>STAGES?'endless':'main';
-  if(Music.mode==='tablerivals')Music.bpm=112;
 }
 
 const METAL={
