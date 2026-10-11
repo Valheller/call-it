@@ -1037,7 +1037,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.59</div>
+  <div class="gamever" aria-label="Version">v1.2.60</div>
 </div>
 
 <script>
@@ -4222,8 +4222,8 @@ function saveCodeModal(){
     <textarea id="savetxt" class="savetxt" readonly aria-label="Your save code">${makeSaveCode()}</textarea>
     <div style="display:flex;gap:8px;justify-content:center;margin:6px 0 12px"><button class="btn green small" data-act="savecopy">Copy code</button></div>
     <div class="lbl" style="margin-bottom:6px">Load a code from another device. <b style="color:var(--mult)">This replaces everything on this device.</b></div>
-    <textarea id="loadtxt" class="savetxt" placeholder="Paste a save code here" aria-label="Paste a save code" spellcheck="false"></textarea>
-    <div style="display:flex;gap:8px;justify-content:center;margin-top:6px"><button class="btn ${saveArm?'red':'orange'} small" data-act="saveload">${saveArm?'Tap again to replace this save':'Load code'}</button></div>
+    <textarea id="loadtxt" class="savetxt" placeholder="Tap Paste code, or long-press here and Paste" aria-label="Paste a save code" spellcheck="false" inputmode="none" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:6px"><button class="btn green small" data-act="savepaste">Paste code</button><button class="btn ${saveArm?'red':'orange'} small" data-act="saveload">${saveArm?'Tap again to replace this save':'Load code'}</button></div>
     <div style="text-align:center;margin-top:12px"><button class="btn orange" data-act="options">Back</button></div></div></div>`}
 function creditsModal(){
   return `<div class="overlay"><div class="panel modal credm"><h2>Credits</h2>
@@ -5600,6 +5600,8 @@ const ACT={
   boothequip(a){COS()[BOOTH_TAB]=a;saveProf();if(BOOTH_TAB==='skin')applySkin();if(BOOTH_TAB==='filter')applyFilter();play('click');showModal(boothModal);boothPreviews();if(typeof updateTitleCoin==='function')updateTitleCoin()},
   savecode(){saveArm=false;showModal(saveCodeModal)},
   savecopy(){const t=$('#savetxt');if(!t)return;t.select();const ok=()=>{toast('Save code copied');play('money')};try{navigator.clipboard.writeText(t.value).then(ok,()=>{document.execCommand('copy');ok()})}catch(e){document.execCommand('copy');ok()}},
+  savepaste(){const t=$('#loadtxt');if(!t)return;const done=v=>{if(v){t.value=v.trim();play('click')}else toast('Nothing to paste. Copy your save code first')};
+    try{navigator.clipboard.readText().then(done,()=>{toast('Long-press the box and choose Paste');t.focus()})}catch(e){toast('Long-press the box and choose Paste');t.focus()}},
   saveload(){const t=$('#loadtxt'),v=t?t.value:'',d=readSaveCode(v);if(!d){toast('That is not a valid save code');play('miss');saveArm=false;return}
     if(!saveArm){saveArm=true;const keep=v;showModal(saveCodeModal);const n=$('#loadtxt');if(n)n.value=keep;return}
     try{localStorage.setItem('hwr-profile',JSON.stringify(d.p));localStorage.setItem('hwr-opts',JSON.stringify(d.o||{}));if(d.r)localStorage.setItem('hwr-run',d.r);else localStorage.removeItem('hwr-run');if(d.b)localStorage.setItem('hwr-best',d.b)}catch(e){toast('Could not save on this device');return}
