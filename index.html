@@ -75,6 +75,8 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .s-binfo{display:flex;align-items:center;gap:10px;padding:8px 10px}
 .s-target{font-size:26px;font-weight:700;color:var(--mult);font-variant-numeric:tabular-nums}
 .s-bdesc{padding:0 10px 8px;font-size:14px;color:#ffd7d3}
+.hmob{display:none}
+@media (max-width:760px){.hmob{display:inline}.hdesk{display:none}}
 .bchip{--sz:44px;width:var(--sz);height:var(--sz);flex:none;border-radius:50%;background:var(--bc);display:grid;place-items:center;font-weight:700;font-size:calc(var(--sz)*.42);
   box-shadow:inset 0 0 0 4px rgba(255,255,255,.25),inset 0 0 0 calc(var(--sz)*.18) rgba(0,0,0,.18),0 3px 0 rgba(0,0,0,.4)}
 .s-score{display:flex;align-items:center;gap:10px}
@@ -1044,7 +1046,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.86</div>
+  <div class="gamever" aria-label="Version">v1.2.87</div>
 </div>
 
 <script>
@@ -4071,7 +4073,10 @@ function refreshTable(){
   if(cb)cb.innerHTML=S.call&&S.phase!=='call'?`${S.roll==='majority'?'Majority':'Calling'}<b class="${S.call}">${callName(S.call)}</b>`:'Make your call';
   const h=$('#hint'),ct=$('#controls');if(!ct)return;
   if(S.phase==='call'){
-    h.innerHTML=(S.boss==='fatal'&&S.boss2?`<b class="fataltxt">FATAL ERROR</b> · next toss: <b>${BOSSES[S.boss2].name}</b>: ${fmt(BOSSES[S.boss2].desc)}.`:S.duel&&!S.duel.general&&!S.duel.table&&S.rival?`<b style="color:var(--orange)">${isRematch()?'Rematch: ':''}${S.rival.name}</b> · ${fmt(rivalInfo().habit)}. Be ahead after your 3rd Flip.`:S.boss?bossDesc(curBlind())+'.':S.roll==='majority'?'No calls: each toss scores whichever face came up most.':'Every coin that lands on your call scores. Drag coins to rearrange them, or tap them to target a Rune.');
+    {const base=S.roll==='majority'?'No calls: each toss scores whichever face came up most.':'Every coin that lands on your call scores. Drag coins to rearrange them, or tap them to target a Rune.';
+     /* boss, elite and rival rules already sit in the sidebar on computers, so under the coins they only show on phones */
+     const foe=S.duel&&!S.duel.general&&!S.duel.table&&S.rival?`<b style="color:var(--orange)">${isRematch()?'Rematch: ':''}${S.rival.name}</b> · ${fmt(rivalInfo().habit)}. Be ahead after your 3rd Flip.`:S.boss?bossDesc(curBlind())+'.':'';
+     h.innerHTML=S.boss==='fatal'&&S.boss2?`<b class="fataltxt">FATAL ERROR</b> · next toss: <b>${BOSSES[S.boss2].name}</b>: ${fmt(BOSSES[S.boss2].desc)}.`:foe?`<span class="hmob">${foe}</span><span class="hdesk">${base}</span>`:base}
     const stake=betStake(),capped=stake<S.money,lim=`Table limit $${tableLimit()} this stage`;
     const betBtn=S.tossNo>0?'':S.roll==='highroller'&&S.money>0?`<button class="btn tiny gold betting" disabled title="High Roller: the first toss of every wager bets all your money, up to the table limit (${lim})">All-in: $${stake}</button>`:S.money>0?`<button class="btn tiny ${S.bet?'gold betting':''}" style="${S.bet?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="bet" aria-pressed="${!!S.bet}" title="Double or nothing with ${capped?`$${stake} (${lim})`:'all your money'}. No re-flips on a toss you bet on">${S.bet?`Betting ${capped?'':'all '}$${stake}`:`Bet ${capped?'':'all '}$${stake}`}${capped?' (max)':''}</button>`:'';
     const mid=`<div class="mid"><div class="lbl">Flips left</div><div class="num blue">${S.flipsLeft}</div>${betBtn}<div class="lbl" style="font-size:10px">on ${Math.min(4,S.purse.length)}+ hits · no re-flips</div></div>`;
