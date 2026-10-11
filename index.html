@@ -1037,7 +1037,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.61</div>
+  <div class="gamever" aria-label="Version">v1.2.62</div>
 </div>
 
 <script>
@@ -3090,7 +3090,7 @@ function coinArt(type,side){
     case 'glass':lumpy(15.8,'#a87c1c',.5,36);disc(13.4,'#e8c14a');
       g.globalCompositeOperation='source-atop';for(let k=0;k<40;k++){const x=(k*37)%32,y=(k*53+11)%32;rect(x,y,1,1,k%3?'#fff2b0':'#b8892a')}g.globalCompositeOperation='source-over';
       if(h)profile('#c99a2c','#fff2b0');else{ell(16,16,4.5,7.5,'#7a4a1c');rect(16,9,1,15,'#5a3412');rect(13,12,1,8,'#9a6428');rect(19,12,1,8,'#9a6428')}break;
-    case 'sanddollar':{lumpy(15.6,'#b8a07a',.6,24);disc(14.4,'#e9dcc0');for(let k=0;k<60;k++){const x=3+(k*31)%27,y=3+(k*47+5)%27;rect(x,y,1,1,k%3?'#dccca8':'#f6eedc')}
+    case 'sanddollar':{lumpy(15.6,'#b8a07a',.6,24);disc(14.4,'#e9dcc0');for(let k=0;k<60;k++){const x=3+(k*31)%27,y=3+(k*47+5)%27;if(Math.hypot(x+.5-C,y+.5-C)<13)rect(x,y,1,1,k%3?'#dccca8':'#f6eedc')}
       for(let k=0;k<5;k++){const a=-Math.PI/2+k*TAU/5;ell(16+Math.cos(a)*6.5,16+Math.sin(a)*6.5,1.6,4.2,'#b8a07a',a+Math.PI/2);ell(16+Math.cos(a)*6.5,16+Math.sin(a)*6.5,.7,3.2,'#d8c8a2',a+Math.PI/2)}
       disc(1.6,'#a08a60');if(!h)for(let k=0;k<5;k++){const a=-Math.PI/2+(k+.5)*TAU/5;ell(16+Math.cos(a)*11,16+Math.sin(a)*11,1.2,2.4,'#9a8458',a+Math.PI/2)}}break;
     case 'bellwether':{disc(15.6,'#5a3a14');disc(14.5,'#b8873a');ring(12.6,'#8a5f22');reed(14.6,'#7a5420');
