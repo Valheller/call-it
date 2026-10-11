@@ -618,10 +618,11 @@ img{-webkit-user-drag:none}
 .bigcoin .face.tails{transform:rotateY(180deg) translateZ(calc(var(--t)/2))}
 .tagline{color:#e3eef0;font-size:18px;max-width:40ch}
 /* title buttons: one 4-column grid so every button is the same size and the columns line up; Continue gets its own row */
-.titlebtns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 14px;width:min(860px,94vw);margin:0 auto}
+.titlebtns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 14px;width:min(680px,94vw);margin:0 auto}
 .trow{display:contents}
 .titlebtns .btn.big{width:100%;min-width:0;justify-content:center}
-#contbtn{grid-column:1/-1;justify-self:center;width:calc(50% - 7px)!important}
+#contbtn{grid-column:1/-1;justify-self:center;width:calc(25% - 10.5px)!important}
+#contbtn:not([hidden]){display:flex;flex-direction:column;align-items:center;line-height:1.05;padding-top:8px;padding-bottom:8px}#contbtn small{display:block;font-size:12px;margin:0}
 .trow .btn[hidden]{display:none}
 .bestlines{display:flex;flex-direction:column;align-items:center;gap:2px}
 
@@ -779,7 +780,7 @@ img{-webkit-user-drag:none}
   #toasts .toast{font-size:13px;padding:6px 12px;line-height:1.25}
   body:has(#coach:not([hidden])) #toasts{bottom:calc(100px + env(safe-area-inset-bottom))}
   /* title: Continue gets its own full-width row */
-  #contbtn{width:100%!important;display:flex;flex-direction:column;align-items:center;line-height:1.1}
+  #contbtn{width:calc(25% - 4.5px)!important;display:flex;flex-direction:column;align-items:center;line-height:1.1}
   #contbtn[hidden]{display:none}
   #contbtn small{display:block;margin:2px 0 0;font-size:11px}
   .modal h2{font-size:24px;margin:2px 0 8px}
@@ -1019,7 +1020,7 @@ html,body,button,a,.pond{touch-action:manipulation}
   <div class="titlebtns">
     <div class="trow">
       <button class="btn red big" data-act="cont" id="contbtn" hidden>Continue</button>
-      <button class="btn blue big" data-act="play">Play</button>
+      <button class="btn blue big" data-act="play" id="playbtn">Play</button>
       <button class="btn purple big" data-act="daily">Daily Toss</button>
       <button class="btn orange big" data-act="howto">How to Play</button>
       <button class="btn big" style="--c:#ff6f9a;--cd:#a8335a" data-act="booth">Prize Booth</button>
@@ -1032,7 +1033,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.52</div>
+  <div class="gamever" aria-label="Version">v1.2.53</div>
 </div>
 
 <script>
@@ -4747,7 +4748,7 @@ async function titleToss(){
   if(tok!==titleTok)return;sp.style.animationDelay=`-${(end%360)/360*2.4}s`;a.cancel();titleAnim=null;el.classList.remove('tossing');
 }
 function updateTitle(){updateStreakLine();
-  const sv=savedRun(),c=$('#contbtn');if(c){c.hidden=!(sv&&sv.S);if(sv&&sv.S)c.innerHTML=`Continue<small>Stage ${sv.S.ante}${sv.S.daily?' · Daily':''}</small>`}
+  const sv=savedRun(),c=$('#contbtn');{const pb=$('#playbtn');if(pb)pb.textContent=sv&&sv.S?'New Run':'Play'}if(c){c.hidden=!(sv&&sv.S);if(sv&&sv.S)c.innerHTML=`Continue<small>Stage ${sv.S.ante}${sv.S.daily?' · Daily':''}</small>`}
 }
 /* ================= COLLECTION ================= */
 const COL={tab:'charms',rar:0,sel:null,wear:''};
