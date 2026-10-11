@@ -310,6 +310,7 @@ body.badges .face::before{display:block}
 
 /* panels for blind select / cashout / shop */
 .panel{background:var(--panel);border-radius:14px;padding:14px;box-shadow:0 5px 0 var(--edge),inset 0 0 0 2px rgba(255,255,255,.06)}
+.panel.brshop{background:linear-gradient(#2a1416,#1d1012);box-shadow:0 5px 0 #120809,inset 0 0 0 2px rgba(200,16,46,.35)}
 .blinds{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;width:100%;max-width:820px}
 .bcol{position:relative;flex:1 1 170px;max-width:260px;background:var(--panel);border-radius:14px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;
   box-shadow:0 5px 0 var(--edge),inset 0 0 0 2px rgba(255,255,255,.06);transition:transform .2s}
@@ -1038,7 +1039,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.70</div>
+  <div class="gamever" aria-label="Version">v1.2.71</div>
 </div>
 
 <script>
@@ -1759,6 +1760,7 @@ Object.assign(JOKERS,{
 const cursed=(j,k)=>j.curse===k&&!(hasK('guardianangel')&&karmaNow()>=3);
 const slots=()=>S.jokerSlots+nK('cage')+S.jokers.filter(j=>j.wear==='weightless').length-S.jokers.filter(j=>cursed(j,'heavy')).length;
 const SPR_ALM={p:{1:'#27b3d6',2:'#9be7ff',3:'#ffffff'},s:["..........","...1111...","..122111..",".12111111.","3333333333",".11111111.","..111111..","...1111...","..........",".........."]};
+const SPR_FENCE={p:{1:'#6b4a2a',2:'#c9a227',3:'#ffd34d'},s:["...2222...","....22....","...1111...","..111111..",".11133111.",".11311111.",".11133111.",".11111311.",".11133111.","..111111.."]};
 const SPR_UPG={p:{1:'#ffd34d',2:'#b8650a'},s:["..........","..........","1111111111","1211111121","1112222111","1112222111","1211111121","1111111111","..........",".........."]};
 const SPR_SPIRIT=["...1111...","..111111..",".11211211.",".11211211.",".11111111.",".11122111.",".11111111.",".11111111.",".1.11.1.1.",".........."];
 const SPR_PACK=["...2..2...","....22....","..111111..",".11111111.","1111331111","1113333111","1111331111",".11111111.","..111111..",".........."];
@@ -2380,6 +2382,19 @@ const PACK_MUSIC={
   const MEL=[[3,-1,-1,2,1,-1,2,-1,3,-1,-1,-1,2,1,0,-1],[1,-1,2,-1,3,-1,-1,2,-1,1,-1,-1,0,-1,-1,-1]][bar%2];
   if((bar>=2||sec)&&MEL[s]>=0){const n=up[MEL[s]%up.length]+12;tone({at,f:mtof(n),type:'sawtooth',lp:1600,q:2,a:.03,d:spb*(MEL[s+1]===-1?.7:.35),v:.026,bus:B,vib:true})}
  },
+ backroom(m){ /* the Back Room: smoky after-hours jazz. Walking upright bass, brushes and ride, Rhodes comping, a muted trumpet */
+  const{s,bar,ch,at,spb,B,loop,up}=m,sec=loop%2;
+  if(s%4===0){const W=[ch.r,up[1%up.length],up[2%up.length],up[(bar%2?3:1)%up.length]],n=W[s/4];let f=mtof(n);while(f>130)f/=2;while(f<55)f*=2;
+    tone({at,f,type:'triangle',lp:420,a:.006,d:spb*.85,v:.22,bus:B});tone({at,f:f*2,a:.004,d:.07,v:.03,bus:B})}
+  if(s===4||s===12)noise({at,ft:'bandpass',ff:2600,q:.5,a:.035,d:.2,v:.022,bus:B});
+  if([0,4,7,8,12,15].includes(s))noise({at,ft:'highpass',ff:7200,a:.003,d:s===0||s===8?.32:.12,v:s===7||s===15?.006:.011,bus:B});
+  if(s===0||s===6||(s===11&&bar%2))ch.n.forEach((n,k)=>fm({at:at+k*.012,f:mtof(n),ratio:1,idx:.8,d:s===6?spb*1.4:spb*.7,v:.013,bus:B,wob:true}));
+  if(s===0)tone({at,f:mtof(ch.r-12),type:'sawtooth',lp:280,a:.5,d:spb*4,v:.02,bus:B});
+  const PH=[[-1,-1,2,-1,3,-1,-1,2,1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,1,-1,2,-1,3,-1,-1,-1,2,-1,-1,-1],[3,-1,-1,-1,2,-1,1,-1,0,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]][bar%4];
+  if((bar>=4||sec)&&PH[s]>=0){let e=s+1;while(e<16&&PH[e]<0)e++;const n=up[PH[s]%up.length]+12;
+    tone({at,f:mtof(n),type:'sawtooth',lp:1100,q:3,a:.04,d:Math.min(e-s,6)*spb/4*.9,v:.03,bus:B,vib:true});tone({at,f:mtof(n),type:'triangle',a:.04,d:Math.min(e-s,6)*spb/4*.8,v:.012,bus:B})}
+  if(s===14&&bar%4===3&&Math.random()<.5){const k=1+Math.random()*.03;fm({at,f:mtof(up[2%up.length]+36)*k,ratio:2.76,idx:1.6,d:.9,v:.008,bus:B})}
+ },
  chapel(m){ /* quiet chapel: pipe organ, wordless choir, distant bells, no drums */
   const{s,bar,ch,at,spb,B,loop,up}=m;
   if(s===0){ch.n.forEach(n=>{tone({at,f:mtof(n),a:.5,d:spb*4.2,v:.018,bus:B});tone({at,f:mtof(n)*2,a:.5,d:spb*4.2,v:.007,bus:B});tone({at,f:mtof(n),type:'square',lp:900,a:.6,d:spb*4,v:.004,bus:B})});tone({at,f:mtof(ch.r-12),a:.4,d:spb*4.2,v:.08,bus:B});tone({at,f:mtof(ch.r-24),a:.4,d:spb*4.2,v:.05,bus:B})}
@@ -2990,10 +3005,10 @@ function musicMood(){
   if(!AU.ctx)return;const t=AU.ctx.currentTime;
   if(SOUNDTEST!=null){const tr=TRACKS[SOUNDTEST],o=tr[2]||{};Music.mode=tr[1];Music.intense=!!o.intense;Music.var=o.v||0;Music.bpm=({fish:72,credits:104})[tr[1]]||90;Music.stage=tr[1]==='endless'?ST.estage:ST.stage;setLP(o.lp?750:16000);return}
   const shop=S&&(S.screen==='shop'||S.screen==='cashout'||S.screen==='over'||S.screen==='event');
-  setLP(shop&&!S.pack&&!S.bazaar&&!(S.event&&['prizecounter','chapel'].includes(S.event.key))&&modal!==creditsModal?750:16000);
+  setLP(shop&&!S.pack&&!S.bazaar&&!S.backroom&&!(S.event&&['prizecounter','chapel'].includes(S.event.key))&&modal!==creditsModal?750:16000);
   if(modal===creditsModal){setLP(16000);Music.mode='credits';Music.intense=false;Music.bpm=104;return}
   if(!S&&modal===fishModal){Music.mode='fish';Music.intense=false;Music.bpm=72;return}
-  {const sp=S&&S.screen==='event'&&S.event&&S.event.key==='prizecounter'?['prize',90]:S&&S.screen==='event'&&S.event&&S.event.key==='chapel'?['chapel',90]:S&&S.screen==='shop'&&S.bazaar&&!S.pack?['bazaar',90]:null;
+  {const sp=S&&S.screen==='event'&&S.event&&S.event.key==='prizecounter'?['prize',90]:S&&S.screen==='event'&&S.event&&S.event.key==='chapel'?['chapel',90]:S&&S.screen==='shop'&&S.bazaar&&!S.pack?['bazaar',90]:S&&S.screen==='shop'&&S.backroom&&!S.pack?['backroom',90]:null;
    if(sp){setLP(16000);Music.mode=sp[0];Music.intense=false;Music.bpm=sp[1];return}}
   Music.intense=!!(S&&S.screen==='play'&&S.boss);
   Music.var=S&&S.boss?bossTheme(S.boss):0;
@@ -3052,6 +3067,7 @@ function bgTarget(){
   if(S.pack){const k=S.pack.kind,A=k==='almanac'?M.platinum:k==='rune'?M.bronze:k==='spirit'?M.pewter:M.brass;
     return set(A,dim(k==='rune'?[.42,.26,.46]:k==='almanac'?[.3,.36,.52]:A,.4),3,.8)}
   if(S.screen==='choose')return set(M.brass,dim(M.bronze,.4),1.4,.8);
+  if(S.screen==='shop'&&S.backroom)return set([.62,.1,.14],dim([.4,.14,.1],.45),1.1,.72);
   if(S.screen==='shop'||S.screen==='cashout'||S.screen==='event')return set(M.verdigris,dim(M.copper,.35),1.6,.8);
   const b=curBlind();
   if(S.roll==='glitched'){const A=b.kind==='boss'?[.75,.12,.55]:b.kind==='big'?[.2,.7,.72]:[.6,.25,.75];return set(A,dim([.1,.85,.8],.4),S.boss?2.6:1.6,.7)}
@@ -3917,7 +3933,7 @@ function renderSide(){
     head=`<div class="s-blind" style="--bc:var(--purple)"><div class="s-bname">${EVENTS[S.event.key]&&EVENTS[S.event.key].omen?'Omen':EVENTS[S.event.key]&&EVENTS[S.event.key].mapOnly?EVENTS[S.event.key].title:'Encounter'}</div><div class="s-binfo"><div class="lbl">${EVENTS[S.event.key]&&EVENTS[S.event.key].omen?'The halls are trying to tell you something':'Something stirs between the tables'}</div></div></div>`;
   }else if(S.screen==='shop'){
     head=S.pack?`<div class="s-blind" style="--bc:${PACKS[S.pack.kind].col}"><div class="s-bname">${packName(S.pack)}</div><div class="s-binfo"><div class="lbl">Choose ${S.pack.picks} of ${S.pack.opts.length}</div></div></div>`
-      :`<div class="s-blind" style="--bc:${S.bazaar?'#5fd3c8':'var(--green)'}"><div class="s-bname">${S.bazaar?'Bazaar':'Shop'}</div><div class="s-binfo"><div class="lbl">${S.bazaar?'Rare goods, 40% dearer':'Charms, packs and upgrades'}</div></div></div>`;
+      :`<div class="s-blind" style="--bc:${S.backroom?'#c8102e':S.bazaar?'#5fd3c8':'var(--green)'}"><div class="s-bname">${S.backroom?'The Back Room':S.bazaar?'Bazaar':'Shop'}</div><div class="s-binfo"><div class="lbl">${S.backroom?'Cheap goods, none of them clean':S.bazaar?'Rare goods, 40% dearer':'Charms, packs and upgrades'}</div></div></div>`;
   }else{
     const b=curBlind();
     head=`<div class="s-blind" style="--bc:${blindColor(b)}"><div class="s-bname">${blindName(b)}</div>
@@ -4076,7 +4092,7 @@ const packName=p=>sizeName(p.size)+PACKS[p.kind].name;
 const packCost=s=>s==='normal'?4:s==='jumbo'?6:8;
 const packCounts=p=>PACKS[p.kind].n&&PACKS[p.kind].n[p.size]?{n:PACKS[p.kind].n[p.size][0],picks:PACKS[p.kind].n[p.size][1]}:({n:p.size==='normal'?(p.kind==='spirit'?2:3):(p.kind==='spirit'?4:5),picks:p.size==='mega'?2:1});
 const gp=(o,v)=>{const k=karmaNow();if(S&&S.bazaar)v=Math.max(1,Math.round(v*1.4));return Math.max(1,v+((o&&o.gd)||0)+(k>=6?-1:k<=-6?1:0))};
-const slotPrice=o=>S.shop&&o===S.shop.jokers[0]&&countEff('goldenticket')?0:gp(o,o.kind==='charm'?(o.curse==='rented'?1:Math.max(1,price(o.curse?Math.ceil(o.cost/2):o.cost)-countEff('coupon'))):price(o.cost));
+const slotPrice=o=>S.shop&&o===S.shop.jokers[0]&&countEff('goldenticket')?0:gp(o,o.br?3:o.kind==='charm'?(o.curse==='rented'?1:Math.max(1,price(o.curse?Math.ceil(o.cost/2):o.cost)-countEff('coupon'))):price(o.cost));
 /* each reroll in the same shop costs 50% more than the last: $5, $8, $11, $17, $25, $38... */
 const rerollCost=()=>countEff('cornucopia')?0:Math.max(0,Math.round(S.shop.reroll*1.5**(S.shop.rolls||0))-countEff('thrifty')+infl());
 function charmCardHTML(o,i){
@@ -4103,12 +4119,15 @@ function shopHTML(){
     return `<div class="scard ${pk.bought?'gone':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">${p?'$'+p:'Free'}</div>
       <button class="jcard tile ${pk.kind==='glitch'?'gpk':''}" data-tip="pack:${i}" data-drag="shop" data-sk="p:${i}" aria-label="${packName(pk)}"><div class="jin" style="--jbg:${info.bg};--dl:${-i*.8}s">${IMG(packIconFor(pk.kind,pk.size))}<span class="lab">${PACKS[pk.kind].word}</span></div></button>
       <button class="btn green small" data-act="buypack" data-arg="${i}" ${pk.bought||S.money<p?'disabled':''}>Open</button><div class="pcap">${packName(pk)}</div></div>`}).join('');
-  return `<div class="panel shop"><div class="shophead"><div class="shopbtns">
-      <button class="btn red big" data-act="nextround">Next Round</button>
+  const brc=S.backroom&&(sh.br||[]).map((o,i)=>{const L=o.k==='loaded',p=L?gp(o,6):0,room=purseUsed()+2<=S.purseMax,dis=o.bought||(L&&(S.money<p||!room));
+      return `<div class="scard ${o.bought?'gone':''}"><div class="price">${L?'$'+p:'+$10'}</div><button class="jcard tile" aria-label="${L?'Loaded coins':'Fence something'}"><div class="jin" style="--jbg:${L?'#3a1414':'#2a2410'};--dl:${-i*.8}s">${L?coinIcon('loaded'):IMG(sprite('fence',SPR_FENCE))}<span class="lab">${L?'Loaded':'Fence'}</span></div></button>
+      <button class="btn ${L?'green':'red'} small" data-act="brbuy" data-arg="${i}" ${dis?'disabled':''}>${L&&!room&&!o.bought?'No room':L?'Buy':'Take'}</button><div class="pcap">${L?"A Magician's Coin and a counterfeit. Karma -1":'Easy money. Karma -2'}</div></div>`}).join('');
+  return `<div class="panel shop ${S.backroom?'brshop':''}"><div class="shophead"><div class="shopbtns">
+      <button class="btn red big" data-act="nextround">${S.backroom?'Leave':'Next Round'}</button>
       <button class="btn green" data-act="reroll" ${S.money<rerollCost()?'disabled':''}>Reroll $${rerollCost()}</button></div>
       <div class="sect"><div class="slbl">${S.roll==='ghost'?'Spirits':'Charms'}</div><div class="shelf">${sh.jokers.map(charmCardHTML).join('')}</div></div></div>
-    <div class="shoprow2"><div class="sect up"><div class="slbl">Upgrade</div><div class="shelf">${uc}</div></div>
-      <div class="sect"><div class="slbl">Packs</div><div class="shelf">${pc}</div></div></div></div>
+    <div class="shoprow2">${S.backroom?`<div class="sect"><div class="slbl">Under the counter</div><div class="shelf">${brc}</div></div>`:`<div class="sect up"><div class="slbl">Upgrade</div><div class="shelf">${uc}</div></div>
+      <div class="sect"><div class="slbl">Packs</div><div class="shelf">${pc}</div></div>`}</div></div>
     ${purseHTML()}`;
 }
 function purseHTML(){
@@ -4202,7 +4221,7 @@ function runInfoModal(){
 function lkMeters(note='Revealed by your Crystal Ball',showL=true,showK=true){const L=luckNow(),K=karmaNow(),bar=(v,c)=>`<div class="lkbar"><i style="left:${50+Math.min(0,v)*5}%;width:${Math.abs(v)*5}%;background:${c}"></i></div>`;
   return `<div class="lkm">${showL?`<div><span>Luck</span>${bar(L,'#4bd18f')}<b>${fmtSign(L)} · ${luckWord(L)}</b></div>`:''}${showK?`<div><span>Karma</span>${bar(K,'#ffd34d')}<b>${fmtSign(K)} · ${karmaWord(K)}</b></div>`:''}<div class="lbl">${note}</div></div>`}
 /* in the order you meet them: menu, the run, its packs, then the endings */
-const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','main',{lp:1}],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Glitch Pack','glitch',{sub:'Unlocked by beating House'}],['Prize Counter','prize',{sub:'Spend your Tickets'}],['The Bazaar','bazaar',{sub:'A rare detour'}],['The Chapel','chapel',{sub:'For those with good Karma'}],['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['Endless','endless',{sub:'Below the House'}],['The House','thehouse',{sub:'Endless final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
+const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','main',{lp:1}],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Glitch Pack','glitch',{sub:'Unlocked by beating House'}],['Prize Counter','prize',{sub:'Spend your Tickets'}],['The Bazaar','bazaar',{sub:'A rare detour'}],['The Back Room','backroom',{sub:'For those with bad Karma'}],['The Chapel','chapel',{sub:'For those with good Karma'}],['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['Endless','endless',{sub:'Below the House'}],['The House','thehouse',{sub:'Endless final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
 let SOUNDTEST=null;const ST={glitch:false,stage:1,estage:9};
 function soundTestModal(){
   return `<div class="overlay"><div class="panel modal stm" style="width:min(660px,100%)"><h2>Sound Test</h2>
@@ -5239,11 +5258,12 @@ const randHand=()=>pick(HANDS.filter(h=>h.key!=='bust')).key;
 function bazaarKey(){if(rand()<.1){const own=new Set(S.jokers.map(j=>j.key)),lg=Object.keys(JOKERS).filter(k=>JOKERS[k].r===4&&!own.has(k));if(lg.length)return pick(lg)}return rollJokerKey(rand()<.45?3:2)}
 function charmRow(){
   // two charm slots; sometimes one (never both) is a lone Almanac instead
-  const n=S.bazaar?3:S.shopCharms||2,alm=S.roll!=='ghost'&&!S.bazaar&&rand()<.3?Math.floor(rand()*n):-1;
+  const n=S.bazaar||S.backroom?3:S.shopCharms||2,alm=S.roll!=='ghost'&&!S.bazaar&&!S.backroom&&rand()<.3?Math.floor(rand()*n):-1;
   const row=[];
   for(let i=0;i<n;i++){
     if(i===alm)row.push({...randAlmanac(),cost:3});
     else if(S.roll==='ghost'){let k;do k=pick(Object.keys(SPIRITS).filter(x=>x!=='soul'));while(row.some(o=>o.key===k));row.push({kind:'spirit',key:k,cost:4})}
+    else if(S.backroom){let k;do k=rollJokerKey(3);while(row.some(o=>o.key===k)&&rand()<.9);row.push({kind:'charm',key:k,cost:JOKERS[k].cost,curse:pickCurse(k,Object.keys(CURSES).filter(c=>c!=='rented')),br:1})}
     else{const k=S.bazaar?bazaarKey():rollJokerKey();let curse=null;if(S.roll==='cursed')curse=pickCurse(k);else if(S.stake>=4&&rand()<.2&&curseOK(k,'rented'))curse='rented';else if(rand()<.12-karmaNow()*.012)curse=pickCurse(k,['rusted','bound','fleeting','brittle','heavy','hungry','jinxed']);
       row.push({kind:'charm',key:k,cost:JOKERS[k].cost,curse})}
     if(S.shop)S.shop.jokers=row;
@@ -5322,6 +5342,7 @@ function chooseWay(i){
   if(!S.wayStage||S.wayStage.ante!==S.ante)S.wayStage={ante:S.ante,used:[]};if(w.t==='rival'||w.t==='elite')S.wayStage.used.push(w.t);
   if(w.t==='shop'){genShop();S.screen='shop';render();coach('shop');return}
   if(w.t==='bazaar'){S.bazaar=true;genShop();S.screen='shop';render();play('unlock');return}
+  if(w.t==='backroom'){S.backroom=true;genShop();S.screen='shop';render();play('unlock');return}
   if(w.t==='treasure'){S.treasure=true;genShop();const k=rollPack().kind;S.shop.packs=[{kind:k,size:biggest(k),bought:false,free:true}];S.screen='shop';render();buyPack(0);return}
   if(w.t==='mystery'){const opts=['encounter','rest','treasure','bazaar','house','pawn',...(S.ante>=2&&S.roll!=='rivalroll'&&!S.wayStage.used.includes('elite')?['elite']:[]),...(!S.wayStage.used.includes('rival')?['rival']:[]),...((S.tickets||0)>=3?['prize']:[])];
     const t=pick(opts),nw={t};if(t==='elite'){nw.boss=pick(BOSS_POOL.filter(b=>!['wall','needle','judge'].includes(b)));nw.boss2=S.ante>=4?pick(SECOND_BOSS.filter(k=>k!==nw.boss)):null}
@@ -5333,7 +5354,7 @@ function chooseWay(i){
   if(w.t==='elite'){S.inElite=true;S.eliteBlind={kind:'elite',boss:w.boss,boss2:w.boss2,state:'select'};setTimeout(()=>{play('boss');shake(6)},50);startBlind();return}
 }
 /* every detour (and the shop) ends here: on to the next wager */
-function goNext(){S.bazaar=false;S.treasure=false;S.pack=null;S.event=null;S.ways=null;S.selJoker=null;S.selCons=null;S.csel=[];S.screen='blind';render()}
+function goNext(){S.bazaar=false;S.backroom=false;S.treasure=false;S.pack=null;S.event=null;S.ways=null;S.selJoker=null;S.selCons=null;S.csel=[];S.screen='blind';render()}
 function endElite(won){
   const kind=S.eliteBlind&&S.eliteBlind.kind;S.inElite=false;S.eliteBlind=null;S.boss=null;S.boss2=null;S.phase='idle';S.results=[];S.call=null;S.csel=[];
   S.purse.forEach(c=>{c.fog=false;if(c.face==='E')c.face='H'});
@@ -5466,10 +5487,11 @@ const freeUpgrades=()=>Object.keys(UPGRADES).filter(u=>!S.upgrades.includes(u)&&
 function genShop(){
   S.shop={jokers:[],packs:Array.from({length:S.shopPacks||2},()=>rollPack()),reroll:S.rerollBase,upgrade:null};
   if(S.bazaar)S.shop.packs.forEach(pk=>pk.size=biggest(pk.kind));
+  if(S.backroom){S.shop.packs=[];S.shop.br=[{k:'loaded'},{k:'fence'}]}
   S.shop.jokers=charmRow();
   const ups=freeUpgrades();
-  if(ups.length)S.shop.upgrade={key:pick(ups),bought:false};
-  if(S.roll==='glitched')[...S.shop.jokers,...S.shop.packs,S.shop.upgrade].forEach(glitchPrice);
+  if(ups.length&&!S.backroom)S.shop.upgrade={key:pick(ups),bought:false};
+  if(S.roll==='glitched')[...S.shop.jokers,...S.shop.packs,S.shop.upgrade].filter(Boolean).forEach(glitchPrice);
 }
 function reroll(){
   const sh=S.shop,cost=rerollCost();if(S.money<cost)return;spend(cost);sh.rolls=(sh.rolls||0)+1;
@@ -5601,6 +5623,10 @@ const ACT={
   cashout(){doCashout()},
   reroll(){reroll()},
   buyjoker(a){buyJoker(+a)},
+  brbuy(a){const o=S.shop.br&&S.shop.br[+a];if(!o||o.bought)return;
+    if(o.k==='loaded'){const p=gp(o,6);if(S.money<p||purseUsed()+2>S.purseMax)return;spend(p);S.purse.push(mkCoin('loaded'),mkCoin(pick(['twohead','twotail'])));addKarma(-1);play('buy');toast("A <b>Magician's Coin</b> and a counterfeit slide across the table. Nobody saw anything.")}
+    else{S.money+=10;addKarma(-2);play('money');toast('You never ask where it came from. <b>+$10</b>')}
+    o.bought=true;render()},
   buyuse(a){buyJoker(+a,true)},
   buyupg(){buyUpg()},
   buypack(a){buyPack(+a)},
