@@ -1039,7 +1039,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.79</div>
+  <div class="gamever" aria-label="Version">v1.2.80</div>
 </div>
 
 <script>
@@ -4693,7 +4693,7 @@ const EVENTS={
    {label:'A free Upgrade',ok:()=>freeUpgrades().length>0,why:'No Upgrades left',run:()=>{const k=pick(freeUpgrades());S.upgrades.push(k);UPGRADES[k].apply();play('levelup');return `You earn the {a:${UPGRADES[k].name}} Upgrade: ${UPGRADES[k].desc}.`}}]},
  rivalwin:{mapOnly:1,avail:()=>false,title:'Duel Won',text:'You won the duel. Take one prize. They will be tougher next time.',
   choices:[{label:()=>`Double the stake ($${2*rivalStake()})`,run:()=>{const v=2*rivalStake();S.rival.lvl++;S.money+=v;play('money');return `You collect {$:$${v}}.`}},
-   {label:()=>`Their ${COINS[rivalCoin()].name}`,ok:()=>purseUsed()<S.purseMax,why:'Your purse is full',run:()=>{const t=rivalCoin();S.rival.lvl++;S.purse.push({...mkCoin(t),wear:'proof'});play('win');return `You take their {a:Proof Finish ${COINS[t].name}}.`}},
+   {label:()=>`Their ${COINS[rivalCoin()].name}`,tip:()=>'ctypep:'+rivalCoin(),ok:()=>purseUsed()<S.purseMax,why:'Your purse is full',run:()=>{const t=rivalCoin();S.rival.lvl++;S.purse.push({...mkCoin(t),wear:'proof'});play('win');return `You take their {a:Proof Finish ${COINS[t].name}}.`}},
    {label:()=>`Learn their ${HAND[rivalInfo().fav].name}`,run:()=>{const h=rivalInfo().fav;S.rival.lvl++;S.hands[h].level+=2;play('levelup');return `{a:${HAND[h].name}} goes up {a:2 levels}.`}}]},
  q_courier:{title:'The Courier',text:()=>`A courier who can\'t remember where they were going holds out a sealed coin. "Carry it to stage ${Math.min(STAGES,S.ante+2)} for me. Don\'t spend it, don\'t melt it."`,avail:()=>!hasQuest('courier')&&S.ante<=STAGES-2,
   choices:[{label:'Accept the quest',ok:()=>purseUsed()<S.purseMax,why:'Your purse is full',run:()=>{S.purse.push(mkCoin('sealed'));startQuest('courier');play('buy');return 'You tuck the {a:Sealed Coin} into your purse. Reward on delivery: {$:$20} and a Rare Charm.'}},declineC('You leave them still holding it out.')]},
@@ -4727,7 +4727,7 @@ function eventHTML(){
   if(!S.event.text)S.event.text=typeof E.text==='function'?E.text():E.text;
   return `<div class="panel evpanel ${E.omen?'omen':''}"><div class="evtitle">${E.omen?'<span class="omentag">Omen</span>':''}${E.title}</div><div class="evtext">${fmt(S.event.result||S.event.text)}</div>
     ${S.event.result?'<button class="btn orange big" data-act="evdone">Continue</button>':`<div class="evchoices">${E.choices.map((c,i)=>{const ok=!c.ok||c.ok();
-      return `<div class="evch"><button class="btn ${i===E.choices.length-1&&E.choices.length>1&&c.label==='Decline'?'':'green'}" data-act="evpick" data-arg="${i}" ${ok?'':'disabled'}>${hideLuck(typeof c.label==='function'?c.label():c.label)}</button>${!ok&&c.why?`<div class="why">${c.why}</div>`:''}</div>`}).join('')}</div>`}
+      return `<div class="evch"><button class="btn ${i===E.choices.length-1&&E.choices.length>1&&c.label==='Decline'?'':'green'}" data-act="evpick" data-arg="${i}" ${c.tip?`data-tip="${c.tip()}"`:''} ${ok?'':'disabled'}>${hideLuck(typeof c.label==='function'?c.label():c.label)}</button>${!ok&&c.why?`<div class="why">${c.why}</div>`:''}</div>`}).join('')}</div>`}
   </div><div class="purse shopp">${S.purse.map((c,i)=>coinHTML(c,i)).join('')}</div>`;
 }
 function prizeHTML(){const t=S.tickets||0,full=S.jokers.length>=slots();S.event.sold=S.event.sold||{};
@@ -4924,6 +4924,7 @@ function tipContent(spec){
   if(k==='runroll'){const r=ROLLS[S.roll],st=STAKES[S.stake]||STAKES[1];
     return `<div class="tn">${rollName(S.roll)}</div><div class="td">${fmt(r.desc)}</div>${S.daily?`<span class="tb" style="background:var(--purple)">Daily Toss</span>`:r.challenge?`<span class="tb" style="background:var(--mult)">Challenge Roll</span>`:`<span class="tb" style="background:${st.col};color:#1a1a1a">${st.name}</span><div class="td" style="margin-top:4px">${stakeDesc(S.stake)}</div>`}${S.seed?`<div class="tkind">Seed ${S.seed}</div>`:''}`}
   if(k==='way'){const D=DEST[i];return D&&`<div class="tn">${D.name}</div><div class="td">${fmt(D.desc)}</div><span class="tb" style="background:${D.col};color:#1a1a1a">${D.rare?'Rare detour':'Destination'}</span>`}
+  if(k==='ctype'||k==='ctypep')return COINS[a]&&cn(a,k==='ctypep'?{wear:'proof'}:null);
   if(k==='prize'){const key=S.event&&prizeOffer()[i];return key&&jt(key)}
   if(k==='goal'){const g=GOALS[i];if(!g)return null;const ok=isUnlocked(g.kind,g.key)&&!PROF.unlockAll||!!PROF.unlocked[g.kind+':'+g.key];
     return `<div class="tn">#${i+1} ${ok?goalName(g):'Locked'}</div><div class="td">${ok?'Unlocked: ':'To unlock: '}${g.desc}</div><span class="tb" style="background:${ok?'var(--green)':'var(--grey)'}">${{charm:'Charm',coin:'Coin',pack:'Pack',roll:'Roll'}[g.kind]}</span>`}
