@@ -344,6 +344,10 @@ body.badges .face::before{display:block}
 .scard .price{background:var(--panel-deep);color:var(--money);font-weight:700;font-size:18px;border-radius:8px;padding:2px 10px;box-shadow:0 3px 0 var(--edge)}
 .shelf .scard .price{background:var(--panel)}
 .scard.gone{visibility:hidden}
+.soldout{align-self:center;margin:auto;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 10px;border:3px solid var(--mult);border-radius:8px;color:var(--mult);transform:rotate(-10deg);background:rgba(254,95,85,.08);box-shadow:inset 0 0 0 2px rgba(254,95,85,.25);animation:soldin .35s cubic-bezier(.2,1.6,.4,1)}
+.soldout b{font-size:20px;letter-spacing:.06em;line-height:1;white-space:nowrap}
+.soldout small{font-size:10px;color:var(--ink-dim);white-space:nowrap}
+@keyframes soldin{0%{transform:rotate(-10deg) scale(1.8);opacity:0}100%{transform:rotate(-10deg) scale(1);opacity:1}}
 .scard .jcard{width:clamp(56px,7vw,72px)}
 .shop .lbl.c{text-align:center}
 .coinicon{width:58%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 34% 30%,var(--hi) 0 14%,var(--fc) 52%,var(--rim) 100%);
@@ -956,7 +960,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.10</div>
+  <div class="gamever" aria-label="Version">v1.2.11</div>
 </div>
 
 <script>
@@ -3640,7 +3644,8 @@ const packCost=s=>s==='normal'?4:s==='jumbo'?6:8;
 const packCounts=p=>PACKS[p.kind].n&&PACKS[p.kind].n[p.size]?{n:PACKS[p.kind].n[p.size][0],picks:PACKS[p.kind].n[p.size][1]}:({n:p.size==='normal'?(p.kind==='spirit'?2:3):(p.kind==='spirit'?4:5),picks:p.size==='mega'?2:1});
 const gp=(o,v)=>{const k=karmaNow();if(S&&S.bazaar)v=Math.max(1,Math.round(v*1.4));return Math.max(1,v+((o&&o.gd)||0)+(k>=6?-1:k<=-6?1:0))};
 const slotPrice=o=>S.shop&&o===S.shop.jokers[0]&&countEff('goldenticket')?0:gp(o,o.kind==='charm'?(o.curse==='rented'?1:Math.max(1,price(o.curse?Math.ceil(o.cost/2):o.cost)-countEff('coupon'))):price(o.cost));
-const rerollCost=()=>countEff('cornucopia')?0:Math.max(0,S.shop.reroll-countEff('thrifty'));
+/* each reroll in the same shop costs 50% more than the last: $5, $8, $11, $17, $25, $38... */
+const rerollCost=()=>countEff('cornucopia')?0:Math.max(0,Math.round(S.shop.reroll*1.5**(S.shop.rolls||0))-countEff('thrifty'));
 function charmCardHTML(o,i){
   const p=slotPrice(o),full=S.jokers.length>=slots();
   if(o.kind==='spirit'){const ci=consInfo(o),room=consRoom();
@@ -3659,7 +3664,7 @@ function charmCardHTML(o,i){
 function shopHTML(){
   const sh=S.shop;
   const u=sh.upgrade;
-  const uc=u?`<div class="scard ${u.bought?'gone':''}"><div class="price">$${gp(u,upgCost(u))}</div><button class="jcard tile" data-tip="upg"><div class="jin" style="--jbg:#5d3d94">${IMG(sprite('upg',SPR_UPG))}<span class="lab">Upgrade</span></div></button>
+  const uc=upgLocked()?`<div class="soldout" role="img" aria-label="Sold out: one Upgrade per stage"><b>SOLD OUT</b><small>Back next stage</small></div>`:u?`<div class="scard ${u.bought?'gone':''}"><div class="price">$${gp(u,upgCost(u))}</div><button class="jcard tile" data-tip="upg"><div class="jin" style="--jbg:#5d3d94">${IMG(sprite('upg',SPR_UPG))}<span class="lab">Upgrade</span></div></button>
       <button class="btn purple small" data-act="buyupg" ${u.bought||upgLocked()||S.money<gp(u,upgCost(u))?'disabled':''}>${upgLocked()&&!u.bought?'1 per stage':'Redeem'}</button></div>`:'<div class="lbl">Sold out</div>';
   const pc=sh.packs.map((pk,i)=>{const p=packPrice(pk),info=PACKS[pk.kind];
     return `<div class="scard ${pk.bought?'gone':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">${p?'$'+p:'Free'}</div>
@@ -4935,7 +4940,7 @@ function genShop(){
   if(S.roll==='glitched')[...S.shop.jokers,...S.shop.packs,S.shop.upgrade].forEach(glitchPrice);
 }
 function reroll(){
-  const sh=S.shop,cost=rerollCost();if(S.money<cost)return;spend(cost);sh.reroll++;
+  const sh=S.shop,cost=rerollCost();if(S.money<cost)return;spend(cost);sh.rolls=(sh.rolls||0)+1;
   sh.jokers=[];sh.jokers=charmRow();if(S.roll==='glitched')sh.jokers.forEach(glitchPrice);play('reroll');render();
 }
 function addJoker(key,cost){const d=JOKERS[key],j={id:uid++,key,st:d.init?{...d.init}:{},cost};if(S.roll==='cursed'){j.curse=pick(Object.keys(CURSES));if(j.curse==='fleeting')j.left=5}S.jokers.push(j)}
