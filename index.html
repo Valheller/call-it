@@ -524,6 +524,8 @@ body.badges .face::before{display:block}
 /* drag to reorder */
 [data-drag]{touch-action:none;-webkit-user-drag:none}
 img{-webkit-user-drag:none}
+/* no Save Image / text-select menu when holding a finger on game art */
+img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .dragging{opacity:.22}
 .dragging .jin,.dragging .lift{animation:none}
 .ghost{position:fixed;left:0;top:0;margin:0;pointer-events:none;z-index:72;transform-origin:50% 40%;transition:none!important;will-change:transform;animation:none!important}
@@ -1057,7 +1059,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.106</div>
+  <div class="gamever" aria-label="Version">v1.2.107</div>
 </div>
 
 <script>
@@ -4986,6 +4988,7 @@ function hideTip(){tipFor=null;const t=$('#tip');if(t)t.hidden=true}
 let lastHover=null;
 /* touch screens: tap something to pin its tooltip; it stays until you tap anywhere else */
 const touchUI=()=>matchMedia('(hover: none)').matches;
+document.addEventListener('contextmenu',e=>{if(e.target.closest('img,canvas,[data-drag],[data-tip],.jcard,.coin'))e.preventDefault()});
 document.addEventListener('pointerdown',e=>{if(!touchUI())return;if(S&&!S.pack&&S.selJoker!=null&&!e.target.closest('.jslot')){S.selJoker=null;renderJokers()}if(!tipFor)return;const t=e.target.closest('[data-tip]');if(!t||t.dataset.tip!==tipFor.dataset.tip)hideTip()},true);
 document.addEventListener('click',e=>{if(!touchUI()||(drag&&drag.active))return;const t=e.target.closest('[data-tip]');if(!t)return;const spec=t.dataset.tip;
   requestAnimationFrame(()=>{const el=t.isConnected?t:document.querySelector(`[data-tip="${spec}"]`);if(el){tipFor=el;showTip(el)}})},true);
