@@ -981,6 +981,10 @@ html,body,button,a,.pond{touch-action:manipulation}
 /* Collection and roll picker: the header (tabs, description) stays put; only the grid scrolls, so there is one scrollbar */
 .overlay>.colm,.overlay>.rollm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px) / var(--k,1))}
 .colm>*,.rollm>*{flex:none}
+.overlay>.optm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px) / var(--k,1))}
+.optm>h2{flex:none;margin-bottom:8px}.optm .optbody{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:2px}
+.optm .optfoot{flex:none;text-align:center;padding-top:8px}.optm .optver{margin-top:4px}
+.optm .optrow{padding:5px 10px;margin-bottom:5px;min-height:38px}.optm .optrow .btn.small{padding:5px 10px;font-size:14px}
 .colm .cgrid,.rollm .rollgrid{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden}
 </style>
 
@@ -1033,7 +1037,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.46</div>
+  <div class="gamever" aria-label="Version">v1.2.47</div>
 </div>
 
 <script>
@@ -4176,7 +4180,7 @@ function soundTestModal(){
     <div style="text-align:center;margin-top:12px;display:flex;gap:10px;justify-content:center">${SOUNDTEST!=null?'<button class="btn red" data-act="ststop">Stop</button>':''}<button class="btn orange" data-act="stback">Back</button></div></div></div>`}
 let abandonArm=false,resetArm=false;
 function optionsModal(){
-  return `<div class="overlay"><div class="panel modal" style="width:min(380px,100%)"><h2>Options</h2>
+  return `<div class="overlay"><div class="panel modal optm" style="width:min(400px,100%)"><h2>Options</h2><div class="optbody">
     <div class="optrow"><span>Music volume</span><input type="range" class="vol" min="0" max="100" value="${Math.round(OPT.mvol*100)}" data-vol="m" aria-label="Music volume"></div>
     <div class="optrow"><span>Effects volume</span><input type="range" class="vol" min="0" max="100" value="${Math.round(OPT.svol*100)}" data-vol="s" aria-label="Sound effects volume"></div>
     <div class="optrow"><span>H / T labels on coins</span><button class="btn ${OPT.badges?'green':''} small" data-act="tbadges">${OPT.badges?'On':'Off'}</button></div>
@@ -4187,10 +4191,10 @@ function optionsModal(){
     ${canFS()?`<div class="optrow"><span>Fullscreen</span><button class="btn ${isFS()?'green':''} small" data-act="fullscreen">${isFS()?'On':'Off'}</button></div>`:''}
     ${S?`<div class="optrow"><span>${abandonArm?'Really abandon this run?':'Start over'}</span><button class="btn red small" data-act="abandon">${abandonArm?'Yes, new run':'New Run'}</button></div>`:''}
     <div class="optrow"><span>Keyboard shortcuts</span><button class="btn small" style="--c:#5d6bd6;--cd:#343c80" data-act="keys">Show</button></div>
-    <div class="optrow"><span>Save code<small style="display:block;font-size:11px;color:var(--ink-dim)">Move your progress between devices</small></span><button class="btn small" style="--c:#2a8a6a;--cd:#175a44" data-act="savecode">Open</button></div>
+    <div class="optrow"><span title="Move your progress between devices">Save code</span><button class="btn small" style="--c:#2a8a6a;--cd:#175a44" data-act="savecode">Open</button></div>
     <div class="optrow"><span>Links</span><a class="btn small" style="--c:#2a2a33;--cd:#111;text-decoration:none;color:#fff" href="https://github.com/Valheller/call-it" target="_blank" rel="noopener">GitHub</a></div>
     <div class="optrow"><span>Credits</span><button class="btn small" style="--c:#c96a8a;--cd:#7a3a55" data-act="credits">Credits</button></div>
-    <div style="text-align:center;margin-top:6px"><button class="btn orange" data-act="closemodal">Back</button></div><div class="optver">Call it. ${($('.gamever')||{}).textContent||''}</div></div></div>`;
+    </div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button><div class="optver">Call it. ${($('.gamever')||{}).textContent||''}</div></div></div></div>`;
 }
 let BOOTH_TAB='skin';
 function boothModal(){const C=COS(),tix=PROF.tix||0,isSkin=BOOTH_TAB==='skin',isF=BOOTH_TAB==='filter',L=isSkin?SKINS:isF?FILTERS:THEMES;
