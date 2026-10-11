@@ -968,7 +968,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.17</div>
+  <div class="gamever" aria-label="Version">v1.2.18</div>
 </div>
 
 <script>
@@ -1815,7 +1815,7 @@ const SPIRITS={
  doppelganger:{name:'Doppelganger',col:'#4bd18f',desc:'Copy a random Charm. Lose {$:$10}',ok:()=>S.jokers.length>0&&S.jokers.length<slots(),why:'You need a Charm and room for another',
   use:async()=>{const j=pick(S.jokers);S.jokers.push({id:uid++,key:j.key,st:{...j.st},cost:j.cost});S.money=Math.max(0,S.money-10);play('xmult');render()}},
  wraith:{name:'Wraith',col:'#ff9de2',desc:'Summon a random {f:Fabled} Charm. It carries a random {r:Curse}, and you lose {r:all} your money',ok:()=>S.jokers.length<slots()&&wraithPool().length>0,why:'No room for a Charm',
-  use:async()=>{const k=pick(wraithPool());addJoker(k,0);const j=S.jokers[S.jokers.length-1];j.curse=pick(Object.keys(CURSES).filter(c=>c!=='rented'));if(j.curse==='fleeting')j.left=5;S.money=Math.min(S.money,0);play('unlock');shake(6);render();juice($('#jk'+(S.jokers.length-1)));toast(`The <b>Wraith</b> leaves you <b style="color:#ff9de2">${JOKERS[k].name}</b>, cursed <b>${CURSES[j.curse].name}</b>`)}},
+  use:async()=>{const k=pick(wraithPool());addJoker(k,0);const j=S.jokers[S.jokers.length-1];j.curse=pickCurse(k,Object.keys(CURSES).filter(c=>c!=='rented'));if(j.curse==='fleeting')j.left=5;S.money=Math.min(S.money,0);play('unlock');shake(6);render();juice($('#jk'+(S.jokers.length-1)));toast(`The <b>Wraith</b> leaves you <b style="color:#ff9de2">${JOKERS[k].name}</b>, cursed <b>${CURSES[j.curse].name}</b>`)}},
  shade:{name:'Shade',col:'#5a5a6a',desc:'Your purse holds {a:2} more coins. Melt {a:2} random coins',ok:()=>S.purse.length-2>=PURSE_MIN,why:`Purse needs ${PURSE_MIN+2}+ coins`,
   use:async()=>{S.purseMax+=2;for(let k=0;k<2;k++)S.purse.splice(Math.floor(rand()*S.purse.length),1);play('shatter');render()}},
  lich:{name:'Lich',col:'#3fae8a',desc:'Raise {a:every} toss type to your highest level. {r:-1} Charm slot',ok:()=>S.jokerSlots>1,why:'You need 2+ Charm slots',
@@ -1947,6 +1947,11 @@ const CURSES={
  jinxed:{name:'Jinxed',col:'#3a2a4a',letter:'J',desc:'{r:-2} Luck while you carry it'},
  rented:{name:'Rented',col:'#b8901f',letter:'$',desc:'Bought for {$:$1}. Lose {$:$3} at the end of each wager'},
 };
+/* curses that would cancel a Charm's whole point never land on it */
+const CURSE_BAN={cage:['heavy'],jester:['jinxed'],luckystreak:['jinxed'],potofgold:['jinxed','rented'],
+  piggy:['rented'],rebate:['rented'],bottle:['rented'],loyalty:['rented'],changejar:['rented'],taxrefund:['rented'],goose:['rented'],savings:['rented']};
+const curseOK=(k,c)=>{const d=JOKERS[k];if(!d)return true;if(c==='jinxed'&&(d.luck||0)>0)return false;if(c==='bound'&&d.artifact)return false;return !(CURSE_BAN[k]||[]).includes(c)};
+const pickCurse=(k,pool)=>{const ok=(pool||Object.keys(CURSES)).filter(c=>curseOK(k,c));return ok.length?pick(ok):null};
 const curseBadge=(c,left)=>`<i class="cbadge" style="--cc:${CURSES[c].col}">${c==='fleeting'?(left??5):CURSES[c].letter}</i>`;
 const STAKES=[null,
  {name:'Copper Stake',col:'#c87533',desc:'Base difficulty'},
@@ -3076,7 +3081,7 @@ function genPackOpts(pk,n){
     else if(k==='workshop')uniq(()=>({kind:'cwear',key:pick(Object.keys(WEARS))}),'key');
     else if(k==='exchange')uniq(()=>({kind:'swap',type:rand()<.12&&relicsLeft().length?pick(relicsLeft()):pick(SPC().filter(t=>COINS[t].cost>=4))}),'type');
     else if(k==='mystery')opts.push({kind:'myst',inner:mysteryInner()});
-    else if(k==='cursed')uniq(()=>{const legs=Object.keys(JOKERS).filter(x=>JOKERS[x].r===4&&isUnlocked('charm',x));const key=legs.length&&rand()<.12?pick(legs):rollJokerKey(rand()<.4?3:2);return{kind:'charm',key,curse:pick(Object.keys(CURSES))}},'key');
+    else if(k==='cursed')uniq(()=>{const legs=Object.keys(JOKERS).filter(x=>JOKERS[x].r===4&&isUnlocked('charm',x));const key=legs.length&&rand()<.12?pick(legs):rollJokerKey(rand()<.4?3:2);return{kind:'charm',key,curse:pickCurse(key)}},'key');
     else if(k==='relic')uniq(()=>{const rl=relicsLeft().filter(t=>!opts.some(o=>o.type===t));return{kind:'coin',type:rl.length?pick(rl):pick(SPC())}},'type');
     else if(k==='chest'){[{kind:'coin',type:pick(SPC()),wear:rand()<.3?pick(COIN_WEARS):null},{kind:'charm',key:rollJokerKey()},{kind:'rune',key:pick(Object.keys(RUNES))},randAlmanac()].forEach(o=>opts.push(o));break}
     else if(k==='glitch')uniq(()=>{const x=rand();
@@ -4202,7 +4207,7 @@ const EVENTS={
     c.push({label:'Pawn a special coin ($9)',ok:()=>specialCount()>0&&S.purse.length>PURSE_MIN&&S.roll!=='hoarder',why:'Needs a special coin and more than 3 coins',run:()=>{const co=pick(S.purse.filter(x=>x.type!=='copper'));S.purse.splice(S.purse.indexOf(co),1);S.money+=9;play('money');return `Your ${COINS[co.type].name} goes behind the bars. {$:$9}.`}});
     c.push(declineC('You leave with everything you came in with.'));return c}},
  backroom:{mapOnly:1,avail:()=>false,title:'The Back Room',text:'A door behind the bar opens only for those the House has its eye on. The goods inside are cheap, and nothing is clean.',
-  choices:[{label:'A cursed Rare Charm ($3)',ok:()=>S.money>=3&&S.jokers.length<slots(),why:'Needs $3 and a free Charm slot',run:()=>{S.money-=3;const k=rollJokerKey(3);addJoker(k,JOKERS[k].cost);const j=S.jokers[S.jokers.length-1];j.curse=pick(Object.keys(CURSES).filter(c=>c!=='rented'));if(j.curse==='fleeting')j.left=5;play('buy');return `You get a {a:${JOKERS[k].name}}. It carries the {r:${CURSES[j.curse].name}} curse.`}},
+  choices:[{label:'A cursed Rare Charm ($3)',ok:()=>S.money>=3&&S.jokers.length<slots(),why:'Needs $3 and a free Charm slot',run:()=>{S.money-=3;const k=rollJokerKey(3);addJoker(k,JOKERS[k].cost);const j=S.jokers[S.jokers.length-1];j.curse=pickCurse(k,Object.keys(CURSES).filter(c=>c!=='rented'));if(j.curse==='fleeting')j.left=5;play('buy');return `You get a {a:${JOKERS[k].name}}. It carries the {r:${CURSES[j.curse].name}} curse.`}},
    {label:'Loaded coins ($6)',ok:()=>S.money>=6&&purseUsed()+2<=S.purseMax,why:'Needs $6 and 2 spaces in your purse',run:()=>{S.money-=6;S.purse.push(mkCoin('loaded'),mkCoin(pick(['twohead','twotail'])));addKarma(-1);play('buy');return 'A {a:Magician\'s Coin} and a counterfeit slide across the table. Nobody saw anything.'}},
    {label:'Fence something (+$10)',run:()=>{S.money+=10;addKarma(-2);play('money');return 'You never ask where it came from. {$:$10}.'}},declineC('You back out of the room. The door closes behind you.')]},
  chapel:{mapOnly:1,avail:()=>false,title:'The Chapel',text:'A small chapel sits where the noise of the halls cannot reach. Candles burn for everyone who ever lost here.',
@@ -4756,7 +4761,7 @@ function charmRow(){
   for(let i=0;i<n;i++){
     if(i===alm)row.push({...randAlmanac(),cost:3});
     else if(S.roll==='ghost'){let k;do k=pick(Object.keys(SPIRITS).filter(x=>x!=='soul'));while(row.some(o=>o.key===k));row.push({kind:'spirit',key:k,cost:4})}
-    else{const k=S.bazaar?bazaarKey():rollJokerKey();let curse=null;if(S.roll==='cursed')curse=pick(Object.keys(CURSES));else if(S.stake>=4&&rand()<.2)curse='rented';else if(rand()<.12-karmaNow()*.012)curse=pick(['rusted','bound','fleeting','brittle','heavy','hungry','jinxed']);
+    else{const k=S.bazaar?bazaarKey():rollJokerKey();let curse=null;if(S.roll==='cursed')curse=pickCurse(k);else if(S.stake>=4&&rand()<.2&&curseOK(k,'rented'))curse='rented';else if(rand()<.12-karmaNow()*.012)curse=pickCurse(k,['rusted','bound','fleeting','brittle','heavy','hungry','jinxed']);
       row.push({kind:'charm',key:k,cost:JOKERS[k].cost,curse})}
     if(S.shop)S.shop.jokers=row;
   }
@@ -4984,7 +4989,7 @@ function reroll(){
   const sh=S.shop,cost=rerollCost();if(S.money<cost)return;spend(cost);sh.rolls=(sh.rolls||0)+1;
   sh.jokers=[];sh.jokers=charmRow();if(S.roll==='glitched')sh.jokers.forEach(glitchPrice);play('reroll');render();
 }
-function addJoker(key,cost){const d=JOKERS[key],j={id:uid++,key,st:d.init?{...d.init}:{},cost};if(S.roll==='cursed'){j.curse=pick(Object.keys(CURSES));if(j.curse==='fleeting')j.left=5}S.jokers.push(j)}
+function addJoker(key,cost){const d=JOKERS[key],j={id:uid++,key,st:d.init?{...d.init}:{},cost};if(S.roll==='cursed'){j.curse=pickCurse(key);if(j.curse==='fleeting')j.left=5}S.jokers.push(j)}
 function buyJoker(i,useNow){
   const o=S.shop.jokers[i],p=slotPrice(o);if(o.bought||S.money<p)return;
   if(o.kind==='spirit'){if(!consRoom())return;spend(p);o.bought=true;play('buy');S.cons.push({kind:'spirit',key:o.key});render();juice($('#cs'+(S.cons.length-1)));return}
