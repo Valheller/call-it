@@ -892,10 +892,13 @@ img{-webkit-user-drag:none}
 
 #minifish{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(5,15,20,.45);animation:pop .2s ease-out;touch-action:none;cursor:pointer}
 #minifish.out{opacity:0;transition:opacity .25s}
+/* bigger on computer screens (zoom keeps the bobber, meter and text in proportion) */
+@media (min-width:760px) and (min-height:560px){.mfp{zoom:1.5}}
+@media (min-width:1200px) and (min-height:800px){.mfp{zoom:1.9}}
 .mfp{width:min(340px,90vw);background:var(--panel-deep);border-radius:14px;padding:12px;text-align:center;box-shadow:0 6px 0 var(--edge),inset 0 0 0 2px #9be7ff}
 .mft{font-size:18px;color:#9be7ff}.mfs{font-size:12px;color:var(--ink-dim);margin:2px 0 8px}
 .mfpond{position:relative;height:110px;border-radius:10px;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#2a6a7a,#123a48 55%,#0a1f29)}
-.mfpond .fbob{left:50%;top:50%;transform:translate(-50%,-50%) scale(1.1)}
+.mfpond .fbob{left:50%;top:50%;transform:translate(-50%,-50%) scale(1.5)}
 .mfbang{position:absolute;left:50%;top:6px;transform:translateX(-50%);font-size:30px;font-weight:700;color:#ffd34d;text-shadow:0 2px 0 #000;opacity:0}
 .mfcatch{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:rgba(5,15,20,.6);opacity:0;transition:opacity .2s}
 .mfpond.got .mfcatch{opacity:1}.mfcatch img{width:52px;height:52px;image-rendering:pixelated}
@@ -960,7 +963,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.12</div>
+  <div class="gamever" aria-label="Version">v1.2.13</div>
 </div>
 
 <script>
