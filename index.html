@@ -1046,7 +1046,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.88</div>
+  <div class="gamever" aria-label="Version">v1.2.89</div>
 </div>
 
 <script>
@@ -4114,7 +4114,7 @@ function cashoutHTML(){
   const C=S.cash;const done=C.shown>=C.lines.length;
   return `<div class="panel cash"><h2>Wager Won</h2>
     ${C.lines.slice(0,C.shown).map(l=>`<div class="cline"><span class="l">${l.l}</span><span class="v" ${l.v<0?'style="color:var(--mult)"':''}>${l.v<0?'-$'+(-l.v):'$'.repeat(Math.min(l.v,10))+(l.v>10?'+':'')+' <small>$'+l.v+'</small>'}</span></div>`).join('')}
-    <button class="btn ${C.total<0?'red':'orange'} big" data-act="cashout" ${done?'':'disabled'}>Cash Out: ${C.total<0?`-$${-C.total}`:`$${C.total}`}</button></div>`;
+    <button class="btn ${C.total<0?'red':'orange'} big" data-act="cashout" ${done?'':'disabled'}>${C.total<0?`Cash Lost: -$${-C.total}`:`Cash Out: $${C.total}`}</button></div>`;
 }
 const sizeName=s=>s==='normal'?'':s==='jumbo'?'Jumbo ':'Mega ';
 const packName=p=>sizeName(p.size)+PACKS[p.kind].name;
