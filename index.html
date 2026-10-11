@@ -149,8 +149,7 @@ input.vol{width:150px;accent-color:var(--orange)}
 .stctl .optrow{flex-wrap:wrap;gap:6px}.stsg{display:flex;gap:3px;flex:0 1 auto;margin-left:auto}.stsg .btn{flex:1 1 0;min-width:28px;padding:5px 6px}
 @media (max-width:520px){.stsg{flex:1 1 100%}
   /* phones: one column in its own scrolling list, title and buttons stay put */
-  .stm{display:flex;flex-direction:column;overflow:hidden}
-  .stm .sttracks{grid-template-columns:1fr;flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--ink-dim) transparent}
+  .stm .sttracks{grid-template-columns:1fr}
   .stm .sttracks::-webkit-scrollbar{width:6px}.stm .sttracks::-webkit-scrollbar-thumb{background:var(--ink-dim);border-radius:3px}}
 .sbuys{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}.sbuys .btn{white-space:nowrap}
 .sttracks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -981,6 +980,8 @@ html,body,button,a,.pond{touch-action:manipulation}
 /* Collection and roll picker: the header (tabs, description) stays put; only the grid scrolls, so there is one scrollbar */
 .overlay>.colm,.overlay>.rollm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px) / var(--k,1))}
 .colm>*,.rollm>*{flex:none}
+.overlay>.stm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px) / var(--k,1))}.stm>*{flex:none}
+.stm .sttracks{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--ink-dim) transparent}
 .overlay>.optm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px) / var(--k,1))}
 .optm>h2{flex:none;margin-bottom:8px}.optm .optbody{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:2px}
 .optm .optfoot{flex:none;text-align:center;padding-top:8px}.optm .optver{margin-top:4px}
@@ -1037,7 +1038,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.47</div>
+  <div class="gamever" aria-label="Version">v1.2.48</div>
 </div>
 
 <script>
@@ -5543,7 +5544,7 @@ const ACT={
   tunlock(){PROF.unlockAll=!PROF.unlockAll;saveProf();showModal(optionsModal)},
   rollsel(a){const g=document.querySelector('.rollgrid'),st=g?g.scrollTop:0;ROLLSEL=a;showModal(rollModal);const g2=document.querySelector('.rollgrid');if(g2)g2.scrollTop=st},
   rollstart(){if(!isUnlocked('roll',ROLLSEL))return;openRoll(ROLLSEL)},
-  howto(){audioInit();showModal(()=>`<div class="overlay"><div class="panel modal"><h2>How to Play</h2>${RULES}<div style="text-align:center"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`)},
+  howto(){audioInit();showModal(()=>`<div class="overlay"><div class="panel modal optm"><h2>How to Play</h2><div class="optbody">${RULES}</div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`)},
   call(a){doCall(a)},
   reflip(){doReflip()},
   cashin(){doCashIn()},
