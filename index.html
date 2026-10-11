@@ -947,6 +947,10 @@ body.rewinding #app{animation:rewindfx .9s steps(9) both}@keyframes rewindfx{0%{
 .sitap{font-size:11px;color:var(--ink-dim);opacity:.6;margin-top:6px}
 @keyframes sifade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .tixprice{background:#a8335a!important;color:#fff}.prizenote{text-align:center;font-size:13px;color:var(--ink-dim);padding:4px 8px}.prizenote b{color:#ff8fab}
+.mystcash{font-size:26px;color:var(--money);font-weight:700;text-shadow:0 2px 0 rgba(0,0,0,.5)}
+.mystres{font-size:13px;text-align:center;color:#fff;max-width:150px;line-height:1.2}.mystres.missed{color:var(--ink-dim)}
+.popt.mystup .jcard{animation:mystflip .45s ease-out}.popt.mystup.missed{opacity:.5;filter:grayscale(.6)}
+@keyframes mystflip{0%{transform:rotateY(90deg) scale(.9)}100%{transform:none}}
 .droptarget{box-shadow:inset 0 0 0 3px #d9824a,0 0 18px rgba(217,130,74,.55)!important;border-radius:14px}
 
 #minifish{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(5,15,20,.45);animation:pop .2s ease-out;touch-action:none;cursor:pointer}
@@ -1026,7 +1030,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.34</div>
+  <div class="gamever" aria-label="Version">v1.2.35</div>
 </div>
 
 <script>
@@ -3212,7 +3216,7 @@ const PX={
   block:()=>null,take:o=>{let got=0;for(let k=0;k<2;k++){if(consRoom()){S.cons.push({...o.item});got++}else S.money+=2}toast(got===2?'Two for the price of one':got?'One fit. The other sold for $2':'No room: both sold for $2 each');play('buy')}},
  myst:{name:()=>'???',face:()=>`<div class="jin" style="--jbg:#2a1a3a">${IMG(sprite('mystq',{p:{1:'#c9a4ff'},s:SPR_Q}))}</div>`,
   tip:()=>`<div class="tn">A mystery</div><div class="td">Pick it to find out what's inside.</div>`,block:()=>null,
-  take:o=>{const r=grantMystery(o.inner);toast(`Inside the mystery: ${r}`,5000);play('rip')}},
+  take:o=>{o.res=grantMystery(o.inner);play('rip')}},
  boss:{name:o=>BOSSES[o.key].name,face:o=>`<div class="jin" style="--jbg:${BOSSES[o.key].col}">${bossSil(o.key)?`<img class="bsil" src="${bossSil(o.key)}" alt="" style="width:62%;height:62%">`:`<span class="dosl">${BOSSES[o.key].name.replace('The ','')[0]}</span>`}</div>`,
   tip:o=>`<div class="tn">${BOSSES[o.key].name}</div><div class="td">${fmt(BOSSES[o.key].desc)}</div><div class="tkind">Replaces ${BOSSES[S.blinds[2].boss].name}</div>`,
   block:()=>S.blinds[2].state!=='upcoming'&&S.blinds[2].state!=='select'?'No boss wager to change':null,
@@ -3228,6 +3232,13 @@ function mysteryInner(){const x=rand();
   if(x<.90)return{kind:'cash',v:1+Math.floor(rand()*9)};
   if(x<.92&&relicsLeft().length)return{kind:'coin',type:pick(relicsLeft())};
   return{kind:'junk'}}
+/* what a mystery turns out to be, for flipping its card face-up in the pack */
+function mystShow(it){
+  if(it.kind==='cash')return{face:`<div class="jin" style="--jbg:#3a3010"><span class="mystcash">$${it.v}</span></div>`,name:`$${it.v}`};
+  if(it.kind==='junk')return{face:`<div class="jin" style="--jbg:#3a3a3a"><span class="mystcash" style="color:#bbb">lint</span></div>`,name:'Pocket lint'};
+  if(it.kind==='coin')return{face:`<div class="jin" style="--jbg:#2b3a3d">${coinIcon(it.type,it)}</div>`,name:COINS[it.type].name};
+  if(it.kind==='charm')return{face:`<div class="jin" style="--jbg:${JOKERS[it.key].bg}">${IMG(icon(it.key))}</div>`,name:JOKERS[it.key].name};
+  const ci=consInfo(it);return{face:`<div class="jin" style="--jbg:${ci.bg}">${IMG(ci.icon)}</div>`,name:ci.name}}
 function grantMystery(it){
   if(it.kind==='cash'){S.money+=it.v;return `<b>$${it.v}</b>`}
   if(it.kind==='junk'){addLuck(1);return 'some pocket lint. At least your luck feels a little better'}
@@ -3978,8 +3989,10 @@ function packHTML(){
   const P=S.pack,info=PACKS[P.kind];
   const opts=P.opts.map((o,i)=>{
     let face,btns,name,why=null;
-    if(PX[o.kind]){const X=PX[o.kind];name=X.name(o);why=X.block(o);face=X.face(o);
-      btns=`<button class="btn green small" data-act="ppick" data-arg="${i},take" ${why?'disabled':''}>${o.kind==='myst'?'Reveal':'Take'}</button>`}
+    if(o.kind==='myst'&&(o.taken||P.done)){const m=mystShow(o.inner);name=m.name;face=m.face;
+      btns=o.taken?`<div class="mystres">You got ${o.res||m.name}</div>`:'<div class="mystres missed">Not picked</div>'}
+    else if(PX[o.kind]){const X=PX[o.kind];name=X.name(o);why=X.block(o);face=X.face(o);
+      btns=P.done?'':`<button class="btn green small" data-act="ppick" data-arg="${i},take" ${why?'disabled':''}>${o.kind==='myst'?'Reveal':'Take'}</button>`}
     else if(o.kind==='coin'){const full=purseUsed()>=S.purseMax;name=(o.pair?'Stack of 2 ':'')+COINS[o.type].name+(o.pair?`<br><small style="color:var(--money)">Pre-stacked: one purse space</small>`:modName(o)?`<br><small style="color:var(--money)">${modName(o)}</small>`:'');
       face=`<div class="jin" style="--jbg:#2b3a3d">${coinIcon(o.type,o)}</div>`;
       btns=`<button class="btn green small" data-act="ppick" data-arg="${i},take" ${full?'disabled':''}>${full?'Purse full':'Take'}</button>`}
@@ -3988,11 +4001,11 @@ function packHTML(){
       btns=`<button class="btn green small" data-act="ppick" data-arg="${i},use" ${why?'disabled':''}>Use</button>`+
         (o.kind!=='almanac'?`<button class="btn small" data-act="ppick" data-arg="${i},keep" ${consRoom()?'':'disabled'}>Keep</button>`:'')}
     if(P.kind==='glitch'&&!o.taken)name=`<span class="glitchname" aria-label="${name.replace(/<[^>]+>/g,' ').replace(/"/g,'')}">${name.replace(/<[^>]+>/g,' ')}</span>`;
-    return `<div class="scard popt ${o.taken?'gone':''} ${P.kind==='glitch'?'gpopt':''}"><button class="jcard tile" data-tip="popt:${i}" aria-label="${name.replace(/<[^>]+>/g,' ').replace(/"/g,'')}">${face}</button>
+    return `<div class="scard popt ${o.taken&&o.kind!=='myst'?'gone':''} ${o.kind==='myst'&&(o.taken||P.done)?'mystup'+(o.taken?'':' missed'):''} ${P.kind==='glitch'?'gpopt':''}"><button class="jcard tile" data-tip="popt:${i}" aria-label="${name.replace(/<[^>]+>/g,' ').replace(/"/g,'')}">${face}</button>
       <div class="pname">${name}</div><div class="pbtns">${btns}</div><div class="why">${why&&!o.taken?why:''}</div></div>`}).join('');
   return `<div class="panel packview" style="--pc:${info.col}"><div class="packhead"><div><div class="ptitle" style="color:${info.col}">${packName(P)}</div>
-    <div class="lbl" style="max-width:62ch;line-height:1.35">Choose ${P.picks} more. ${fmt(KIND_INFO[P.kind])}</div></div>
-    <button class="btn red" data-act="skippack">Skip</button></div>${P.kind==='fortune'?lkMeters('The Fortune Pack reveals your fortunes'):''}<div class="popts">${opts}</div></div>${purseHTML()}`;
+    <div class="lbl" style="max-width:62ch;line-height:1.35">${P.done?'Here\'s what was inside.':`Choose ${P.picks} more. ${fmt(KIND_INFO[P.kind])}`}</div></div>
+    ${P.done?'<button class="btn orange big" data-act="skippack">Continue</button>':'<button class="btn red" data-act="skippack">Skip</button>'}</div>${P.kind==='fortune'?lkMeters('The Fortune Pack reveals your fortunes'):''}<div class="popts">${opts}</div></div>${purseHTML()}`;
 }
 function renderOverlay(){
   const o=$('#overlay');
@@ -4723,6 +4736,7 @@ function tipContent(spec){
   if(k==='shopj'){const o=S.shop.jokers[i];return o&&(o.kind==='almanac'||o.kind==='spirit'?ct(o):jt(o.key,null,o))}
   if(k==='coin'){const c=S.purse[i];return c&&(cn(c.type,c)+(S.roll==='glitched'&&S.glitch&&S.glitch[c.id]&&S.screen==='play'?`<div class="tkind">Glitched: acting as a ${COINS[S.glitch[c.id]].name} this toss</div>`:''))}
   if(k==='cons'){const c=S.cons[i];return c&&ct(c)}
+  if(k==='popt'){const o0=S.pack&&S.pack.opts[i];if(o0&&o0.kind==='myst'&&(o0.taken||S.pack.done)){const it=o0.inner;return it.kind==='coin'?cn(it.type,it):it.kind==='charm'?jt(it.key):it.kind==='cash'?`<div class="tn">$${it.v}</div><div class="td">Cash from a mystery</div>`:it.kind==='junk'?`<div class="tn">Pocket lint</div><div class="td">Worthless, but your Luck feels a little better</div>`:ct(it)}}
   if(k==='popt'){const o=S.pack&&S.pack.opts[i];return o&&(o.kind==='coin'?cn(o.type,o):o.kind==='charm'?jt(o.key,null,o):PX[o.kind]?PX[o.kind].tip(o):ct(o))}
   if(k==='pack'){const p=S.shop.packs[i];if(!p)return null;const c=packCounts(p);
     return `<div class="tn">${packName(p)}</div><div class="td">Open it and choose <span class="k-a">${c.picks}</span> of ${c.n} ${PACKS[p.kind].what}.<br><br>${fmt(KIND_INFO[p.kind])}</div><span class="tb" style="background:${PACKS[p.kind].col}">Pack</span>`}
@@ -5373,7 +5387,7 @@ async function packPick(i,mode){
   else if(o.kind==='coin'){if(purseUsed()>=S.purseMax)return;o.taken=true;P.picks--;if(o.pair){const g=uid++;S.purse.push({...mkCoin(o.type),stk:g},{...mkCoin(o.type),stk:g})}else S.purse.push({...mkCoin(o.type),wear:o.wear||null,defect:o.defect||null});play('buy')}
   else if(mode==='keep'){if(!consRoom())return;o.taken=true;P.picks--;const kc={kind:o.kind,key:o.key,hand:o.hand};if(!kc.key)delete kc.key;if(!kc.hand)delete kc.hand;S.cons.push(kc);play('buy')}
   else{const c={kind:o.kind,key:o.key,hand:o.hand};if(!c.key)delete c.key;if(!c.hand)delete c.hand;if(consBlock(c))return;o.taken=true;P.picks--;render();await applyCons(c)}
-  if(S.pack&&S.pack.picks<=0)S.pack=null;
+  if(S.pack&&S.pack.picks<=0){if(S.pack.opts.some(x=>x.kind==='myst'))S.pack.done=true;else S.pack=null}
   if(!S.pack&&S.treasure){goNext();return}
   render();
 }
