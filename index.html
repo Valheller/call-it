@@ -201,6 +201,8 @@ input.vol{width:150px;accent-color:var(--orange)}
 .wcstats span{display:block;font-size:12px;color:var(--ink-dim)}.wcstats b{font-size:24px;color:#fff;font-variant-numeric:tabular-nums}
 .wchint{position:relative;font-size:12px;color:var(--ink-dim);opacity:0;transition:opacity .4s}
 #wincine.ready .wchint{opacity:.8}
+/* computers: a bigger victory card */
+@media (min-width:761px) and (min-height:600px){.wccoin{width:clamp(150px,27vmin,240px)}.wctitle{font-size:clamp(60px,12.5vmin,124px)}.wcsub{font-size:19px}.wcstats{gap:16px}.wcstats div{padding:12px 22px;min-width:150px}.wcstats span{font-size:15px}.wcstats b{font-size:34px}.wchint{font-size:15px}}
 .coin.frozen::after{content:'';position:absolute;inset:4%;border-radius:50%;border:3px dashed #9be7ff;box-shadow:0 0 12px rgba(155,231,255,.6),inset 0 0 14px rgba(155,231,255,.45);pointer-events:none}
 .jslot.stolen .jcard{opacity:.3}
 .jslot.stolen::after{content:'Stolen';position:absolute;left:50%;top:40%;transform:translateX(-50%) rotate(-12deg);background:#3a3a4a;color:#fff;font-size:11px;padding:1px 6px;border-radius:4px;pointer-events:none}
@@ -593,7 +595,6 @@ img{-webkit-user-drag:none}
 .endpanel h1{margin:0;font-size:44px}
 .endpanel .row{display:flex;justify-content:space-between;background:var(--panel-deep);border-radius:8px;padding:8px 12px;gap:10px}
 .endpanel .row b{color:var(--money)}
-@media (min-width:761px) and (min-height:600px){.endpanel.winpanel{zoom:1.25}}
 
 /* title */
 /* boot screen: one tap unlocks sound in every browser, then a coin is tossed and the title appears */
@@ -1056,7 +1057,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.102</div>
+  <div class="gamever" aria-label="Version">v1.2.103</div>
 </div>
 
 <script>
@@ -4231,7 +4232,7 @@ function renderOverlay(){
       ${S.daily?'':`<button class="btn blue big" data-act="retry" title="Same roll and stake, new seed">Retry</button>`}
       <button class="btn" style="--c:var(--grey);--cd:var(--grey-d)" data-act="tomenu">Main Menu</button></div></div>`;o.hidden=false;
   }else if(S&&S.screen==='win'){
-    o.innerHTML=`<div class="overlay"><div class="panel endpanel winpanel"><h1 style="color:var(--money)">You Win!</h1>
+    o.innerHTML=`<div class="overlay"><div class="panel endpanel"><h1 style="color:var(--money)">You Win!</h1>
       <div class="lbl">You cleared all ${STAGES} stages on ${STAKES[S.stake].name}.</div>
       ${S.flags.newStake?`<div class="row" style="justify-content:center"><span>New: <b style="color:${STAKES[S.flags.newStake].col}">${STAKES[S.flags.newStake].name}</b> unlocked for the ${ROLLS[S.roll].name}</span></div>`:''}
       ${S.daily?shareBox():''}
