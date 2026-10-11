@@ -1034,7 +1034,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}.optm .optrow .btn.small{p
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.55</div>
+  <div class="gamever" aria-label="Version">v1.2.56</div>
 </div>
 
 <script>
@@ -2119,9 +2119,10 @@ const FLOORS=[
  {name:'The High Tables',col:'#5d3d94',line:'Few get this far. Fewer leave.'},
  {name:'The House Itself',col:'#6a6a7a',line:'You have come all this way to see me. Good.'}];
 const floorOf=a=>a<=STAGES?FLOORS[a-1]:{name:`Sub-basement ${a-STAGES}`,col:'#3a1a1a',line:'Below the House, there is only more House.'};
-function houseSay(t,ms=5000){toast(`<b class="housesay">The House</b> · ${t}`,ms,false,'say')}
+const introUp=()=>!!$('#ripstage')||!!(($('#stageintro')||{}).hidden===false);
+function houseSay(t,ms=5000){if(introUp()){setTimeout(()=>houseSay(t,ms),300);return}toast(`<b class="housesay">The House</b> · ${t}`,ms,false,'say')}
 const HOUSE_MD=['Did you try the medicine drug?','you are stupid','don\'t care','more mouse bites!','I am very smart.'];
-function drSay(t,ms=4200){toast(`<b style="color:#7fb0ff">House</b> · ${t||pick(HOUSE_MD)}`,ms,false,'say')}
+function drSay(t,ms=4200){if(introUp()){setTimeout(()=>drSay(t,ms),300);return}toast(`<b style="color:#7fb0ff">House</b> · ${t||pick(HOUSE_MD)}`,ms,false,'say')}
 const ANTE_BASE=[300,1100,4000,13000,40000,120000,300000,700000];
 const anteBase=a=>a<=STAGES?ANTE_BASE[a-1]:Math.round(ANTE_BASE[STAGES-1]*Math.pow(2.5,a-STAGES));
 
