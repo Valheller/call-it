@@ -1048,7 +1048,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.96</div>
+  <div class="gamever" aria-label="Version">v1.2.97</div>
 </div>
 
 <script>
@@ -2695,10 +2695,8 @@ PACK_MUSIC.showdown=function(m){
 const END_MEL={0:[3,2,4],4:[2,2,4],8:[1,2,6],14:[0,2,2]};
 const END_MEL2={0:[2,2,3],3:[1,2,1],4:[0,2,4],8:[1,2,3],11:[2,2,1],12:[3,1,4]};
 PACK_MUSIC.endless=function(m){
-  /* Endless: each sub-basement before the final boss adds a layer; the final boss's stage plays a 64-bar extended form */
+  /* Endless: each sub-basement before the final boss adds a layer */
   const E=Math.max(1,(m.L||9)-STAGES),{s,bar,at,spb,B,up}=m,s16=spb/4,cn=(i,o)=>up[i%up.length]+12*o;
-  const L8=m.loop%8;
-  if(E>=4&&L8>=4){endlessExt(m,L8,cn,s16);return}
   if(E>=2&&s%2===1)noise({at,ft:'highpass',ff:7500,a:.003,d:.03,v:.007,bus:B});
   if(E>=2&&s%4===3)noise({at,ft:'bandpass',ff:5200,q:.8,a:.008,d:.05,v:.009,bus:B});
   if(E>=3&&s%2===0)tone({at,f:mtof(cn(0,-1)+(s%4===2?12:0)),type:'square',lp:600,a:.004,d:spb*.22,v:.03,bus:B});
@@ -2706,25 +2704,6 @@ PACK_MUSIC.endless=function(m){
   if(E>=4&&s===0&&bar%4===0)noise({at,ft:'highpass',ff:3000,a:.005,d:1.2,v:.03,bus:B});
   endlessBase(m,cn,s16);
 };
-function endlessExt(m,L8,cn,s16){const{s,bar,at,spb,B,up}=m,X=L8-4;
-  if(s===0)up.forEach((n,k)=>tone({at,f:mtof(n-12),type:'sawtooth',lp:X===0?380:900,a:spb*.9,d:spb*3.4,v:.02,bus:B,wob:true,det:k%2?16:-16}));
-  if(X===0){ /* breakdown: pads, a lone bell motif, sub hits */
-    if(s===0)tone({at,f:mtof(cn(0,-2)),d:spb*3.6,v:.16,bus:B});
-    const mot=bar%2===0?END_MEL:END_MEL2;if(s in mot){const[i,o,l]=mot[s];fm({at,f:mtof(cn(i,o+1)),ratio:3.5,idx:1.6,d:s16*l*2,v:.022,bus:B})}return}
-  if(X===1){ /* build: snare roll that speeds up, rising kicks, riser */
-    const rate=bar<4?4:bar<6?2:1;if(s%rate===0)noise({at,ft:'bandpass',ff:1500+bar*300+s*40,q:1,a:.002,d:.07,v:.015+bar*.005,bus:B});
-    if(s%4===0)tone({at,f:92,f2:44,glide:.12,a:.008,d:.2,v:.12+bar*.02,bus:B});
-    if(bar===7&&s===0)noise({at,ft:'lowpass',ff:400,ff2:6000,a:spb*3.6,d:.2,v:.05,bus:B});return}
-  /* finale (X 2..3): everything, motif doubled in octaves, claps */
-  if(s===0&&bar===0&&X===2)noise({at,ft:'highpass',ff:3000,a:.005,d:1.6,v:.05,bus:B});
-  if(s===0||s===3||s===8||s===11)tone({at,f:92,f2:44,glide:.12,a:.008,d:.22,v:.22,bus:B});
-  if(s===4||s===12){noise({at,ft:'bandpass',ff:1800,q:1.2,a:.002,d:.09,v:.05,bus:B});noise({at:at+.012,ft:'bandpass',ff:2400,q:1,a:.002,d:.06,v:.03,bus:B})}
-  if(s%2===1)noise({at,ft:'highpass',ff:7500,a:.003,d:.03,v:.008,bus:B});
-  if(s%2===0)tone({at,f:mtof(cn(0,-1)+(s%4===2?12:0)),type:'square',lp:700,a:.004,d:spb*.22,v:.032,bus:B});
-  const mot=bar%2===0?END_MEL:END_MEL2;if(s in mot){const[i,o,l]=mot[s];fm({at,f:mtof(cn(i,o)),ratio:3.5,idx:1.1,d:s16*l*1.4,v:.034,bus:B});fm({at,f:mtof(cn(i,o+1)),ratio:3.5,idx:.9,d:s16*l*1.2,v:.02,bus:B})}
-  if(s%2===1)tone({at,f:mtof(cn([0,2,1,3,2,0,3,1][(s>>1)%8],2)),type:'triangle',a:.004,d:s16*.8,v:.016,bus:B});
-  if(X===3&&bar===7&&s>=8&&s%2===0)tone({at,f:mtof(cn([3,2,1,0][(s-8)/2],0)),d:.18,v:.12,bus:B});
-}
 function endlessBase(m,cn,s16){
   const{s,bar,at,spb,B,up,loop}=m,sec=loop%4;
   if(s===0)up.forEach((n,k)=>tone({at,f:mtof(n-12),type:'sawtooth',lp:520,a:spb*.9,d:spb*3.2,v:.016,bus:B,wob:true,det:k%2?16:-16}));
@@ -2887,21 +2866,6 @@ PACK_MUSIC.tablerivals=function(m){
   if(sec===2&&s%8===0)tone({at,f:mtof(cn(3,1)),type:'triangle',a:.004,d:spb,v:.02,bus:B});
   if(bar===7&&s>=12)tone({at,f:mtof(cn(s-12,1)),type:'sawtooth',lp:1800,a:.004,d:s16*.8,v:.025,bus:B});
 };
-/* Endless final bosses run 64 bars to match the extended Endless theme:
-   32 bars as written, then a breakdown (no drums), a build, and a 16-bar finale with the melody doubled up an octave */
-function extend64(orig,m){const L8=m.loop%8;if(L8<4){orig(m);return}
-  const{s,bar,at,spb,B,up}=m,X=L8-4,T=tone,N=noise,F=fm,drum=o=>!!o.f2||o.type==='square'&&o.f>3000;
-  try{
-    if(X<=1){tone=o=>{if(!drum(o))T(o)};noise=()=>{};orig({...m,loop:0})}
-    else{const dbl=o=>{if(!o.f2&&o.f>200&&o.f<1600&&(o.v||0)>.012)F({...o,at:o.at,f:o.f*2,v:o.v*.45,idx:.8,ratio:3.5})};tone=o=>{T(o);dbl(o)};fm=o=>{F(o);dbl(o)};orig({...m,loop:X===2?1:3})}
-  }finally{tone=T;noise=N;fm=F}
-  if(X===0&&s===0)T({at,f:mtof(up[0]-24),d:spb*3.6,v:.14,bus:B});
-  if(X===1){const rate=bar<4?4:bar<6?2:1;if(s%rate===0)N({at,ft:'bandpass',ff:1500+bar*300+s*40,q:1,a:.002,d:.07,v:.015+bar*.005,bus:B});
-    if(s%4===0)T({at,f:92,f2:44,glide:.12,a:.008,d:.2,v:.12+bar*.02,bus:B});if(bar===7&&s===0)N({at,ft:'lowpass',ff:400,ff2:6000,a:spb*3.6,d:.2,v:.05,bus:B})}
-  if(X>=2){if(s===0&&bar===0&&X===2)N({at,ft:'highpass',ff:3000,a:.005,d:1.6,v:.05,bus:B});
-    if(s===4||s===12){N({at,ft:'bandpass',ff:1800,q:1.2,a:.002,d:.09,v:.045,bus:B});N({at:at+.012,ft:'bandpass',ff:2400,q:1,a:.002,d:.06,v:.028,bus:B})}
-    if(X===3&&bar===7&&s>=8&&s%2===0)T({at,f:mtof(up[[3,2,1,0][(s-8)/2]%up.length]),d:.18,v:.12,bus:B})}}
-['thehouse','tablerivals','drhouse'].forEach(k=>{const o=PACK_MUSIC[k];PACK_MUSIC[k]=m=>extend64(o,m)});
 const Music={step:0,next:0,timer:null,bpm:90,intense:false,mode:'main',prevLead:0,
   chunks:[],tl:[],gen:0,sig:null,busy:false,ahead:2.5,rt:[],live:!(window.OfflineAudioContext),
   start(){if(this.timer)return;this.next=AU.ctx.currentTime+.1;this.timer=setInterval(()=>this.sched(),25)},
@@ -4262,7 +4226,7 @@ let RI_TAB='scores';
 function runInfoModal(){
   const tabs=`<div class="ctabs">${[['scores','Toss scores'],['upgrades',`Upgrades${S?` <small>${S.upgrades.length}</small>`:''}`],['howto','How to Play']].map(([k,n])=>`<button class="btn small ${RI_TAB===k?'orange':''}" style="${RI_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ritab" data-arg="${k}">${n}</button>`).join('')}</div>`;
   if(RI_TAB==='upgrades'){const U=S?S.upgrades.filter(k=>UPGRADES[k]):[];
-    return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${U.length?`<div class="upglist">${U.map(k=>{const u=UPGRADES[k];return `<div class="upgrow"><div class="cic" style="--jbg:#5d3d94">${IMG(upgIcon(k))}</div><div><div class="cname">${u.name}${u.req?' <small class="k-a">II</small>':''}</div><div class="ds">${fmt(u.desc)}</div></div></div>`}).join('')}</div>`:'<div class="cdesc" style="text-align:center;padding:20px 0">No Upgrades yet. The shop sells one each stage.</div>'}</div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`}
+    return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${U.length?`<div class="upglist">${U.map(k=>{const u=UPGRADES[k];return `<div class="upgrow"><div class="cic tile" style="--jbg:#5d3d94">${IMG(upgIcon(k))}</div><div><div class="cname">${u.name}${u.req?' <small class="k-a">II</small>':''}</div><div class="ds">${fmt(u.desc)}</div></div></div>`}).join('')}</div>`:'<div class="cdesc" style="text-align:center;padding:20px 0">No Upgrades yet. The shop sells one each stage.</div>'}</div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`}
   if(RI_TAB==='howto')return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${RULES}</div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
   return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${S?questsHTML():''}${S&&S.seed?`<div class="lbl" style="text-align:center;margin:2px 0 6px">Seed <b style="color:#fff;letter-spacing:.08em">${S.seed}</b> <button class="btn tiny" data-act="copyseed">Copy</button></div>`:''}${S&&(hasK('crystalball')||hasK('mirroroftruth'))?lkMeters(hasK('crystalball')?'Revealed by your Crystal Ball':'Revealed by your Mirror of Truth',hasK('crystalball'),true):''}${S&&ROLLS[S.roll]?`<div class="lbl" style="text-align:center;margin:-6px 0 8px">Playing the <b style="color:#fff">${rollName(S.roll)}</b> on <b style="color:${STAKES[S.stake].col}">${STAKES[S.stake].name}</b>${S.daily?' (Daily Toss)':''}: ${fmt(ROLLS[S.roll].desc)}</div>`:''}<div class="lbl" style="text-align:center;margin:-4px 0 10px">Collection: ${Object.keys(JOKERS).length} Charms · ${ALM_POOL().length} Almanacs · ${Object.keys(RUNES).length} Runes · ${Object.keys(SPIRITS).length} Spirits</div>
     <table class="htable">${HANDS.map(h=>{const pl=S?S.hands[h.key].played:0;const hv=S?handLv(h.key):{chips:h.chips,mult:h.mult,lv:1,mast:0};const lv=hv.lv,c=hv.chips,m=hv.mult;
@@ -4279,7 +4243,7 @@ function soundTestModal(){
     ${OPT.mvol>0?'':'<div class="lbl" style="text-align:center;margin-bottom:8px">Music volume is at 0 in Options</div>'}
     <div class="stctl"><div class="optrow"><span>Glitched audio<small>How music sounds on the Glitched Roll</small></span><button class="btn small ${ST.glitch?'green':''}" data-act="stglitch">${ST.glitch?'On':'Off'}</button></div>
       ${(()=>{const tr=SOUNDTEST!=null&&TRACKS[SOUNDTEST],en=tr&&tr[1]==='endless',wg=tr&&tr[0]==='Wager';if(!en&&!wg)return '';const L=en?[9,10,11,12]:[1,2,3,4,5,6,7,8],cur=en?ST.estage:ST.stage;
-        return `<div class="optrow"><span>Stage<small>${en?'Layers build toward the final boss; 12 is the extended version':'Music adds layers as a run goes on'}</small></span><div class="stsg">${L.map(n=>`<button class="btn small" style="${cur===n?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ststage" data-arg="${n}" aria-pressed="${cur===n}">${n}</button>`).join('')}</div></div>`})()}</div>
+        return `<div class="optrow"><span>Stage<small>${en?'Layers build toward the final boss':'Music adds layers as a run goes on'}</small></span><div class="stsg">${L.map(n=>`<button class="btn small" style="${cur===n?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ststage" data-arg="${n}" aria-pressed="${cur===n}">${n}</button>`).join('')}</div></div>`})()}</div>
     <div class="sttracks">${TRACKS.map((t,i)=>`<button class="btn small ${SOUNDTEST===i?'green':''}" style="${SOUNDTEST===i?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="sttrack" data-arg="${i}"><span class="stn">${String(i+1).padStart(2,'0')}</span>${t[0]}${SOUNDTEST===i?'<small>Now playing</small>':t[2]&&t[2].sub?`<small>${t[2].sub}</small>`:''}</button>`).join('')}</div>
     <div style="text-align:center;margin-top:12px;display:flex;gap:10px;justify-content:center">${SOUNDTEST!=null?'<button class="btn red" data-act="ststop">Stop</button>':''}<button class="btn orange" data-act="stback">Back</button></div></div></div>`}
 let abandonArm=false,resetArm=false;
@@ -4880,7 +4844,7 @@ function colItems(){
   if(COL.tab==='charms')return Object.keys(JOKERS).filter(k=>!COL.rar||JOKERS[k].r===COL.rar).sort((a,b)=>JOKERS[a].r-JOKERS[b].r).map(k=>{const d=JOKERS[k];
     if(!isUnlocked('charm',k))return{id:k,name:'Locked',ic:`<div class="cic locked" style="--jbg:#2a2a2a">${IMG(icon(k))}</div>`,desc:`Unlock it: {a:${GOAL_OF['charm:'+k].desc}}`,tag:RAR[d.r].n+' · Locked',tc:'var(--grey)'};
     const lk=lkOf('charm',k);return{id:k,name:d.name,ic:charmIc(k,''),desc:(typeof d.desc==='function'?d.desc(null):d.desc)+(lk?`<div class="lkline">${lk}</div>`:''),tag:RAR[d.r].n,tc:RAR[d.r].c}});
-  if(COL.tab==='upgrades')return Object.keys(UPGRADES).map(k=>{const u=UPGRADES[k];return{id:'u-'+k,name:u.name,ic:`<div class="cic" style="--jbg:#5d3d94">${IMG(upgIcon(k))}</div>`,desc:u.desc+'.'+(u.req?` Needs {a:${UPGRADES[u.req].name}} first.`:''),tag:u.req?'Upgrade II':'Upgrade',tc:'var(--purple)'}});
+  if(COL.tab==='upgrades')return Object.keys(UPGRADES).map(k=>{const u=UPGRADES[k];return{id:'u-'+k,name:u.name,ic:`<div class="cic tile" style="--jbg:#5d3d94">${IMG(upgIcon(k))}</div>`,desc:u.desc+'.'+(u.req?` Needs {a:${UPGRADES[u.req].name}} first.`:''),tag:u.req?'Upgrade II':'Upgrade',tc:'var(--purple)'}});
   if(COL.tab==='curses')return Object.keys(CURSES).map(k=>({id:'c-'+k,name:CURSES[k].name,ic:`<div class="cic" style="--jbg:${JOKERS.jester.bg};position:relative">${IMG(icon('jester'))}${curseBadge(k)}</div>`,desc:CURSES[k].desc+'. Cursed Charms cost less in the shop.'+`<div class="lkline">${lkOf('curse',k)}</div>`,tag:'Curse · Charms only',tc:CURSES[k].col}));
   if(COL.tab==='wears')return Object.keys(WEARS).map(k=>({id:'w-'+k,name:WEARS[k].name,
       ic:`<div class="cpair">${WEARS[k].charmOnly?'':`<div class="cic coinc">${coinIcon('copper',{wear:k})}</div>`}${charmIc(k==='weightless'?'copycat':'jester',k)}</div>`,
