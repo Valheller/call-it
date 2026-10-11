@@ -136,6 +136,12 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .fabled .jcard::after{content:'';position:absolute;inset:-14px;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 18% 22%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 82% 30%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 70% 85%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 25% 78%,#fff 0 1px,transparent 2px);animation:fabtwinkle 1.6s ease-in-out infinite}
 @keyframes fabspin{to{transform:rotate(360deg)}}
 @keyframes fabtwinkle{50%{opacity:.15;transform:rotate(20deg) scale(1.06)}}
+.fabled .jcard,.legend .jcard{isolation:isolate}
+.legend .jcard::before{content:'';position:absolute;inset:-5px;border-radius:50%;background:conic-gradient(#ffd34d,#fff2b0,#c98a12,#ffd34d,#fff2b0,#c98a12,#ffd34d);animation:fabspin 4.5s linear infinite;z-index:-1;box-shadow:0 0 14px rgba(255,200,60,.55)}
+.legend .jcard::after{content:'';position:absolute;inset:-13px;border-radius:50%;pointer-events:none;z-index:-2;background:radial-gradient(circle,rgba(255,211,77,.42) 0,rgba(255,211,77,.12) 55%,transparent 72%);animation:legpulse 2.2s ease-in-out infinite}
+@keyframes legpulse{50%{opacity:.45;transform:scale(1.08)}}
+.scard.legend .price,.shelf .scard.legend .price{background:linear-gradient(100deg,#c98a12 0,#ffd34d 35%,#fff6c8 50%,#ffd34d 65%,#c98a12 100%);background-size:250% 100%;color:#2a1a00;animation:legshine 2.6s linear infinite}
+@keyframes legshine{from{background-position:120% 0}to{background-position:-120% 0}}
 .scard.fabled .price,.shelf .scard.fabled .price{background:linear-gradient(90deg,#ff5f6d,#ffd34d,#4bd18f,#0b9bff,#c9a4ff);color:#1a1a1a}
 #wx{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;image-rendering:pixelated}
 .wxbanner{font-size:14px;color:var(--ink-dim);background:rgba(0,0,0,.35);border:2px solid var(--wc);border-radius:10px;padding:5px 12px;text-align:center;max-width:min(640px,100%)}
@@ -1049,7 +1055,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.100</div>
+  <div class="gamever" aria-label="Version">v1.2.101</div>
 </div>
 
 <script>
@@ -4028,7 +4034,7 @@ function renderJokers(){
 function jokerSlot(j,i){
   const d=JOKERS[j.key],sel=S.selJoker===i&&canEdit(),n=S.jokers.length;
   const gj=(S.roll==='glitched'||j.key==='missingno')&&S.screen==='play'&&S.glitchJ&&S.glitchJ[j.id];
-  return `<div class="jslot ${sel?'sel':''} ${gj?'jglitch':''} ${!jOn(j)?'stolen':''} ${d.r===5?'fabled':''}" data-idx="${i}"><button class="jcard" id="jk${i}" data-act="joker" data-arg="${i}" data-drag="charm" data-tip="joker:${i}" aria-label="${d.name}">
+  return `<div class="jslot ${sel?'sel':''} ${gj?'jglitch':''} ${!jOn(j)?'stolen':''} ${d.r===5?'fabled':d.r===4?'legend':''}" data-idx="${i}"><button class="jcard" id="jk${i}" data-act="joker" data-arg="${i}" data-drag="charm" data-tip="joker:${i}" aria-label="${d.name}">
    <div class="jin ${j.wear==='weightless'?'weightless':''}" style="--jbg:${d.bg};--dl:${-(i*.7)}s;${rarVars(j.key)}">${IMG(icon(j.key))}${j.wear&&j.wear!=='weightless'?`<i class="wfx w-${j.wear}"></i>`:''}</div>${j.curse?curseBadge(j.curse,j.left):''}</button>
    ${sel?`<div class="jacts">${noSell(j)?`<span class="why">${CURSES[j.curse].name}</span>`:`${S.roll==='hoarder'?'':`<button class="btn green tiny" data-act="sell" data-arg="${i}">Sell $${sellVal(j)}</button>`}`}
    <div class="mv"><button class="btn tiny" data-act="move" data-arg="${i},-1" ${i===0||j.curse==='bound'?'disabled':''} aria-label="Move left">&lt;</button><button class="btn tiny" data-act="move" data-arg="${i},1" ${i===n-1||j.curse==='bound'?'disabled':''} aria-label="Move right">&gt;</button></div></div>`:''}</div>`;
@@ -4152,7 +4158,7 @@ function charmCardHTML(o,i){
       <button class="jcard tile" data-tip="shopj:${i}" data-drag="shop" data-sk="j:${i}" aria-label="${ci.name}"><div class="jin" style="--jbg:${ci.bg};--dl:${-i*.9}s">${IMG(ci.icon)}<span class="lab">${ci.short}</span></div></button>
       <div class="sbuys">${consRoom()?`<button class="btn green small" data-act="buyjoker" data-arg="${i}" ${dis}>Buy</button>`:''}<button class="btn small" style="--c:var(--purple);--cd:var(--purple-d)" data-act="buyuse" data-arg="${i}" ${dis}>Buy &amp; Use</button></div></div>`}
   const d=JOKERS[o.key];
-  return `<div class="scard ${o.bought?'gone':''} ${d.r===5?'fabled':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">$${p}</div>
+  return `<div class="scard ${o.bought?'gone':''} ${d.r===5?'fabled':d.r===4?'legend':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">$${p}</div>
     <button class="jcard" data-tip="shopj:${i}" data-drag="shop" data-sk="j:${i}" aria-label="${d.name}"><div class="jin" style="--jbg:${d.bg};--dl:${-i*.9}s;${rarVars(o.key)}">${IMG(icon(o.key))}</div>${o.curse?curseBadge(o.curse):''}</button>
     <button class="btn green small" data-act="buyjoker" data-arg="${i}" ${o.bought||S.money<p||full?'disabled':''}>${full?'No room':'Buy'}</button></div>`;
 }
@@ -4201,7 +4207,7 @@ function packHTML(){
       btns=`<button class="btn green small" data-act="ppick" data-arg="${i},use" ${why?'disabled':''}>Use</button>`+
         (o.kind!=='almanac'?`<button class="btn small" data-act="ppick" data-arg="${i},keep" ${consRoom()?'':'disabled'}>Keep</button>`:'')}
     if(P.kind==='glitch'&&!o.taken)name=`<span class="glitchname" aria-label="${name.replace(/<[^>]+>/g,' ').replace(/"/g,'')}">${name.replace(/<[^>]+>/g,' ')}</span>`;
-    return `<div class="scard popt ${o.taken&&o.kind!=='myst'?'gone':''} ${o.kind==='myst'&&(o.taken||P.done)?'mystup'+(o.taken?'':' missed'):''} ${P.kind==='glitch'?'gpopt':''}"><button class="jcard ${o.kind==='charm'?'':'tile'}" data-tip="popt:${i}" aria-label="${name.replace(/<[^>]+>/g,' ').replace(/"/g,'')}">${face}</button>
+    return `<div class="scard popt ${o.kind==='charm'&&JOKERS[o.key]?(JOKERS[o.key].r===5?'fabled':JOKERS[o.key].r===4?'legend':''):''} ${o.taken&&o.kind!=='myst'?'gone':''} ${o.kind==='myst'&&(o.taken||P.done)?'mystup'+(o.taken?'':' missed'):''} ${P.kind==='glitch'?'gpopt':''}"><button class="jcard ${o.kind==='charm'?'':'tile'}" data-tip="popt:${i}" aria-label="${name.replace(/<[^>]+>/g,' ').replace(/"/g,'')}">${face}</button>
       <div class="pname">${name}</div><div class="pbtns">${btns}</div><div class="why">${why&&!o.taken?why:''}</div></div>`}).join('');
   return `<div class="panel packview" style="--pc:${info.col}"><div class="packhead"><div><div class="ptitle" style="color:${info.col}">${packName(P)}</div>
     <div class="lbl" style="max-width:62ch;line-height:1.35">${P.done?'Here\'s what was inside.':`Choose ${P.picks} more. ${fmt(KIND_INFO[P.kind])}`}</div></div>
@@ -4761,7 +4767,7 @@ function eventHTML(){
   </div><div class="purse shopp" data-count="${purseCnt()}">${S.purse.map((c,i)=>coinHTML(c,i)).join('')}</div>`;
 }
 function prizeHTML(){const t=S.tickets||0,full=S.jokers.length>=slots();S.event.sold=S.event.sold||{};
-  const cards=prizeOffer().map((k,i)=>{const d=JOKERS[k],sold=S.event.sold[k];return `<div class="scard ${sold?'gone':''} ${d.r===5?'fabled':''}"><div class="price tixprice">${d.tix} tickets</div>
+  const cards=prizeOffer().map((k,i)=>{const d=JOKERS[k],sold=S.event.sold[k];return `<div class="scard ${sold?'gone':''} ${d.r===5?'fabled':d.r===4?'legend':''}"><div class="price tixprice">${d.tix} tickets</div>
     <button class="jcard" data-tip="prize:${i}" aria-label="${d.name}"><div class="jin" style="--jbg:${d.bg};--dl:${-i*.9}s">${IMG(icon(k))}</div></button>
     <button class="btn small" style="--c:#ff6f9a;--cd:#a8335a" data-act="prizebuy" data-arg="${i}" ${sold||t<d.tix||full?'disabled':''}>${full?'No room':'Buy'}</button></div>`}).join('');
   return `<div class="panel shop prizeshop"><div class="shophead"><div class="shopbtns">
