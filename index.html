@@ -946,6 +946,7 @@ body.rewinding #app{animation:rewindfx .9s steps(9) both}@keyframes rewindfx{0%{
 .sicon{width:48px;height:48px;border-radius:10px;flex:none;display:grid;place-items:center}.sicon img{width:36px;height:36px;image-rendering:pixelated}.sicon.wxi{color:#1a1a1a;font-size:13px;font-weight:700}
 .sitap{font-size:11px;color:var(--ink-dim);opacity:.6;margin-top:6px}
 @keyframes sifade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.tixprice{background:#a8335a!important;color:#fff}.prizenote{text-align:center;font-size:13px;color:var(--ink-dim);padding:4px 8px}.prizenote b{color:#ff8fab}
 .droptarget{box-shadow:inset 0 0 0 3px #d9824a,0 0 18px rgba(217,130,74,.55)!important;border-radius:14px}
 
 #minifish{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(5,15,20,.45);animation:pop .2s ease-out;touch-action:none;cursor:pointer}
@@ -1025,7 +1026,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.32</div>
+  <div class="gamever" aria-label="Version">v1.2.33</div>
 </div>
 
 <script>
@@ -4530,6 +4531,7 @@ const EVENTS={
   choices:[{label:'Buy it ($12)',ok:()=>S.money>=12&&purseUsed()<S.purseMax,why:'Needs $12 and room in your purse',run:()=>{const t=pick(relicsLeft());S.money-=12;S.purse.push(mkCoin(t));play('buy');return `You bought the {a:${COINS[t].name}}. ${COINS[t].desc}`}},declineC('The case closes on its own.')]},
 };
 function eventHTML(){
+  if(S.event.key==='prizecounter')return prizeHTML();
   const E=EVENTS[S.event.key];
   if(!S.event.text)S.event.text=typeof E.text==='function'?E.text():E.text;
   return `<div class="panel evpanel ${E.omen?'omen':''}"><div class="evtitle">${E.omen?'<span class="omentag">Omen</span>':''}${E.title}</div><div class="evtext">${fmt(S.event.result||S.event.text)}</div>
@@ -4537,6 +4539,16 @@ function eventHTML(){
       return `<div class="evch"><button class="btn ${i===E.choices.length-1&&E.choices.length>1&&c.label==='Decline'?'':'green'}" data-act="evpick" data-arg="${i}" ${ok?'':'disabled'}>${hideLuck(typeof c.label==='function'?c.label():c.label)}</button>${!ok&&c.why?`<div class="why">${c.why}</div>`:''}</div>`}).join('')}</div>`}
   </div><div class="purse shopp">${S.purse.map((c,i)=>coinHTML(c,i)).join('')}</div>`;
 }
+function prizeHTML(){const t=S.tickets||0,full=S.jokers.length>=slots();S.event.sold=S.event.sold||{};
+  const cards=prizeOffer().map((k,i)=>{const d=JOKERS[k],sold=S.event.sold[k];return `<div class="scard ${sold?'gone':''} ${d.r===5?'fabled':''}"><div class="price tixprice">${d.tix} tickets</div>
+    <button class="jcard" data-tip="prize:${i}" aria-label="${d.name}"><div class="jin" style="--jbg:${d.bg};--dl:${-i*.9}s">${IMG(icon(k))}</div></button>
+    <button class="btn small" style="--c:#ff6f9a;--cd:#a8335a" data-act="prizebuy" data-arg="${i}" ${sold||t<d.tix||full?'disabled':''}>${full?'No room':'Buy'}</button></div>`}).join('');
+  return `<div class="panel shop prizeshop"><div class="shophead"><div class="shopbtns">
+      <button class="btn red big" data-act="prizeleave">Leave</button>
+      <button class="btn green" data-act="prizecash" ${t<3?'disabled':''}>Cash in 3 tickets: $10</button></div>
+      <div class="sect"><div class="slbl">The Prize Counter · <b style="color:#ff8fab">${t} ticket${t===1?'':'s'}</b></div><div class="shelf">${cards||'<div class="lbl">The shelves are bare</div>'}</div></div></div>
+    <div class="prizenote">Spending here costs nothing later: every Ticket you earn is <b>also banked</b> for cosmetics in the <b>Prize Booth</b> on the title screen.</div></div>
+    <div class="purse shopp">${S.purse.map((c,i)=>coinHTML(c,i)).join('')}</div>`}
 /* ================= DAILY TOSS ================= */
 const dayKey=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const dailyRoll=k=>{const ks=Object.keys(ROLLS).filter(r=>!ROLLS[r].challenge);return ks[hashStr('roll'+k)%ks.length]};
@@ -4719,6 +4731,7 @@ function tipContent(spec){
   if(k==='runroll'){const r=ROLLS[S.roll],st=STAKES[S.stake]||STAKES[1];
     return `<div class="tn">${rollName(S.roll)}</div><div class="td">${fmt(r.desc)}</div>${S.daily?`<span class="tb" style="background:var(--purple)">Daily Toss</span>`:r.challenge?`<span class="tb" style="background:var(--mult)">Challenge Roll</span>`:`<span class="tb" style="background:${st.col};color:#1a1a1a">${st.name}</span><div class="td" style="margin-top:4px">${stakeDesc(S.stake)}</div>`}${S.seed?`<div class="tkind">Seed ${S.seed}</div>`:''}`}
   if(k==='way'){const D=DEST[i];return D&&`<div class="tn">${D.name}</div><div class="td">${fmt(D.desc)}</div><span class="tb" style="background:${D.col};color:#1a1a1a">${D.rare?'Rare detour':'Destination'}</span>`}
+  if(k==='prize'){const key=S.event&&prizeOffer()[i];return key&&jt(key)}
   if(k==='goal'){const g=GOALS[i];if(!g)return null;const ok=isUnlocked(g.kind,g.key)&&!PROF.unlockAll||!!PROF.unlocked[g.kind+':'+g.key];
     return `<div class="tn">#${i+1} ${ok?goalName(g):'Locked'}</div><div class="td">${ok?'Unlocked: ':'To unlock: '}${g.desc}</div><span class="tb" style="background:${ok?'var(--green)':'var(--grey)'}">${{charm:'Charm',coin:'Coin',pack:'Pack',roll:'Roll'}[g.kind]}</span>`}
   if(k==='coins')return `<div class="tn">Purse</div><div class="td">You hold ${S.purse.length} of ${S.purseMax} coins. Every coin is tossed each Flip. You need at least ${PURSE_MIN}.</div>`;
@@ -5399,6 +5412,9 @@ const ACT={
   bet(){if(!S||S.phase!=='call'||S.money<=0||S.roll==='highroller'||S.tossNo>0)return;S.bet=!S.bet;play(S.bet?'money':'click');refreshTable()},
   evpick(a){const E=EVENTS[S.event.key],c=E.choices[+a];if(!c||(c.ok&&!c.ok())||S.event.result)return;S.event.result=c.run();render()},
   evdone(){goNext()},
+  prizebuy(a){const k=prizeOffer()[+a],d=JOKERS[k];if(!k||S.event.sold&&S.event.sold[k]||(S.tickets||0)<d.tix||S.jokers.length>=slots())return;S.tickets-=d.tix;addJoker(k,d.cost);(S.event.sold=S.event.sold||{})[k]=1;play('buy');render();juice($('#jk'+(S.jokers.length-1)))},
+  prizecash(){if((S.tickets||0)<3)return;S.tickets-=3;S.money+=10;play('money');render()},
+  prizeleave(){goNext()},
   coachok(a){PROF.tips[a]=true;saveProf();$('#coach').hidden=true},
   ttips(){PROF.tutorialDone=false;PROF.tips={};saveProf();toast('Tips will show on your next run');showModal(optionsModal)},
   tunlock(){PROF.unlockAll=!PROF.unlockAll;saveProf();showModal(optionsModal)},
