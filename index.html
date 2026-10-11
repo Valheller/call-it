@@ -1038,7 +1038,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.66</div>
+  <div class="gamever" aria-label="Version">v1.2.67</div>
 </div>
 
 <script>
@@ -1130,7 +1130,7 @@ const COINS={
  jade:   {name:'Cash Coin',         chips:5, held:2, string:10, cost:4, desc:'{c:+5} Points. Earn {$:$2} at the end of each wager while it sits in your purse. Coins {a:next to it} give {c:+10} Points when they score'},
  lucky:{name:'5 Yen Coin',        chips:10, lucky:1, cost:4, desc:'{c:+10} Points. {a:1 in 3} chance for {m:+15} Mult, {a:1 in 8} chance for {$:$8}. Both chances {a:double} while it sits in the {a:middle} of your purse'},
  steel:  {name:'2 Euro Coin',       chips:5, missX:1.5, cost:5, desc:'{c:+5} Points when it scores. {x:X1.5} Mult when it does {a:not} score'},
- glass:  {name:'Chocolate Coin',    chips:5, xmult:2, glass:1, cost:5, desc:'{c:+5} Points, {x:X2} Mult. {a:1 in 4} chance to get eaten when it scores, leaving a {a:Crumpled Gold Foil} coin behind'},
+ glass:  {name:'Chocolate Coin',    chips:5, xmult:2, glass:1, cost:5, desc:'{c:+5} Points, {x:X2} Mult. {a:1 in 10} chance to get eaten when it scores, leaving a {a:Crumpled Gold Foil} coin behind'},
  bronze: {name:'Wooden Nickel',     chips:1, missMult:8, cost:4, desc:'{c:+1} Point when it scores, but {m:+8} Mult when it {a:misses}. Don\'t take any wooden nickels'},
  loaded:{name:"Magician's Coin",   chips:15, bias:.8, freeFlip:1, cost:5, desc:'{c:+15} Points. Lands on your call {a:4 in 5} times. Re-flipping only Magician\'s Coins is {a:free}'},
  quicksilver:{name:'Arcade Token',  chips:5, wild:1, arcade:2, cost:6, desc:'{c:+5} Points. Always scores, whatever face it lands on. {m:+2} Mult for each Re-flip you\'ve used this wager. {a:Continue?} If you would run out of Flips short of the target, it gets used up for {a:+1} Flip and {a:+1} Re-flip'},
@@ -3754,7 +3754,7 @@ function computeHand(){
   }
   const shattered=[];
   let left=S.purse.length;
-  E.matched.forEach((m,i)=>{if(m&&coinDef(S.purse[i]).glass&&rand()<odds(.25,false))shattered.push(i)});
+  E.matched.forEach((m,i)=>{if(m&&coinDef(S.purse[i]).glass&&rand()<odds(.1,false))shattered.push(i)});
   const lost=[];E.matched.forEach((m,i)=>{const d=coinDef(S.purse[i]);if(m&&i>0&&d.loseChance&&S.purse.length>PURSE_MIN&&rand()<d.loseChance)lost.push(i)});
   jk.forEach((j,ji)=>{if(!jOn(j))return;const t=resolveJ(ji);const em=emitter('joker',ji);if(t>=0&&jOn(jk[t])){const def=jdef(jk[t]);if(def.end)def.end(ctx,em,jk[t],t!==ji)}if(j.wear)applyWear(j.wear,em)});
   if(S.roll==='fusion'){const a=(st.chips+st.mult)/2;st.chips=a;st.mult=a;ev.push({src:'hand',kind:'balance',chips:a,mult:a})}
@@ -4276,7 +4276,7 @@ const ROLLS={
  hoarder:{name:'Hoarder Roll',challenge:1,paper:'#4a3a6a',band:'#ffd34d',cap:'gold',desc:'{a:Challenge.} You can\'t sell Charms or Consumables, or melt coins. {a:+1} Charm slot and {a:+1} Consumable slot',apply:()=>{S.jokerSlots++;S.consSlots++}},
  oneflip:{name:'One Flip Roll',challenge:1,paper:'#2a2a3a',band:'#bfe6ff',cap:'silver',desc:'{a:Challenge.} Just {r:1} Flip every wager. You get {a:+3} Re-flips, and can re-flip up to {a:3} coins at once',apply:()=>{S.baseFlips=1;S.baseReflips+=3;S.reflipCap=3}},
  inflation:{name:'Inflation Roll',challenge:1,paper:'#6a5a1a',band:'#ffe08a',cap:'gold',desc:'{a:Challenge.} Everything in the shop costs {r:$1 more} for every stage you\'ve reached, rerolls included, and the House skims money over {r:$50} instead of $100'},
- chocolate:{name:'Chocolate Roll',challenge:1,paper:'#4a2a14',band:'#e8c14a',cap:'glass',desc:'{a:Challenge.} Start with {a:5 Chocolate Coins} instead of Quarters ({x:X2} Mult, but {a:1 in 4} get eaten when they score, leaving Gold Foil)',apply:()=>{S.purse.forEach(c=>c.type='glass')}},
+ chocolate:{name:'Chocolate Roll',challenge:1,paper:'#4a2a14',band:'#e8c14a',cap:'glass',desc:'{a:Challenge.} Start with {a:5 Chocolate Coins} instead of Quarters ({x:X2} Mult, but {a:1 in 10} get eaten when they score, leaving Gold Foil)',apply:()=>{S.purse.forEach(c=>c.type='glass')}},
  speedrun:{name:'Speedrun Roll',challenge:1,paper:'#c8102e',band:'#ffd34d',cap:'quicksilver',desc:'{a:Challenge.} Every move is on the clock: {r:12 seconds} to make each call, and to re-flip or cash in. Run out of time and something {r:very fast} comes for your coins and Charms'},
  invisible:{name:'Invisible Roll',challenge:1,paper:'#000000',band:'#ffffff',cap:'copper',desc:'{a:Challenge.} Every coin lands face down until it scores, so you toss and re-flip blind. Start with {$:$10}',apply:()=>{S.money=10}},
  rivalroll:{name:'Rival Roll',challenge:1,paper:'#3a2210',band:'#ff8f1f',cap:'platinum',desc:'{a:Challenge.} Your rival shows up after almost every boss and wager until you duel them, and you face a {a:new rival} every stage. The final boss is {r:The General}: the face on the Quarter himself'},
