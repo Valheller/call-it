@@ -1048,7 +1048,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.93</div>
+  <div class="gamever" aria-label="Version">v1.2.94</div>
 </div>
 
 <script>
@@ -1189,6 +1189,8 @@ const polterPairs=()=>{const free={},out=[];S.purse.forEach((c,i)=>{if(stkGroup(
 const stkGroup=c=>!!S&&!!c&&!!c.stk&&S.purse.filter(x=>x.stk===c.stk).length>=2?c.stk:null;
 const purseCnt=()=>`${purseUsed()}/${S.purseMax}`;
 const syncPurseCnt=()=>{if(S)document.querySelectorAll('.purse').forEach(p=>p.dataset.count=purseCnt())};
+/* hits a bet needs: 4 with a normal purse, about three quarters of your coins with a bigger one */
+const betNeed=()=>{const n=S.purse.length;return Math.min(n,Math.max(4,Math.ceil(n*.75)))};
 const purseUsed=()=>S.purse.length-new Set(S.purse.filter(c=>stkGroup(c)).map(c=>c.stk)).size;
 function applyStacks(){const seen={};S.purse.forEach((c,i)=>{const g=stkGroup(c);if(!g)return;if(g in seen)S.results[i]=S.results[seen[g]];else seen[g]=i})}
 
@@ -4094,7 +4096,7 @@ function refreshTable(){
      h.innerHTML=S.boss==='fatal'&&S.boss2?`<b class="fataltxt">FATAL ERROR</b> · next toss: <b>${BOSSES[S.boss2].name}</b>: ${fmt(BOSSES[S.boss2].desc)}.`:foe?`<span class="hmob">${foe}</span><span class="hdesk">${base}</span>`:base}
     const stake=betStake(),capped=stake<S.money,lim=`Table limit $${tableLimit()} this stage`;
     const betBtn=S.tossNo>0?'':S.roll==='highroller'&&S.money>0?`<button class="btn tiny gold betting" disabled title="High Roller: the first toss of every wager bets all your money, up to the table limit (${lim})">All-in: $${stake}</button>`:S.money>0?`<button class="btn tiny ${S.bet?'gold betting':''}" style="${S.bet?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="bet" aria-pressed="${!!S.bet}" title="Double or nothing with ${capped?`$${stake} (${lim})`:'all your money'}. No re-flips on a toss you bet on">${S.bet?`Betting ${capped?'':'all '}$${stake}`:`Bet ${capped?'':'all '}$${stake}`}${capped?' (max)':''}</button>`:'';
-    const mid=`<div class="mid"><div class="lbl">Flips left</div><div class="num blue">${S.flipsLeft}</div>${betBtn}<div class="lbl" style="font-size:10px">on ${Math.min(4,S.purse.length)}+ hits · no re-flips</div></div>`;
+    const mid=`<div class="mid"><div class="lbl">Flips left</div><div class="num blue">${S.flipsLeft}</div>${betBtn}<div class="lbl" style="font-size:10px">on ${betNeed()}+ hits · no re-flips</div></div>`;
     const auto=bossIs('whim')||S.roll==='majority',edge=edgeOK()&&!auto;
     ct.classList.toggle('three',edge);
     ct.innerHTML=auto
@@ -4245,7 +4247,7 @@ const RULES=`<ol class="rules">
  <li>Runes that change coins need targets: tap coins to select them, then use the Rune. Keep up to 2 consumables for later.</li>
  <li>Coins and Charms can carry <b>Wear</b> (bonus Points or Mult, or an extra Charm slot). Coins can also carry one <b>Defect</b> (money, retriggers, Runes or Almanacs). Spirits add them, and Coin Pouches sometimes hold modified coins.</li>
  <li>Very rarely a coin lands on its <span class="k-a">edge</span>. Edge coins always score with <span class="k-x">X2</span> Mult.</li>
- <li>On the <b>first toss</b> of a wager you can <b>Bet</b> your money on 4+ hits: double or nothing, up to a <b>table limit</b> that rises each stage. Betting means <b>no re-flips</b> for that toss. Hold more than $100 and the House skims 15% of the extra after each wager.</li>
+ <li>On the <b>first toss</b> of a wager you can <b>Bet</b> your money on 4+ hits (more with a bigger purse: about three quarters of your coins): double or nothing, up to a <b>table limit</b> that rises each stage. Betting means <b>no re-flips</b> for that toss. Hold more than $100 and the House skims 15% of the extra after each wager.</li>
  <li>Each toss type gains <b>+1 Mult</b> for every 10 times you score it (mastery). There are 8 stages. Targets climb steeply, and on Gold Stake every Boss has a second rule. Coins flipped 50 times get <b>Polished</b> for free.</li>
  <li>Encounters bring a choice to make, and are worth about as much as a shop visit. Some Charms are <b>Cursed</b> (Rusted, Bound, Fleeting, Brittle, Heavy, Hungry, Jinxed, Rented). Cursed Charms in the shop cost <b>half</b>.</li>
  <li>The <b>Tightrope</b> Charm and <b>Balance Point</b> Spirit unlock the <b>Edge</b> call.</li>
@@ -5039,7 +5041,7 @@ async function doCall(call){
   if(wx('storm')&&S.purse[S.bolt]){const el=$('#c'+S.bolt);if(el){el.classList.add('bolted');popup(el,'Struck!','text')}if(window.wxFlash)wxFlash();play('thunder');shake(5)}
   S.stats.flips+=S.purse.length;
   /* bets settle on the initial toss only, before any re-flips */
-  if(S.betLive){const needB=Math.min(4,S.purse.length),EB=evalHand(S.results,S.call),cnt=EB.count;
+  if(S.betLive){const needB=betNeed(),EB=evalHand(S.results,S.call),cnt=EB.count;
     if(cnt>=needB){PS().betsWon++;if(S.betLive>=30)PS().bigBet++;addLuck(-1);const bm=countEff('whale')?3:2,chipB=bossIs('miser')?0:3*EB.matched.filter((m,i)=>m&&ctype(S.purse[i])==='ruby').length;S.money+=(bossIs('miser')?S.betLive:S.betLive*bm)+chipB;popup($('#smoney'),'Bet won +$'+(S.betLive*bm+chipB),'money');if(chipB)EB.matched.forEach((m,i)=>{if(m&&ctype(S.purse[i])==='ruby'){const el=$('#c'+i);if(el)popup(el,'+$3','money')}});play('money')}else{PS().betsLost++;addLuck(1);popup($('#smoney'),'Bet lost','miss')}S.betLive=0;syncStats()}
   S.phase='tossed';refreshTable();updatePreview();coach('tossed');scheduleSave();
 }
