@@ -145,7 +145,11 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 #seedin:focus{outline:2px solid var(--orange);outline-offset:1px}
 .seedv{display:flex;align-items:center;gap:6px;letter-spacing:.08em}
 input.vol{width:150px;accent-color:var(--orange)}
-.sttracks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stctl{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}.stctl .optrow>span{display:flex;flex-direction:column}.stctl .optrow small{font-size:11px;color:var(--ink-dim)}
+.stctl .optrow{flex-wrap:wrap;gap:6px}.stsg{display:flex;gap:3px;flex:0 1 auto;margin-left:auto}.stsg .btn{flex:1 1 0;min-width:28px;padding:5px 6px}
+@media (max-width:520px){.stsg{flex:1 1 100%}}
+.sttracks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sttracks .btn{min-width:0;white-space:normal;line-height:1.15}.sttracks small{white-space:normal;min-width:0}
 .sttracks .btn{justify-content:flex-start;text-align:left;gap:8px;display:flex;align-items:center;flex-wrap:wrap}
 .sttracks .stn{opacity:.6;font-variant-numeric:tabular-nums}
 .sttracks small{flex-basis:100%;font-size:10px;opacity:.85}
@@ -627,7 +631,7 @@ img{-webkit-user-drag:none}
   .trow .btn.big{flex:1 1 0;min-width:0;font-size:13px;padding:10px 4px;white-space:normal;line-height:1.15}
   .stat.haswx .stl{display:none}
   .wxbanner{font-size:11px;padding:3px 8px}
-  .sttracks{grid-template-columns:1fr}
+  .sttracks{gap:5px}.sttracks .btn{font-size:11px;padding:7px 6px;gap:4px}.sttracks small{font-size:9px}
   .stat{padding:4px}
   .num{font-size:20px}
   .s-btns .btn{font-size:14px;padding:6px}
@@ -938,7 +942,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.5</div>
+  <div class="gamever" aria-label="Version">v1.2.6</div>
 </div>
 
 <script>
@@ -2433,7 +2437,7 @@ PACK_MUSIC.glitch=function(m){
 };
 let r2=12345;const rand2=()=>{r2=(r2*16807)%2147483647;return r2/2147483647};
 const BOSS_THEMES=[{name:'Pulse'},{name:'March'},{name:'Dread'},{name:'Gallop'},{name:'Clockwork'},{name:'Frenzy'}];
-const BOSS_THEME_OF={frost:0,wall:1,anchor:1,needle:1,judge:1,fog:2,shroud:2,hollow:2,blackcat:2,shards:2,sleeper:2,rust:3,pinch:3,undertow:3,eclipse:3,thief:3,clock:4,toll:4,tax:4,miser:4,eye:4,gale:5,whim:5,gravity:5,reflection:5,parrot:5};
+const BOSS_THEME_OF={frost:0,shards:0,sleeper:0,thief:0,wall:1,anchor:1,needle:1,judge:1,fog:2,shroud:2,hollow:2,blackcat:2,rust:3,pinch:3,undertow:3,eclipse:3,clock:4,toll:4,tax:4,miser:4,eye:4,gale:5,whim:5,gravity:5,reflection:5,parrot:5};
 const bossTheme=k=>k in BOSS_THEME_OF?BOSS_THEME_OF[k]:hashStr(k)%6;
 const bossesOfTheme=i=>{const n=Object.keys(BOSSES).filter(k=>!BOSSES[k].final&&bossTheme(k)===i).map(k=>BOSSES[k].name.replace('The ',''));return n.slice(0,3).join(', ')+(n.length>3?` +${n.length-3}`:'')};
 function bossLayer(v,s,bar,ch,at,spb,B){
@@ -2559,7 +2563,7 @@ const Music={step:0,next:0,timer:null,bpm:90,intense:false,mode:'main',prevLead:
   sched(){const c=AU.ctx;if(!c||!OPT.music)return;if(bootStage<2){this.next=c.currentTime+.05;this.step=0;return}if(this.next<c.currentTime-.2)this.next=c.currentTime+.05;
     while(this.next<c.currentTime+.15){this.play(this.step,this.next);const s16=60/this.bpm/4;this.next+=s16*(this.step%2?.88:1.12);this.step++}},
   play(step,at){
-    if(S&&S.roll==='glitched'&&!this.offline&&this.mode!=='fatal'){const x=Math.random();if(x<.025)step=Math.max(0,step-1);else if(x<.035)return;else if(x<.045)step+=4}
+    if((SOUNDTEST!=null?ST.glitch:S&&S.roll==='glitched')&&!this.offline&&this.mode!=='fatal'){const x=Math.random();if(x<.025)step=Math.max(0,step-1);else if(x<.035)return;else if(x<.045)step+=4}
     const bar=Math.floor(step/16)%8,s=step%16,ch=CHORDS[bar],spb=60/this.bpm,loop=Math.floor(step/128),B=AU.mus;
     if(PACK_MUSIC[this.mode]){PACK_MUSIC[this.mode]({s,bar,ch,at,spb,B,loop,up:[...ch.n].sort((a,b)=>a-b)});return}
     if(this.mode==='menu'){
@@ -2623,7 +2627,7 @@ const Music={step:0,next:0,timer:null,bpm:90,intense:false,mode:'main',prevLead:
   }};
 function musicMood(){
   if(!AU.ctx)return;const t=AU.ctx.currentTime;
-  if(SOUNDTEST!=null){const tr=TRACKS[SOUNDTEST],o=tr[2]||{};Music.mode=tr[1];Music.intense=!!o.intense;Music.var=o.v||0;Music.bpm=({tablerivals:112,fish:72,credits:104})[tr[1]]||90;AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(o.lp?750:16000,t,.25);return}
+  if(SOUNDTEST!=null){const tr=TRACKS[SOUNDTEST],o=tr[2]||{};Music.mode=tr[1];Music.intense=!!o.intense;Music.var=o.v||0;Music.bpm=({tablerivals:112,fish:72,credits:104,menu:90})[tr[1]]||86+ST.stage*2;AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(o.lp?750:16000,t,.25);return}
   const shop=S&&(S.screen==='shop'||S.screen==='cashout'||S.screen==='over'||S.screen==='event');
   AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(shop&&!S.pack?750:16000,t,.25);
   if(modal===creditsModal){AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(16000,t,.25);Music.mode='credits';Music.intense=false;Music.bpm=104;return}
@@ -3737,10 +3741,12 @@ function lkMeters(note='Revealed by your Crystal Ball',showL=true,showK=true){co
   return `<div class="lkm">${showL?`<div><span>Luck</span>${bar(L,'#4bd18f')}<b>${fmtSign(L)} · ${luckWord(L)}</b></div>`:''}${showK?`<div><span>Karma</span>${bar(K,'#ffd34d')}<b>${fmtSign(K)} · ${karmaWord(K)}</b></div>`:''}<div class="lbl">${note}</div></div>`}
 /* in the order you meet them: menu, the run, its packs, then the endings */
 const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','main',{lp:1}],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Glitch Pack','glitch',{sub:'Unlocked by beating House'}],['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['Endless','endless',{sub:'Below the House'}],['The House','thehouse',{sub:'Endless final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
-let SOUNDTEST=null;
+let SOUNDTEST=null;const ST={glitch:false,stage:1};
 function soundTestModal(){
-  return `<div class="overlay"><div class="panel modal" style="width:min(440px,100%)"><h2>Sound Test</h2>
+  return `<div class="overlay"><div class="panel modal" style="width:min(660px,100%)"><h2>Sound Test</h2>
     ${OPT.mvol>0?'':'<div class="lbl" style="text-align:center;margin-bottom:8px">Music volume is at 0 in Options</div>'}
+    <div class="stctl"><div class="optrow"><span>Glitched audio<small>How music sounds on the Glitched Roll</small></span><button class="btn small ${ST.glitch?'green':''}" data-act="stglitch">${ST.glitch?'On':'Off'}</button></div>
+      <div class="optrow"><span>Stage<small>Music speeds up as a run goes on</small></span><div class="stsg">${[1,2,3,4,5,6,7,8].map(n=>`<button class="btn small" style="${ST.stage===n?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ststage" data-arg="${n}" aria-pressed="${ST.stage===n}">${n}</button>`).join('')}</div></div></div>
     <div class="sttracks">${TRACKS.map((t,i)=>`<button class="btn small ${SOUNDTEST===i?'green':''}" style="${SOUNDTEST===i?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="sttrack" data-arg="${i}"><span class="stn">${String(i+1).padStart(2,'0')}</span>${t[0]}${SOUNDTEST===i?'<small>Now playing</small>':t[2]&&t[2].sub?`<small>${t[2].sub}</small>`:''}</button>`).join('')}</div>
     <div style="text-align:center;margin-top:12px;display:flex;gap:10px;justify-content:center">${SOUNDTEST!=null?'<button class="btn red" data-act="ststop">Stop</button>':''}<button class="btn orange" data-act="stback">Back</button></div></div></div>`}
 let abandonArm=false,resetArm=false;
@@ -4994,6 +5000,8 @@ const ACT={
   dailystart(){const k=dayKey();if(PROF.daily[k])return;PROF.daily[k]={started:1};saveProf();openRoll(dailyRoll(k),{seed:hashStr(k),daily:k})},
   soundtest(){audioInit();showModal(soundTestModal)},
   sttrack(a){audioInit();SOUNDTEST=+a;Music.prevLead=0;musicMood();play('click');showModal(soundTestModal)},
+  stglitch(){ST.glitch=!ST.glitch;play('click');showModal(soundTestModal)},
+  ststage(a){ST.stage=+a;play('click');musicMood();showModal(soundTestModal)},
   ststop(){SOUNDTEST=null;musicMood();showModal(soundTestModal)},
   stback(){closeModal()},
   copyseed(){if(!S||!S.seed)return;navigator.clipboard.writeText(S.seed).then(()=>toast('Seed copied')).catch(()=>toast('Seed: <b>'+S.seed+'</b>'))},
