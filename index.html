@@ -963,7 +963,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.13</div>
+  <div class="gamever" aria-label="Version">v1.2.14</div>
 </div>
 
 <script>
@@ -2979,6 +2979,10 @@ const SPR_SCROLL=["..........",".22222222.","2111111112",".1333331..",".1111111.
 const contractIcon=k=>sprite('ct-'+k,{p:{1:'#e9d9a8',2:'#a8743a',3:'#7a5a3a'},s:SPR_SCROLL});
 /* tickets: a second currency from duels, Elite wins and contracts, spent at the Prize Counter */
 const tixTxt=()=>S&&S.tickets?`${S.tickets} ticket${S.tickets>1?'s':''}`:'';
+/* money sinks: bets are capped by a per-stage table limit, and the House skims hoarded cash after each wager */
+const tableLimit=()=>20+10*(S?S.ante:1);
+const betStake=()=>S?Math.min(S.money,tableLimit()):0;
+const HOARD_FREE=100;const houseCut=m=>m>HOARD_FREE?Math.ceil((m-HOARD_FREE)*.15):0;
 function addTickets(n,why){if(!S||!n)return;S.tickets=(S.tickets||0)+n;S.ticketsEarned=(S.ticketsEarned||0)+n;toast(`<b style="color:#ff8fab">+${n} Ticket${n>1?'s':''}</b>${why?' · '+why:''}`);syncStats()}
 function settleContract(){
   if(!S.contract)return;const C=CONTRACTS[S.contract.key];S.contract=null;
@@ -3624,7 +3628,8 @@ function refreshTable(){
   const h=$('#hint'),ct=$('#controls');if(!ct)return;
   if(S.phase==='call'){
     h.innerHTML=(S.boss==='fatal'&&S.boss2?`<b class="fataltxt">FATAL ERROR</b> · next toss: <b>${BOSSES[S.boss2].name}</b>: ${fmt(BOSSES[S.boss2].desc)}.`:S.boss?bossDesc(curBlind())+'.':S.roll==='majority'?'No calls: each toss scores whichever face came up most.':'Every coin that lands on your call scores. Drag coins to rearrange them, or tap them to target a Rune.');
-    const betBtn=S.tossNo>0?'':S.roll==='highroller'&&S.money>0?`<button class="btn tiny gold betting" disabled title="High Roller: the first toss of every wager bets all your money">All-in: $${S.money}</button>`:S.money>0?`<button class="btn tiny ${S.bet?'gold betting':''}" style="${S.bet?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="bet" aria-pressed="${!!S.bet}" title="Double or nothing with all your money. No re-flips on a toss you bet on">${S.bet?`Betting all $${S.money}`:`Bet all $${S.money}`}</button>`:'';
+    const stake=betStake(),capped=stake<S.money,lim=`Table limit $${tableLimit()} this stage`;
+    const betBtn=S.tossNo>0?'':S.roll==='highroller'&&S.money>0?`<button class="btn tiny gold betting" disabled title="High Roller: the first toss of every wager bets all your money, up to the table limit (${lim})">All-in: $${stake}</button>`:S.money>0?`<button class="btn tiny ${S.bet?'gold betting':''}" style="${S.bet?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="bet" aria-pressed="${!!S.bet}" title="Double or nothing with ${capped?`$${stake} (${lim})`:'all your money'}. No re-flips on a toss you bet on">${S.bet?`Betting ${capped?'':'all '}$${stake}`:`Bet ${capped?'':'all '}$${stake}`}${capped?' (max)':''}</button>`:'';
     const mid=`<div class="mid"><div class="lbl">Flips left</div><div class="num blue">${S.flipsLeft}</div>${betBtn}<div class="lbl" style="font-size:10px">on ${Math.min(4,S.purse.length)}+ hits · no re-flips</div></div>`;
     const auto=bossIs('whim')||S.roll==='majority',edge=edgeOK()&&!auto;
     ct.classList.toggle('three',edge);
@@ -3659,7 +3664,7 @@ function cashoutHTML(){
   const C=S.cash;const done=C.shown>=C.lines.length;
   return `<div class="panel cash"><h2>Wager Won</h2>
     ${C.lines.slice(0,C.shown).map(l=>`<div class="cline"><span class="l">${l.l}</span><span class="v" ${l.v<0?'style="color:var(--mult)"':''}>${l.v<0?'-$'+(-l.v):'$'.repeat(Math.min(l.v,10))+(l.v>10?'+':'')+' <small>$'+l.v+'</small>'}</span></div>`).join('')}
-    <button class="btn orange big" data-act="cashout" ${done?'':'disabled'}>Cash Out: $${C.total}</button></div>`;
+    <button class="btn orange big" data-act="cashout" ${done?'':'disabled'}>Cash Out: ${C.total<0?`-$${-C.total}`:`$${C.total}`}</button></div>`;
 }
 const sizeName=s=>s==='normal'?'':s==='jumbo'?'Jumbo ':'Mega ';
 const packName=p=>sizeName(p.size)+PACKS[p.kind].name;
@@ -4457,7 +4462,7 @@ async function doCall(call){
   {const hg=S.jokers.filter(j=>cursed(j,'hungry')).length;if(hg&&S.money>0){S.money=Math.max(0,S.money-hg);syncStats();setTimeout(()=>popup($('#smoney'),'Hungry -$'+hg,'miss'),200)}}
   if(S.roll==='glitched'){S.glitch={};const pool=Object.keys(COINS).filter(k=>!COINS[k].relic);S.purse.forEach(c=>S.glitch[c.id]=pick(pool));glitchCharms();renderJokers()}
   if(S.jokers.some(j=>j.key==='missingno')){if(S.roll!=='glitched')S.glitchJ={};const mp=Object.keys(JOKERS).filter(k=>JOKERS[k].r<=3&&!COPYK[k]&&!JOKERS[k].init&&!JOKERS[k].wager&&!JOKERS[k].glitchOnly&&!JOKERS[k].prize&&!JOKERS[k].artifact&&(JOKERS[k].coin||JOKERS[k].end||JOKERS[k].miss));S.jokers.filter(j=>j.key==='missingno').forEach(j=>S.glitchJ[j.id]=pick(mp));renderJokers()}
-  S.betLive=S.bet?S.money:0;S.bet=false;S.betTurn=S.betLive>0;if(S.betLive){S.money-=S.betLive;syncStats()}
+  S.betLive=S.bet?betStake():0;S.bet=false;S.betTurn=S.betLive>0;if(S.betLive){S.money-=S.betLive;syncStats()}
   S.results=S.purse.map(c=>tossOne(c,call));S.rfd=[];
   const owls=S.purse.map((c,i)=>i).filter(i=>coinDef(S.purse[i]).owl&&call!=='E'&&!scores(S.results[i],call));owls.forEach(i=>S.results[i]=tossOne(S.purse[i],call,true));
   applyHeavy();applyStacks();
@@ -4683,6 +4688,7 @@ function enterCashout(){
   for(const j of S.jokers)if(j.key==='savings'){j.st.v=(j.st.v||0)+2}
   for(let k=0;k<countEff('clawmachine');k++)if(purseUsed()<S.purseMax&&rand()<odds(1/3)){const t=pick(SPECIAL);S.purse.push(mkCoin(t));toast(`<b>Claw Machine</b> grabs a <b>${COINS[t].name}</b>`)}
   {const H=S.jokers.filter(j=>j.key==='dragonhoard');if(H.length&&S.money+lines.reduce((a,l)=>a+l.v,0)>=25)H.forEach(j=>{j.st.x=Math.round((j.st.x+.25)*100)/100;toast("<b>Dragon's Hoard</b> grows")})}
+  {const cut=houseCut(S.money);if(cut){lines.push({l:`The House's cut (15% of money over $${HOARD_FREE})`,v:-cut});if(!PS().houseCutSeen){PS().houseCutSeen=1;setTimeout(()=>houseSay('Carrying that much? I\'ll take a little off the top. Spend it, or lose it.',6500),700)}}}
   S.cash={lines,total:lines.reduce((a,l)=>a+l.v,0),shown:0};S.screen='cashout';S.phase='idle';render();animateCashout();
 }
 async function animateCashout(){
