@@ -392,6 +392,8 @@ body.badges .face::before{display:block}
 .cblurb{text-align:center;color:var(--ink-dim);font-size:14px;margin:-2px auto 10px;max-width:70ch;line-height:1.35}
 .scard .pcap{font-size:12px;color:var(--ink-dim);text-align:center;white-space:nowrap;line-height:1.2}
 .meltbar:not(:has(.btn)){display:none}
+/* the melt bar floats over the bottom edge instead of pushing the page into a scrollbar */
+:has(>.purse.shopp+.meltbar){position:relative}.purse.shopp+.meltbar{position:absolute;left:0;right:0;bottom:0;min-height:0;pointer-events:none;z-index:3}.purse.shopp+.meltbar>*{pointer-events:auto}.purse.shopp+.meltbar>span{background:rgba(20,18,16,.8);padding:2px 8px;border-radius:6px}
 .shop{gap:10px}
 .shop .shelf{padding:8px 10px}
 .purse.shopp{padding-top:14px;padding-bottom:10px}
@@ -443,6 +445,14 @@ body.badges .face::before{display:block}
   display:flex;flex-direction:column;gap:8px;align-items:flex-start;font-size:calc(14px*var(--k,1));line-height:1.35}
 #coach[hidden]{display:none}
 #coach .btn{flex:none}
+/* tips: warm card, a "Tip" tag, a pop on arrival and a soft pulsing glow so they get noticed */
+#coach{background:linear-gradient(180deg,#4a3418,#2c2012);box-shadow:0 5px 0 var(--edge),inset 0 0 0 3px var(--orange),0 0 0 0 rgba(255,154,31,.55);color:#fff;animation:coachin .45s cubic-bezier(.2,1.6,.4,1),coachglow 1.8s ease-in-out .45s infinite}
+#coach .coachtag{display:flex;align-items:center;gap:6px;font-size:.8em;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);font-weight:700}
+#coach .coachtag i{display:inline-grid;place-items:center;width:1.5em;height:1.5em;border-radius:50%;background:var(--orange);color:#2c2012;font-style:normal;letter-spacing:0;animation:coachbob 1.2s ease-in-out infinite}
+@keyframes coachin{0%{transform:translateY(16px) scale(.85);opacity:0}100%{transform:none;opacity:1}}
+@keyframes coachglow{0%,100%{box-shadow:0 5px 0 var(--edge),inset 0 0 0 3px var(--orange),0 0 0 0 rgba(255,154,31,.5)}50%{box-shadow:0 5px 0 var(--edge),inset 0 0 0 3px var(--orange),0 0 18px 4px rgba(255,154,31,.45)}}
+@keyframes coachbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@media (prefers-reduced-motion:reduce){#coach,#coach .coachtag i{animation:none}}
 .evpanel{width:min(520px,100%);display:flex;flex-direction:column;gap:12px;text-align:center;box-shadow:0 5px 0 var(--edge),inset 0 0 0 3px var(--purple)}
 .evtitle{font-size:26px;font-weight:700;color:#d9c4ff}
 .evtext{background:var(--panel-deep);border-radius:10px;padding:10px 12px;font-size:16px;line-height:1.4}
@@ -945,7 +955,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.7</div>
+  <div class="gamever" aria-label="Version">v1.2.8</div>
 </div>
 
 <script>
@@ -3205,7 +3215,7 @@ const COACH={
 };
 function coach(id){
   if(!S||!S.tutorial||PROF.tips[id])return;
-  const c=$('#coach');c.innerHTML=`<div>${COACH[id]}</div><button class="btn tiny orange" data-act="coachok" data-arg="${id}">Got it</button>`;c.hidden=false;c.dataset.id=id;
+  const c=$('#coach');const fresh=c.hidden||c.dataset.id!==id;c.innerHTML=`<div class="coachtag"><i>!</i>Tip</div><div>${COACH[id]}</div><button class="btn small orange" data-act="coachok" data-arg="${id}">Got it</button>`;c.hidden=false;c.dataset.id=id;if(fresh){c.style.animation='none';void c.offsetWidth;c.style.animation='';play('click')}
 }
 /* autosave */
 let saveT=0;
