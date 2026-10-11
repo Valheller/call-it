@@ -1041,7 +1041,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.82</div>
+  <div class="gamever" aria-label="Version">v1.2.83</div>
 </div>
 
 <script>
@@ -5847,6 +5847,15 @@ function dragFrame(){
   {const q=zoneAt(drag,x,y);(drag.zones||[]).forEach(o=>o.e.classList.toggle('hot',o===q));if(q||drag.kind==='shop')return}
   const kids=[...drag.list.children].filter(c=>c.dataset.idx!=null),cur=kids.indexOf(drag.item);
   let j=0,best=1e9;drag.centers.forEach((cx,k)=>{const d=Math.abs(x-cx);if(d<best){best=d;j=k}});
+  if(drag.kind==='charm'&&S.jokers.some(q=>q.curse==='bound')){
+    /* Bound charms keep their slot: everything else shuffles around them */
+    const n=kids.length,isB=k=>S.jokers[k]&&S.jokers[k].curse==='bound';if(isB(j))return;
+    const free=kids.filter(c=>c!==drag.item&&!isB(+c.dataset.idx)),fs=[...Array(n).keys()].filter(k=>!isB(k));free.splice(fs.indexOf(j),0,drag.item);
+    const tgt=Array(n);kids.forEach(c=>{if(isB(+c.dataset.idx))tgt[+c.dataset.idx]=c});let f=0;for(let k=0;k<n;k++)if(!tgt[k])tgt[k]=free[f++];
+    if(tgt.every((c,k)=>c===kids[k]))return;
+    const first=new Map(kids.map(c=>[c,c.getBoundingClientRect().left]));tgt.forEach(c=>drag.list.appendChild(c));play('slide');
+    if(!reduced)kids.forEach(c=>{if(c===drag.item)return;const dx=first.get(c)-c.getBoundingClientRect().left;if(dx)c.animate([{transform:`translateX(${dx}px)`},{transform:'translateX(0)'}],{duration:120,easing:'ease-out'})});
+    return}
   if(j!==cur){
     const others=kids.filter(c=>c!==drag.item);
     const first=new Map(others.map(c=>[c,c.getBoundingClientRect().left]));
