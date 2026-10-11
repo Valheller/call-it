@@ -1039,7 +1039,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.77</div>
+  <div class="gamever" aria-label="Version">v1.2.78</div>
 </div>
 
 <script>
@@ -2239,11 +2239,12 @@ function consRoomAfter(){return S.cons.length-(usingFromSlot?1:0)<S.consSlots}
 
 /* the final boss sits on stage 8, then on every 4th stage of Endless */
 const finalAnte=a=>a===STAGES||(a>STAGES&&(a-STAGES)%4===0);
-/* boss rerolls: a paid button on the boss card (price climbs per stage), Inside Man's free one, Rune of Exile, Dossier packs */
+/* boss rerolls: one per stage from the boss card (paid, or free with Inside Man); Rune of Exile and Dossier packs work on top of that */
 const bossBlind=()=>S&&S.blinds&&S.blinds.find(b=>b.kind==='boss');
 const bossRerollable=()=>{const b=bossBlind();return !!b&&!BOSSES[b.boss].final&&(b.state==='upcoming'||b.state==='select')};
 const bossRerollCost=()=>8+4*(S.bossRR||0);
-const freeBossRR=()=>charmsOn()&&countEff('insideman')>(S.bossRRfree||0);
+const bossRRused=()=>(S.bossRR||0)+(S.bossRRfree||0)>=1; /* one boss reroll per stage */
+const freeBossRR=()=>!bossRRused()&&charmsOn()&&countEff('insideman')>(S.bossRRfree||0);
 function rerollBoss(){const b=bossBlind();if(!b||!bossRerollable())return false;const old=b.boss;let nb=old;for(let k=0;k<20&&nb===old;k++)nb=pickBoss(S.ante);if(nb===old)return false;
   b.boss=nb;if(b.boss2===nb)b.boss2=null;markSeen('boss',nb);toast(`${BOSSES[old].name} is out. <b style="color:${BOSSES[nb].col}">${BOSSES[nb].name}</b> takes the table`);play('boss');return true}
 function pickBoss(ante){
@@ -4093,7 +4094,7 @@ function blindSelectHTML(){
       <div class="btgt"><div class="lbl">${b.boss==='general'||b.boss==='tablerivals'?'Beat':'Score at least'}</div><div class="tv">${b.boss==='general'?'The General':b.boss==='tablerivals'?'The Table':S.roll==='glitched'?`<span class="glitchnum" aria-label="Hidden target">${fmtN(blindTarget(b))}</span>`:fmtN(blindTarget(b))}</div><div class="lbl">Reward: <span class="k-money">${'$'.repeat(blindReward(b))}</span></div></div>
       ${b.kind!=='boss'?`<div class="bskip"><div class="tagd">Skip for <b>${TAGS[b.tag].name}</b><br>${fmt(TAGS[b.tag].desc)}</div>
         <button class="btn red small" data-act="skipblind" ${cur?'':'disabled'}>Skip Wager</button></div>`:''}
-      ${b.kind==='boss'&&bossRerollable()?`<div class="bskip">${freeBossRR()?'<button class="btn small" style="--c:var(--purple);--cd:var(--purple-d)" data-act="bossrr" data-arg="free">Reroll Boss: Free</button>':`<button class="btn small" style="--c:var(--purple);--cd:var(--purple-d)" data-act="bossrr" ${S.money<bossRerollCost()?'disabled':''}>Reroll Boss $${bossRerollCost()}</button>`}</div>`:''}
+      ${b.kind==='boss'&&bossRerollable()?`<div class="bskip">${bossRRused()?'<button class="btn small" disabled>Boss rerolled</button>':freeBossRR()?'<button class="btn small" style="--c:var(--purple);--cd:var(--purple-d)" data-act="bossrr" data-arg="free">Reroll Boss: Free</button>':`<button class="btn small" style="--c:var(--purple);--cd:var(--purple-d)" data-act="bossrr" ${S.money<bossRerollCost()?'disabled':''}>Reroll Boss $${bossRerollCost()}</button>`}</div>`:''}
     </div>`}).join('')}</div>`;
 }
 function cashoutHTML(){
@@ -5605,7 +5606,7 @@ const ACT={
   bet(){if(!S||S.phase!=='call'||S.money<=0||S.roll==='highroller'||S.tossNo>0)return;S.bet=!S.bet;play(S.bet?'money':'click');refreshTable()},
   evpick(a){const E=EVENTS[S.event.key],c=E.choices[+a];if(!c||(c.ok&&!c.ok())||S.event.result)return;S.event.result=c.run();render()},
   evdone(){goNext()},
-  bossrr(a){if(!bossRerollable())return;if(a==='free'){if(!freeBossRR())return;S.bossRRfree=(S.bossRRfree||0)+1}else{const c=bossRerollCost();if(S.money<c)return;spend(c);S.bossRR=(S.bossRR||0)+1}if(rerollBoss())render()},
+  bossrr(a){if(!bossRerollable()||bossRRused())return;if(a==='free'){if(!freeBossRR())return;S.bossRRfree=(S.bossRRfree||0)+1}else{const c=bossRerollCost();if(S.money<c)return;spend(c);S.bossRR=(S.bossRR||0)+1}if(rerollBoss())render()},
   prizebuy(a){const k=prizeOffer()[+a],d=JOKERS[k];if(!k||S.event.sold&&S.event.sold[k]||(S.tickets||0)<d.tix||S.jokers.length>=slots())return;S.tickets-=d.tix;addJoker(k,d.cost);(S.event.sold=S.event.sold||{})[k]=1;play('buy');render();juice($('#jk'+(S.jokers.length-1)))},
   prizecash(){if((S.tickets||0)<3)return;S.tickets-=3;S.money+=10;play('money');render()},
   prizeleave(){goNext()},
