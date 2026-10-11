@@ -1030,7 +1030,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.40</div>
+  <div class="gamever" aria-label="Version">v1.2.41</div>
 </div>
 
 <script>
@@ -1723,6 +1723,8 @@ Object.assign(JOKERS,{
   desc:j=>`If you would {r:lose} a wager, rewind time to the moment it began. {a:${j&&j.st?j.st.u:3}} rewind${(j&&j.st?j.st.u:3)===1?'':'s'} left, then it breaks`},
  smelter:{name:'Smelter',r:2,cost:6,bg:'#3a1a0a',p:{1:'#6a6a72',2:'#ff6a1a',3:'#ffd34d',4:'#2a2a30'},s:["..........","1........1","11......11","111111111.",".12233221.",".12333321.","..122221..","...1111...","...4444...","..444444.."],
   desc:'Lets you {a:melt} coins from your purse whenever you like, for money (select a coin in the shop)'},
+ teller:{name:'Bank Teller',r:2,cost:6,bg:'#1e3a2a',p:{1:'#c3c9ce',2:'#6f7a83',3:'#3fbf8b',4:'#222222'},s:["..333333..",".33333333.","3344444433","..111111..",".11222211.",".12111121.",".12111121.",".11222211.","..111111..",".........."],
+  desc:'Every wager you win, hands you a {a:Quarter} (if your purse has room). Quarters give {c:+10} Points when they score',coin:(c,i,e)=>{if(ctype(c.purse[i])==='copper')e('chips',10)}},
  sundial:{name:'Sundial',r:3,cost:8,bg:'#3a2a10',p:{1:'#c9a06a',2:'#ffd34d',3:'#3a2a1a'},s:["....22....","..2.22.2..","...2222...",".22222222.","...2222...","..2.22.2..","....22....","1111111111",".11111131.","..111111.."],
   desc:()=>{const x=sunX();return `Mult that follows your clock: {x:X1} at midnight, rising to {x:X3} at noon {d:(Right now X${x.toFixed(2)})}`},end:(c,e)=>{const x=sunX();if(x>1)e('xmult',Math.round(x*100)/100)}},
 });
@@ -1878,6 +1880,7 @@ async function setCoinMod(i,kind,v){const c=S.purse[i];if(!c)return;c[kind]=v;re
 
 /* Runes: shape your coins (target coins by selecting them first) */
 const RUNES={
+ change:{name:'Rune of Change',col:'#c3c9ce',min:1,max:3,to:'copper',desc:'Turn up to {a:3} selected coins into {a:Quarters}'},
  iron:{name:'Rune of Iron',col:'#a9b6c4',min:1,max:2,to:'steel',desc:'Turn up to {a:2} selected coins into {a:2 Euro Coins}'},
  glass:{name:'Rune of Cocoa',col:'#c98a4a',min:1,max:2,to:'glass',desc:'Turn up to {a:2} selected coins into {a:Chocolate Coins}'},
  gold:{name:'Rune of Gold',col:'#ffd34d',min:1,max:2,to:'gold',desc:'Turn up to {a:2} selected coins into {a:Doubloons}'},
@@ -3258,6 +3261,7 @@ const PX={
   take:o=>{const old=BOSSES[S.blinds[2].boss].name;S.blinds[2].boss=o.key;if(S.blinds[2].boss2===o.key)S.blinds[2].boss2=null;toast(`${old} is out. <b>${BOSSES[o.key].name}</b> is your next boss`);play('boss')}},
 };
 function mysteryInner(){const x=rand();
+  if(x<.06)return{kind:'coin',type:'copper'};
   if(x<.16)return{kind:'coin',type:pickSpecial(SPC()),wear:rand()<.3?pick(COIN_WEARS):null};
   if(x<.30)return{kind:'charm',key:rollJokerKey()};
   if(x<.44)return{kind:'rune',key:pick(Object.keys(RUNES))};
@@ -4029,7 +4033,7 @@ function packHTML(){
       btns=o.taken?`<div class="mystres">You got ${o.res||m.name}</div>`:'<div class="mystres missed">Not picked</div>'}
     else if(PX[o.kind]){const X=PX[o.kind];name=X.name(o);why=X.block(o);face=X.face(o);
       btns=P.done?'':`<button class="btn green small" data-act="ppick" data-arg="${i},take" ${why?'disabled':''}>${o.kind==='myst'?'Reveal':'Take'}</button>`}
-    else if(o.kind==='coin'){const full=purseUsed()>=S.purseMax;name=(o.pair?'Stack of 2 ':'')+COINS[o.type].name+(o.pair?`<br><small style="color:var(--money)">Pre-stacked: one purse space</small>`:modName(o)?`<br><small style="color:var(--money)">${modName(o)}</small>`:'');
+    else if(o.kind==='coin'){const full=purseUsed()>=S.purseMax;name=o.qroll?`Roll of ${o.qroll} Quarters<br><small style="color:var(--money)">Extras that don't fit pay $1 each</small>`:(o.pair?'Stack of 2 ':'')+COINS[o.type].name+(o.pair?`<br><small style="color:var(--money)">Pre-stacked: one purse space</small>`:modName(o)?`<br><small style="color:var(--money)">${modName(o)}</small>`:'');
       face=`<div class="jin" style="--jbg:#2b3a3d">${coinIcon(o.type,o)}</div>`;
       btns=`<button class="btn green small" data-act="ppick" data-arg="${i},take" ${full?'disabled':''}>${full?'Purse full':'Take'}</button>`}
     else{const ci=consInfo(o);name=ci.name;why=consBlock(o);
@@ -5018,7 +5022,8 @@ async function doCashIn(){
 }
 async function blindWon(){
   play('win');popup($('#callb'),'Wager Won!','huge');shake(5);
-  PS().wagers++;if(S.roundScore>=S.target*2)PS().doubleWin++;if(S.jokers.length>=5)PS().fullWin=(PS().fullWin||0)+1;
+  PS().wagers++;if(S.roundScore>=S.target*2)PS().doubleWin++;
+  {const tq=charmsOn()?countEff('teller'):0;for(let k=0;k<tq&&purseUsed()<S.purseMax;k++)S.purse.push(mkCoin('copper'));if(tq)setTimeout(()=>toast('<b>Bank Teller</b> hands you a Quarter'),700)}if(S.jokers.length>=5)PS().fullWin=(PS().fullWin||0)+1;
   {const sk=charmsOn()?countEff('skeeball'):0;if(sk)setTimeout(()=>addTickets(2*sk,'Skee-Ball'),600)}
   {const P=PS(),b0=curBlind(),K=karmaNow();if(b0.kind==='boss'&&b0.boss){P.bossBeat=P.bossBeat||{};P.bossBeat[b0.boss]=(P.bossBeat[b0.boss]||0)+1}if(b0.boss==='fatal')P.fatalWins++;if(b0.boss==='drhouse'){P.drHouseWins=(P.drHouseWins||0)+1;setTimeout(()=>drSay('don\'t care'),1500)}if(b0.boss==='tablerivals'){P.tableWins=(P.tableWins||0)+1;P.rivalsBeat=P.rivalsBeat||{};RIVALS.forEach(r=>P.rivalsBeat[r]=1)}if(b0.boss==='house'){P.houseWins=(P.houseWins||0)+1;setTimeout(()=>houseSay('...Well played. Nobody has done that in a very long time.',7000),1500)}if(b0.kind==='boss'){P.bossWins++;if(K>=5)P.angelWin++}if(K<=-5)P.devilWin++;
    if(!S.wagerReflips)P.cleanWins++;if(S.tossNo===1)P.oneFlipWin++;if(S.flipsLeft===0)P.lastFlipWin++;
@@ -5408,7 +5413,7 @@ function buyPack(i){
   else for(let k=0;k<n;k++){
     if(pk.kind==='coin'&&S.roll==='pennyroll'&&S.ante<4)opts.push({kind:'coin',type:'penny'});
     else if(pk.kind==='coin'){const rl=relicsLeft().filter(t=>!opts.some(o=>o.type===t));const mods=!(S.tutorial&&S.ante<3);
-      const L=luckNow();if(rl.length&&rand()<.06+L*.004)opts.push({kind:'coin',type:pick(rl)});else if(mods&&rand()<.12)opts.push({kind:'coin',type:pickSpecial(SPC()),pair:true});else opts.push({kind:'coin',type:pickSpecial(SPC()),wear:mods&&rand()<.2+L*.01?pick(COIN_WEARS):null,defect:mods&&rand()<.15+L*.01?pick(Object.keys(DEFECTS)):null})}
+      const L=luckNow(),qf=ownKeys().filter(k=>k&&(coinFav()[k]||[]).includes('copper')).length;if(!opts.some(o=>o.qroll)&&rand()<.1+.2*qf)opts.push({kind:'coin',type:'copper',qroll:3});else if(rl.length&&rand()<.06+L*.004)opts.push({kind:'coin',type:pick(rl)});else if(mods&&rand()<.12)opts.push({kind:'coin',type:pickSpecial(SPC()),pair:true});else opts.push({kind:'coin',type:pickSpecial(SPC()),wear:mods&&rand()<.2+L*.01?pick(COIN_WEARS):null,defect:mods&&rand()<.15+L*.01?pick(Object.keys(DEFECTS)):null})}
     else if(pk.kind==='almanac'){let a;do a=randAlmanac();while(opts.some(o=>(o.hand||o.key)===(a.hand||a.key)));opts.push(a)}
     else if(pk.kind==='rune'){let r;do r=pick(Object.keys(RUNES));while(opts.some(o=>o.key===r));opts.push({kind:'rune',key:r})}
     else{let s;do s=rand()<.05?'soul':pick(Object.keys(SPIRITS).filter(x=>x!=='soul'));while(opts.some(o=>o.key===s));opts.push({kind:'spirit',key:s})}
@@ -5420,7 +5425,7 @@ function buyPack(i){
 async function packPick(i,mode){
   const P=S.pack;if(!P)return;const o=P.opts[i];if(!o||o.taken)return;
   if(PX[o.kind]){const X=PX[o.kind];if(X.block(o))return;o.taken=true;P.picks--;await X.take(o)}
-  else if(o.kind==='coin'){if(purseUsed()>=S.purseMax)return;o.taken=true;P.picks--;if(o.pair){const g=uid++;S.purse.push({...mkCoin(o.type),stk:g},{...mkCoin(o.type),stk:g})}else S.purse.push({...mkCoin(o.type),wear:o.wear||null,defect:o.defect||null});play('buy')}
+  else if(o.kind==='coin'){if(purseUsed()>=S.purseMax)return;o.taken=true;P.picks--;if(o.qroll){let n=0;for(let k=0;k<o.qroll&&purseUsed()<S.purseMax;k++){S.purse.push(mkCoin('copper'));n++}if(n<o.qroll)S.money+=o.qroll-n;play('buy')}else if(o.pair){const g=uid++;S.purse.push({...mkCoin(o.type),stk:g},{...mkCoin(o.type),stk:g})}else S.purse.push({...mkCoin(o.type),wear:o.wear||null,defect:o.defect||null});play('buy')}
   else if(mode==='keep'){if(!consRoom())return;o.taken=true;P.picks--;const kc={kind:o.kind,key:o.key,hand:o.hand};if(!kc.key)delete kc.key;if(!kc.hand)delete kc.hand;S.cons.push(kc);play('buy')}
   else{const c={kind:o.kind,key:o.key,hand:o.hand};if(!c.key)delete c.key;if(!c.hand)delete c.hand;if(consBlock(c))return;o.taken=true;P.picks--;render();await applyCons(c)}
   if(S.pack&&S.pack.picks<=0){if(S.pack.opts.some(x=>x.kind==='myst'))S.pack.done=true;else S.pack=null}
