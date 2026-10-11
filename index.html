@@ -857,7 +857,6 @@ img{-webkit-user-drag:none}
 .credwin{position:relative;height:min(52vh,380px);overflow:hidden;border-radius:12px;background:var(--panel-deep);
   -webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
 .credroll{position:absolute;left:0;right:0;top:55%;display:flex;flex-direction:column;align-items:center;gap:6px;padding:0 16px;animation:credup 30s linear infinite}
-.credwin:hover .credroll{animation-play-state:paused}
 @keyframes credup{to{transform:translateY(calc(-100% - min(29vh,210px)))}}
 .credroll .ct{font-family:'Silkscreen','Pixelify Sans',monospace;font-size:34px;font-weight:700;margin-bottom:2px}
 .credroll .cs{color:var(--ink-dim);font-size:13px;margin-bottom:22px}
@@ -939,7 +938,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.4</div>
+  <div class="gamever" aria-label="Version">v1.2.5</div>
 </div>
 
 <script>
@@ -1562,6 +1561,8 @@ Object.assign(JOKERS,{
 Object.assign(JOKERS,{
  morningpaper:{name:'Morning Paper',r:1,cost:4,bg:'#efe3cc',p:{1:'#f5f0e0',2:'#222222',3:'#c8102e'},s:["..........","1111111111","1333333331","1111111111","1221122221","1111111111","1221122221","1111111111","1222211221","1111111111"],
   desc:()=>`{c:+5} Points for every day of the month so far {d:(Today +${5*new Date().getDate()} Points)}`,end:(c,e)=>e('chips',5*new Date().getDate())},
+ curtaincall:{name:'Curtain Call',r:2,cost:6,bg:'#2a0e14',p:{1:'#c8102e',2:'#ffd34d',3:'#7a0a1c'},s:["2222222222","1131..1311","1131..1311","1131..1311",".131..131.",".131..131.","..31..13..","...1..1...","2222222222",".22222222."],
+  desc:()=>{const n=curtainN();return `{m:+1} Mult for every 3 things you've unlocked {d:(Currently +${n} Mult)}`},end:(c,e)=>{const n=curtainN();if(n)e('mult',n)}},
  sundial:{name:'Sundial',r:3,cost:8,bg:'#3a2a10',p:{1:'#c9a06a',2:'#ffd34d',3:'#3a2a1a'},s:["....22....","..2.22.2..","...2222...",".22222222.","...2222...","..2.22.2..","....22....","1111111111",".11111131.","..111111.."],
   desc:()=>{const x=sunX();return `Mult that follows your clock: {x:X1} at midnight, rising to {x:X3} at noon {d:(Right now X${x.toFixed(2)})}`},end:(c,e)=>{const x=sunX();if(x>1)e('xmult',Math.round(x*100)/100)}},
 });
@@ -3161,6 +3162,7 @@ const GOALS=[
 ];
 const GOAL_OF=Object.fromEntries(GOALS.map(g=>[g.kind+':'+g.key,g]));
 /* challenge rolls stay sealed until you have won a run */
+const curtainN=()=>Math.floor(Object.keys(PROF.unlocked||{}).length/3);
 const isUnlocked=(kind,key)=>PROF.unlockAll||(kind==='roll'&&typeof ROLLS!=='undefined'&&ROLLS[key]&&ROLLS[key].challenge?(PROF.stats.wins||0)>=1:(!GOAL_OF[kind+':'+key]||!!PROF.unlocked[kind+':'+key]));
 const goalName=g=>g.kind==='roll'?ROLLS[g.key].name:g.kind==='pack'?PACKS[g.key].name:g.kind==='coin'?COINS[g.key].name:JOKERS[g.key].name;
 function checkGoals(){
@@ -3949,7 +3951,7 @@ function fishHook(){
 }
 {const g={kind:'charm',key:'standing',desc:'Land the title screen coin on its edge',test:()=>!!PS().titleEdge};GOALS.push(g);GOAL_OF['charm:standing']=g}
 {const g={kind:'charm',key:'calledit',desc:'Flip the title screen coin to the same face 3 times in a row',test:()=>!!PS().titleCall3};GOALS.push(g);GOAL_OF['charm:calledit']=g}
-[['morningpaper','Play a Daily Toss',()=>(PS().dailyPlayed||0)>=1],['sundial','Win a Daily Toss',()=>(PS().dailyWins||0)>=1]].forEach(([k,desc,test])=>{const g={kind:'charm',key:k,desc,test};GOALS.push(g);GOAL_OF['charm:'+k]=g});
+[['curtaincall','Watch the Credits',()=>!!PS().sawCredits],['morningpaper','Play a Daily Toss',()=>(PS().dailyPlayed||0)>=1],['sundial','Win a Daily Toss',()=>(PS().dailyWins||0)>=1]].forEach(([k,desc,test])=>{const g={kind:'charm',key:k,desc,test};GOALS.push(g);GOAL_OF['charm:'+k]=g});
 {const g={kind:'coin',key:'sanddollar',desc:'Fill your fishing log',test:()=>fishKinds()>=Object.keys(FISHES).length};GOALS.push(g);GOAL_OF['coin:sanddollar']=g;if(isUnlocked('coin','sanddollar')&&!SPECIAL.includes('sanddollar'))SPECIAL.push('sanddollar')}
 /* Sand Dollar: a quick cast in the middle of a toss */
 const SD_MULT={boot:1.25,quarter:1.25,mud:1.5,minnow:1.5,carp:1.75,bottle:2,die:2,crab:2,eel:2.5,ghost:3,goldkoi:4,pitboss:5};
@@ -5056,7 +5058,7 @@ const ACT={
     toast('Unlocks reset. Everything is locked again');play('shatter');showModal(optionsModal)},
   closemodal(){closeModal()},
 
-  credits(){audioInit();showModal(creditsModal);musicMood()},
+  credits(){audioInit();showModal(creditsModal);musicMood();if(!PS().sawCredits){PS().sawCredits=1;saveProf();setTimeout(checkGoals,1500)}},
   credback(){showModal(optionsModal);musicMood()},
   fishdot(a,el){const n=performance.now();FISH.taps=n-FISH.tapT<900?FISH.taps+1:1;FISH.tapT=n;el.classList.remove('plip');void el.offsetWidth;el.classList.add('plip');tone({f:300+FISH.taps*120,f2:120,d:.12,v:.1});
     if(FISH.taps>=3){FISH.taps=0;audioInit();FISH.st='idle';showModal(fishModal);pondInit();musicMood();toast('You found the <b>Drowned Fountain</b>')}},
