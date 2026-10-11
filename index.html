@@ -1039,7 +1039,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.72</div>
+  <div class="gamever" aria-label="Version">v1.2.73</div>
 </div>
 
 <script>
@@ -2859,7 +2859,7 @@ function extend64(orig,m){const L8=m.loop%8;if(L8<4){orig(m);return}
     if(X===3&&bar===7&&s>=8&&s%2===0)T({at,f:mtof(up[[3,2,1,0][(s-8)/2]%up.length]),d:.18,v:.12,bus:B})}}
 ['thehouse','tablerivals','drhouse'].forEach(k=>{const o=PACK_MUSIC[k];PACK_MUSIC[k]=m=>extend64(o,m)});
 const Music={step:0,next:0,timer:null,bpm:90,intense:false,mode:'main',prevLead:0,
-  chunks:[],tl:[],gen:0,sig:null,busy:false,live:!(window.OfflineAudioContext),
+  chunks:[],tl:[],gen:0,sig:null,busy:false,ahead:2.5,rt:[],live:!(window.OfflineAudioContext),
   start(){if(this.timer)return;this.next=AU.ctx.currentTime+.1;this.timer=setInterval(()=>this.sched(),25)},
   sched(){const c=AU.ctx;if(!c||!OPT.music)return;if(bootStage<2){this.next=c.currentTime+.05;this.step=0;return}
     if(this.live){if(this.next<c.currentTime-.2)this.next=c.currentTime+.05;
@@ -2869,7 +2869,7 @@ const Music={step:0,next:0,timer:null,bpm:90,intense:false,mode:'main',prevLead:
     if(this.next<now-.2){this.next=now+.15;this.tl=[]}
     if(sig!==this.sig){if(this.sig!=null){const e=this.tl.find(e=>e.t>=now+.2);if(e){this.step=e.step;this.next=e.t}else this.next=Math.max(this.next,now+.2);this.cut(this.next)}
       this.sig=sig;this.gen++;this.busy=false;this.tl=[]}
-    if(!this.busy&&this.next<now+1.2)this.render()},
+    if(!this.busy&&this.next<now+this.ahead)this.render()},
   cut(t){this.chunks.forEach(k=>{if(k.end<=t)return;try{k.g.gain.setValueAtTime(1,t);k.g.gain.linearRampToValueAtTime(0,t+.08);k.src.stop(t+.1)}catch(e){}})},
   render(){const c=AU.ctx,gen=this.gen,t0=this.next,step0=this.step,OFF=.01,n=16;let t=OFF;const rel=[];
     for(let i=0;i<n;i++){rel.push(t);t+=60/this.bpm/4*((step0+i)%2?.88:1.12)}
@@ -2881,9 +2881,10 @@ const Music={step:0,next:0,timer:null,bpm:90,intense:false,mode:'main',prevLead:
     AU.ctx=oc;AU.vibG=oc.createGain();AU.vibG.gain.value=28;const v=oc.createOscillator();v.frequency.value=5.5;v.connect(AU.vibG);v.start();
     AU.lfoG=oc.createGain();AU.lfoG.gain.value=10;const l=oc.createOscillator();l.frequency.value=.5;l.connect(AU.lfoG);l.start(0);
     try{for(const[k,o]of notes)({tone,noise,fm})[k](o.bus===B?{...o,bus:oc.destination}:o)}finally{Object.assign(AU,sv)}
-    this.busy=true;
-    oc.startRendering().then(buf=>{if(gen!==this.gen)return;this.busy=false;const c=AU.ctx,src=c.createBufferSource(),g=c.createGain();src.buffer=buf;src.connect(g);g.connect(AU.mus);
-      const T=t0-OFF,now=c.currentTime;if(T>=now)src.start(T);else if(now-T<buf.duration)src.start(now,now-T);
+    this.busy=true;const r0=performance.now();
+    oc.startRendering().then(buf=>{const took=(performance.now()-r0)/1000;this.rt=[...this.rt.slice(-5),took];this.ahead=Math.min(8,Math.max(2.5,1+3*Math.max(...this.rt)));
+      if(gen!==this.gen)return;this.busy=false;const c=AU.ctx,src=c.createBufferSource(),g=c.createGain();src.buffer=buf;src.connect(g);g.connect(AU.mus);
+      const T=t0-OFF,now=c.currentTime;if(T>=now)src.start(T);else if(now-T<buf.duration){this.late=(this.late||0)+1;g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(1,now+.04);src.start(now,now-T)}
       const k={src,g,end:T+buf.duration};this.chunks.push(k);src.onended=()=>{g.disconnect();this.chunks=this.chunks.filter(x=>x!==k)}}).catch(()=>{this.live=true;this.busy=false})},
   play(step,at){
     if((SOUNDTEST!=null?ST.glitch:S&&S.roll==='glitched')&&!this.offline&&this.mode!=='fatal'){const x=Math.random();if(x<.025)step=Math.max(0,step-1);else if(x<.035)return;else if(x<.045)step+=4}
