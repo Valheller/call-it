@@ -1059,7 +1059,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.109</div>
+  <div class="gamever" aria-label="Version">v1.2.110</div>
 </div>
 
 <script>
@@ -4305,7 +4305,7 @@ function optionsModal(){
     <div class="optrow"><span title="Move your progress between devices">Save code</span><button class="btn small" style="--c:#2a8a6a;--cd:#175a44" data-act="savecode">Open</button></div>
     <div class="optrow"><span>Links</span><a class="btn small" style="--c:#2a2a33;--cd:#111;text-decoration:none;color:#fff" href="https://github.com/Valheller/call-it" target="_blank" rel="noopener">GitHub</a></div>
     <div class="optrow"><span>Credits</span><button class="btn small" style="--c:#c96a8a;--cd:#7a3a55" data-act="credits">Credits</button></div>
-    </div><div class="optfoot"><div class="optfbtns">${S?'<button class="btn red" data-act="mainmenu" title="Your run is saved: Continue picks it up">Main Menu</button>':''}<button class="btn orange" data-act="closemodal">Back</button></div><div class="optver">Call it. ${($('.gamever')||{}).textContent||''}</div></div></div></div>`;
+    </div><div class="optfoot"><div class="optfbtns"><button class="btn orange" data-act="closemodal">Back</button>${S?'<button class="btn red" data-act="mainmenu" title="Your run is saved: Continue picks it up">Main Menu</button>':''}</div><div class="optver">Call it. ${($('.gamever')||{}).textContent||''}</div></div></div></div>`;
 }
 let BOOTH_TAB='skin';
 function boothModal(){const C=COS(),tix=PROF.tix||0,isSkin=BOOTH_TAB==='skin',isF=BOOTH_TAB==='filter',L=isSkin?SKINS:isF?FILTERS:THEMES;
