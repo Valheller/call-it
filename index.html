@@ -1059,7 +1059,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.113</div>
+  <div class="gamever" aria-label="Version">v1.2.114</div>
 </div>
 
 <script>
@@ -4998,7 +4998,9 @@ document.addEventListener('pointerup',()=>{if(holdTip){holdTip=null;hideTip()}},
 document.addEventListener('pointercancel',()=>{if(holdTip){holdTip=null;hideTip()}},true);
 document.addEventListener('pointerdown',e=>{if(!touchUI())return;
   {const t=e.target.closest('[data-tip]');if(t&&holdKind(t)){holdTip=t;tipFor=t;showTip(t);return}}if(!tipFor)return;const t=e.target.closest('[data-tip]');if(!t||t.dataset.tip!==tipFor.dataset.tip)hideTip()},true);
-document.addEventListener('click',e=>{if(!touchUI()||(drag&&drag.active))return;const t=e.target.closest('[data-tip]');if(!t||holdKind(t))return;const spec=t.dataset.tip;
+document.addEventListener('click',e=>{if(!touchUI()||(drag&&drag.active))return;
+  /* in packs and shops the whole card counts, not just the picture (but not its buttons) */
+  const card=!e.target.closest('button[data-act]')&&e.target.closest('.popt,.scard');const t=e.target.closest('[data-tip]')||(card&&card.querySelector('[data-tip]'));if(!t||holdKind(t))return;const spec=t.dataset.tip;
   /* tapping your selected Charm again deselects it and hides its description */
   requestAnimationFrame(()=>{const[k,a]=spec.split(':');if(k==='joker'&&S&&canEdit()&&S.selJoker!==+a){hideTip();return}const el=t.isConnected?t:document.querySelector(`[data-tip="${spec}"]`);if(el){tipFor=el;showTip(el)}})},true);
 document.addEventListener('pointerover',e=>{if(drag&&drag.active)return;const t=e.target.closest('[data-tip]');if(e.pointerType==='mouse'&&t!==tipFor){tipFor=t;t?showTip(t):hideTip()}
