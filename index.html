@@ -1030,7 +1030,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.36</div>
+  <div class="gamever" aria-label="Version">v1.2.37</div>
 </div>
 
 <script>
@@ -2342,6 +2342,17 @@ function chordDeg(ch){const iv=[...new Set(ch.n.map(n=>((n-ch.r)%12+12)%12))];co
 /* six boss themes, each with its own rhythm section and signature layer; every note comes from the playing chord */
 /* ================= PACK MUSIC: one arrangement per new pack, same tempo and chords, chord tones only ================= */
 const PACK_MUSIC={
+ prize(m){ /* Prize Counter: chiptune arcade. Square arps, bouncing pulse bass, noise kit, a hooky lead and coin dings */
+  const{s,bar,ch,at,spb,B,loop,up}=m,s16=spb/4,sec=loop%2,sq=(n,d,v,o={})=>tone({at:o.at||at,f:mtof(n),type:'square',lp:o.lp||3200,a:.002,d,v,bus:B});
+  {const A=[0,1,2,3,2,1,0,1,2,3,3,2,1,2,3,2];sq(up[A[s]%up.length]+24,s16*.8,.012,{lp:4200})}
+  if(s%4===0||s===6||s===14){const n=ch.r-12+(s===6||s===14?12:0);sq(n,spb*.45,.05,{lp:900});tone({at,f:mtof(n),type:'triangle',d:spb*.5,v:.12,bus:B})}
+  if(s===0||s===8||(s===11&&bar%2))tone({at,f:140,f2:55,glide:.06,d:.12,v:.24,bus:B});
+  if(s===4||s===12)noise({at,ft:'bandpass',ff:2200,q:.8,a:.002,d:.08,v:.05,bus:B});
+  if(s%2===1)noise({at,ft:'highpass',ff:8000,a:.001,d:.02,v:.006,bus:B});
+  const L=[[3,-1,2,-1,3,-1,1,-1,2,-1,-1,0,1,-1,-1,-1],[0,-1,1,-1,2,-1,3,-1,-1,-1,2,-1,3,-1,-1,-1]][(bar+sec)%2];
+  if(L[s]>=0&&(sec===1||bar>=2)){const n=up[L[s]%up.length]+12+(bar>=6?12:0);sq(n,spb*(L[s+1]===-1?.4:.22),.03,{lp:3800});sq(n+12,spb*.12,.008,{at:at+s16*.5,lp:5000})}
+  if(s===15&&bar%4===3){const k=mtof(up[3%up.length]+36);tone({at,f:k,d:.25,v:.02,type:'square',lp:6000,bus:B});tone({at:at+.06,f:k*1.5,d:.3,v:.016,type:'square',lp:6000,bus:B})}
+ },
  charm(m){ /* jazzy lounge: walking bass, offbeat piano comps, vibraphone */
   const{s,bar,ch,at,spb,B,up}=m;
   if(s%4===0){const walk=[up[0],up[1],up[2],up[1]];tone({at,f:mtof(walk[s/4]-24),type:'triangle',a:.01,d:spb*.9,v:.2,lp:700,bus:B})}
@@ -2855,11 +2866,12 @@ function wager32(s,bar,ch,at,spb,B,loop){
 }
 function musicMood(){
   if(!AU.ctx)return;const t=AU.ctx.currentTime;
-  if(SOUNDTEST!=null){const tr=TRACKS[SOUNDTEST],o=tr[2]||{};Music.mode=tr[1];Music.intense=!!o.intense;Music.var=o.v||0;Music.bpm=({tablerivals:112,fish:72,credits:104,menu:90})[tr[1]]||90;Music.stage=ST.stage;AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(o.lp?750:16000,t,.25);return}
+  if(SOUNDTEST!=null){const tr=TRACKS[SOUNDTEST],o=tr[2]||{};Music.mode=tr[1];Music.intense=!!o.intense;Music.var=o.v||0;Music.bpm=({tablerivals:112,fish:72,credits:104,menu:90,prize:118})[tr[1]]||90;Music.stage=ST.stage;AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(o.lp?750:16000,t,.25);return}
   const shop=S&&(S.screen==='shop'||S.screen==='cashout'||S.screen==='over'||S.screen==='event');
   AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(shop&&!S.pack?750:16000,t,.25);
   if(modal===creditsModal){AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(16000,t,.25);Music.mode='credits';Music.intense=false;Music.bpm=104;return}
   if(!S&&modal===fishModal){Music.mode='fish';Music.intense=false;Music.bpm=72;return}
+  if(S&&S.screen==='event'&&S.event&&S.event.key==='prizecounter'){AU.lp.frequency.cancelScheduledValues(t);AU.lp.frequency.setTargetAtTime(16000,t,.25);Music.mode='prize';Music.intense=false;Music.bpm=118;return}
   Music.intense=!!(S&&S.screen==='play'&&S.boss);
   Music.var=S&&S.boss?bossTheme(S.boss):0;
   Music.bpm=90;Music.stage=S?Math.min(8,S.ante):1;
@@ -4068,7 +4080,7 @@ function runInfoModal(){
 function lkMeters(note='Revealed by your Crystal Ball',showL=true,showK=true){const L=luckNow(),K=karmaNow(),bar=(v,c)=>`<div class="lkbar"><i style="left:${50+Math.min(0,v)*5}%;width:${Math.abs(v)*5}%;background:${c}"></i></div>`;
   return `<div class="lkm">${showL?`<div><span>Luck</span>${bar(L,'#4bd18f')}<b>${fmtSign(L)} · ${luckWord(L)}</b></div>`:''}${showK?`<div><span>Karma</span>${bar(K,'#ffd34d')}<b>${fmtSign(K)} · ${karmaWord(K)}</b></div>`:''}<div class="lbl">${note}</div></div>`}
 /* in the order you meet them: menu, the run, its packs, then the endings */
-const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','main',{lp:1}],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Glitch Pack','glitch',{sub:'Unlocked by beating House'}],['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['Endless','endless',{sub:'Below the House'}],['The House','thehouse',{sub:'Endless final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
+const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','main',{lp:1}],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Glitch Pack','glitch',{sub:'Unlocked by beating House'}],['Prize Counter','prize',{sub:'Spend your Tickets'}],['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['Endless','endless',{sub:'Below the House'}],['The House','thehouse',{sub:'Endless final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
 let SOUNDTEST=null;const ST={glitch:false,stage:1};
 function soundTestModal(){
   return `<div class="overlay"><div class="panel modal stm" style="width:min(660px,100%)"><h2>Sound Test</h2>
