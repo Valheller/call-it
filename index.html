@@ -1046,7 +1046,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.91</div>
+  <div class="gamever" aria-label="Version">v1.2.92</div>
 </div>
 
 <script>
@@ -2408,6 +2408,19 @@ const PACK_MUSIC={
   const MEL=[[3,-1,-1,2,1,-1,2,-1,3,-1,-1,-1,2,1,0,-1],[1,-1,2,-1,3,-1,-1,2,-1,1,-1,-1,0,-1,-1,-1]][bar%2];
   if((bar>=2||sec)&&MEL[s]>=0){const n=up[MEL[s]%up.length]+12;tone({at,f:mtof(n),type:'sawtooth',lp:1600,q:2,a:.03,d:spb*(MEL[s+1]===-1?.7:.35),v:.026,bus:B,vib:true})}
  },
+ shop(m){ /* the shop: easy bossa nova. Nylon guitar comping, soft rim and shaker, a walking-ish bass and a vibraphone tune */
+  const{s,bar,ch,at,spb,B,loop,up}=m,sec=loop%2,lo=n=>{let f=mtof(n);while(f>130)f/=2;while(f<55)f*=2;return f};
+  if(s===0||s===8)tone({at,f:lo(ch.r),type:'triangle',lp:500,a:.008,d:spb*.75,v:.24,bus:B});
+  if(s===6||s===14)tone({at,f:lo(up[2%up.length]),type:'triangle',lp:500,a:.008,d:spb*.5,v:.16,bus:B});
+  if(s===0)tone({at,f:95,f2:50,glide:.09,d:.16,v:.16,bus:B});
+  if([0,3,6,10,12].includes(s))ch.n.forEach((n,k)=>{const t=at+k*.012;tone({at:t,f:mtof(n),type:'triangle',a:.004,d:s===0||s===6?.3:.16,v:.02,bus:B});tone({at:t,f:mtof(n),type:'sawtooth',lp:1700,a:.004,d:.1,v:.005,bus:B})});
+  if((bar%2?[4,10]:[0,6,12]).includes(s))noise({at,ft:'bandpass',ff:1700,q:3,a:.002,d:.045,v:.03,bus:B});
+  if(s%2===1)noise({at,ft:'highpass',ff:6200,a:.01,d:.05,v:s%4===3?.009:.005,bus:B});
+  if(s===0)ch.n.forEach(n=>tone({at,f:mtof(n+12),a:.35,d:spb*4,v:.008,bus:B,wob:true}));
+  const MEL=[[2,-1,-1,3,-1,-1,2,-1,1,-1,-1,-1,0,-1,-1,-1],[-1,-1,1,-1,2,-1,-1,3,-1,-1,2,-1,-1,-1,-1,-1],[3,-1,-1,2,-1,-1,1,-1,2,-1,-1,-1,3,-1,2,-1],[1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]][bar%4];
+  if((bar>=2||sec)&&MEL[s]>=0){let e=s+1;while(e<16&&MEL[e]<0)e++;fm({at,f:mtof(up[MEL[s]%up.length]+12),ratio:4,idx:.55,d:Math.min(e-s,8)*spb/4+.25,v:.03,bus:B,vib:true})}
+  if(s===15&&bar%4===3&&Math.random()<.5){fm({at,f:mtof(up[0]+36),ratio:3.5,idx:1.2,d:.6,v:.01,bus:B});fm({at:at+.09,f:mtof(up[2%up.length]+36),ratio:3.5,idx:1.2,d:.7,v:.009,bus:B})}
+ },
  backroom(m){ /* the Back Room: smoky after-hours jazz. Walking upright bass, brushes and ride, Rhodes comping, a muted trumpet */
   const{s,bar,ch,at,spb,B,loop,up}=m,sec=loop%2;
   if(s%4===0){const W=[ch.r,up[1%up.length],up[2%up.length],up[(bar%2?3:1)%up.length]],n=W[s/4];let f=mtof(n);while(f>130)f/=2;while(f<55)f*=2;
@@ -3032,10 +3045,10 @@ function musicMood(){
   if(!AU.ctx)return;const t=AU.ctx.currentTime;
   if(SOUNDTEST!=null){const tr=TRACKS[SOUNDTEST],o=tr[2]||{};Music.mode=tr[1];Music.intense=!!o.intense;Music.var=o.v||0;Music.bpm=({fish:72,credits:104})[tr[1]]||90;Music.stage=tr[1]==='endless'?ST.estage:ST.stage;setLP(o.lp?750:16000);return}
   const shop=S&&(S.screen==='shop'||S.screen==='cashout'||S.screen==='over'||S.screen==='event');
-  setLP(shop&&!S.pack&&!S.bazaar&&!S.backroom&&!(S.event&&['prizecounter','chapel'].includes(S.event.key))&&modal!==creditsModal?750:16000);
+  setLP(shop&&!S.pack&&!S.bazaar&&!S.backroom&&!(S.screen==='shop'&&!S.treasure)&&!(S.event&&['prizecounter','chapel'].includes(S.event.key))&&modal!==creditsModal?750:16000);
   if(modal===creditsModal){setLP(16000);Music.mode='credits';Music.intense=false;Music.bpm=104;return}
   if(!S&&modal===fishModal){Music.mode='fish';Music.intense=false;Music.bpm=72;return}
-  {const sp=S&&S.screen==='event'&&S.event&&S.event.key==='prizecounter'?['prize',90]:S&&S.screen==='event'&&S.event&&S.event.key==='chapel'?['chapel',90]:S&&S.screen==='shop'&&S.bazaar&&!S.pack?['bazaar',90]:S&&S.screen==='shop'&&S.backroom&&!S.pack?['backroom',90]:null;
+  {const sp=S&&S.screen==='event'&&S.event&&S.event.key==='prizecounter'?['prize',90]:S&&S.screen==='event'&&S.event&&S.event.key==='chapel'?['chapel',90]:S&&S.screen==='shop'&&S.bazaar&&!S.pack?['bazaar',90]:S&&S.screen==='shop'&&S.backroom&&!S.pack?['backroom',90]:S&&S.screen==='shop'&&!S.pack&&!S.treasure?['shop',90]:null;
    if(sp){setLP(16000);Music.mode=sp[0];Music.intense=false;Music.bpm=sp[1];return}}
   Music.intense=!!(S&&S.screen==='play'&&S.boss);
   Music.var=S&&S.boss?bossTheme(S.boss):0;
@@ -4250,7 +4263,7 @@ function runInfoModal(){
 function lkMeters(note='Revealed by your Crystal Ball',showL=true,showK=true){const L=luckNow(),K=karmaNow(),bar=(v,c)=>`<div class="lkbar"><i style="left:${50+Math.min(0,v)*5}%;width:${Math.abs(v)*5}%;background:${c}"></i></div>`;
   return `<div class="lkm">${showL?`<div><span>Luck</span>${bar(L,'#4bd18f')}<b>${fmtSign(L)} · ${luckWord(L)}</b></div>`:''}${showK?`<div><span>Karma</span>${bar(K,'#ffd34d')}<b>${fmtSign(K)} · ${karmaWord(K)}</b></div>`:''}<div class="lbl">${note}</div></div>`}
 /* in the order you meet them: menu, the run, its packs, then the endings */
-const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','main',{lp:1}],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Glitch Pack','glitch',{sub:'Unlocked by beating House'}],['Prize Counter','prize',{sub:'Spend your Tickets'}],['The Bazaar','bazaar',{sub:'A rare detour'}],['The Back Room','backroom',{sub:'For those with bad Karma'}],['The Chapel','chapel',{sub:'For those with good Karma'}],['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['Endless','endless',{sub:'Below the House'}],['The House','thehouse',{sub:'Endless final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
+const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','shop'],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Glitch Pack','glitch',{sub:'Unlocked by beating House'}],['Prize Counter','prize',{sub:'Spend your Tickets'}],['The Bazaar','bazaar',{sub:'A rare detour'}],['The Back Room','backroom',{sub:'For those with bad Karma'}],['The Chapel','chapel',{sub:'For those with good Karma'}],['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['Endless','endless',{sub:'Below the House'}],['The House','thehouse',{sub:'Endless final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
 let SOUNDTEST=null;const ST={glitch:false,stage:1,estage:9};
 function soundTestModal(){
   return `<div class="overlay"><div class="panel modal stm" style="width:min(660px,100%)"><h2>Sound Test</h2>
