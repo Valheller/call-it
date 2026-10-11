@@ -146,7 +146,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .seedv{display:flex;align-items:center;gap:6px;letter-spacing:.08em}
 input.vol{width:150px;accent-color:var(--orange)}
 .stctl{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}.stctl .optrow>span{display:flex;flex-direction:column}.stctl .optrow small{font-size:11px;color:var(--ink-dim)}
-.stctl .optrow{flex-wrap:wrap;gap:6px}.stdbg{background:rgba(0,0,0,.25);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px}.stdbg .lbl{font-size:12px;line-height:1.5;text-align:left}.stdbg small{font-size:11px;color:var(--ink-dim)}.stdsw{display:flex;flex-wrap:wrap;gap:4px}.stdsw .btn{flex:1 1 auto;padding:5px 8px;font-size:12px}.stsg{display:flex;gap:3px;flex:0 1 auto;margin-left:auto}.stsg .btn{flex:1 1 0;min-width:28px;padding:5px 6px}
+.stctl .optrow{flex-wrap:wrap;gap:6px}.stsg{display:flex;gap:3px;flex:0 1 auto;margin-left:auto}.stsg .btn{flex:1 1 0;min-width:28px;padding:5px 6px}
 @media (max-width:520px){.stsg{flex:1 1 100%}
   /* phones: one column in its own scrolling list, title and buttons stay put */
   .stm .sttracks{grid-template-columns:1fr}
@@ -1039,7 +1039,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.75</div>
+  <div class="gamever" aria-label="Version">v1.2.76</div>
 </div>
 
 <script>
@@ -2263,7 +2263,6 @@ function makeAnteBlinds0(ante){
 
 /* ================= AUDIO ================= */
 const AU={ctx:null};
-const DBG={open:false,nohat:false,nobg:false,nocomp:false,nolp:false,gap:0};
 const musGain=()=>OPT.music?.55*OPT.mvol:0,sfxGain=()=>OPT.sfx?.85*OPT.svol:0;
 function audioInit(){
   if(AU.ctx){if(AU.ctx.state==='suspended')AU.ctx.resume();return}
@@ -2313,7 +2312,7 @@ function noise(o){
   const c=AU.ctx;if(!c)return;
   let at=Math.max(o.at??c.currentTime+(o.t||0),c.currentTime+.004), a=o.a??.002, d=o.d??.1;
   /* music hi-hats: a soft swish instead of a sharp tick (phone speakers turn short bright noise into clicks) */
-  if(o.bus&&o.bus!==AU.sfx&&!o.ff2&&(o.ft==='highpass'||(o.ff||2000)>=4500)){if(DBG.nohat)return;a=Math.max(a,.016);d=Math.max(d,.05);
+  if(o.bus&&o.bus!==AU.sfx&&!o.ff2&&(o.ft==='highpass'||(o.ff||2000)>=4500)){a=Math.max(a,.016);d=Math.max(d,.05);
     /* play a pre-made hi-hat sample: Safari pops when it builds bright filtered noise hit by hit */
     const hs=c.createBufferSource();hs.buffer=hatBuf(c.sampleRate,o.ft||'bandpass',o.ff||2000,o.q||1,a,d);const hg=c.createGain();hg.gain.value=(o.v??.2)*.6;hs.connect(hg);hg.connect(o.bus);hs.start(at);hs.onended=()=>hg.disconnect();return}
   const s=c.createBufferSource();s.buffer=AU.noise;
@@ -2874,7 +2873,7 @@ function extend64(orig,m){const L8=m.loop%8;if(L8<4){orig(m);return}
 const Music={step:0,next:0,timer:null,bpm:90,intense:false,mode:'main',prevLead:0,
   chunks:[],tl:[],gen:0,sig:null,busy:false,ahead:2.5,rt:[],live:!(window.OfflineAudioContext),
   start(){if(this.timer)return;this.next=AU.ctx.currentTime+.1;this.timer=setInterval(()=>this.sched(),25)},
-  sched(){const c=AU.ctx;if(!c||!OPT.music)return;{const n=performance.now();if(this.lastTick){const g=n-this.lastTick;DBG.gap=Math.max(DBG.gap*.995,g)}this.lastTick=n}if(bootStage<2){this.next=c.currentTime+.05;this.step=0;return}
+  sched(){const c=AU.ctx;if(!c||!OPT.music)return;if(bootStage<2){this.next=c.currentTime+.05;this.step=0;return}
     if(this.live){if(this.next<c.currentTime-.2)this.next=c.currentTime+.05;
       while(this.next<c.currentTime+.3){if(this.next>c.currentTime+.01)this.play(this.step,this.next);const s16=60/this.bpm/4;this.next+=s16*(this.step%2?.88:1.12);this.step++}return}
     /* each bar is rendered offline and played back as one buffer: far fewer live nodes, so no crackle on phones */
@@ -3068,7 +3067,7 @@ const BG={gl:null,cur:null,tgt:null,t:0};
     BG.cur.sp+=(tg.sp-BG.cur.sp)*k;BG.cur.D+=(tg.D-BG.cur.D)*k;BG.t+=dt*BG.cur.sp*(reduced?.1:1);
     gl.uniform2f(BG.u.R,cv.width,cv.height);gl.uniform1f(BG.u.T,BG.t);
     gl.uniform3fv(BG.u.A,BG.cur.A);gl.uniform3fv(BG.u.B,BG.cur.B);gl.uniform3fv(BG.u.C,BG.cur.C);gl.uniform1f(BG.u.D,BG.cur.D);gl.uniform1f(BG.u.G,BG.glitch||0);
-    if(!DBG.nobg)gl.drawArrays(gl.TRIANGLE_STRIP,0,4);requestAnimationFrame(frame)};
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);requestAnimationFrame(frame)};
   requestAnimationFrame(frame);
 })();
 function hex3(h){const n=parseInt(h.slice(1),16);return[(n>>16&255)/255,(n>>8&255)/255,(n&255)/255]}
@@ -4239,27 +4238,12 @@ function lkMeters(note='Revealed by your Crystal Ball',showL=true,showK=true){co
 /* in the order you meet them: menu, the run, its packs, then the endings */
 const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','main',{lp:1}],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Glitch Pack','glitch',{sub:'Unlocked by beating House'}],['Prize Counter','prize',{sub:'Spend your Tickets'}],['The Bazaar','bazaar',{sub:'A rare detour'}],['The Back Room','backroom',{sub:'For those with bad Karma'}],['The Chapel','chapel',{sub:'For those with good Karma'}],['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['Endless','endless',{sub:'Below the House'}],['The House','thehouse',{sub:'Endless final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
 let SOUNDTEST=null;const ST={glitch:false,stage:1,estage:9};
-/* Audio check: a readout and switches for tracking down crackles on a given device */
-function dbgSet(k){const c=AU.ctx;if(!c)return;
-  if(k==='live'){const now=c.currentTime;Music.cut(now);Music.live=!Music.live;Music.gen++;Music.busy=false;Music.sig=null;Music.tl=[];Music.next=now+.1;return}
-  DBG[k]=!DBG[k];
-  if(k==='nocomp'){AU.master.disconnect();AU.master.connect(DBG.nocomp?c.destination:AU.comp)}
-  if(k==='nolp'){AU.mus.disconnect();AU.mus.connect(DBG.nolp?AU.master:AU.lp)}}
-function dbgText(){const c=AU.ctx;if(!c)return 'Audio not started';const M=Music,rt=M.rt||[],bar=60/M.bpm*4;
-  return `${c.sampleRate} Hz · ${c.state} · latency ${Math.round((c.baseLatency||0)*1000)}/${Math.round((c.outputLatency||0)*1000)} ms<br>
-   Music: ${M.live?'live notes':'pre-rendered bars'}${M.live?'':` · render ${rt.length?Math.round(Math.max(...rt)*1000):'-'} ms per ${Math.round(bar*1000)} ms bar · ahead ${M.ahead.toFixed(1)} s · late bars ${M.late||0}`}<br>
-   Longest timer gap ${Math.round(DBG.gap)} ms`}
-function dbgHTML(){const sw=(k,label,on)=>`<button class="btn small" style="${on?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="dbg" data-arg="${k}">${label}: ${on?'On':'Off'}</button>`;
-  return `<div class="stdbg"><div class="lbl" id="stdiag">${dbgText()}</div><div class="stdsw">${sw('live','Pre-render',!Music.live)}${sw('nocomp','Compressor',!DBG.nocomp)}${sw('nolp','Music filter',!DBG.nolp)}${sw('nohat','Hi-hats',!DBG.nohat)}${sw('nobg','Background',!DBG.nobg)}</div>
-   <small>Play a track that pops, then switch one thing off at a time. The one that stops the popping is the culprit.</small></div>`}
-setInterval(()=>{if(modal===soundTestModal&&DBG.open){const e=$('#stdiag');if(e)e.innerHTML=dbgText()}},500);
 function soundTestModal(){
   return `<div class="overlay"><div class="panel modal stm" style="width:min(660px,100%)"><h2>Sound Test</h2>
     ${OPT.mvol>0?'':'<div class="lbl" style="text-align:center;margin-bottom:8px">Music volume is at 0 in Options</div>'}
     <div class="stctl"><div class="optrow"><span>Glitched audio<small>How music sounds on the Glitched Roll</small></span><button class="btn small ${ST.glitch?'green':''}" data-act="stglitch">${ST.glitch?'On':'Off'}</button></div>
       ${(()=>{const tr=SOUNDTEST!=null&&TRACKS[SOUNDTEST],en=tr&&tr[1]==='endless',wg=tr&&tr[0]==='Wager';if(!en&&!wg)return '';const L=en?[9,10,11,12]:[1,2,3,4,5,6,7,8],cur=en?ST.estage:ST.stage;
-        return `<div class="optrow"><span>Stage<small>${en?'Layers build toward the final boss; 12 is the extended version':'Music adds layers as a run goes on'}</small></span><div class="stsg">${L.map(n=>`<button class="btn small" style="${cur===n?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ststage" data-arg="${n}" aria-pressed="${cur===n}">${n}</button>`).join('')}</div></div>`})()}
-      <div class="optrow"><span>Audio check<small>Readout and switches for finding crackles</small></span><button class="btn small ${DBG.open?'green':''}" data-act="dbgopen">${DBG.open?'Hide':'Show'}</button></div>${DBG.open?dbgHTML():''}</div>
+        return `<div class="optrow"><span>Stage<small>${en?'Layers build toward the final boss; 12 is the extended version':'Music adds layers as a run goes on'}</small></span><div class="stsg">${L.map(n=>`<button class="btn small" style="${cur===n?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ststage" data-arg="${n}" aria-pressed="${cur===n}">${n}</button>`).join('')}</div></div>`})()}</div>
     <div class="sttracks">${TRACKS.map((t,i)=>`<button class="btn small ${SOUNDTEST===i?'green':''}" style="${SOUNDTEST===i?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="sttrack" data-arg="${i}"><span class="stn">${String(i+1).padStart(2,'0')}</span>${t[0]}${SOUNDTEST===i?'<small>Now playing</small>':t[2]&&t[2].sub?`<small>${t[2].sub}</small>`:''}</button>`).join('')}</div>
     <div style="text-align:center;margin-top:12px;display:flex;gap:10px;justify-content:center">${SOUNDTEST!=null?'<button class="btn red" data-act="ststop">Stop</button>':''}<button class="btn orange" data-act="stback">Back</button></div></div></div>`}
 let abandonArm=false,resetArm=false;
@@ -5613,8 +5597,6 @@ const ACT={
   ststage(a){if(+a>8)ST.estage=+a;else ST.stage=+a;play('click');musicMood();showModal(soundTestModal)},
   ststop(){SOUNDTEST=null;musicMood();showModal(soundTestModal)},
   stback(){closeModal()},
-  dbgopen(){DBG.open=!DBG.open;play('click');showModal(soundTestModal)},
-  dbg(a){dbgSet(a);play('click');showModal(soundTestModal)},
   copyseed(){if(!S||!S.seed)return;navigator.clipboard.writeText(S.seed).then(()=>toast('Seed copied')).catch(()=>toast('Seed: <b>'+S.seed+'</b>'))},
   copyshare(){const i=$('#shareline');if(!i)return;const t=i.value;navigator.clipboard.writeText(t).then(()=>toast('Copied to clipboard')).catch(()=>{i.focus();i.select()})},
   records(){audioInit();showModal(recordsModal)},
