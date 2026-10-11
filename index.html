@@ -154,7 +154,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .seedv{display:flex;align-items:center;gap:6px;letter-spacing:.08em}
 input.vol{width:150px;accent-color:var(--orange)}
 .stctl{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}.stctl .optrow>span{display:flex;flex-direction:column}.stctl .optrow small{font-size:11px;color:var(--ink-dim)}
-.stctl .optrow{flex-wrap:wrap;gap:6px}.upglist{display:flex;flex-direction:column;gap:6px}.upgrow{display:flex;gap:10px;align-items:center;background:rgba(0,0,0,.25);border-radius:10px;padding:8px}.upgrow .cic{width:44px;height:44px;flex:0 0 44px}.upgrow .cname{font-size:16px}.upgrow .ds{font-size:13px;color:var(--ink-dim);margin-top:2px}.stsg{display:flex;gap:3px;flex:0 1 auto;margin-left:auto}.stsg .btn{flex:1 1 0;min-width:28px;padding:5px 6px}
+.stctl .optrow{flex-wrap:wrap;gap:6px}.optfbtns{display:flex;gap:10px;justify-content:center}.upglist{display:flex;flex-direction:column;gap:6px}.upgrow{display:flex;gap:10px;align-items:center;background:rgba(0,0,0,.25);border-radius:10px;padding:8px}.upgrow .cic{width:44px;height:44px;flex:0 0 44px}.upgrow .cname{font-size:16px}.upgrow .ds{font-size:13px;color:var(--ink-dim);margin-top:2px}.stsg{display:flex;gap:3px;flex:0 1 auto;margin-left:auto}.stsg .btn{flex:1 1 0;min-width:28px;padding:5px 6px}
 @media (max-width:520px){.stsg{flex:1 1 100%}
   /* phones: one column in its own scrolling list, title and buttons stay put */
   .stm .sttracks{grid-template-columns:1fr}
@@ -1059,7 +1059,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.108</div>
+  <div class="gamever" aria-label="Version">v1.2.109</div>
 </div>
 
 <script>
@@ -4092,7 +4092,8 @@ function refreshTable(){
   let E=null;if(tossed&&S.results.length)E=evalHand(S.results,S.call);
   S.purse.forEach((c,i)=>{const el=$('#c'+i);if(!el)return;
     el.classList.toggle('sel',S.phase==='call'?S.csel.includes(i):S.selected.includes(i));
-    el.classList.toggle('miss',!!(E&&!c.fog&&!E.matched[i]&&S.phase==='tossed'));
+    /* coins that missed stay greyed through scoring, and through a re-flip unless they're the ones being re-flipped */
+    el.classList.toggle('miss',tossed?!!(E&&!c.fog&&!E.matched[i]):S.phase==='tossing'&&!!S.keepMiss&&S.keepMiss.includes(i));
     el.classList.toggle('fog',!!c.fog);
     el.classList.toggle('edge',c.face==='E');
   });
@@ -4300,12 +4301,11 @@ function optionsModal(){
     <div class="optrow"><span>${resetArm?'Lock everything again?':'Reset unlocks'}</span><button class="btn red small" data-act="resetunlocks">${resetArm?'Yes, reset':'Reset'}</button></div>
     ${resetArm?'<div class="lbl" style="text-align:center;margin:-4px 0 6px">Locks every Charm and Roll and clears the lifetime stats and stakes that unlock them. Run history is kept.</div>':''}
     ${canFS()?`<div class="optrow"><span>Fullscreen</span><button class="btn ${isFS()?'green':''} small" data-act="fullscreen">${isFS()?'On':'Off'}</button></div>`:''}
-    ${S?`<div class="optrow"><span title="Your run is saved: Continue picks it up">Main Menu</span><button class="btn small" data-act="mainmenu">Main Menu</button></div>`:''}
     <div class="optrow"><span>Keyboard shortcuts</span><button class="btn small" style="--c:#5d6bd6;--cd:#343c80" data-act="keys">Show</button></div>
     <div class="optrow"><span title="Move your progress between devices">Save code</span><button class="btn small" style="--c:#2a8a6a;--cd:#175a44" data-act="savecode">Open</button></div>
     <div class="optrow"><span>Links</span><a class="btn small" style="--c:#2a2a33;--cd:#111;text-decoration:none;color:#fff" href="https://github.com/Valheller/call-it" target="_blank" rel="noopener">GitHub</a></div>
     <div class="optrow"><span>Credits</span><button class="btn small" style="--c:#c96a8a;--cd:#7a3a55" data-act="credits">Credits</button></div>
-    </div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button><div class="optver">Call it. ${($('.gamever')||{}).textContent||''}</div></div></div></div>`;
+    </div><div class="optfoot"><div class="optfbtns">${S?'<button class="btn red" data-act="mainmenu" title="Your run is saved: Continue picks it up">Main Menu</button>':''}<button class="btn orange" data-act="closemodal">Back</button></div><div class="optver">Call it. ${($('.gamever')||{}).textContent||''}</div></div></div></div>`;
 }
 let BOOTH_TAB='skin';
 function boothModal(){const C=COS(),tix=PROF.tix||0,isSkin=BOOTH_TAB==='skin',isF=BOOTH_TAB==='filter',L=isSkin?SKINS:isF?FILTERS:THEMES;
@@ -5077,18 +5077,18 @@ async function doReflip(){
   if(bossIs('toll')){if(S.money<2)return;S.money-=2;play('money')}
   if(freeF){if(rubyFree()&&!S.selected.every(i=>S.purse[i]&&coinDef(S.purse[i]).freeFlip))S.rubyUsed=true;popup($('#callb'),'Free re-flip!','text')}else{S.reflipsLeft--;S.wagerReflips=(S.wagerReflips||0)+1}S.tossReflips=(S.tossReflips||0)+1;S.stats.reflips++;
   const tip=countEff('tipjar');if(tip){S.money+=tip;play('money');popup($('#smoney'),'+$'+tip,'money')}
-  S.phase='tossing';syncStats();
+  S.phase='tossing';syncStats();S.keepMiss=[...S.purse.keys()].filter(i=>{const e=$('#c'+i);return !!e&&e.classList.contains('miss')});
   if(S.roll==='mirror'&&S.call!=='E'){S.call=S.call==='H'?'T':'H';refreshTable();popup($('#callb'),'Mirrored: '+callName(S.call)+'!','text');play('reroll')}
   const idx=bossIs('gale')?S.purse.map((c,i)=>i):S.selected.slice().sort((a,b)=>a-b);S.selected=[];
   idx.forEach(i=>{S.results[i]=tossOne(S.purse[i],S.call,true);S.purse[i].flips=(S.purse[i].flips||0)+1;if(!(S.rfd=S.rfd||[]).includes(i))S.rfd.push(i)});
-  applyHeavy().forEach(i=>{if(!idx.includes(i))idx.push(i)});applyStacks();
+  applyHeavy().forEach(i=>{if(!idx.includes(i))idx.push(i)});applyStacks();S.keepMiss=S.keepMiss.filter(i=>!idx.includes(i));
   if(S.roll==='majority')setMajority();
   S.wedges=(S.wedges||0)+idx.filter(i=>S.results[i]==='E').length;PS().flips+=idx.length;tallyFlips(idx);PS().reflips++;PS().edges+=idx.filter(i=>S.results[i]==='E').length;
   idx.forEach(i=>{if(S.purse[i].defect==='diecrack'&&consRoom()){S.cons.push({kind:'rune',key:pick(Object.keys(RUNES))});popup($('#c'+i),'+Rune','text')}});
   if(idx.some(i=>S.purse[i].defect==='diecrack'))renderJokers();
   refreshTable();
   await Promise.all(idx.map((i,k)=>animateToss(i,k*70)));
-  S.stats.flips+=idx.length;S.phase='tossed';refreshTable();updatePreview();scheduleSave();
+  S.stats.flips+=idx.length;S.phase='tossed';S.keepMiss=null;refreshTable();updatePreview();scheduleSave();
 }
 function animateToss(i,delay){
   const el=$('#c'+i);const c=S.purse[i],r=S.results[i];
