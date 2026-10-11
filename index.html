@@ -237,13 +237,15 @@ input.vol{width:150px;accent-color:var(--orange)}
 /* joker tray */
 #jokerbar{display:flex;gap:10px}
 .tray{flex:1;min-width:0;background:rgba(0,0,0,.3);border-radius:14px;padding:10px 10px 6px;box-shadow:inset 0 3px 0 rgba(0,0,0,.25)}
-.cards{display:flex;gap:clamp(6px,1.4vw,14px);justify-content:center;min-height:calc(var(--jw) + 14px);align-items:center;padding-top:8px}
+.cards{display:flex;--cg:clamp(6px,1.4vw,14px);gap:var(--cg);justify-content:center;min-height:calc(var(--jw) + 14px);align-items:center;padding-top:8px}
 .trayfoot{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-dim);margin-top:6px}
 .empty{color:var(--ink-dim);font-size:14px;text-align:center;max-width:26ch}
 :root{--jw:clamp(50px,7vw,76px)}
 .jslot{position:relative;display:flex;flex-direction:column;align-items:center;transition:transform .15s}
 .jslot.sel{transform:translateY(-8px);z-index:4}
 .jcard{width:var(--jw);aspect-ratio:1;border-radius:50%;position:relative;display:block}
+/* a full Charm row shrinks to fit its tray instead of spilling out the sides */
+.cards.jrow{container-type:inline-size;justify-content:safe center}.cards.jrow .jcard{width:min(var(--jw),calc((100cqw - (var(--n) - 1)*var(--cg)) / var(--n)))}
 .jin{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.35),transparent 45%),var(--jbg);display:grid;place-items:center;
   box-shadow:0 4px 0 rgba(0,0,0,.45),inset 0 0 0 3px var(--rc,#e9d9a8),inset 0 0 0 5px var(--rcd,#8a6a2a),inset 0 0 0 7px rgba(0,0,0,.2);transform-origin:50% -8px;
   animation:wob 3.4s ease-in-out infinite;animation-delay:var(--dl,0s);transition:transform .15s;transform:perspective(320px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .18s ease-out}
@@ -699,7 +701,7 @@ img{-webkit-user-drag:none}
   #jokerbar{flex-direction:row;gap:6px}
   .tray{padding:5px 6px 3px}
   .tray.cons{flex:0 0 auto;min-width:calc(var(--jw)*2 + 22px)}
-  .cards{gap:4px;padding-top:6px;min-height:calc(var(--jw) + 8px)}
+  .cards{--cg:4px;padding-top:6px;min-height:calc(var(--jw) + 8px)}
   .trayfoot{font-size:10px;margin-top:2px}
   .trayfoot span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
   .empty{font-size:10px;max-width:none}
@@ -1046,7 +1048,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.92</div>
+  <div class="gamever" aria-label="Version">v1.2.93</div>
 </div>
 
 <script>
@@ -4016,7 +4018,7 @@ function syncStats(){if(!S)return;if(S.money>(PS().maxMoney||0))PS().maxMoney=S.
 function renderJokers(){
   const el=$('#jokerbar');const n=S.jokers.length;
   const hollow=S.screen==='play'&&bossIs('hollow');
-  el.innerHTML=`<div class="tray ${hollow?'hollow':''}"><div class="cards">${n?S.jokers.map(jokerSlot).join(''):'<div class="empty">Charms you buy in the shop hang here and boost every toss</div>'}</div>
+  el.innerHTML=`<div class="tray ${hollow?'hollow':''}"><div class="cards jrow" style="--n:${Math.max(n,1)}">${n?S.jokers.map(jokerSlot).join(''):'<div class="empty">Charms you buy in the shop hang here and boost every toss</div>'}</div>
    <div class="trayfoot"><span>Charms · drag to reorder</span><span>${n}/${slots()}</span></div></div>
    <div class="tray cons"><div class="cards">${S.cons.length?S.cons.map(consSlot).join(''):'<div class="empty">Runes, Spirits and Almanacs</div>'}</div>
    <div class="trayfoot"><span>Consumables</span><span>${S.cons.length}/${S.consSlots}</span></div></div>`;
