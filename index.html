@@ -835,8 +835,15 @@ img{-webkit-user-drag:none}
   box-shadow:0 3px 4px rgba(0,0,0,.35)}
 .fbin::before{content:"";position:absolute;left:50%;top:-11px;width:4px;height:13px;margin-left:-2px;border-radius:2px;background:linear-gradient(90deg,#c8102e,#ff6b5e 45%,#a00d24);box-shadow:0 -3px 0 -1px #ffd34d}
 .fbob.afloat .fball{box-shadow:none}
-.fshadow{position:absolute;left:-4px;right:-4px;bottom:-5px;height:7px;border-radius:50%;border:2px solid rgba(190,240,255,.45);opacity:0}
-.fbob.afloat .fshadow{opacity:1}
+.fsub{position:absolute;left:-16px;top:-16px;width:56px;height:56px}.fsub>.fbin{inset:auto;left:16px;top:16px;width:24px;height:24px}
+/* floating: below the waterline the bobber shows faintly through the water; a ripple ring sits on the surface, back half behind it and front half in front */
+.fbob.afloat .fsub{-webkit-mask-image:linear-gradient(#000 29px,rgba(0,0,0,.24) 30px,rgba(0,0,0,.08) 42px);mask-image:linear-gradient(#000 29px,rgba(0,0,0,.24) 30px,rgba(0,0,0,.08) 42px)}
+.fshadow,.ffront{position:absolute;left:-6px;right:-6px;top:9px;height:9px;border-radius:50%;opacity:0;pointer-events:none}
+.fshadow{border:1.5px solid rgba(200,240,255,.35);clip-path:inset(0 0 50% 0)}
+.ffront{border:1.5px solid rgba(215,248,255,.7);background:radial-gradient(closest-side,rgba(150,215,235,.18),rgba(150,215,235,0));clip-path:inset(50% 0 0 0)}
+.fbob.afloat .fshadow,.fbob.afloat .ffront{opacity:1;animation:fwl 2.4s ease-in-out infinite}
+.fbob.bite .fshadow,.fbob.bite .ffront{animation:fwl .22s ease-in-out infinite alternate}
+@keyframes fwl{0%,100%{transform:scaleX(1)}50%{transform:scaleX(1.08)}}
 .fbob.afloat .fbin{animation:fbob 2.4s ease-in-out infinite}
 @keyframes fbob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(2px) rotate(3deg)}}
 .fbob.nib .fbin{animation:fnib .4s ease-in-out}
@@ -1037,7 +1044,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.85</div>
+  <div class="gamever" aria-label="Version">v1.2.86</div>
 </div>
 
 <script>
@@ -4391,7 +4398,7 @@ function fishModal(){
     <div class="pond" id="pond" data-act="fishtap"><canvas id="pondcv"></canvas>
       <svg class="fsvg" id="fsvg"><path id="frod2" fill="none" stroke="#3a2614" stroke-width="7" stroke-linecap="round"/><path id="frod" fill="none" stroke="#9a6a3a" stroke-width="4" stroke-linecap="round"/>
         <circle id="freel" r="7" fill="#c3c9ce" stroke="#4a4a5a" stroke-width="2"/><path id="fline" fill="none" stroke="rgba(235,245,255,.75)" stroke-width="1.3"/></svg>
-      <div class="fbob" id="fbob"><div class="fshadow"></div><div class="fbin"><div class="fball"></div></div></div>
+      <div class="fbob" id="fbob"><div class="fshadow"></div><div class="fsub"><div class="fbin"><div class="fball"></div></div></div><div class="ffront"></div></div>
       <div class="fbang">!</div><div class="fcatch" id="fcatch"></div></div>
     <div class="fmeter" id="fmeter" hidden><div class="fzone" id="fzone"></div><div class="fneedle" id="fneedle"></div></div>
     <div class="fmsg" id="fmsg">Tap the water to cast.</div>
@@ -4500,7 +4507,7 @@ function sandFish(i,hit){
   return new Promise(done=>{
     const ov=document.createElement('div');ov.id='minifish';
     ov.innerHTML=`<div class="mfp"><div class="mft">Sand Dollar: gone fishing!</div><div class="mfs">${hit?'It scored. Land a catch for bonus Mult':'It missed. Land a catch to flip it onto your call'}</div>
-      <div class="mfpond"><div class="fbob afloat"><div class="fshadow"></div><div class="fbin"><div class="fball"></div></div></div><div class="mfbang">!</div><div class="mfcatch"></div></div>
+      <div class="mfpond"><div class="fbob afloat"><div class="fshadow"></div><div class="fsub"><div class="fbin"><div class="fball"></div></div></div><div class="ffront"></div></div><div class="mfbang">!</div><div class="mfcatch"></div></div>
       <div class="fmeter" hidden><div class="fzone"></div><div class="fneedle"></div></div><div class="mfmsg">Wait for a bite...</div><div class="mfhint">Tap or press Space</div></div>`;
     document.body.appendChild(ov);const q=s=>ov.querySelector(s),pond=q('.mfpond'),bob=q('.fbob'),msg=q('.mfmsg'),meter=q('.fmeter');
     let st='wait',tm=0,raf=0,key=null,zone=[0,0],pos=0,t0=0,sp=1;
