@@ -1,0 +1,29 @@
+# Builds Call-it.exe and publishes a GitHub Release whenever a version tag (v*) is pushed.
+# Release notes come from release-notes/<tag>.md when that file exists.
+name: Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build Call-it.exe
+        working-directory: desktop
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+          ls -la Call-it.exe
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [ -f "release-notes/$TAG.md" ]; then NOTES=(--notes-file "release-notes/$TAG.md"); else NOTES=(--generate-notes); fi
+          gh release create "$TAG" desktop/Call-it.exe --title "Call it. $TAG" "${NOTES[@]}"
