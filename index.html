@@ -147,7 +147,11 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 input.vol{width:150px;accent-color:var(--orange)}
 .stctl{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}.stctl .optrow>span{display:flex;flex-direction:column}.stctl .optrow small{font-size:11px;color:var(--ink-dim)}
 .stctl .optrow{flex-wrap:wrap;gap:6px}.stsg{display:flex;gap:3px;flex:0 1 auto;margin-left:auto}.stsg .btn{flex:1 1 0;min-width:28px;padding:5px 6px}
-@media (max-width:520px){.stsg{flex:1 1 100%}}
+@media (max-width:520px){.stsg{flex:1 1 100%}
+  /* phones: one column in its own scrolling list, title and buttons stay put */
+  .stm{display:flex;flex-direction:column;overflow:hidden}
+  .stm .sttracks{grid-template-columns:1fr;flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--ink-dim) transparent}
+  .stm .sttracks::-webkit-scrollbar{width:6px}.stm .sttracks::-webkit-scrollbar-thumb{background:var(--ink-dim);border-radius:3px}}
 .sttracks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .sttracks .btn{min-width:0;white-space:normal;line-height:1.15}.sttracks small{white-space:normal;min-width:0}
 .sttracks .btn{justify-content:flex-start;text-align:left;gap:8px;display:flex;align-items:center;flex-wrap:wrap}
@@ -631,7 +635,6 @@ img{-webkit-user-drag:none}
   .trow .btn.big{flex:1 1 0;min-width:0;font-size:13px;padding:10px 4px;white-space:normal;line-height:1.15}
   .stat.haswx .stl{display:none}
   .wxbanner{font-size:11px;padding:3px 8px}
-  .sttracks{gap:5px}.sttracks .btn{font-size:11px;padding:7px 6px;gap:4px}.sttracks small{font-size:9px}
   .stat{padding:4px}
   .num{font-size:20px}
   .s-btns .btn{font-size:14px;padding:6px}
@@ -942,7 +945,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.6</div>
+  <div class="gamever" aria-label="Version">v1.2.7</div>
 </div>
 
 <script>
@@ -3743,7 +3746,7 @@ function lkMeters(note='Revealed by your Crystal Ball',showL=true,showK=true){co
 const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','main',{lp:1}],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Glitch Pack','glitch',{sub:'Unlocked by beating House'}],['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['Endless','endless',{sub:'Below the House'}],['The House','thehouse',{sub:'Endless final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
 let SOUNDTEST=null;const ST={glitch:false,stage:1};
 function soundTestModal(){
-  return `<div class="overlay"><div class="panel modal" style="width:min(660px,100%)"><h2>Sound Test</h2>
+  return `<div class="overlay"><div class="panel modal stm" style="width:min(660px,100%)"><h2>Sound Test</h2>
     ${OPT.mvol>0?'':'<div class="lbl" style="text-align:center;margin-bottom:8px">Music volume is at 0 in Options</div>'}
     <div class="stctl"><div class="optrow"><span>Glitched audio<small>How music sounds on the Glitched Roll</small></span><button class="btn small ${ST.glitch?'green':''}" data-act="stglitch">${ST.glitch?'On':'Off'}</button></div>
       <div class="optrow"><span>Stage<small>Music speeds up as a run goes on</small></span><div class="stsg">${[1,2,3,4,5,6,7,8].map(n=>`<button class="btn small" style="${ST.stage===n?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ststage" data-arg="${n}" aria-pressed="${ST.stage===n}">${n}</button>`).join('')}</div></div></div>
