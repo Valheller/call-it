@@ -1059,7 +1059,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.111</div>
+  <div class="gamever" aria-label="Version">v1.2.112</div>
 </div>
 
 <script>
@@ -1955,7 +1955,7 @@ const SPIRITS={
  ankh:{name:'Ankh',col:'#ffd34d',desc:'Copy a random Charm. {r:Destroy} all your other Charms',ok:()=>S.jokers.length>0,why:'You need a Charm',
   use:async()=>{const j=pick(S.jokers);S.jokers=[j,{id:uid++,key:j.key,st:{...j.st},cost:j.cost},...S.jokers.filter(x=>x!==j&&x.curse==='rusted')];play('xmult');render()}},
  soul:{name:'The Soul',col:'#e6eefc',desc:'Create a {p:Legendary} Charm',ok:()=>S.jokers.length<slots(),why:'No room for a Charm',
-  use:async()=>{const own=new Set(S.jokers.map(j=>j.key));const fab=rand()<odds(.1);const pool=Object.keys(JOKERS).filter(k=>JOKERS[k].r===(fab?5:4)&&!own.has(k)&&isUnlocked('charm',k));const k=pool.length?pick(pool):rollJokerKey(3);addJoker(k,JOKERS[k].cost);play('win');render();juice($('#jk'+(S.jokers.length-1)))}},
+  use:async()=>{const own=new Set(S.jokers.map(j=>j.key));const fab=rand()<rareOdds(.1);const pool=Object.keys(JOKERS).filter(k=>JOKERS[k].r===(fab?5:4)&&!own.has(k)&&isUnlocked('charm',k));const k=pool.length?pick(pool):rollJokerKey(3);addJoker(k,JOKERS[k].cost);play('win');render();juice($('#jk'+(S.jokers.length-1)))}},
  blackhole:{name:'Black Hole',col:'#7a55c2',desc:'Level up {a:every} toss type',
   use:async()=>{render();await levelMany(HANDS.map(h=>h.key))}},
  wraith:{name:'Wraith',col:'#c8102e',desc:'Create a random {r:Rare} Charm. Lose {r:half} your money',ok:()=>S.jokers.length<slots(),why:'No room for a Charm',
@@ -2264,6 +2264,8 @@ const ctype=c=>S&&S.screen==='play'&&bossIs('rust')?'copper':S&&S.screen==='play
 const coinDef=c=>COINS[ctype(c)];
 const rubyFree=()=>!!S&&!S.rubyUsed&&countEff('rubyslippers')>0;
 const freeReflip=()=>!!S&&!bossIs('gale')&&S.selected.length>0&&(rubyFree()||S.selected.every(i=>S.purse[i]&&coinDef(S.purse[i]).freeFlip));
+/* rarity rolls (Fabled in shops and packs, The Soul's upgrade): Luck and Rainbow nudge them, but Fortuna and Loaded Dice don't, or every shop fills with Fabled Charms */
+const rareOdds=p=>Math.min(1,p*(1+Math.max(0,luckNow())*.05)*(wx('rainbow')?2:1));
 const odds=(p,good=true)=>good&&countEff('fortuna')?1:Math.min(1,p*Math.pow(2,countEff('dice'))*(good?1+luckNow()*.05:Math.max(.2,1-luckNow()*.04))*(good&&wx('rainbow')?2:1));
 const coinKinds=()=>new Set(S.purse.map(c=>c.type)).size;
 const specialCount=()=>S.purse.filter(c=>c.type!=='copper').length;
@@ -3455,7 +3457,7 @@ function grantMystery(it){
 function genPackOpts(pk,n){
   const opts=[],k=pk.kind,uniq=(f,key)=>{let v,t=0;do{v=f();t++}while(opts.some(o=>o[key]===v[key]&&o.kind===v.kind)&&t<30);opts.push(v)};
   for(let i=0;i<n;i++){
-    if(k==='charm')uniq(()=>{if(pk.size==='mega'&&rand()<odds(1/40)){const fb=Object.keys(JOKERS).filter(x=>JOKERS[x].r===5&&!S.jokers.some(j=>j.key===x));if(fb.length)return{kind:'charm',key:pick(fb)}}return{kind:'charm',key:rollJokerKey()}},'key');
+    if(k==='charm')uniq(()=>{if(pk.size==='mega'&&rand()<rareOdds(1/40)){const fb=Object.keys(JOKERS).filter(x=>JOKERS[x].r===5&&!S.jokers.some(j=>j.key===x));if(fb.length)return{kind:'charm',key:pick(fb)}}return{kind:'charm',key:rollJokerKey()}},'key');
     else if(k==='fortune')uniq(()=>({kind:'fortune',key:pick(Object.keys(FORTUNES))}),'key');
     else if(k==='forecast')uniq(()=>({kind:'wx',key:i===0&&S.weather?'clear':pick(Object.keys(WEATHER))}),'key');
     else if(k==='contract')uniq(()=>({kind:'contract',key:pick(Object.keys(CONTRACTS))}),'key');
@@ -5319,7 +5321,7 @@ function saveBest(){try{const b=+localStorage.getItem('hwr-best')||0;if(S.ante>b
 /* ================= SHOP ================= */
 function rollJokerKey(minR){
   const owned=new Set([...S.jokers.map(j=>j.key),...(S.shop?S.shop.jokers.filter(j=>j.key).map(j=>j.key):[])]);
-  if(!minR&&rand()<odds(1/200)){const fb=Object.keys(JOKERS).filter(k=>JOKERS[k].r===5&&!owned.has(k)&&isUnlocked('charm',k));if(fb.length)return pick(fb)}
+  if(!minR&&rand()<rareOdds(1/200)){const fb=Object.keys(JOKERS).filter(k=>JOKERS[k].r===5&&!owned.has(k)&&isUnlocked('charm',k));if(fb.length)return pick(fb)}
   if(!minR&&S.curator&&rand()<1/40){const lg=Object.keys(JOKERS).filter(k=>JOKERS[k].r===4&&!owned.has(k));if(lg.length)return pick(lg)}
   const x=clamp(rand()-luckNow()*.012,0,.999);let r=minR||(x<(S.patron?.5:.7)?1:x<(S.patron?.85:.95)?2:3);
   const base=Object.keys(JOKERS).filter(k=>JOKERS[k].r<4&&!JOKERS[k].glitchOnly&&!JOKERS[k].prize&&!JOKERS[k].artifact&&isUnlocked('charm',k));
