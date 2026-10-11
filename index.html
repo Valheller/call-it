@@ -316,6 +316,7 @@ body.badges .face::before{display:block}
 
 /* panels for blind select / cashout / shop */
 .panel{background:var(--panel);border-radius:14px;padding:14px;box-shadow:0 5px 0 var(--edge),inset 0 0 0 2px rgba(255,255,255,.06)}
+.panel.bsshop{background:linear-gradient(#2e2610,#1e180a);box-shadow:0 5px 0 #120e04,inset 0 0 0 2px rgba(255,211,77,.45)}
 .panel.brshop{background:linear-gradient(#2a1416,#1d1012);box-shadow:0 5px 0 #120809,inset 0 0 0 2px rgba(200,16,46,.35)}
 .blinds{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;width:100%;max-width:820px}
 .bcol{position:relative;flex:1 1 170px;max-width:260px;background:var(--panel);border-radius:14px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;
@@ -1048,7 +1049,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.98</div>
+  <div class="gamever" aria-label="Version">v1.2.99</div>
 </div>
 
 <script>
@@ -2102,12 +2103,17 @@ const CURSES={
  hungry:{name:'Hungry',col:'#c2557a',letter:'¢',desc:'Eats {$:$1} every toss'},
  jinxed:{name:'Jinxed',col:'#3a2a4a',letter:'J',desc:'{r:-2} Luck while you carry it'},
  rented:{name:'Rented',col:'#b8901f',letter:'$',desc:'Bought for {$:$1}. Lose {$:$3} at the end of each wager'},
+ inflation:{name:'Inflation',col:'#d9a020',letter:'I',desc:'Shop prices rise with the money you hold: {r:+2%} for every {$:$1} (each Inflation Charm adds more). Never lowers a price, and the Big Spender is exempt. Can\'t be sold or purified'},
 };
 /* curses that would cancel a Charm's whole point never land on it */
 const CURSE_BAN={cage:['heavy'],jester:['jinxed'],luckystreak:['jinxed'],potofgold:['jinxed','rented'],
   piggy:['rented'],rebate:['rented'],bottle:['rented'],loyalty:['rented'],changejar:['rented'],taxrefund:['rented'],goose:['rented'],savings:['rented']};
 const curseOK=(k,c)=>{const d=JOKERS[k];if(!d)return true;if(c==='jinxed'&&(d.luck||0)>0)return false;if(c==='bound'&&d.artifact)return false;return !(CURSE_BAN[k]||[]).includes(c)};
-const pickCurse=(k,pool)=>{const ok=(pool||Object.keys(CURSES)).filter(c=>curseOK(k,c));return ok.length?pick(ok):null};
+const pickCurse=(k,pool)=>{const ok=(pool||Object.keys(CURSES)).filter(c=>c!=='inflation'&&curseOK(k,c));return ok.length?pick(ok):null};
+/* Inflation sticks: it can't be lifted, and its Charm can't be sold */
+const purifiable=j=>!!j.curse&&j.curse!=='inflation',noSell=j=>j.curse==='bound'||j.curse==='inflation';
+const inflN=()=>S?S.jokers.filter(j=>j.curse==='inflation').length:0;
+const inflMult=()=>S&&!S.bigspender&&inflN()?1+inflN()*Math.max(0,S.money)/50:1;
 const curseBadge=(c,left)=>`<i class="cbadge" style="--cc:${CURSES[c].col}">${c==='fleeting'?(left??5):CURSES[c].letter}</i>`;
 const STAKES=[null,
  {name:'Copper Stake',col:'#c87533',desc:'Base difficulty'},
@@ -2427,6 +2433,26 @@ const PACK_MUSIC={
   const MEL=[[2,-1,-1,3,-1,-1,2,-1,1,-1,-1,-1,0,-1,-1,-1],[-1,-1,1,-1,2,-1,-1,3,-1,-1,2,-1,-1,-1,-1,-1],[3,-1,-1,2,-1,-1,1,-1,2,-1,-1,-1,3,-1,2,-1],[1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]][bar%4];
   if((bar>=2||sec)&&MEL[s]>=0){let e=s+1;while(e<16&&MEL[e]<0)e++;fm({at,f:mtof(up[MEL[s]%up.length]+12),ratio:4,idx:.55,d:Math.min(e-s,8)*spb/4+.25,v:.03,bus:B,vib:true})}
   if(s===15&&bar%4===3&&Math.random()<.5){fm({at,f:mtof(up[0]+36),ratio:3.5,idx:1.2,d:.6,v:.01,bus:B});fm({at:at+.09,f:mtof(up[2%up.length]+36),ratio:3.5,idx:1.2,d:.7,v:.009,bus:B})}
+ },
+ bigspender(m){ /* Big Spender: a swanky big-band swing. Walking bass, ride and brushes, brass stabs, a sax lead and casino bells */
+  const{s,bar,ch,at,spb,B,loop,up}=m,sec=loop%2,lo=n=>{let f=mtof(n);while(f>130)f/=2;while(f<55)f*=2;return f};
+  if(s%4===0){const W=[ch.r,up[2%up.length],up[1%up.length],up[3%up.length]];tone({at,f:lo(W[s/4]),type:'triangle',lp:450,a:.006,d:spb*.85,v:.23,bus:B})}
+  if(s===0||s===8)tone({at,f:100,f2:48,glide:.09,d:.18,v:.2,bus:B});
+  if(s===4||s===12)noise({at,ft:'bandpass',ff:2300,q:.6,a:.02,d:.16,v:.03,bus:B});
+  if([0,4,7,8,12,15].includes(s))noise({at,ft:'highpass',ff:6800,a:.004,d:s%8===0?.28:.1,v:s===7||s===15?.007:.012,bus:B});
+  const stab=(s===0&&bar%2===0)||s===6||(s===14&&bar%2);if(stab)ch.n.forEach((n,k)=>{tone({at,f:mtof(n),type:'sawtooth',lp:2200,q:1.5,a:.012,d:s===6?.16:.32,v:.016,bus:B});tone({at,f:mtof(n)*1.003,type:'square',lp:1800,a:.012,d:s===6?.14:.28,v:.008,bus:B})});
+  const MEL=[[3,-1,-1,2,-1,3,-1,-1,1,-1,2,-1,-1,-1,-1,-1],[0,-1,1,-1,2,-1,-1,3,-1,-1,2,-1,1,-1,-1,-1],[3,-1,2,-1,3,-1,-1,1,-1,-1,0,-1,-1,-1,-1,-1],[1,-1,-1,2,-1,-1,3,-1,-1,-1,-1,-1,-1,-1,-1,-1]][bar%4];
+  if((bar>=2||sec)&&MEL[s]>=0){let e=s+1;while(e<16&&MEL[e]<0)e++;const n=up[MEL[s]%up.length]+12;tone({at,f:mtof(n),type:'sawtooth',lp:1500,q:2,a:.03,d:Math.min(e-s,6)*spb/4*.9,v:.032,bus:B,vib:true});tone({at,f:mtof(n),type:'triangle',a:.03,d:Math.min(e-s,6)*spb/4*.8,v:.014,bus:B})}
+  if(s===15&&bar%4===3&&Math.random()<.6)[0,1,2].forEach(k=>fm({at:at+k*.07,f:mtof(up[k%up.length]+36),ratio:3.5,idx:1.3,d:.5,v:.009,bus:B}));
+ },
+ spiritselect(m){ /* Spirit Select: a bright, blessed hymn. Harp runs, wordless choir, celesta melody, no drums */
+  const{s,bar,ch,at,spb,B,loop,up}=m,sec=loop%2;
+  if(s===0){ch.n.forEach((n,k)=>tone({at:at+k*.04,f:mtof(n+12),type:'sawtooth',lp:1000,a:spb*1.2,d:spb*3,v:.018,bus:B,vib:true,det:k%2?7:-7}));tone({at,f:mtof(ch.r-12),a:.3,d:spb*4,v:.17,bus:B})}
+  if(s<8&&bar%2===0){const n=up[s%up.length]+12*(1+Math.floor(s/up.length));tone({at,f:mtof(n),type:'triangle',a:.003,d:.7,v:.05,bus:B})}
+  if(s>=8&&s%2===0&&bar%2===1){const n=up[(s/2)%up.length]+24;tone({at,f:mtof(n),type:'triangle',a:.003,d:.6,v:.038,bus:B})}
+  const MEL=[[2,-1,-1,-1,3,-1,-1,-1,2,-1,1,-1,0,-1,-1,-1],[1,-1,-1,-1,2,-1,-1,-1,3,-1,-1,-1,-1,-1,-1,-1]][bar%2];
+  if((bar>=2||sec)&&MEL[s]>=0)fm({at,f:mtof(up[MEL[s]%up.length]+24),ratio:4,idx:.7,d:spb*1.4,v:.042,bus:B});
+  if(s===12&&bar%4===3)fm({at,f:mtof(up[0]+36),ratio:3.5,idx:1.6,d:1.6,v:.014,bus:B});
  },
  backroom(m){ /* the Back Room: smoky after-hours jazz. Walking upright bass, brushes and ride, Rhodes comping, a muted trumpet */
   const{s,bar,ch,at,spb,B,loop,up}=m,sec=loop%2;
@@ -3019,7 +3045,7 @@ function musicMood(){
   setLP(shop&&!S.pack&&!S.bazaar&&!S.backroom&&!(S.screen==='shop'&&!S.treasure)&&!(S.event&&['prizecounter','chapel'].includes(S.event.key))&&modal!==creditsModal?750:16000);
   if(modal===creditsModal){setLP(16000);Music.mode='credits';Music.intense=false;Music.bpm=104;return}
   if(!S&&modal===fishModal){Music.mode='fish';Music.intense=false;Music.bpm=72;return}
-  {const sp=S&&S.screen==='event'&&S.event&&S.event.key==='prizecounter'?['prize',90]:S&&S.screen==='event'&&S.event&&S.event.key==='chapel'?['chapel',90]:S&&S.screen==='shop'&&S.bazaar&&!S.pack?['bazaar',90]:S&&S.screen==='shop'&&S.backroom&&!S.pack?['backroom',90]:S&&S.screen==='shop'&&!S.pack&&!S.treasure?['shop',90]:null;
+  {const sp=S&&S.screen==='event'&&S.event&&S.event.key==='prizecounter'?['prize',90]:S&&S.screen==='event'&&S.event&&S.event.key==='chapel'?['chapel',90]:S&&S.screen==='shop'&&S.bazaar&&!S.pack?['bazaar',90]:S&&S.screen==='shop'&&S.backroom&&!S.pack?['backroom',90]:S&&S.screen==='shop'&&S.bigspender&&!S.pack?['bigspender',90]:S&&S.screen==='shop'&&!S.pack&&!S.treasure?['shop',90]:null;
    if(sp){setLP(16000);Music.mode=sp[0];Music.intense=false;Music.bpm=sp[1];return}}
   Music.intense=!!(S&&S.screen==='play'&&S.boss);
   Music.var=S&&S.boss?bossTheme(S.boss):0;
@@ -3078,6 +3104,7 @@ function bgTarget(){
   if(S.pack){const k=S.pack.kind,A=k==='almanac'?M.platinum:k==='rune'?M.bronze:k==='spirit'?M.pewter:M.brass;
     return set(A,dim(k==='rune'?[.42,.26,.46]:k==='almanac'?[.3,.36,.52]:A,.4),3,.8)}
   if(S.screen==='choose')return set(M.brass,dim(M.bronze,.4),1.4,.8);
+  if(S.screen==='shop'&&S.bigspender&&!S.pack)return set(M.gold,dim([.5,.36,.08],.5),1.3,.8);
   if(S.screen==='shop'&&S.backroom)return set([.62,.1,.14],dim([.4,.14,.1],.45),1.1,.72);
   if(S.screen==='shop'||S.screen==='cashout'||S.screen==='event')return set(M.verdigris,dim(M.copper,.35),1.6,.8);
   const b=curBlind();
@@ -3213,7 +3240,11 @@ Object.assign(PACKS,{
  relic:   {name:'Relic Case',col:'#ffd34d',bg:'#3a2a08',what:'relic coins',word:'Relic',w:1,sizes:['normal'],cost:10,n:{normal:[2,1]},avail:()=>relicsLeft().length>0},
  chest:   {name:'Treasure Chest',col:'#d9a020',bg:'#3a2810',what:'treasures, and you keep them all',word:'Chest',w:2,sizes:['normal'],cost:9,n:{normal:[4,4]}},
  dossier: {name:'Boss Dossier',col:'#e04050',bg:'#2a0a10',what:'replacement bosses',word:'Dossier',w:3,sizes:['normal'],cost:5},
+ spiritselect:{name:'Spirit Select',col:'#fff1b0',bg:'#2e2a16',what:'blessed Spirits',word:'Select',w:0,sizes:['mega'],cost:21,n:{mega:[5,2]},avail:()=>false},
 });
+/* Spirit Select: only Spirits with no downside. Sold only at the Big Spender */
+const SELECT_SPIRITS=['soul','blackhole','cryptid','poltergeist','wisp','counterfeiter','hammerer','wanderer','cracker','aura','shimmer'];
+KIND_INFO.spiritselect='Only {a:Spirits with no downside}. The catch: opening it puts the {r:Inflation} curse on a random Charm you own.';
 PACKS.glitch={name:'Glitch Pack',col:'#ff1aa8',bg:'#2a0a2a',what:'corrupted items',word:'GL!TCH',w:4,avail:()=>isUnlocked('pack','glitch')};
 KIND_INFO.glitch='Corrupted goods. Names don\'t read right, but everything comes {a:boosted}: coins with Wear and a Defect, Charms with free Wear, consumables that come in {a:pairs}, and Charms you can\'t find anywhere else.';
 Object.assign(PACKS.coin,{w:18});Object.assign(PACKS.almanac,{w:18});Object.assign(PACKS.rune,{w:16});Object.assign(PACKS.spirit,{w:6});
@@ -3257,6 +3288,7 @@ const PACK_PIX={
  relic:[{1:'#5a1a3a',2:'#ffd34d',3:'#fff6e6',4:'#c48a12'},["............","..22222222..",".2444444442.","222222222222","211111111112","211112211112","211123321112","211112211112","211111111112","222222222222",".4........4.","............"]],
  chest:[{1:'#a8743a',2:'#ffd34d',3:'#5a3a1a',4:'#ffe9a0'},["............","..33333333..",".3111111113.","311111111113","322222222223","311112211113","311112211113","311111111113","311111111113","322222222223","333333333333","............"]],
  dossier:[{1:'#c9b48a',2:'#7a5a3a',3:'#e04050',4:'#3a2a1a'},["............",".2222.......",".21112222222",".21111111112",".21111111112",".21333333312",".21333333312",".21111111112",".21444441112",".21111111112",".22222222222","............"]],
+ spiritselect:[{1:'#fff1b0',2:'#b8901f',3:'#ffffff',4:'#ffd34d'},["....2222....",".....22.....","...222222...","..21111112..","..21133112..","..21333312..","..21333312..","..21133112..","..21111112..","..24444442..","...222222...","............"]],
  glitch:[{1:'#ff1aa8',2:'#00f0e0',3:'#ffffff',4:'#2a0a2a'},["2.2.2.2.1.2.","222222221222","211111122112","211331111112","112331122112","211111111222","211122111112","211122133112","222111113112","211111111112","222212222222","2.2.2.2.2.1."]],
 };
 const PACK_IMG={};
@@ -3421,6 +3453,7 @@ function genPackOpts(pk,n){
     else if(k==='workshop')uniq(()=>({kind:'cwear',key:pick(Object.keys(WEARS))}),'key');
     else if(k==='exchange')uniq(()=>({kind:'swap',type:rand()<.12&&relicsLeft().length?pick(relicsLeft()):pickSpecial(SPC().filter(t=>COINS[t].cost>=4))}),'type');
     else if(k==='mystery')opts.push({kind:'myst',inner:mysteryInner()});
+    else if(k==='spiritselect')uniq(()=>({kind:'spirit',key:pick(SELECT_SPIRITS)}),'key');
     else if(k==='cursed')uniq(()=>{const legs=Object.keys(JOKERS).filter(x=>JOKERS[x].r===4&&isUnlocked('charm',x));const key=legs.length&&rand()<.12?pick(legs):rollJokerKey(rand()<.4?3:2);return{kind:'charm',key,curse:pickCurse(key)}},'key');
     else if(k==='relic')uniq(()=>{const rl=relicsLeft().filter(t=>!opts.some(o=>o.type===t));return{kind:'coin',type:rl.length?pick(rl):pickSpecial(SPC())}},'type');
     else if(k==='chest'){[{kind:'coin',type:pickSpecial(SPC()),wear:rand()<.3?pick(COIN_WEARS):null},{kind:'charm',key:rollJokerKey()},{kind:'rune',key:pick(Object.keys(RUNES))},randAlmanac()].forEach(o=>opts.push(o));break}
@@ -3944,7 +3977,7 @@ function renderSide(){
     head=`<div class="s-blind" style="--bc:var(--purple)"><div class="s-bname">${EVENTS[S.event.key]&&EVENTS[S.event.key].omen?'Omen':EVENTS[S.event.key]&&EVENTS[S.event.key].mapOnly?EVENTS[S.event.key].title:'Encounter'}</div><div class="s-binfo"><div class="lbl">${EVENTS[S.event.key]&&EVENTS[S.event.key].omen?'The halls are trying to tell you something':'Something stirs between the tables'}</div></div></div>`;
   }else if(S.screen==='shop'){
     head=S.pack?`<div class="s-blind" style="--bc:${PACKS[S.pack.kind].col}"><div class="s-bname">${packName(S.pack)}</div><div class="s-binfo"><div class="lbl">Choose ${S.pack.picks} of ${S.pack.opts.length}</div></div></div>`
-      :`<div class="s-blind" style="--bc:${S.backroom?'#c8102e':S.bazaar?'#5fd3c8':'var(--green)'}"><div class="s-bname">${S.backroom?'The Back Room':S.bazaar?'Bazaar':'Shop'}</div><div class="s-binfo"><div class="lbl">${S.backroom?'Cheap goods, none of them clean':S.bazaar?'Rare goods, 40% dearer':'Charms, packs and upgrades'}</div></div></div>`;
+      :`<div class="s-blind" style="--bc:${S.bigspender?'#ffd34d':S.backroom?'#c8102e':S.bazaar?'#5fd3c8':'var(--green)'}"><div class="s-bname">${S.bigspender?'Big Spender':S.backroom?'The Back Room':S.bazaar?'Bazaar':'Shop'}</div><div class="s-binfo"><div class="lbl">${S.bigspender?'Only the finest. Inflation doesn\'t reach in here':S.backroom?'Cheap goods, none of them clean':S.bazaar?'Rare goods, 40% dearer':'Charms, packs and upgrades'}${inflMult()>1?` · <span style="color:${CURSES.inflation.col}">Inflation ×${inflMult().toFixed(1)}</span>`:''}</div></div></div>`;
   }else{
     const b=curBlind();
     head=`<div class="s-blind" style="--bc:${blindColor(b)}"><div class="s-bname">${blindName(b)}</div>
@@ -3997,7 +4030,7 @@ function jokerSlot(j,i){
   const gj=(S.roll==='glitched'||j.key==='missingno')&&S.screen==='play'&&S.glitchJ&&S.glitchJ[j.id];
   return `<div class="jslot ${sel?'sel':''} ${gj?'jglitch':''} ${!jOn(j)?'stolen':''} ${d.r===5?'fabled':''}" data-idx="${i}"><button class="jcard" id="jk${i}" data-act="joker" data-arg="${i}" data-drag="charm" data-tip="joker:${i}" aria-label="${d.name}">
    <div class="jin ${j.wear==='weightless'?'weightless':''}" style="--jbg:${d.bg};--dl:${-(i*.7)}s;${rarVars(j.key)}">${IMG(icon(j.key))}${j.wear&&j.wear!=='weightless'?`<i class="wfx w-${j.wear}"></i>`:''}</div>${j.curse?curseBadge(j.curse,j.left):''}</button>
-   ${sel?`<div class="jacts">${j.curse==='bound'?'<span class="why">Bound</span>':`${S.roll==='hoarder'?'':`<button class="btn green tiny" data-act="sell" data-arg="${i}">Sell $${sellVal(j)}</button>`}`}
+   ${sel?`<div class="jacts">${noSell(j)?`<span class="why">${CURSES[j.curse].name}</span>`:`${S.roll==='hoarder'?'':`<button class="btn green tiny" data-act="sell" data-arg="${i}">Sell $${sellVal(j)}</button>`}`}
    <div class="mv"><button class="btn tiny" data-act="move" data-arg="${i},-1" ${i===0||j.curse==='bound'?'disabled':''} aria-label="Move left">&lt;</button><button class="btn tiny" data-act="move" data-arg="${i},1" ${i===n-1||j.curse==='bound'?'disabled':''} aria-label="Move right">&gt;</button></div></div>`:''}</div>`;
 }
 function consSlot(c,i){
@@ -4104,10 +4137,10 @@ const sizeName=s=>s==='normal'?'':s==='jumbo'?'Jumbo ':'Mega ';
 const packName=p=>sizeName(p.size)+PACKS[p.kind].name;
 const packCost=s=>s==='normal'?4:s==='jumbo'?6:8;
 const packCounts=p=>PACKS[p.kind].n&&PACKS[p.kind].n[p.size]?{n:PACKS[p.kind].n[p.size][0],picks:PACKS[p.kind].n[p.size][1]}:({n:p.size==='normal'?(p.kind==='spirit'?2:3):(p.kind==='spirit'?4:5),picks:p.size==='mega'?2:1});
-const gp=(o,v)=>{const k=karmaNow();if(S&&S.bazaar)v=Math.max(1,Math.round(v*1.4));return Math.max(1,v+((o&&o.gd)||0)+(k>=6?-1:k<=-6?1:0))};
-const slotPrice=o=>S.shop&&o===S.shop.jokers[0]&&countEff('goldenticket')?0:gp(o,o.br?3:o.kind==='charm'?(o.curse==='rented'?1:Math.max(1,price(o.curse?Math.ceil(o.cost/2):o.cost)-countEff('coupon'))):price(o.cost));
+const gp=(o,v)=>{const k=karmaNow();if(S&&S.bazaar)v=Math.max(1,Math.round(v*1.4));{const im=inflMult();if(im>1&&v>0)v=Math.ceil(v*im)}return Math.max(1,v+((o&&o.gd)||0)+(k>=6?-1:k<=-6?1:0))};
+const slotPrice=o=>S.shop&&o===S.shop.jokers[0]&&countEff('goldenticket')?0:gp(o,o.bs?price(o.bs):o.br?3:o.kind==='charm'?(o.curse==='rented'?1:Math.max(1,price(o.curse?Math.ceil(o.cost/2):o.cost)-countEff('coupon'))):price(o.cost));
 /* each reroll in the same shop costs 50% more than the last: $5, $8, $11, $17, $25, $38... */
-const rerollCost=()=>countEff('cornucopia')?0:Math.max(0,Math.round(S.shop.reroll*1.5**(S.shop.rolls||0))-countEff('thrifty')+infl());
+const rerollCost=()=>countEff('cornucopia')?0:Math.max(0,Math.ceil((Math.round(S.shop.reroll*1.5**(S.shop.rolls||0))-countEff('thrifty')+infl())*inflMult()));
 function charmCardHTML(o,i){
   const p=slotPrice(o),full=S.jokers.length>=slots();
   if(o.kind==='spirit'){const ci=consInfo(o),room=consRoom();
@@ -4135,11 +4168,11 @@ function shopHTML(){
   const brc=S.backroom&&(sh.br||[]).map((o,i)=>{const L=o.k==='loaded',p=L?gp(o,6):0,room=purseUsed()+2<=S.purseMax,dis=o.bought||(L&&(S.money<p||!room));
       return `<div class="scard ${o.bought?'gone':''}"><div class="price">${L?'$'+p:'+$10'}</div><button class="jcard tile" data-tip="brgood:${i}" aria-label="${L?'Loaded coins':'Fence something'}"><div class="jin" style="--jbg:${L?'#3a1414':'#2a2410'};--dl:${-i*.8}s">${L?coinIcon('loaded'):IMG(sprite('fence',SPR_FENCE))}<span class="lab">${L?'Loaded':'Fence'}</span></div></button>
       <button class="btn ${L?'green':'red'} small" data-act="brbuy" data-arg="${i}" ${dis?'disabled':''}>${L&&!room&&!o.bought?'No room':L?'Buy':'Take'}</button><div class="pcap">${L?"A Magician's Coin and a counterfeit. Karma -1":'Easy money. Karma -2'}</div></div>`}).join('');
-  return `<div class="panel shop ${S.backroom?'brshop':''}"><div class="shophead"><div class="shopbtns">
-      <button class="btn red big" data-act="nextround">${S.backroom?'Leave':'Next Round'}</button>
+  return `<div class="panel shop ${S.backroom?'brshop':S.bigspender?'bsshop':''}"><div class="shophead"><div class="shopbtns">
+      <button class="btn red big" data-act="nextround">${S.backroom||S.bigspender?'Leave':'Next Round'}</button>
       <button class="btn green" data-act="reroll" ${S.money<rerollCost()?'disabled':''}>Reroll $${rerollCost()}</button></div>
       <div class="sect"><div class="slbl">${S.roll==='ghost'?'Spirits':'Charms'}</div><div class="shelf">${sh.jokers.map(charmCardHTML).join('')}</div></div></div>
-    <div class="shoprow2">${S.backroom?`<div class="sect"><div class="slbl">Under the counter</div><div class="shelf">${brc}</div></div>`:`<div class="sect up"><div class="slbl">Upgrade</div><div class="shelf">${uc}</div></div>
+    <div class="shoprow2">${S.backroom?`<div class="sect"><div class="slbl">Under the counter</div><div class="shelf">${brc}</div></div>`:S.bigspender?`<div class="sect"><div class="slbl">Packs</div><div class="shelf">${pc}</div></div>`:`<div class="sect up"><div class="slbl">Upgrade</div><div class="shelf">${uc}</div></div>
       <div class="sect"><div class="slbl">Packs</div><div class="shelf">${pc}</div></div>`}</div></div>
     ${purseHTML()}`;
 }
@@ -4236,7 +4269,7 @@ function runInfoModal(){
 function lkMeters(note='Revealed by your Crystal Ball',showL=true,showK=true){const L=luckNow(),K=karmaNow(),bar=(v,c)=>`<div class="lkbar"><i style="left:${50+Math.min(0,v)*5}%;width:${Math.abs(v)*5}%;background:${c}"></i></div>`;
   return `<div class="lkm">${showL?`<div><span>Luck</span>${bar(L,'#4bd18f')}<b>${fmtSign(L)} · ${luckWord(L)}</b></div>`:''}${showK?`<div><span>Karma</span>${bar(K,'#ffd34d')}<b>${fmtSign(K)} · ${karmaWord(K)}</b></div>`:''}<div class="lbl">${note}</div></div>`}
 /* in the order you meet them: menu, the run, its packs, then the endings */
-const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','shop'],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Glitch Pack','glitch',{sub:'Unlocked by beating House'}],['Prize Counter','prize',{sub:'Spend your Tickets'}],['The Bazaar','bazaar',{sub:'A rare detour'}],['The Back Room','backroom',{sub:'For those with bad Karma'}],['The Chapel','chapel',{sub:'For those with good Karma'}],['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['Endless','endless',{sub:'Below the House'}],['The House','thehouse',{sub:'Endless final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
+const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','shop'],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Glitch Pack','glitch',{sub:'Unlocked by beating House'}],['Prize Counter','prize',{sub:'Spend your Tickets'}],['The Bazaar','bazaar',{sub:'A rare detour'}],['The Back Room','backroom',{sub:'For those with bad Karma'}],['Big Spender','bigspender',{sub:'Only when you\'re rich'}],['The Chapel','chapel',{sub:'For those with good Karma'}],['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['Endless','endless',{sub:'Below the House'}],['The House','thehouse',{sub:'Endless final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
 let SOUNDTEST=null;const ST={glitch:false,stage:1,estage:9};
 function soundTestModal(){
   return `<div class="overlay"><div class="panel modal stm" style="width:min(660px,100%)"><h2>Sound Test</h2>
@@ -4662,14 +4695,14 @@ const EVENTS={
   choices:[{label:'Pick up a shard',run:()=>{addLuck(-2);if(consRoom()){S.cons.push({kind:'rune',key:pick(Object.keys(RUNES))});play('buy');return 'The shard hums: you gain a {a:Rune}. You feel {r:unlucky}.'}return 'The shard turns to dust in your hand. You feel {r:unlucky}.'}},
    {label:'Step around it',run:()=>'You step around it carefully. You don\'t look down.'}]},
  rest:{mapOnly:1,avail:()=>false,title:'The Quiet Lounge',text:'A lounge where nobody gambles. The chairs are soft, the lamps are low, and the music is very far away.',
-  choices:[{label:'Lay down a curse',ok:()=>S.jokers.some(j=>j.curse),why:'None of your Charms are cursed',run:()=>{const j=S.jokers.find(x=>x.curse);const c=CURSES[j.curse].name;j.curse=null;delete j.left;play('levelup');return `You leave the {a:${c}} curse on the side table. Your ${JOKERS[j.key].name} feels lighter.`}},
+  choices:[{label:'Lay down a curse',ok:()=>S.jokers.some(purifiable),why:'None of your Charms carry a curse you can lift',run:()=>{const j=S.jokers.find(purifiable);const c=CURSES[j.curse].name;j.curse=null;delete j.left;play('levelup');return `You leave the {a:${c}} curse on the side table. Your ${JOKERS[j.key].name} feels lighter.`}},
    {label:'Count your chips (+$8)',run:()=>{S.money+=8;play('money');return 'Between the cushions: {$:$8} that somebody forgot, a long time ago.'}},
    {label:'Close your eyes',run:()=>{addLuck(2);addKarma(1);S.bonusReflip=(S.bonusReflip||0)+1;play('levelup');return 'You wake rested, with steadier hands: {a:+1 Re-flip} next wager.'}}]},
  housedeal:{mapOnly:1,avail:()=>false,title:'The House',text:'Behind a door with no handle, the House is waiting. It has no face, only a voice, and the voice is pleased to see you. "Let us make a deal. Something you keep forever, for something you want now."',
   get choices(){const o=S.event.offer||(S.event.offer={d:(()=>{const ok=Object.keys(HOUSE_DEALS).filter(k=>HOUSE_DEALS[k].ok());const a=[];while(a.length<2&&ok.length)a.push(ok.splice(Math.floor(rand()*ok.length),1)[0]);return a})()});
     return [...o.d.map(k=>({label:HOUSE_DEALS[k].label,ok:HOUSE_DEALS[k].ok,why:'The House will not take that',run:()=>{addKarma(-1);play('boss');shake(5);return HOUSE_DEALS[k].run()}})),declineC('"Another time, then. There is always another time."')]}},
  pawn:{mapOnly:1,avail:()=>false,title:'The Pawnshop',text:'A pawnshop behind brass bars. Everything here once belonged to someone who needed one more spin.',
-  get choices(){const c=[];S.jokers.map((j,i)=>({j,i})).filter(x=>x.j.curse!=='bound').slice(-2).forEach(({j})=>c.push({label:`Pawn your ${JOKERS[j.key].name} ($${j.cost})`,ok:()=>S.jokers.includes(j)&&S.roll!=='hoarder',why:'Not allowed',run:()=>{S.jokers.splice(S.jokers.indexOf(j),1);S.money+=j.cost;S.lastSold=j.key;play('money');return `The broker takes your {a:${JOKERS[j.key].name}} and counts out {$:$${j.cost}}, the full price.`}}));
+  get choices(){const c=[];S.jokers.map((j,i)=>({j,i})).filter(x=>!noSell(x.j)).slice(-2).forEach(({j})=>c.push({label:`Pawn your ${JOKERS[j.key].name} ($${j.cost})`,ok:()=>S.jokers.includes(j)&&S.roll!=='hoarder',why:'Not allowed',run:()=>{S.jokers.splice(S.jokers.indexOf(j),1);S.money+=j.cost;S.lastSold=j.key;play('money');return `The broker takes your {a:${JOKERS[j.key].name}} and counts out {$:$${j.cost}}, the full price.`}}));
     if(S.lastSold)c.push({label:`Buy back your ${JOKERS[S.lastSold].name} ($${JOKERS[S.lastSold].cost})`,ok:()=>S.money>=JOKERS[S.lastSold].cost&&S.jokers.length<slots(),why:'Needs the money and a free Charm slot',run:()=>{const k=S.lastSold;S.money-=JOKERS[k].cost;addJoker(k,JOKERS[k].cost);S.lastSold=null;play('buy');return `Your {a:${JOKERS[k].name}} is back where it belongs.`}});
     c.push({label:'Pawn a special coin ($9)',ok:()=>specialCount()>0&&S.purse.length>PURSE_MIN&&S.roll!=='hoarder',why:'Needs a special coin and more than 3 coins',run:()=>{const co=pick(S.purse.filter(x=>x.type!=='copper'));S.purse.splice(S.purse.indexOf(co),1);S.money+=9;play('money');return `Your ${COINS[co.type].name} goes behind the bars. {$:$9}.`}});
     c.push(declineC('You leave with everything you came in with.'));return c}},
@@ -4678,7 +4711,7 @@ const EVENTS={
    {label:'Loaded coins ($6)',ok:()=>S.money>=6&&purseUsed()+2<=S.purseMax,why:'Needs $6 and 2 spaces in your purse',run:()=>{S.money-=6;S.purse.push(mkCoin('loaded'),mkCoin(pick(['twohead','twotail'])));addKarma(-1);play('buy');return 'A {a:Magician\'s Coin} and a counterfeit slide across the table. Nobody saw anything.'}},
    {label:'Fence something (+$10)',run:()=>{S.money+=10;addKarma(-2);play('money');return 'You never ask where it came from. {$:$10}.'}},declineC('You back out of the room. The door closes behind you.')]},
  chapel:{mapOnly:1,avail:()=>false,title:'The Chapel',text:'A small chapel sits where the noise of the halls cannot reach. Candles burn for everyone who ever lost here.',
-  choices:[{label:'Turn a curse into a blessing',ok:()=>S.jokers.some(j=>j.curse),why:'None of your Charms are cursed',run:()=>{const j=S.jokers.find(x=>x.curse);const c=CURSES[j.curse].name;j.curse=null;delete j.left;j.wear=pick(['polished','patina','proof']);addKarma(1);play('levelup');return `The {a:${c}} curse burns away, and your ${JOKERS[j.key].name} comes out {a:${WEARS[j.wear].name}}.`}},
+  choices:[{label:'Turn a curse into a blessing',ok:()=>S.jokers.some(purifiable),why:'None of your Charms carry a curse you can lift',run:()=>{const j=S.jokers.find(purifiable);const c=CURSES[j.curse].name;j.curse=null;delete j.left;j.wear=pick(['polished','patina','proof']);addKarma(1);play('levelup');return `The {a:${c}} curse burns away, and your ${JOKERS[j.key].name} comes out {a:${WEARS[j.wear].name}}.`}},
    {label:'Pray for guidance',run:()=>{const ks=HANDS.filter(h=>h.key!=='bust').map(h=>h.key).sort((a,b)=>S.hands[b].played-S.hands[a].played).slice(0,2);ks.forEach(k=>S.hands[k].level++);addKarma(1);play('levelup');return `${ks.map(k=>'{a:'+HAND[k].name+'}').join(' and ')} each go up a level.`}},
    {label:'Bless a coin',ok:()=>S.purse.some(c=>c.wear!=='proof'),why:'Every coin is already blessed',run:()=>{const c=pick(S.purse.filter(x=>x.wear!=='proof'));c.wear='proof';addKarma(1);play('levelup');return `Your ${COINS[c.type].name} is now {a:Proof Finish}.`}}]},
  prizecounter:{mapOnly:1,avail:()=>false,title:'The Prize Counter',text:()=>{const o=prizeOffer();return `A prize counter stands lit in the dark. Everything here costs Tickets, and nothing here can be bought with money. You have {a:${S.tickets||0} Tickets}.<br><br>${o.map(k=>`<b>${JOKERS[k].name}</b> (${JOKERS[k].tix} tickets): ${typeof JOKERS[k].desc==='function'?JOKERS[k].desc(null):JOKERS[k].desc}`).join('<br>')}`},
@@ -5236,7 +5269,7 @@ function doCashout(){
   if(S.cash.total>0)coinRain(clamp(S.cash.total*2,8,60));
   S.money=Math.max(0,S.money+S.cash.total);S.cash=null;play('rush');
   S.jokers.forEach(j=>{if(j.key==='cursedidol')j.st.x=Math.round((j.st.x+.3)*100)/100;if(cursed(j,'fleeting'))j.left=(j.left??5)-1});
-  for(let k=0;k<nK('chimneysweep');k++){const cj=S.jokers.filter(j=>j.curse&&j.curse!=='rented');if(cj.length&&rand()<odds(1/3)){const j=pick(cj);toast(`<b>Chimney Sweep</b> sweeps the ${CURSES[j.curse].name} curse off your ${JOKERS[j.key].name}`);j.curse=null;delete j.left}}
+  for(let k=0;k<nK('chimneysweep');k++){const cj=S.jokers.filter(j=>purifiable(j)&&j.curse!=='rented');if(cj.length&&rand()<odds(1/3)){const j=pick(cj);toast(`<b>Chimney Sweep</b> sweeps the ${CURSES[j.curse].name} curse off your ${JOKERS[j.key].name}`);j.curse=null;delete j.left}}
   S.jokers.filter(j=>cursed(j,'brittle')&&rand()<1/8).forEach(j=>{j.curse='broken';toast(`<b>${JOKERS[j.key].name}</b> was Brittle, and it broke`)});S.jokers=S.jokers.filter(j=>j.curse!=='broken');
   S.jokers.filter(j=>cursed(j,'fleeting')&&j.left<=0).forEach(j=>toast(`<b>${JOKERS[j.key].name}</b> faded away`));S.jokers=S.jokers.filter(j=>!(cursed(j,'fleeting')&&j.left<=0));
   const b=curBlind();if(b.kind==='elite'||b.kind==='rival'){S.round++;endElite(true);return}b.state='defeated';
@@ -5278,11 +5311,13 @@ const randHand=()=>pick(HANDS.filter(h=>h.key!=='bust')).key;
 function bazaarKey(){if(rand()<.1){const own=new Set(S.jokers.map(j=>j.key)),lg=Object.keys(JOKERS).filter(k=>JOKERS[k].r===4&&!own.has(k));if(lg.length)return pick(lg)}return rollJokerKey(rand()<.45?3:2)}
 function charmRow(){
   // two charm slots; sometimes one (never both) is a lone Almanac instead
-  const n=S.bazaar||S.backroom?3:S.shopCharms||2,alm=S.roll!=='ghost'&&!S.bazaar&&!S.backroom&&rand()<.3?Math.floor(rand()*n):-1;
+  const n=S.bazaar||S.backroom||S.bigspender?3:S.shopCharms||2,alm=S.roll!=='ghost'&&!S.bazaar&&!S.backroom&&!S.bigspender&&rand()<.3?Math.floor(rand()*n):-1;
   const row=[];
   for(let i=0;i<n;i++){
     if(i===alm)row.push({...randAlmanac(),cost:3});
     else if(S.roll==='ghost'){let k;do k=pick(Object.keys(SPIRITS).filter(x=>x!=='soul'));while(row.some(o=>o.key===k));row.push({kind:'spirit',key:k,cost:4})}
+    else if(S.bigspender){const own=new Set([...S.jokers.map(j=>j.key),...row.map(o=>o.key)]),ok=x=>!own.has(x)&&!JOKERS[x].prize&&!JOKERS[x].artifact&&!JOKERS[x].glitchOnly&&isUnlocked('charm',x),fab=Object.keys(JOKERS).filter(x=>JOKERS[x].r===5&&ok(x)),leg=Object.keys(JOKERS).filter(x=>JOKERS[x].r===4&&ok(x));
+      const f=fab.length&&(rand()<.35||!leg.length),k=f?pick(fab):leg.length?pick(leg):rollJokerKey(3);row.push({kind:'charm',key:k,cost:JOKERS[k].cost,curse:'inflation',bs:JOKERS[k].r===5?65:42})}
     else if(S.backroom){let k;do k=rollJokerKey(3);while(row.some(o=>o.key===k)&&rand()<.9);row.push({kind:'charm',key:k,cost:JOKERS[k].cost,curse:pickCurse(k,Object.keys(CURSES).filter(c=>c!=='rented')),br:1})}
     else{const k=S.bazaar?bazaarKey():rollJokerKey();let curse=null;if(S.roll==='cursed')curse=pickCurse(k);else if(S.stake>=4&&rand()<.2&&curseOK(k,'rented'))curse='rented';else if(rand()<.12-karmaNow()*.012)curse=pickCurse(k,['rusted','bound','fleeting','brittle','heavy','hungry','jinxed']);
       row.push({kind:'charm',key:k,cost:JOKERS[k].cost,curse})}
@@ -5319,6 +5354,8 @@ const DEST={
   spr:{p:{1:'#ffd34d',2:'#a8743a'},s:["2222222222","..2....2..",".111..111.","1111111111",".111..111.","....22....","...1111...","..111111..","...1111...",".........."]}},
  backroom:{bg:'#2a0a0a',name:'The Back Room',col:'#c8102e',desc:'Only opens for those with a bad reputation. Cheap goods, none of them clean: cursed Charms, loaded coins, easy money',
   spr:{p:{1:'#5a3a2a',2:'#ff3b3b',3:'#1a1010'},s:["....22....","...2222...","..111111..","..133331..","..133331..","..133331..","..133311..","..133331..","..133331..","..111111.."]}},
+ bigspender:{bg:'#3a2a08',name:'Big Spender',col:'#ffd34d',desc:'Only opens once, for the rich (over $100). Legendary and Fabled Charms at eye-watering prices, all carrying {r:Inflation}, and the Spirit Select pack',
+  spr:{p:{1:'#ffd34d',2:'#b8650a',3:'#fff6d0',4:'#5fd3c8'},s:["...4..4...","....44....","...4444...","..122221..",".12222221.",".12233221.",".12322221.",".12223321.",".12233221.","..111111.."]}},
  chapel:{bg:'#1e2a3a',name:'The Chapel',col:'#bfe6ff',desc:'Only opens for those with a good reputation. Turn a curse into a blessing, pray for guidance, or bless a coin',
   spr:{p:{1:'#fff2b0',2:'#ffa21f',3:'#e9d9a8'},s:["....2.....","...222....","...222....","....2.....","...333....","...333....","...333....","...333....","..33333...",".3333333.."]}},
  mystery:{bg:'#2a1a3a',name:'???',col:'#9a6fdc',desc:'A face-down card. You only find out where it leads once you commit',
@@ -5336,11 +5373,13 @@ function genWays(){
   const K=karmaNow(),pool=[['encounter',5],['rest',2],['treasure',1.4],['bazaar',.7],['house',.9],['mystery',1]];
   if(S.jokers.length||specialCount()||S.lastSold)pool.push(['pawn',1.2]);
   if(K<=-3)pool.push(['backroom',2.2]);if(K>=3)pool.push(['chapel',2.2]);
+  if(S.money>100&&!S.bigSeen)pool.push(['bigspender',4]);
   if((S.tickets||0)>=3)pool.push(['prize',1.6]);
   if(!used.includes('rival'))pool.push(['rival',rr?50:2]);
   if(!used.includes('elite')&&S.ante>=2&&!rr)pool.push(['elite',2]);
   const out=[];let n=1; /* always two choices: the shop and one detour */
   while(n-->0&&pool.length){const tot=pool.reduce((a,x)=>a+x[1],0);let x=rand()*tot,k=0;for(;k<pool.length-1;k++){x-=pool[k][1];if(x<0)break}out.push(pool.splice(k,1)[0][0])}
+  if(out.includes('bigspender'))S.bigSeen=true; /* the Big Spender only ever shows up once */
   return [{t:'shop'},...out.map(t=>{const w={t};if(t==='elite'){w.boss=pick(BOSS_POOL.filter(b=>!['wall','needle','judge'].includes(b)));w.boss2=S.ante>=4?pick(SECOND_BOSS.filter(k=>k!==w.boss)):null}return w})];
 }
 function wayInfo(w){
@@ -5363,6 +5402,7 @@ function chooseWay(i){
   if(w.t==='shop'){genShop();S.screen='shop';render();coach('shop');return}
   if(w.t==='bazaar'){S.bazaar=true;genShop();S.screen='shop';render();play('unlock');return}
   if(w.t==='backroom'){S.backroom=true;genShop();S.screen='shop';render();play('unlock');return}
+  if(w.t==='bigspender'){S.bigspender=true;genShop();S.screen='shop';render();play('unlock');return}
   if(w.t==='treasure'){S.treasure=true;genShop();const k=rollPack().kind;S.shop.packs=[{kind:k,size:biggest(k),bought:false,free:true}];S.screen='shop';render();buyPack(0);return}
   if(w.t==='mystery'){const opts=['encounter','rest','treasure','bazaar','house','pawn',...(S.ante>=2&&S.roll!=='rivalroll'&&!S.wayStage.used.includes('elite')?['elite']:[]),...(!S.wayStage.used.includes('rival')?['rival']:[]),...((S.tickets||0)>=3?['prize']:[])];
     const t=pick(opts),nw={t};if(t==='elite'){nw.boss=pick(BOSS_POOL.filter(b=>!['wall','needle','judge'].includes(b)));nw.boss2=S.ante>=4?pick(SECOND_BOSS.filter(k=>k!==nw.boss)):null}
@@ -5374,7 +5414,7 @@ function chooseWay(i){
   if(w.t==='elite'){S.inElite=true;S.eliteBlind={kind:'elite',boss:w.boss,boss2:w.boss2,state:'select'};setTimeout(()=>{play('boss');shake(6)},50);startBlind();return}
 }
 /* every detour (and the shop) ends here: on to the next wager */
-function goNext(){S.bazaar=false;S.backroom=false;S.treasure=false;S.pack=null;S.event=null;S.ways=null;S.selJoker=null;S.selCons=null;S.csel=[];S.screen='blind';render()}
+function goNext(){S.bazaar=false;S.backroom=false;S.bigspender=false;S.treasure=false;S.pack=null;S.event=null;S.ways=null;S.selJoker=null;S.selCons=null;S.csel=[];S.screen='blind';render()}
 function endElite(won){
   const kind=S.eliteBlind&&S.eliteBlind.kind;S.inElite=false;S.eliteBlind=null;S.boss=null;S.boss2=null;S.phase='idle';S.results=[];S.call=null;S.csel=[];
   S.purse.forEach(c=>{c.fog=false;if(c.face==='E')c.face='H'});
@@ -5508,9 +5548,10 @@ function genShop(){
   S.shop={jokers:[],packs:Array.from({length:S.shopPacks||2},()=>rollPack()),reroll:S.rerollBase,upgrade:null};
   if(S.bazaar)S.shop.packs.forEach(pk=>pk.size=biggest(pk.kind));
   if(S.backroom){S.shop.packs=[];S.shop.br=[{k:'loaded'},{k:'fence'}]}
+  if(S.bigspender)S.shop.packs=[{kind:'spiritselect',size:'mega',bought:false}];
   S.shop.jokers=charmRow();
   const ups=freeUpgrades();
-  if(ups.length&&!S.backroom)S.shop.upgrade={key:pick(ups),bought:false};
+  if(ups.length&&!S.backroom&&!S.bigspender)S.shop.upgrade={key:pick(ups),bought:false};
   if(S.roll==='glitched')[...S.shop.jokers,...S.shop.packs,S.shop.upgrade].filter(Boolean).forEach(glitchPrice);
 }
 function reroll(){
@@ -5561,6 +5602,7 @@ function buyPack(i){
     else{let s;do s=rand()<.05?'soul':pick(Object.keys(SPIRITS).filter(x=>x!=='soul'));while(opts.some(o=>o.key===s));opts.push({kind:'spirit',key:s})}
   }
   S.pack={kind:pk.kind,size:pk.size,opts,picks};S.csel=[];S.selCons=null;S.selJoker=null;
+  if(pk.kind==='spiritselect'){const c=S.jokers.filter(j=>j.curse!=='inflation');if(c.length){const j=pick(c);j.curse='inflation';delete j.left;setTimeout(()=>toast(`The seal breaks, and your <b>${JOKERS[j.key].name}</b> catches <b style="color:${CURSES.inflation.col}">Inflation</b>`,4500),300)}}
   play('rip');render();coach('pack');
   document.querySelectorAll('.popt .jcard').forEach((el,k)=>setTimeout(()=>{juice(el);play('tick')},k*90));
 }
@@ -5634,7 +5676,7 @@ const ACT={
     if(S&&S.roll==='glitched'&&consRoom()&&rand()<.2){S.cons.push({...c});render();const el=$('#cs'+(S.cons.length-1));if(el){popup(el,'Glitch! It came back','text');juice(el)}play('glitch');return}
     render()},
   sellcons(a){const i=+a,c=S.cons[i];if(!c||S.roll==='hoarder')return;S.money+=consInfo(c).sell;S.cons.splice(i,1);S.selCons=null;play('money');if(S.screen==='play'){renderJokers();syncStats()}else render()},
-  sell(a){const i=+a,j=S.jokers[i];if(!j||!canEdit()||j.curse==='bound'||S.roll==='hoarder')return;PS().sold++;S.money+=sellVal(j);S.jokers.splice(i,1);S.selJoker=null;play('money');S.lastSold=j.key;if(j.key==='confession'){S.karma=Math.max(0,S.karma||0);toast('You feel <b>forgiven</b>.')}else addKarma(-1);
+  sell(a){const i=+a,j=S.jokers[i];if(!j||!canEdit()||noSell(j)||S.roll==='hoarder')return;PS().sold++;S.money+=sellVal(j);S.jokers.splice(i,1);S.selJoker=null;play('money');S.lastSold=j.key;if(j.key==='confession'){S.karma=Math.max(0,S.karma||0);toast('You feel <b>forgiven</b>.')}else addKarma(-1);
     if(j.key==='hydra')for(let k=0;k<2&&S.jokers.length<slots();k++){const nk=rollJokerKey(1);addJoker(nk,JOKERS[nk].cost)}
     if(S.screen==='play'){renderJokers();syncStats()}else render()},
   move(a){const[i,d]=a.split(',').map(Number),k=i+d;if(k<0||k>=S.jokers.length||S.jokers[i].curse==='bound'||S.jokers[k].curse==='bound')return;[S.jokers[i],S.jokers[k]]=[S.jokers[k],S.jokers[i]];S.selJoker=k;renderJokers()},
@@ -5773,7 +5815,7 @@ function dropZones(d){
       if(o.kind==='almanac'){if(consRoom())Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':''});Z.push({act:'buyuse',pos:'side',label:'Buy and Use',sub:`$${p}`,col:'var(--orange)',why:money<p?'Not enough money':''})}
       else if(o.kind==='spirit')Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':!consRoom()?'No room':''});
       else Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':S.jokers.length>=slots()?'No free Charm slot':''})}}
-  else if(d.kind==='charm'){const j=S.jokers[+d.item.dataset.idx];if(j&&canEdit()&&S.roll!=='hoarder'&&j.curse!=='bound'&&!JOKERS[j.key].artifact)Z.push({act:'sell',pos:'side',label:'Sell',sub:`$${sellVal(j)}`,col:'var(--money-d)'})}
+  else if(d.kind==='charm'){const j=S.jokers[+d.item.dataset.idx];if(j&&canEdit()&&S.roll!=='hoarder'&&!noSell(j)&&!JOKERS[j.key].artifact)Z.push({act:'sell',pos:'side',label:'Sell',sub:`$${sellVal(j)}`,col:'var(--money-d)'})}
   else if(d.kind==='cons'){const c=S.cons[+d.item.dataset.idx];if(c&&canEdit()){const why=consBlock(c,true);Z.push({act:'use',pos:'side',label:'Use',col:'var(--chips-d)',why:why||''});if(S.roll!=='hoarder')Z.push({act:'sell',pos:'side',label:'Sell',sub:`$${consInfo(c).sell}`,col:'var(--money-d)'})}}
   else if(d.kind==='coin'&&S.screen==='shop'){const c=S.purse[+d.item.dataset.idx];if(c&&canMelt())Z.push({act:'melt',pos:'side',label:'Melt',sub:`$${(coinDef(c).meltVal||1)+3*countEff('recycler')}`,col:'var(--mult-d)',why:S.purse.length<=PURSE_MIN?`Purse needs ${PURSE_MIN} coins`:''})}
   return Z}
