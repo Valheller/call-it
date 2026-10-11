@@ -971,11 +971,12 @@ html,body,button,a,.pond{touch-action:manipulation}
 [data-drag]{touch-action:none}
 /* the Collection scrolls as one page (one scrollbar), with the Back button pinned */
 /* Collection and roll picker: the header (tabs, description) stays put; only the grid scrolls, so there is one scrollbar */
-.overlay>.colm,.overlay>.rollm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px) / var(--k,1))}
+.overlay>.colm,.overlay>.rollm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) / var(--k,1))}
 .colm>*,.rollm>*{flex:none}
-.overlay>.stm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px) / var(--k,1))}.stm>*{flex:none}
+.overlay>.stm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) / var(--k,1))}.stm>*{flex:none}
 .stm .sttracks{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--ink-dim) transparent}
-.overlay>.optm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px) / var(--k,1))}
+.overlay>.boothm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) / var(--k,1))}.boothm>*{flex:none}.boothm .bgrid{flex:1 1 auto;min-height:0;overflow-y:auto;padding:2px}
+.overlay>.optm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) / var(--k,1))}
 .optm>h2{flex:none;margin-bottom:8px}.optm .optbody{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:2px}
 .optm .optfoot{flex:none;text-align:center;padding-top:8px}.optm .optver{margin-top:4px}
 .optm .optrow{padding:5px 10px;margin-bottom:5px;min-height:38px}.optm .optrow .btn.small{padding:5px 10px;font-size:14px}
@@ -1031,7 +1032,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.51</div>
+  <div class="gamever" aria-label="Version">v1.2.52</div>
 </div>
 
 <script>
@@ -4189,7 +4190,7 @@ function boothModal(){const C=COS(),tix=PROF.tix||0,isSkin=BOOTH_TAB==='skin',is
   const card=k=>{const it=L[k],own=!it.cost||C.owned[BOOTH_TAB+':'+k],on=C[BOOTH_TAB]===k;
     const pv=isSkin?`<img src="${coinArt('copper','H').replace(/^/,'')}" alt="" data-skin="${k}">`:isF?`<i class="fprev" style="--a:${it.v.panel||'#47423b'};--b:${it.v.chips||'#0b9bff'};--c2:${it.v.mult||'#fe5f55'};--d:${it.v.orange||'#ff9a1f'}"></i>`:`<i class="swatch" style="background:radial-gradient(circle at 35% 35%,rgb(${it.A.map(v=>v*255|0)}),rgb(${it.B.map(v=>v*255|0)}))"></i>`;
     return `<div class="bitem ${on?'on':''}">${pv}<b>${it.name}</b>${on?'<span class="btn small green" aria-disabled="true">Equipped</span>':own?`<button class="btn small" data-act="boothequip" data-arg="${k}">Equip</button>`:`<button class="btn small" style="--c:#ff6f9a;--cd:#a8335a" data-act="boothbuy" data-arg="${k}" ${tix<it.cost?'disabled':''}>${it.cost} tickets</button>`}</div>`};
-  return `<div class="overlay"><div class="panel modal" style="width:min(620px,100%)"><h2>Prize Booth</h2>
+  return `<div class="overlay"><div class="panel modal boothm" style="width:min(620px,100%)"><h2>Prize Booth</h2>
     <div class="lbl" style="text-align:center;margin-bottom:8px">Every Ticket you earn in a run is also banked here. You have <b style="color:#ff8fab">${tix} ticket${tix===1?'':'s'}</b></div>
     <div class="ctabs">${[['skin','Quarter skins'],['theme','Title themes'],['filter','Colour themes']].map(([k,n])=>`<button class="btn small ${BOOTH_TAB===k?'orange':''}" style="${BOOTH_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="boothtab" data-arg="${k}">${n}</button>`).join('')}</div>
     <div class="bgrid">${Object.keys(L).map(card).join('')}</div>
