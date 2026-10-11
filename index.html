@@ -978,7 +978,10 @@ html.pwa #fsbtn{display:none}
 html,body,button,a,.pond{touch-action:manipulation}
 [data-drag]{touch-action:none}
 /* the Collection scrolls as one page (one scrollbar), with the Back button pinned */
-.colm .cgrid{max-height:none;overflow:visible}
+/* Collection and roll picker: the header (tabs, description) stays put; only the grid scrolls, so there is one scrollbar */
+.overlay>.colm,.overlay>.rollm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px) / var(--k,1))}
+.colm>*,.rollm>*{flex:none}
+.colm .cgrid,.rollm .rollgrid{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1030,7 +1033,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.45</div>
+  <div class="gamever" aria-label="Version">v1.2.46</div>
 </div>
 
 <script>
@@ -4461,7 +4464,7 @@ let ROLLSEL=(OPT&&OPT.roll&&ROLLS[OPT.roll])?OPT.roll:'standard',STAKESEL=1;
 const maxStake=k=>ROLLS[k].challenge?1:Math.min(6,(PROF.stakes[k]||0)+1);
 function rollModal(){
   const r=ROLLS[ROLLSEL],lock=!isUnlocked('roll',ROLLSEL),ms=maxStake(ROLLSEL);STAKESEL=Math.min(STAKESEL,ms);
-  return `<div class="overlay"><div class="panel modal wide"><h2>Choose a Roll</h2>
+  return `<div class="overlay"><div class="panel modal wide rollm"><h2>Choose a Roll</h2>
     <div class="rolldetail ${lock||r.fake?'locked':''}">${rollHTML(ROLLSEL,190,64)}<div class="cbody"><div class="cname" style="font-size:24px;font-weight:600">${r.fake?'Locked':rollName(ROLLSEL)}</div>
       <div class="cdesc">${r.fake?`<b>Locked.</b> Unlock it: open it. ${fmt(r.desc)}`:lock?`<b>Locked.</b> Unlock it: ${r.challenge?'Win any run to open the Challenge Rolls':GOAL_OF['roll:'+ROLLSEL].desc}`:fmt(r.desc)}</div>
       ${ROLL_UNLOCK[ROLLSEL]?(()=>{const k=ROLL_UNLOCK[ROLLSEL],J=JOKERS[k],got=(PROF.stakes[ROLLSEL]||0)>=1;return `<div class="lbl" style="margin-top:6px">${got?'Beaten · unlocked':'First win unlocks'} <b style="color:${RAR[J.r].c}">${J.name}</b>${J.r===5?' (Fabled)':''}</div>`})():''}
