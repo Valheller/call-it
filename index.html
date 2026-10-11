@@ -1048,7 +1048,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.97</div>
+  <div class="gamever" aria-label="Version">v1.2.98</div>
 </div>
 
 <script>
@@ -1189,8 +1189,8 @@ const polterPairs=()=>{const free={},out=[];S.purse.forEach((c,i)=>{if(stkGroup(
 const stkGroup=c=>!!S&&!!c&&!!c.stk&&S.purse.filter(x=>x.stk===c.stk).length>=2?c.stk:null;
 const purseCnt=()=>`${purseUsed()}/${S.purseMax}`;
 const syncPurseCnt=()=>{if(S)document.querySelectorAll('.purse').forEach(p=>p.dataset.count=purseCnt())};
-/* hits a bet needs: 4 with a normal purse, about three quarters of your coins with a bigger one */
-const betNeed=()=>{const n=S.purse.length;return Math.min(n,Math.max(4,Math.ceil(n*.75)))};
+/* hits a bet needs: 4, or every coin with a smaller purse */
+const betNeed=()=>Math.min(4,S.purse.length);
 const purseUsed=()=>S.purse.length-new Set(S.purse.filter(c=>stkGroup(c)).map(c=>c.stk)).size;
 function applyStacks(){const seen={};S.purse.forEach((c,i)=>{const g=stkGroup(c);if(!g)return;if(g in seen)S.results[i]=S.results[seen[g]];else seen[g]=i})}
 
@@ -3328,7 +3328,7 @@ const tixTxt=()=>S&&S.tickets?`${S.tickets} ticket${S.tickets>1?'s':''}`:'';
 /* money sinks: bets are capped by a per-stage table limit, and the House skims hoarded cash after each wager */
 const tableLimit=()=>20+10*(S?S.ante:1);
 const betStake=()=>S?Math.min(S.money,tableLimit()):0;
-const HOARD_FREE0=100,hoardFree=()=>S&&S.roll==='inflation'?50:HOARD_FREE0;const houseCut=m=>m>hoardFree()?Math.ceil((m-hoardFree())*.15):0;
+const HOARD_FREE0=100,hoardFree=()=>S&&S.roll==='inflation'?50:HOARD_FREE0;const HOUSE_CUT=.25,houseCut=m=>m>hoardFree()?Math.ceil((m-hoardFree())*HOUSE_CUT):0;
 function addTickets(n,why){if(!S||!n)return;PS().ticketsTotal=(PS().ticketsTotal||0)+n;PROF.tix=(PROF.tix||0)+n;S.tickets=(S.tickets||0)+n;S.ticketsEarned=(S.ticketsEarned||0)+n;toast(`<b style="color:#ff8fab">+${n} Ticket${n>1?'s':''}</b>${why?' · '+why:''}`);syncStats()}
 function settleContract(){
   if(!S.contract)return;const C=CONTRACTS[S.contract.key];S.contract=null;
@@ -4214,7 +4214,7 @@ const RULES=`<ol class="rules">
  <li>Runes that change coins need targets: tap coins to select them, then use the Rune. Keep up to 2 consumables for later.</li>
  <li>Coins and Charms can carry <b>Wear</b> (bonus Points or Mult, or an extra Charm slot). Coins can also carry one <b>Defect</b> (money, retriggers, Runes or Almanacs). Spirits add them, and Coin Pouches sometimes hold modified coins.</li>
  <li>Very rarely a coin lands on its <span class="k-a">edge</span>. Edge coins always score with <span class="k-x">X2</span> Mult.</li>
- <li>On the <b>first toss</b> of a wager you can <b>Bet</b> your money on 4+ hits (more with a bigger purse: about three quarters of your coins): double or nothing, up to a <b>table limit</b> that rises each stage. Betting means <b>no re-flips</b> for that toss. Hold more than $100 and the House skims 15% of the extra after each wager.</li>
+ <li>On the <b>first toss</b> of a wager you can <b>Bet</b> your money on 4+ hits: double or nothing, up to a <b>table limit</b> that rises each stage. Betting means <b>no re-flips</b> for that toss. Hold more than $100 and the House skims 25% of the extra after each wager.</li>
  <li>Each toss type gains <b>+1 Mult</b> for every 10 times you score it (mastery). There are 8 stages. Targets climb steeply, and on Gold Stake every Boss has a second rule. Coins flipped 50 times get <b>Polished</b> for free.</li>
  <li>Encounters bring a choice to make, and are worth about as much as a shop visit. Some Charms are <b>Cursed</b> (Rusted, Bound, Fleeting, Brittle, Heavy, Hungry, Jinxed, Rented). Cursed Charms in the shop cost <b>half</b>.</li>
  <li>The <b>Tightrope</b> Charm and <b>Balance Point</b> Spirit unlock the <b>Edge</b> call.</li>
@@ -5224,7 +5224,7 @@ function enterCashout(){
   for(const j of S.jokers)if(j.key==='savings'){j.st.v=(j.st.v||0)+2}
   for(let k=0;k<countEff('clawmachine');k++)if(purseUsed()<S.purseMax&&rand()<odds(1/3)){const t=pickSpecial(SPC());S.purse.push(mkCoin(t));toast(`<b>Claw Machine</b> grabs a <b>${COINS[t].name}</b>`)}
   {const H=S.jokers.filter(j=>j.key==='dragonhoard');if(H.length&&S.money+lines.reduce((a,l)=>a+l.v,0)>=25)H.forEach(j=>{j.st.x=Math.round((j.st.x+.25)*100)/100;toast("<b>Dragon's Hoard</b> grows")})}
-  {const cut=houseCut(S.money);if(cut){lines.push({l:`The House's cut (15% of money over $${hoardFree()})`,v:-cut});if(!PS().houseCutSeen){PS().houseCutSeen=1;setTimeout(()=>houseSay('Carrying that much? I\'ll take a little off the top. Spend it, or lose it.',6500),700)}}}
+  {const cut=houseCut(S.money);if(cut){lines.push({l:`The House's cut (${Math.round(HOUSE_CUT*100)}% of money over $${hoardFree()})`,v:-cut});if(!PS().houseCutSeen){PS().houseCutSeen=1;setTimeout(()=>houseSay('Carrying that much? I\'ll take a little off the top. Spend it, or lose it.',6500),700)}}}
   S.cash={lines,total:lines.reduce((a,l)=>a+l.v,0),shown:0};S.screen='cashout';S.phase='idle';render();animateCashout();
 }
 async function animateCashout(){
