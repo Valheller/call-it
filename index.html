@@ -1039,7 +1039,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.74</div>
+  <div class="gamever" aria-label="Version">v1.2.75</div>
 </div>
 
 <script>
@@ -2281,6 +2281,16 @@ function audioInit(){
   musicMood();
 }
 function env(g,at,v,a,d){g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(v,at+a);g.gain.exponentialRampToValueAtTime(.0001,at+a+d)}
+const HATS=new Map();
+function hatBuf(sr,ft,ff,q,a,d){const key=[sr,ft,Math.round(ff/100),Math.round(q*10),Math.round(a*1000),Math.round(d*100)].join();let L=HATS.get(key);
+  if(!L){L=[];const w=2*Math.PI*Math.min(ff,sr*.45)/sr,cs=Math.cos(w),al=Math.sin(w)/(2*(ft==='bandpass'?q:.707));
+    let b0,b1,b2;if(ft==='highpass'){b0=(1+cs)/2;b1=-(1+cs);b2=b0}else if(ft==='lowpass'){b0=(1-cs)/2;b1=1-cs;b2=b0}else{b0=al;b1=0;b2=-al}
+    const a0=1+al,a1=-2*cs,a2=1-al,n=Math.ceil((a+d+.02)*sr),W=512;
+    for(let v=0;v<4;v++){const buf=new AudioBuffer({length:n,sampleRate:sr,numberOfChannels:1}),out=buf.getChannelData(0);let x1=0,x2=0,y1=0,y2=0;
+      for(let i=-W;i<n;i++){const x=Math.random()*2-1,y=(b0*x+b1*x1+b2*x2-a1*y1-a2*y2)/a0;x2=x1;x1=x;y2=y1;y1=y;if(i<0)continue;
+        const t=i/sr,e=t<a?t/a:t<a+d?Math.exp(Math.log(1e-4)*(t-a)/d):0;out[i]=y*e}
+      L.push(buf)}HATS.set(key,L)}
+  return L[Math.floor(Math.random()*L.length)]}
 function tone(o){
   if(AU.rec){AU.rec.push(['tone',o]);return}
   const c=AU.ctx;if(!c)return;const LG=AU.lfoG,VG=AU.vibG;
@@ -2303,7 +2313,9 @@ function noise(o){
   const c=AU.ctx;if(!c)return;
   let at=Math.max(o.at??c.currentTime+(o.t||0),c.currentTime+.004), a=o.a??.002, d=o.d??.1;
   /* music hi-hats: a soft swish instead of a sharp tick (phone speakers turn short bright noise into clicks) */
-  if(o.bus&&o.bus!==AU.sfx&&(o.ft==='highpass'||(o.ff||2000)>=4500)){if(DBG.nohat)return;a=Math.max(a,.016);d=Math.max(d,.05);o={...o,v:(o.v??.2)*.6}}
+  if(o.bus&&o.bus!==AU.sfx&&!o.ff2&&(o.ft==='highpass'||(o.ff||2000)>=4500)){if(DBG.nohat)return;a=Math.max(a,.016);d=Math.max(d,.05);
+    /* play a pre-made hi-hat sample: Safari pops when it builds bright filtered noise hit by hit */
+    const hs=c.createBufferSource();hs.buffer=hatBuf(c.sampleRate,o.ft||'bandpass',o.ff||2000,o.q||1,a,d);const hg=c.createGain();hg.gain.value=(o.v??.2)*.6;hs.connect(hg);hg.connect(o.bus);hs.start(at);hs.onended=()=>hg.disconnect();return}
   const s=c.createBufferSource();s.buffer=AU.noise;
   const f=c.createBiquadFilter();f.type=o.ft||'bandpass';f.frequency.setValueAtTime(o.ff||2000,at);f.Q.value=o.q||1;
   if(o.ff2)f.frequency.exponentialRampToValueAtTime(o.ff2,at+a+d);
