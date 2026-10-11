@@ -302,7 +302,7 @@ body.badges .face::before{display:block}
 @keyframes shatter{to{transform:scale(1.5) rotate(25deg);opacity:0;filter:brightness(2)}}
 .t-copper{--rim:var(--skrim,#7d8790);--hi:var(--skhi,#e3e7ea)}.t-silver{--rim:#6b5a24;--hi:#d6c27a}.t-platinum{--rim:#7a3e06;--hi:#e8961c}
 .t-ruby{--rim:#c22630;--hi:#ffffff}.t-gold{--rim:#9a6f10;--hi:#f5cf55}.t-jade{--rim:#2b5e48;--hi:#7cc4a4}
-.t-sanddollar{--rim:#a8946a;--hi:#fff2d8}.t-firstdime{--rim:#3a3a2a;--hi:#a8a888}.t-foil{--rim:#8a6a14;--hi:#fff2b0}.t-lucky{--rim:#a8862a;--hi:#f0d27a}.t-sealed{--rim:#4a0a0e;--hi:#e04050}.t-sixpence{--rim:#5f666c;--hi:#e6eaed}.t-drachma{--rim:#6c6a5a;--hi:#e6e0c4}.t-peso{--rim:#7a5a14;--hi:#e2c15a}.t-krona{--rim:#8a6a1c;--hi:#eccf6a}.t-pog{--rim:#2a2a6a;--hi:#ff8f9a}.t-crypto{--rim:#8a5a0a;--hi:#ffb04a}.t-steel{--rim:#7d8790;--hi:#d9b44a}.t-glass{--rim:#c99a2c;--hi:#fff2b0}
+.t-sanddollar{--rim:#a8946a;--hi:#fff2d8}.t-firstdime{--rim:#3a3a2a;--hi:#a8a888}.t-bellwether{--rim:#6a4818;--hi:#ffe08a}.t-foil{--rim:#8a6a14;--hi:#fff2b0}.t-lucky{--rim:#a8862a;--hi:#f0d27a}.t-sealed{--rim:#4a0a0e;--hi:#e04050}.t-sixpence{--rim:#5f666c;--hi:#e6eaed}.t-drachma{--rim:#6c6a5a;--hi:#e6e0c4}.t-peso{--rim:#7a5a14;--hi:#e2c15a}.t-krona{--rim:#8a6a1c;--hi:#eccf6a}.t-pog{--rim:#2a2a6a;--hi:#ff8f9a}.t-crypto{--rim:#8a5a0a;--hi:#ffb04a}.t-steel{--rim:#7d8790;--hi:#d9b44a}.t-glass{--rim:#c99a2c;--hi:#fff2b0}
 .t-bronze{--rim:#6b4219;--hi:#c99a5a}.t-loaded{--rim:#c9a227;--hi:#3e2f5c}.t-quicksilver{--rim:#8a6f1f;--hi:#d6b24c}
 .t-penny{--rim:#6b3218;--hi:#e09a64}.t-denarius{--rim:#6f7a83;--hi:#d9dee2}.t-hope{--rim:#1a2a5a;--hi:#6f9be0}.t-ecu{--rim:#7a5a14;--hi:#f0d27a}
 .t-twohead{--rim:#7a6a40;--hi:#d8cfa4}.t-twotail{--rim:#4f6a8a;--hi:#b8cbe0}
@@ -903,7 +903,11 @@ img{-webkit-user-drag:none}
 .bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
 .bitem{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--panel-deep);border-radius:12px;padding:10px 6px;text-align:center;font-size:14px}
 .bitem.on{box-shadow:inset 0 0 0 2px var(--green)}.bitem img{width:64px;height:64px;image-rendering:pixelated}
+.bitem .fprev{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#e8b830 0 25%,#3fbf8b 25% 50%,#0b9bff 50% 75%,#fe5f55 75%);box-shadow:inset 0 0 0 3px rgba(255,255,255,.2)}
 .bitem .swatch{width:64px;height:64px;border-radius:50%;box-shadow:inset 0 0 0 3px rgba(255,255,255,.2)}
+#ffbtn{position:fixed;right:calc(14px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));z-index:57;display:flex;align-items:center;gap:6px;padding:8px 12px;border:0;border-radius:12px;background:var(--panel-deep);color:var(--ink-dim);font:inherit;font-size:16px;cursor:pointer;box-shadow:0 4px 0 var(--edge),inset 0 0 0 2px var(--grey,#666)}
+#ffbtn[hidden]{display:none}@media (max-width:700px){#ffbtn{padding:6px 10px;font-size:14px}body:has(#coach:not([hidden])) #ffbtn{display:none}body:has(#ffbtn:not([hidden])):not(:has(#coach:not([hidden]))) #app{padding-bottom:calc(50px + env(safe-area-inset-bottom))}}#ffbtn .ffi{letter-spacing:-4px;font-size:13px;padding-right:4px}#ffbtn b{min-width:26px;text-align:left}
+#ffbtn.on{background:var(--chips-d);color:#fff;box-shadow:0 4px 0 var(--edge),inset 0 0 0 2px var(--chips)}#ffbtn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
 .droptarget{box-shadow:inset 0 0 0 3px #d9824a,0 0 18px rgba(217,130,74,.55)!important;border-radius:14px}
 
 #minifish{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(5,15,20,.45);animation:pop .2s ease-out;touch-action:none;cursor:pointer}
@@ -946,6 +950,7 @@ html,body,button,a,.pond{touch-action:manipulation}
 </div>
 <div id="fx"></div>
 <div id="tip" hidden></div>
+<button id="ffbtn" data-act="ffwd" hidden aria-label="Fast forward"></button>
 <div id="coach" hidden></div>
 <div id="toasts"></div>
 <div id="showdown" hidden></div>
@@ -980,7 +985,7 @@ html,body,button,a,.pond{touch-action:manipulation}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.21</div>
+  <div class="gamever" aria-label="Version">v1.2.22</div>
 </div>
 
 <script>
@@ -1019,10 +1024,20 @@ const THEMES={
  midnight:{name:'Midnight',cost:15,A:[.25,.35,.8],B:[.1,.12,.3]},
  sakura:{name:'Sakura',cost:20,A:[.95,.55,.7],B:[.4,.2,.3]},
  vapor:{name:'Vaporwave',cost:30,A:[.95,.3,.8],B:[.1,.6,.7]}};
-const COS=()=>{PROF.cos=PROF.cos||{owned:{},skin:'classic',theme:'classic'};return PROF.cos};
+const FILTERS={
+ none:{name:'No filter',cost:0,css:''},
+ oldphoto:{name:'Old Photo',cost:10,css:'sepia(.75) contrast(1.05)'},
+ noir:{name:'Noir',cost:10,css:'grayscale(1) contrast(1.15)'},
+ sunset:{name:'Sunset',cost:15,css:'sepia(.3) saturate(1.4) hue-rotate(-12deg)'},
+ moonlight:{name:'Moonlight',cost:15,css:'saturate(.7) hue-rotate(195deg) brightness(.95) sepia(.15)'},
+ technicolor:{name:'Technicolor',cost:20,css:'saturate(1.8) contrast(1.1)'},
+ handheld:{name:'Handheld',cost:25,css:'grayscale(1) sepia(1) hue-rotate(45deg) saturate(2.2) contrast(1.2) brightness(.9)'},
+ vhs:{name:'VHS',cost:25,css:'saturate(1.35) contrast(1.15) blur(.4px) hue-rotate(-6deg)'}};
+const COS=()=>{PROF.cos=PROF.cos||{owned:{},skin:'classic',theme:'classic'};if(!PROF.cos.filter)PROF.cos.filter='none';return PROF.cos};
+function applyFilter(){const f=FILTERS[COS().filter]||FILTERS.none;document.documentElement.style.filter=f.css||''}
 const skinNow=()=>SKINS[COS().skin]||SKINS.classic;
 function applySkin(){const k=skinNow();document.documentElement.style.setProperty('--skrim',k.rim);document.documentElement.style.setProperty('--skhi',k.hi);Object.keys(ART).forEach(x=>{if(x.startsWith('copper'))delete ART[x]})}
-if(PROF.tix==null){PROF.tix=5;saveProf()}applySkin();
+if(PROF.tix==null){PROF.tix=5;saveProf()}applySkin();applyFilter();
 const pick=a=>a[Math.floor(rand()*a.length)];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1082,7 +1097,8 @@ Object.assign(COINS,{
  ecu:     {name:'Gold Ecu',       chips:5,xmult:1.5,euro:1,relic:1,cost:0,desc:'{c:+5} Points, {x:X1.5} Mult when it scores, or {x:X2} when it sits next to another {a:foreign} coin. The coin before the Euro. {a:Relic}: one of a kind'},
  foil:    {name:'Crumpled Gold Foil',chips:3,money:1,meltVal:3,noShop:1,cost:0,desc:'{c:+3} Points. Earn {$:$1} when it scores. Melts down for {$:$3}. All that\'s left of an eaten Chocolate Coin'},
  sanddollar:{name:'Sand Dollar',chips:8,sand:1,fishLocked:1,cost:6,desc:'{c:+8} Points. Whenever it lands, it goes {a:fishing}. If it {r:missed}, land a catch and it flips onto your call. If it {a:scored}, land a catch for bonus Mult: {x:X1.25} for an Old Boot up to {x:X5} for The Pit Boss'},
- firstdime:{name:'The First Dime',chips:10,firstDime:.2,loseChance:.25,relic:1,artifact:1,cost:0,desc:'{c:+10} Points. The very first dime ever earned. In your {a:first} slot when a wager starts, the score needed drops by {a:20%}. Anywhere else, each time it scores there is a {r:1 in 4} chance it gets {r:lost} for good. {a:Artifact}: one of a kind'},
+ bellwether:{name:'The Bellwether',chips:6,bell:4,relic:1,artifact:1,cost:0,desc:'{c:+6} Points. The flock follows it. In your {a:first} slot, every other coin that scores gets {m:+4} Mult. Anywhere else it {r:never scores}. {a:Artifact}: one of a kind'},
+ firstdime:{name:'The First Dime',chips:10,firstDime:.2,loseChance:1,relic:1,artifact:1,cost:0,desc:'{c:+10} Points. The very first dime ever earned. In your {a:first} slot when a wager starts, the score needed drops by {a:20%}. Anywhere else, the moment it scores it gets {r:lost} for good. {a:Artifact}: one of a kind'},
  pressed: {name:'Pressed Penny',  chips:3,wild:1,fixed:'H',train:3,flat:1,relic:1,artifact:1,charm:'pressedpenny',cost:0,desc:'{c:+3} Points. A souvenir penny pressed flat with a steam train. It never flips: it always scores, and gives {m:+3} Mult for each scoring coin to its {a:right} (its train cars). {a:Artifact}: drag it up into your Charms and it gives {a:+1} Flip every wager instead'},
  hope:{name:'Hope Diamond Coin',chips:25,money:6,relic:1,cost:0,desc:'{c:+25} Points and earn {$:$6} when it scores. {a:Relic}: one of a kind'},
 });
@@ -2885,6 +2901,8 @@ function coinArt(type,side){
     case 'sanddollar':{lumpy(15.6,'#b8a07a',.6,24);disc(14.4,'#e9dcc0');for(let k=0;k<60;k++){const x=3+(k*31)%27,y=3+(k*47+5)%27;rect(x,y,1,1,k%3?'#dccca8':'#f6eedc')}
       for(let k=0;k<5;k++){const a=-Math.PI/2+k*TAU/5;ell(16+Math.cos(a)*6.5,16+Math.sin(a)*6.5,1.6,4.2,'#b8a07a',a+Math.PI/2);ell(16+Math.cos(a)*6.5,16+Math.sin(a)*6.5,.7,3.2,'#d8c8a2',a+Math.PI/2)}
       disc(1.6,'#a08a60');if(!h)for(let k=0;k<5;k++){const a=-Math.PI/2+(k+.5)*TAU/5;ell(16+Math.cos(a)*11,16+Math.sin(a)*11,1.2,2.4,'#9a8458',a+Math.PI/2)}}break;
+    case 'bellwether':{disc(15.6,'#5a3a14');disc(14.5,'#b8873a');ring(12.6,'#8a5f22');reed(14.6,'#7a5420');
+      poly([[16,6],[12,9],[11,17],[9,21],[23,21],[21,17],[20,9]],h?'#ffe08a':'#5a3a14');rect(10,21,12,2,h?'#e8c14a':'#4a2e10');disc(2,h?'#ffe08a':'#5a3a14',16,24.5);rect(15,4,2,3,h?'#e8c14a':'#4a2e10');if(h)poly([[14,9],[13,17],[15,17],[15.5,9]],'#fff6d0');break}
     case 'firstdime':{lumpy(15.7,'#3a3828',1.2,20);lumpy(14.6,'#6f6c4e',1.1,20);
       for(let k=0;k<70;k++){const x=4+(k*29)%25,y=4+(k*41+7)%25;rect(x,y,1,1,k%4?'#5a5840':'#8a8a62')}
       g.globalCompositeOperation='source-atop';poly([[25,4],[30,10],[31,20],[27,27],[24,26],[27,19],[26,10]],'#b8b48a');poly([[26,6],[29,11],[29,19],[27,24],[26,19],[27,11]],'#d8d4a8');g.globalCompositeOperation='source-over';
@@ -3447,6 +3465,7 @@ function evalHand(res,call){
     matched=res.map((r,i)=>!(frz&&(i===0||i===n-1))&&(scores(r,call)||(i===0&&lefty)||!!(S.purse[i]&&(coinDef(S.purse[i]).wild||S.purse[i].defect==='mule'||(coinDef(S.purse[i]).tailsWild&&r==='T'&&!bossIs('undertow'))))));
   for(let i=0;i<n-1;i++)if(matched[i]&&S.purse[i]&&coinDef(S.purse[i]).slam&&!(frz&&i+1===n-1))matched[i+1]=true;
   if(bossIs('drhouse')&&S.benched)matched.forEach((m,i)=>{if(S.purse[i]&&S.purse[i].id===S.benched)matched[i]=false});
+  matched.forEach((m,i)=>{if(m&&i>0&&S.purse[i]&&coinDef(S.purse[i]).bell)matched[i]=false});
   if(bossIs('house')&&S.houseOwned&&S.houseOwned.length)matched.forEach((m,i)=>{if(S.purse[i]&&S.houseOwned.includes(S.purse[i].id))matched[i]=false});
   const runs=[];let run=0;matched.forEach(m=>{if(m)run++;else{if(run)runs.push(run);run=0}});if(run)runs.push(run);
   const longest=runs.length?Math.max(...runs):0,count=matched.filter(Boolean).length;
@@ -3507,6 +3526,7 @@ function computeHand(){
       if(S.purse[i].sdx&&r===0){e('text','Catch bonus!');e('xmult',S.purse[i].sdx)}
       if(d.train){const cars=E.matched.filter((m,k)=>m&&k>i).length;if(cars){e('text','All aboard!');e('mult',d.train*cars)}}
       if(d.arcade&&S.wagerReflips)e('mult',d.arcade*S.wagerReflips);
+      if(i>0&&S.purse[0]&&coinDef(S.purse[0]).bell){e('text','The flock follows');e('mult',coinDef(S.purse[0]).bell)}
       [S.purse[i-1],S.purse[i+1]].forEach(nb=>{if(nb&&coinDef(nb).string)e('chips',coinDef(nb).string)});
       if(d.betX&&ctx.bet)e('xmult',d.betX);else if(d.mult)e('mult',d.mult);if(S.purse[i].bm)e('mult',S.purse[i].bm);
       if(d.xmult)e('xmult',d.euro&&[S.purse[i-1],S.purse[i+1]].some(nb=>nb&&FOREIGN.has(ctype(nb)))?2:d.xmult);
@@ -3564,8 +3584,11 @@ function reflipOdds(){
 }
 
 /* ================= RENDER ================= */
+/* fast forward: shown during wagers, cycles Off / X2 / X4 */
+function updateFF(){const b=$('#ffbtn');if(!b)return;b.hidden=!(S&&S.screen==='play');const v=OPT.speed||1;b.classList.toggle('on',v>1);
+  b.innerHTML=`<span class="ffi">${v>=4?'&#9654;&#9654;&#9654;':'&#9654;&#9654;'}</span><b>${v>1?'X'+v:'Off'}</b>`;b.title=`Fast forward: ${v>1?'X'+v:'off'} (tap to change)`}
 function render(){
-  hideTip();
+  hideTip();setTimeout(updateFF,0);
   if(S&&S.blinds)S.blinds.forEach(b=>{if(b.boss&&BOSSES[b.boss])markSeen('boss',b.boss);if(b.boss2&&BOSSES[b.boss2])markSeen('boss',b.boss2)});
   $('#title').hidden=!!S;$('#app').hidden=!S;
   if(!S){$('#coach').hidden=true;if(!modal){$('#overlay').hidden=true;$('#overlay').innerHTML=''}updateTitle();musicMood();return}
@@ -3885,7 +3908,6 @@ function optionsModal(){
     <div class="optrow"><span>${resetArm?'Lock everything again?':'Reset unlocks'}</span><button class="btn red small" data-act="resetunlocks">${resetArm?'Yes, reset':'Reset'}</button></div>
     ${resetArm?'<div class="lbl" style="text-align:center;margin:-4px 0 6px">Locks every Charm and Roll and clears the lifetime stats and stakes that unlock them. Run history is kept.</div>':''}
     ${canFS()?`<div class="optrow"><span>Fullscreen</span><button class="btn ${isFS()?'green':''} small" data-act="fullscreen">${isFS()?'On':'Off'}</button></div>`:''}
-    <div class="optrow"><span>Game speed</span><button class="btn blue small" data-act="tspeed">X${OPT.speed}</button></div>
     ${S?`<div class="optrow"><span>${abandonArm?'Really abandon this run?':'Start over'}</span><button class="btn red small" data-act="abandon">${abandonArm?'Yes, new run':'New Run'}</button></div>`:''}
     <div class="optrow"><span>Keyboard shortcuts</span><button class="btn small" style="--c:#5d6bd6;--cd:#343c80" data-act="keys">Show</button></div>
     <div class="optrow"><span>Save code<small style="display:block;font-size:11px;color:var(--ink-dim)">Move your progress between devices</small></span><button class="btn small" style="--c:#2a8a6a;--cd:#175a44" data-act="savecode">Open</button></div>
@@ -3894,13 +3916,13 @@ function optionsModal(){
     <div style="text-align:center;margin-top:6px"><button class="btn orange" data-act="closemodal">Back</button></div><div class="optver">Call it. ${($('.gamever')||{}).textContent||''}</div></div></div>`;
 }
 let BOOTH_TAB='skin';
-function boothModal(){const C=COS(),tix=PROF.tix||0,isSkin=BOOTH_TAB==='skin',L=isSkin?SKINS:THEMES;
+function boothModal(){const C=COS(),tix=PROF.tix||0,isSkin=BOOTH_TAB==='skin',isF=BOOTH_TAB==='filter',L=isSkin?SKINS:isF?FILTERS:THEMES;
   const card=k=>{const it=L[k],own=!it.cost||C.owned[BOOTH_TAB+':'+k],on=C[BOOTH_TAB]===k;
-    const pv=isSkin?`<img src="${coinArt('copper','H').replace(/^/,'')}" alt="" data-skin="${k}">`:`<i class="swatch" style="background:radial-gradient(circle at 35% 35%,rgb(${it.A.map(v=>v*255|0)}),rgb(${it.B.map(v=>v*255|0)}))"></i>`;
+    const pv=isSkin?`<img src="${coinArt('copper','H').replace(/^/,'')}" alt="" data-skin="${k}">`:isF?`<i class="fprev" style="filter:${it.css||'none'}"></i>`:`<i class="swatch" style="background:radial-gradient(circle at 35% 35%,rgb(${it.A.map(v=>v*255|0)}),rgb(${it.B.map(v=>v*255|0)}))"></i>`;
     return `<div class="bitem ${on?'on':''}">${pv}<b>${it.name}</b>${on?'<span class="btn small green" aria-disabled="true">Equipped</span>':own?`<button class="btn small" data-act="boothequip" data-arg="${k}">Equip</button>`:`<button class="btn small" style="--c:#ff6f9a;--cd:#a8335a" data-act="boothbuy" data-arg="${k}" ${tix<it.cost?'disabled':''}>${it.cost} tickets</button>`}</div>`};
   return `<div class="overlay"><div class="panel modal" style="width:min(620px,100%)"><h2>Prize Booth</h2>
     <div class="lbl" style="text-align:center;margin-bottom:8px">Every Ticket you earn in a run is also banked here. You have <b style="color:#ff8fab">${tix} ticket${tix===1?'':'s'}</b></div>
-    <div class="ctabs">${[['skin','Quarter skins'],['theme','Title themes']].map(([k,n])=>`<button class="btn small ${BOOTH_TAB===k?'orange':''}" style="${BOOTH_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="boothtab" data-arg="${k}">${n}</button>`).join('')}</div>
+    <div class="ctabs">${[['skin','Quarter skins'],['theme','Title themes'],['filter','Filters']].map(([k,n])=>`<button class="btn small ${BOOTH_TAB===k?'orange':''}" style="${BOOTH_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="boothtab" data-arg="${k}">${n}</button>`).join('')}</div>
     <div class="bgrid">${Object.keys(L).map(card).join('')}</div>
     <div style="text-align:center;margin-top:12px"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`}
 function boothPreviews(){document.querySelectorAll('[data-skin]').forEach(img=>{const cur=COS().skin;COS().skin=img.dataset.skin;img.src=coinArt('copper','H');COS().skin=cur})}
@@ -5255,8 +5277,8 @@ const ACT={
   keys(){showModal(keysModal)},
   booth(){audioInit();showModal(boothModal);boothPreviews()},
   boothtab(a){BOOTH_TAB=a;showModal(boothModal);boothPreviews()},
-  boothbuy(a){const L=BOOTH_TAB==='skin'?SKINS:THEMES,it=L[a];if(!it||(PROF.tix||0)<it.cost)return;PROF.tix-=it.cost;COS().owned[BOOTH_TAB+':'+a]=1;play('buy');ACT.boothequip(a)},
-  boothequip(a){COS()[BOOTH_TAB]=a;saveProf();if(BOOTH_TAB==='skin')applySkin();play('click');showModal(boothModal);boothPreviews();if(typeof updateTitleCoin==='function')updateTitleCoin()},
+  boothbuy(a){const L=BOOTH_TAB==='skin'?SKINS:BOOTH_TAB==='filter'?FILTERS:THEMES,it=L[a];if(!it||(PROF.tix||0)<it.cost)return;PROF.tix-=it.cost;COS().owned[BOOTH_TAB+':'+a]=1;play('buy');ACT.boothequip(a)},
+  boothequip(a){COS()[BOOTH_TAB]=a;saveProf();if(BOOTH_TAB==='skin')applySkin();if(BOOTH_TAB==='filter')applyFilter();play('click');showModal(boothModal);boothPreviews();if(typeof updateTitleCoin==='function')updateTitleCoin()},
   savecode(){saveArm=false;showModal(saveCodeModal)},
   savecopy(){const t=$('#savetxt');if(!t)return;t.select();const ok=()=>{toast('Save code copied');play('money')};try{navigator.clipboard.writeText(t.value).then(ok,()=>{document.execCommand('copy');ok()})}catch(e){document.execCommand('copy');ok()}},
   saveload(){const t=$('#loadtxt'),v=t?t.value:'',d=readSaveCode(v);if(!d){toast('That is not a valid save code');play('miss');saveArm=false;return}
@@ -5272,7 +5294,7 @@ const ACT={
   tmusic(){OPT.music=!OPT.music;saveOpt();if(AU.mus)AU.mus.gain.setTargetAtTime(musGain(),AU.ctx.currentTime,.1);showModal(optionsModal)},
   tbadges(){OPT.badges=!OPT.badges;saveOpt();document.body.classList.toggle('badges',OPT.badges);showModal(optionsModal)},
   tsfx(){OPT.sfx=!OPT.sfx;saveOpt();if(AU.sfx)AU.sfx.gain.value=sfxGain();showModal(optionsModal)},
-  tspeed(){OPT.speed=OPT.speed===1?2:OPT.speed===2?4:1;saveOpt();showModal(optionsModal)},
+  ffwd(){OPT.speed=OPT.speed===1?2:OPT.speed===2?4:1;saveOpt();play('click');updateFF()},
   abandon(){if(!abandonArm){abandonArm=true;showModal(optionsModal);return}abandonArm=false;modal=null;if(S&&!S.recorded)recordRun(false);S=null;clearSave();render();showRollPick()},
   newrun(){modal=null;S=null;render();showRollPick()},
   endless(){S.endless=true;enterCashout()},
