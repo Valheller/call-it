@@ -1129,7 +1129,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.151</div>
+  <div class="gamever" aria-label="Version">v1.2.152</div>
 </div>
 
 <script>
@@ -1233,7 +1233,7 @@ const COINS={
 Object.assign(COINS,{
  sixpence:{name:'Silver Sixpence', chips:5, luckmoney:1, cost:4, desc:'{c:+5} Points. {a:1 in 3} chance to earn {$:$4}'},
  drachma:{name:'Greek Drachma',     chips:20,owl:1, cost:5, desc:'{c:+20} Points. {a:Wise}: when it misses on a toss, it re-flips itself once, for free'},
- peso:{name:'Mexican Peso',      chips:10, pesoMult:4, cost:4, desc:'{c:+10} Points. {m:+4} Mult for each Mexican Peso in your purse (including this one)'},
+ peso:{name:'Mexican Peso',      chips:10, pesoMult:4, cost:4, desc:'{c:+10} Points. {m:+4} Mult for each Mexican Peso in your purse (including this one). Each one you own makes more show up'},
  krona:{name:'Swedish Krona',     chips:20,tailsWild:1,tailsMult:5, cost:4, desc:'{c:+20} Points. It always scores when it lands on {a:Tails}, whatever you called, and gives {m:+5} Mult when it does'},
  pog:    {name:'Slammer Pog',       chips:5, slam:1, cost:5, desc:'{c:+5} Points. {a:Slam}: when it scores, the coin to its {a:right} scores too, whatever face it shows'},
  crypto: {name:'Crypto Coin',       chips:5, crypto:1, cost:5, desc:'{c:+5} Points. Earn anywhere from {r:-$2} to {$:$6} when it scores'},
@@ -1257,7 +1257,7 @@ function coinFav(){if(COIN_FAV)return COIN_FAV;COIN_FAV={};const names=Object.ke
     if(t.size)COIN_FAV[k]=[...t]}
   Object.entries({tourist:['lucky','steel'],foolsgold:['twohead','twotail']}).forEach(([k,a])=>{if(JOKERS[k])COIN_FAV[k]=[...new Set([...(COIN_FAV[k]||[]),...a])]});
   return COIN_FAV}
-const coinWeight=t=>{if(!S)return 1;const F=coinFav();let w=1;ownKeys().forEach(k=>{if(k&&F[k]&&F[k].includes(t))w+=3});return w};
+const coinWeight=t=>{if(!S)return 1;const F=coinFav();let w=1;ownKeys().forEach(k=>{if(k&&F[k]&&F[k].includes(t))w+=3});if(t==='peso')w+=2*S.purse.filter(c=>c.type==='peso').length;return w};
 function pickSpecial(pool){pool=pool||SPC();if(!pool.length)return pick(SPECIAL);const W=pool.map(coinWeight);let x=rand()*W.reduce((a,b)=>a+b,0);for(let i=0;i<pool.length;i++){x-=W[i];if(x<0)return pool[i]}return pool[pool.length-1]}
 const SPC=()=>S&&S.roll==='locked'?SPECIAL.filter(t=>!GOAL_OF['coin:'+t]):SPECIAL;
 const SPECIAL=Object.keys(COINS).filter(k=>k!=='copper'&&!COINS[k].relic&&!COINS[k].noShop&&!COINS[k].fishLocked);
