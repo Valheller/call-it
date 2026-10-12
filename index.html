@@ -1134,7 +1134,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.157</div>
+  <div class="gamever" aria-label="Version">v1.2.158</div>
 </div>
 
 <script>
@@ -4431,7 +4431,7 @@ function boothModal(){const C=COS(),tix=PROF.tix||0,isSkin=BOOTH_TAB==='skin',is
     <div style="text-align:center;margin-top:12px"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`}
 function boothPreviews(){document.querySelectorAll('[data-skin]').forEach(img=>{const cur=COS().skin;COS().skin=img.dataset.skin;img.src=coinArt('copper','H');COS().skin=cur})}
 function keysModal(){
-  const K=[['Anywhere','Esc','Options / close a window'],['Wager','H / T / E','Call Heads, Tails or Edge'],['Wager','B','Bet on the first toss'],['Wager','1–9','Select a coin (to re-flip, or for an item)'],['Wager','R','Re-flip the selected coins'],['Wager','Space / Enter','Cash in'],
+  const K=[['Anywhere','Esc','Options / close a window'],['Anywhere','F','Toggle fullscreen'],['Wager','H / T / E','Call Heads, Tails or Edge'],['Wager','B','Bet on the first toss'],['Wager','1–9','Select a coin (to re-flip, or for an item)'],['Wager','R','Re-flip the selected coins'],['Wager','Space / Enter','Cash in'],
     ['Choose a wager','Enter','Select the wager'],['Choose a wager','S','Skip the wager'],['Crossroads','1–4','Pick a path'],['Cash out','Space / Enter','Cash out'],['Shop','N / Enter','Next round'],['Shop','R','Reroll'],['Shop','1–9','Select a coin'],['Title','Space','Flip the title coin (when it has focus)']];
   return `<div class="overlay"><div class="panel modal" style="width:min(480px,100%)"><h2>Keyboard</h2><table class="htable keyt">${K.map(([w,k,d])=>`<tr><td class="ds">${w}</td><td><kbd>${k}</kbd></td><td>${d}</td></tr>`).join('')}</table>
     <div style="text-align:center;margin-top:10px"><button class="btn orange" data-act="options">Back</button></div></div></div>`}
@@ -5914,6 +5914,7 @@ document.addEventListener('keydown',e=>{
   if(e.repeat||$('#boot')||$('#minifish')||$('.fanfare'))return;const tg=e.target;if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'))return;
   const k=e.key.toLowerCase();
   if(k==='escape'){if(modal){e.preventDefault();closeModal()}else if(S){e.preventDefault();ACT.options()}return}
+  if(k==='f'&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();toggleFS();return}
   if(!S||modal||drag)return;
   if(/^[1-9]$/.test(k)&&(S.screen==='shop'||S.screen==='play')&&S.purse[+k-1]&&!S.pack){ACT.coin(String(+k-1));return}
   if(S.screen==='shop'&&!S.pack){if(k==='n'||k==='enter'){e.preventDefault();ACT.nextround()}else if(k==='r'){ACT.reroll()}return}
