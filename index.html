@@ -1134,7 +1134,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.158</div>
+  <div class="gamever" aria-label="Version">v1.2.159</div>
 </div>
 
 <script>
@@ -2381,7 +2381,9 @@ function makeAnteBlinds0(ante){
 
 /* ================= AUDIO ================= */
 const AU={ctx:null};
-const musGain=()=>OPT.music?.55*OPT.mvol:0,sfxGain=()=>OPT.sfx?.85*OPT.svol:0;
+const musGain=()=>OPT.music&&!OPT.muted?.55*OPT.mvol:0,sfxGain=()=>OPT.sfx&&!OPT.muted?.85*OPT.svol:0;
+/* M: mute or unmute everything, keeping the volume sliders as they are */
+function toggleMute(){OPT.muted=!OPT.muted;saveOpt();try{const t=AU.ctx.currentTime;if(AU.mus)AU.mus.gain.setTargetAtTime(musGain(),t,.05);if(AU.sfx)AU.sfx.gain.setTargetAtTime(sfxGain(),t,.05)}catch(e){}toast(OPT.muted?'Sound <b>muted</b> (M)':'Sound <b>on</b>')}
 function audioInit(){
   if(AU.ctx){if(AU.ctx.state==='suspended')AU.ctx.resume();return}
   const C=window.AudioContext||window.webkitAudioContext; if(!C) return;
@@ -4431,10 +4433,10 @@ function boothModal(){const C=COS(),tix=PROF.tix||0,isSkin=BOOTH_TAB==='skin',is
     <div style="text-align:center;margin-top:12px"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`}
 function boothPreviews(){document.querySelectorAll('[data-skin]').forEach(img=>{const cur=COS().skin;COS().skin=img.dataset.skin;img.src=coinArt('copper','H');COS().skin=cur})}
 function keysModal(){
-  const K=[['Anywhere','Esc','Options / close a window'],['Anywhere','F','Toggle fullscreen'],['Wager','H / T / E','Call Heads, Tails or Edge'],['Wager','B','Bet on the first toss'],['Wager','1–9','Select a coin (to re-flip, or for an item)'],['Wager','R','Re-flip the selected coins'],['Wager','Space / Enter','Cash in'],
+  const K=[['Anywhere','Esc','Options / close a window'],['Anywhere','F','Toggle fullscreen'],['Anywhere','M','Mute / unmute'],['Wager','H / T / E','Call Heads, Tails or Edge'],['Wager','B','Bet on the first toss'],['Wager','1–9','Select a coin (to re-flip, or for an item)'],['Wager','R','Re-flip the selected coins'],['Wager','Space / Enter','Cash in'],
     ['Choose a wager','Enter','Select the wager'],['Choose a wager','S','Skip the wager'],['Crossroads','1–4','Pick a path'],['Cash out','Space / Enter','Cash out'],['Shop','N / Enter','Next round'],['Shop','R','Reroll'],['Shop','1–9','Select a coin'],['Title','Space','Flip the title coin (when it has focus)']];
-  return `<div class="overlay"><div class="panel modal" style="width:min(480px,100%)"><h2>Keyboard</h2><table class="htable keyt">${K.map(([w,k,d])=>`<tr><td class="ds">${w}</td><td><kbd>${k}</kbd></td><td>${d}</td></tr>`).join('')}</table>
-    <div style="text-align:center;margin-top:10px"><button class="btn orange" data-act="options">Back</button></div></div></div>`}
+  return `<div class="overlay"><div class="panel modal optm" style="width:min(480px,100%)"><h2>Keyboard</h2><div class="optbody"><table class="htable keyt">${K.map(([w,k,d])=>`<tr><td class="ds">${w}</td><td><kbd>${k}</kbd></td><td>${d}</td></tr>`).join('')}</table></div>
+    <div class="optfoot"><button class="btn orange" data-act="options">Back</button></div></div></div>`}
 /* save codes: the whole profile, options and any run in progress, as one copyable string */
 const SAVE_PFX='CALLIT1:';
 function makeSaveCode(){const d={v:1,p:PROF,o:OPT,r:localStorage.getItem('hwr-run'),b:localStorage.getItem('hwr-best')};return SAVE_PFX+btoa(unescape(encodeURIComponent(JSON.stringify(d))))}
@@ -5915,6 +5917,7 @@ document.addEventListener('keydown',e=>{
   const k=e.key.toLowerCase();
   if(k==='escape'){if(modal){e.preventDefault();closeModal()}else if(S){e.preventDefault();ACT.options()}return}
   if(k==='f'&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();toggleFS();return}
+  if(k==='m'&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();toggleMute();return}
   if(!S||modal||drag)return;
   if(/^[1-9]$/.test(k)&&(S.screen==='shop'||S.screen==='play')&&S.purse[+k-1]&&!S.pack){ACT.coin(String(+k-1));return}
   if(S.screen==='shop'&&!S.pack){if(k==='n'||k==='enter'){e.preventDefault();ACT.nextround()}else if(k==='r'){ACT.reroll()}return}
