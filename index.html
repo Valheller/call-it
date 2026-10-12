@@ -529,6 +529,8 @@ body.badges .face::before{display:block}
 .evpanel .evchoices .btn::before{content:'›';position:absolute;left:14px;top:50%;transform:translateY(-55%);font-size:24px;opacity:.85}
 .evpanel .evchoices .btn:not(:disabled):hover{transform:translateX(4px)}
 .evpanel .evchoices .btn:disabled{filter:saturate(.35) brightness(.8)}
+.evtrade{color:#ffd34d;font-size:16px;animation:wtpulse 2.4s ease-in-out infinite;border:2px dashed rgba(255,211,77,.55);border-radius:10px;padding:8px 12px}
+.purse.trading .coin:not(.sel){opacity:.4}
 .evwhy{font-size:12px;font-weight:400;opacity:.9;margin-top:2px}
 .evpanel.evdone .btn.big{align-self:center;min-width:200px}
 @media (max-width:760px){.evpanel{padding:14px 12px 14px}.evicon{width:48px;margin:-38px 0 -4px}.evpanel .evtitle{font-size:22px}.evpanel .evtext{font-size:14px;padding:10px 12px 10px 14px}.evpanel .evchoices .btn{font-size:14px;padding:9px 12px 9px 28px}.evpanel .evchoices .btn::before{left:10px}}
@@ -1129,7 +1131,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.152</div>
+  <div class="gamever" aria-label="Version">v1.2.153</div>
 </div>
 
 <script>
@@ -4841,7 +4843,7 @@ const EVENTS={
    {label:'A free Upgrade',ok:()=>freeUpgrades().length>0,why:'No Upgrades left',run:()=>{const k=pick(freeUpgrades());S.upgrades.push(k);UPGRADES[k].apply();play('levelup');return `You earn the {a:${UPGRADES[k].name}} Upgrade: ${UPGRADES[k].desc}.`}}]},
  rivalwin:{mapOnly:1,avail:()=>false,title:'Duel Won',text:'You won the duel. Take one prize. They will be tougher next time.',
   choices:[{label:()=>`Double the stake ($${2*rivalStake()})`,run:()=>{const v=2*rivalStake();S.rival.lvl++;S.money+=v;play('money');return `You collect {$:$${v}}.`}},
-   {label:()=>`Their ${COINS[rivalCoin()].name}`,tip:()=>'ctypep:'+rivalCoin(),ok:()=>purseUsed()<S.purseMax,why:'Your purse is full',run:()=>{const t=rivalCoin();S.rival.lvl++;S.purse.push({...mkCoin(t),wear:'proof'});play('win');return `You take their {a:Proof Finish ${COINS[t].name}}.`}},
+   {label:()=>purseUsed()<S.purseMax?`Their ${COINS[rivalCoin()].name}`:`Trade a coin for their ${COINS[rivalCoin()].name}`,tip:()=>'ctypep:'+rivalCoin(),ok:()=>purseUsed()<S.purseMax||S.purse.some(tradeable),why:'Your purse is full',run:()=>{if(purseUsed()>=S.purseMax){S.event.trading=true;return null}const t=rivalCoin();S.rival.lvl++;S.purse.push({...mkCoin(t),wear:'proof'});play('win');return `You take their {a:Proof Finish ${COINS[t].name}}.`}},
    {label:()=>`Learn their ${HAND[rivalInfo().fav].name}`,run:()=>{const h=rivalInfo().fav;S.rival.lvl++;S.hands[h].level+=2;play('levelup');return `{a:${HAND[h].name}} goes up {a:2 levels}.`}}]},
  q_courier:{title:'The Courier',text:()=>`A courier who can\'t remember where they were going holds out a sealed coin. "Carry it to stage ${Math.min(STAGES,S.ante+2)} for me. Don\'t spend it, don\'t melt it."`,avail:()=>!hasQuest('courier')&&S.ante<=STAGES-2,
   choices:[{label:'Accept the quest',ok:()=>purseUsed()<S.purseMax,why:'Your purse is full',run:()=>{S.purse.push(mkCoin('sealed'));startQuest('courier');play('buy');return 'You tuck the {a:Sealed Coin} into your purse. Reward on delivery: {$:$20} and a Rare Charm.'}},declineC('You leave them still holding it out.')]},
@@ -4875,9 +4877,9 @@ function eventHTML(){
   if(!S.event.text)S.event.text=typeof E.text==='function'?E.text():E.text;
   const evIc=E.omen?(DEST.mystery?destIcon('mystery'):destIcon('encounter')):destIcon('encounter');
   return `<div class="panel evpanel ${E.omen?'omen':''} ${S.event.result?'evdone':''}"><div class="evicon"><div class="evbadge">${IMG(evIc)}</div></div><div class="evtitle">${E.omen?'<span class="omentag">Omen</span>':''}${E.title}</div><div class="evtext">${fmt(S.event.result||S.event.text)}</div>
-    ${S.event.result?'<button class="btn orange big" data-act="evdone">Continue</button>':`<div class="evchoices">${E.choices.map((c,i)=>{const ok=!c.ok||c.ok();
+    ${S.event.trading?`<div class="evtrade">Tap a coin in your purse to trade for their <b>${COINS[rivalCoin()].name}</b></div><div class="evchoices"><div class="evch"><button class="btn" data-act="evtradeback"><span class="evl">Back</span></button></div></div>`:S.event.result?'<button class="btn orange big" data-act="evdone">Continue</button>':`<div class="evchoices">${E.choices.map((c,i)=>{const ok=!c.ok||c.ok();
       return `<div class="evch"><button class="btn ${i===E.choices.length-1&&E.choices.length>1&&c.label==='Decline'?'':'green'}" data-act="evpick" data-arg="${i}" ${c.tip?`data-tip="${c.tip()}"`:''} ${ok?'':'disabled'}><span class="evl">${hideLuck(typeof c.label==='function'?c.label():c.label)}</span>${!ok&&c.why?`<small class="evwhy">${c.why}</small>`:''}</button></div>`}).join('')}</div>`}
-  </div><div class="purse shopp" data-count="${purseCnt()}">${S.purse.map((c,i)=>coinHTML(c,i)).join('')}</div>`;
+  </div><div class="purse shopp ${S.event.trading?'trading':''}" data-count="${purseCnt()}">${S.purse.map((c,i)=>coinHTML(c,i,{sel:S.event.trading&&tradeable(c)})).join('')}</div>`;
 }
 function prizeHTML(){const t=S.tickets||0,full=S.jokers.length>=slots();S.event.sold=S.event.sold||{};
   const cards=prizeOffer().map((k,i)=>{const d=JOKERS[k],sold=S.event.sold[k];return `<div class="scard ${sold?'gone':''} ${d.r===5?'fabled':d.r===4?'legend':''}"><div class="price tixprice">${d.tix} tickets</div>
@@ -5573,6 +5575,11 @@ const RIVAL_OF={
 const RIVALS=Object.keys(RIVAL_OF);
 const rivalInfo=()=>RIVAL_OF[S.rival.name]||(S.rival.name=RIVALS[0],RIVAL_OF[RIVALS[0]]);
 /* a relic only once: if you already hold it, they hand over a Loonie instead */
+/* a full purse can swap one coin for the rival's coin (not a stacked coin or a quest coin) */
+const tradeable=c=>!stkGroup(c)&&!COINS[c.type].quest;
+function tradeCoin(i){const c=S.purse[i];if(!c||!tradeable(c))return;const t=rivalCoin(),old=COINS[c.type].name;
+  S.purse.splice(i,1);S.rival.lvl++;S.purse.push({...mkCoin(t),wear:'proof'});S.event.trading=false;play('win');
+  S.event.result=`You hand over your {a:${old}} and take their {a:Proof Finish ${COINS[t].name}}.`;render()}
 const rivalCoin=()=>{const c=rivalInfo().coin;return COINS[c].relic&&S.purse.some(x=>x.type===c)?'silver':c};
 /* rematches: a rival you've beaten before comes back sharper (+40% tosses) for a bigger stake */
 const isRematch=()=>!!S&&!!S.rival&&!!(PS().rivalsBeat||{})[S.rival.name];
@@ -5790,6 +5797,7 @@ const ACT={
   bet(){if(!S||S.phase!=='call'||S.money<=0||S.roll==='highroller'||S.tossNo>0)return;S.bet=!S.bet;play(S.bet?'money':'click');refreshTable()},
   evpick(a){const E=EVENTS[S.event.key],c=E.choices[+a];if(!c||(c.ok&&!c.ok())||S.event.result)return;S.event.result=c.run();render()},
   evdone(){goNext()},
+  evtradeback(){if(S.event)S.event.trading=false;render()},
   bossrr(a){if(!bossRerollable()||bossRRused()||bossBlind().state==='select')return;if(a==='free'){if(!freeBossRR())return;S.bossRRfree=(S.bossRRfree||0)+1}else{const c=bossRerollCost();if(S.money<c)return;spend(c);S.bossRR=(S.bossRR||0)+1}if(rerollBoss())render()},
   prizebuy(a){const k=prizeOffer()[+a],d=JOKERS[k];if(!k||S.event.sold&&S.event.sold[k]||(S.tickets||0)<d.tix||S.jokers.length>=slots())return;S.tickets-=d.tix;addJoker(k,d.cost);(S.event.sold=S.event.sold||{})[k]=1;play('buy');render();juice($('#jk'+(S.jokers.length-1)))},
   prizecash(){if((S.tickets||0)<3)return;S.tickets-=3;S.money+=10;play('money');render()},
@@ -5806,6 +5814,7 @@ const ACT={
   reflip(){doReflip()},
   cashin(){doCashIn()},
   coin(a){const i=+a;
+    if(S.screen==='event'&&S.event&&S.event.trading){tradeCoin(i);return}
     if(S.screen==='play'&&S.phase==='tossed'){if((!S.reflipsLeft&&!coinDef(S.purse[i]).freeFlip)||bossIs('gale')||S.betTurn)return;const grp=stkGroup(S.purse[i])?S.purse.map((c,j)=>j).filter(j=>S.purse[j].stk===S.purse[i].stk):[i];if(S.selected.includes(i)){S.selected=S.selected.filter(j=>!grp.includes(j));refreshTable();return}
     const picks=new Set(S.selected.map(j=>stkGroup(S.purse[j])?'s'+S.purse[j].stk:j)).size;const k=-1;if(picks>=(S.reflipCap||2)){popup($('#c'+i),`Max ${S.reflipCap||2} coins`,'miss');play('miss');return}S.selected.push(...grp);refreshTable()}
     else if((S.screen==='play'&&S.phase==='call')||S.screen==='shop'){const k=S.csel.indexOf(i);k>=0?S.csel.splice(k,1):S.csel.push(i);
