@@ -496,6 +496,8 @@ body.badges .face::before{display:block}
 }
 /* challenge rolls */
 .rollsect{grid-column:1/-1;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--mult);padding:8px 4px 0;border-top:2px dashed rgba(255,255,255,.12);margin-top:4px}
+.wintease{margin:6px auto 2px;max-width:340px;padding:8px 12px;border:2px dashed rgba(255,211,77,.55);border-radius:10px;color:#ffd34d;font-size:14px;line-height:1.35;text-align:center;animation:wtpulse 2.4s ease-in-out infinite}
+@keyframes wtpulse{50%{border-color:rgba(255,211,77,.95);box-shadow:0 0 14px rgba(255,211,77,.35)}}
 .rollsect.basic{border-top:0;margin-top:0;padding-top:2px;color:var(--chips)}
 .rolltilt:has(.rollghost){transform:none}
 .rollghost{animation:ghostfloat 3.2s ease-in-out infinite!important;transform-style:flat}
@@ -1068,7 +1070,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.125</div>
+  <div class="gamever" aria-label="Version">v1.2.126</div>
 </div>
 
 <script>
@@ -4268,12 +4270,16 @@ function renderOverlay(){
       <div class="row"><span>Coins flipped</span><b>${fmtN(S.stats.flips)}</b></div>
       ${S.seed?`<div class="row"><span>Seed${S.customSeed?' (custom)':''}</span><b class="seedv">${S.seed} <button class="btn tiny" data-act="copyseed">Copy</button></b></div>`:''}
       <button class="btn green" data-act="sumcard">Summary card</button>
-      <button class="btn orange big" data-act="endless">Endless Mode</button>
+      ${winTease()}<button class="btn orange big" data-act="endless">Endless Mode</button>
       <button class="btn blue" data-act="newrun">New Run</button></div></div>`;o.hidden=false;
   }else if(modal){o.innerHTML=modal();o.hidden=false}
   else{o.hidden=true;o.innerHTML=''}
 }
 let modal=null;
+/* Rival, Boss and Glitched Rolls hide one more unlock past stage 8: hint at it on the win screen until it is earned */
+const WIN_TEASE={rivalroll:['charm','seattable'],boss:['charm','houseedge'],glitched:['pack','glitch']};
+function winTease(){const t=S&&!S.daily&&WIN_TEASE[S.roll];if(!t||isUnlocked(t[0],t[1]))return'';
+  return `<div class="wintease">&#x1F512; There's still more to unlock in the ${rollName(S.roll)}. Keep going in <b>Endless Mode</b>.</div>`}
 const RULES=`<ol class="rules">
  <li>Call <b>Heads</b> or <b>Tails</b>, then every coin in your purse gets tossed.</li>
  <li>Coins that land on your call score. Matches side by side make better tosses: Double, Triple, Four Streak, all the way to a <span class="k-a">Clean Sweep</span>.</li>
