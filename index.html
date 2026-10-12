@@ -637,8 +637,9 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
 .tagline{color:#e3eef0;font-size:18px;max-width:40ch}
 /* title buttons: one 4-column grid so every button is the same size and the columns line up; Continue gets its own row */
 .titlebtns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;gap:12px 14px;width:min(720px,94vw);margin:0 auto}
-.titlebtns .btn.gearbtn{width:auto;aspect-ratio:1;padding:0;display:grid;place-items:center}
-.extgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.extgrid .btn{width:100%;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff}
+.titlebtns .btn.big.gearbtn{width:auto;height:100%;aspect-ratio:1;min-width:0;padding:0;display:grid;place-items:center}
+.titlebtns .btn.gearbtn svg{width:52%;height:52%}
+.extgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:2px 2px 8px}.extgrid .btn{width:100%;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff}
 .trow{display:contents}
 .titlebtns .btn.big{width:100%;min-width:0;justify-content:center}
 /* with a saved run, Continue and New Run share the top row; the other buttons sit below */
@@ -1060,7 +1061,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.119</div>
+  <div class="gamever" aria-label="Version">v1.2.120</div>
 </div>
 
 <script>
