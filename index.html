@@ -1059,7 +1059,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.116</div>
+  <div class="gamever" aria-label="Version">v1.2.117</div>
 </div>
 
 <script>
@@ -3963,9 +3963,6 @@ setInterval(()=>{
   if(S.phase!==hzPhase){hzPhase=S.phase;S.turnTime=0}
   const turn=hzPlayerTurn();
   if(turn){S.wagerTime=(S.wagerTime||0)+dt;S.turnTime=(S.turnTime||0)+dt}
-  /* the ghost: two minutes in one wager */
-  if(!S.ghost&&!S.ghostWarned&&S.wagerTime>=GHOST_AFTER-20){S.ghostWarned=true;toast('<i>You feel a chill. Something is drifting this way...</i>',4500)}
-  if(!S.ghost&&S.wagerTime>=GHOST_AFTER)summonGhost();
   /* Speedrun Roll: the turn clock */
   if(S.roll==='speedrun'&&clk){const left=Math.max(0,TURN_LIMIT-(S.turnTime||0));clk.hidden=!turn||S.scorp;clk.innerHTML=`<b>${left.toFixed(1)}</b><i style="--f:${(left/TURN_LIMIT).toFixed(3)}"></i>`;clk.classList.toggle('hurry',left<=4);{const pu=$('#purse');if(pu){const q=pu.getBoundingClientRect();clk.style.left=(q.left+q.width/2)+'px';clk.style.top=Math.max(8,q.top-78)+'px'}}
     if(turn&&!S.scorp&&left<=0)summonScorp()}
