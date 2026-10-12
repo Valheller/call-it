@@ -1014,6 +1014,7 @@ body.rewinding #app{animation:rewindfx .9s steps(9) both}@keyframes rewindfx{0%{
 .optver{text-align:center;font-size:13px;color:var(--ink-dim);opacity:.7;letter-spacing:.06em;margin-top:8px}
 .gamever{position:fixed;left:calc(12px + env(safe-area-inset-left));bottom:calc(8px + env(safe-area-inset-bottom));font-size:13px;color:var(--ink-dim);opacity:.7;letter-spacing:.06em;pointer-events:none;z-index:2}
 .colfoot{position:sticky;bottom:-14px;margin:10px -14px -14px;padding:10px 14px 14px;border-radius:0 0 14px 14px;text-align:center;background:linear-gradient(transparent,var(--panel) 35%);z-index:3}
+.flav{margin-top:6px;font-size:13px;font-style:italic;opacity:.7}
 .lkline{margin-top:6px;font-size:13px;color:inherit;opacity:.9}
 html.pwa,html.pwa body{background:#171512}
 html.pwa #bg,html.pwa #crt{bottom:auto;height:var(--vh,100%)}
@@ -1082,7 +1083,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.145</div>
+  <div class="gamever" aria-label="Version">v1.2.146</div>
 </div>
 
 <script>
@@ -2045,6 +2046,12 @@ const PACKS={
 /* Fabled charms a Wraith can summon: unlocked, and not one you already own */
 const wraithPool=()=>Object.keys(JOKERS).filter(k=>JOKERS[k].r===5&&!JOKERS[k].prize&&!JOKERS[k].artifact&&!JOKERS[k].glitchOnly&&isUnlocked('charm',k)&&!S.jokers.some(j=>j.key===k));
 const coinRef=c=>c&&c.kind==='rune'?RUNES[c.key].to:c&&c.kind==='spirit'?({wisp:'quicksilver',specter:'copper'})[c.key]:null;
+/* flavour text for coins: shown only in the Collection */
+const COIN_FLAV={copper:'A plain U.S. quarter.',silver:'Canada\'s eleven-sided dollar.',gold:'Pirate treasure.',bronze:'Don\'t take any wooden nickels.',
+ twohead:'A counterfeit quarter. Crooks don\'t sleep well.',twotail:'A counterfeit quarter. Crooks don\'t sleep well.',sixpence:'Brides keep one in their shoe for good fortune.',
+ drachma:'It has an owl on the back.',krona:'Three crowns on the back.',pog:'A heavy playground slammer.',crypto:'Very volatile.',sealed:'A courier\'s sealed coin.',
+ ecu:'The coin before the Euro.',foil:'All that\'s left of an eaten Chocolate Coin.',bellwether:'The flock follows it.',firstdime:'The very first dime ever earned.',
+ pressed:'A souvenir penny pressed flat with a steam train. The coins to its right are its train cars.'};
 const coinNote=t=>t?`<div class="tmod" style="--mc:#e9d9a8"><b>${COINS[t].name}</b> · ${fmt(COINS[t].desc)}</div>`:'';
 
 const BOSSES={
@@ -4956,7 +4963,7 @@ function colItems(){
     return ok?{id:'r-'+k,name:k,ic:`<div class="cic" style="--jbg:${RIVAL_COL[k]||'#ff8f1f'}">${IMG(rivalSil(k))}</div>`,desc:`${d.habit}. Signature coin: {a:${COINS[d.coin].name}}. Favourite toss: {a:${HAND[d.fav].name}}.${beat[k]?' {d:(Beaten)}':''}`,tag:'Rival',tc:'#ff8f1f'}
       :{id:'r-'+k,name:'???',ic:`<div class="cic locked" style="--jbg:#2a2a2a">${IMG(rivalSil(k))}</div>`,desc:'You haven\'t duelled this rival yet',tag:'Rival · Undiscovered',tc:'var(--grey)'}})}
   if(COL.tab==='coins')return Object.keys(COINS).map(k=>{const d=COINS[k];return{id:k,name:d.name,ic:`<div class="cic coinc">${IMG(coinArt(k,d.fixed||'H'))}</div>`,
-    desc:d.desc+(lkOf('coin',k)?`<div class="lkline">${lkOf('coin',k)}</div>`:''),tag:k==='copper'?'Starting coin':d.relic?'Relic coin':'Special coin',tc:'var(--orange)'}});
+    desc:d.desc+(COIN_FLAV[k]?`<div class="flav">${COIN_FLAV[k]}</div>`:'')+(lkOf('coin',k)?`<div class="lkline">${lkOf('coin',k)}</div>`:''),tag:k==='copper'?'Starting coin':d.relic?'Relic coin':'Special coin',tc:'var(--orange)'}});
   const list=COL.tab==='almanacs'?ALM_POOL():COL.tab==='runes'?Object.keys(RUNES).map(k=>({kind:'rune',key:k})):COL.tab==='fortunes'?Object.keys(FORTUNES).map(k=>({kind:'fortune',key:k})):Object.keys(SPIRITS).map(k=>({kind:'spirit',key:k}));
   return list.map(c=>{const ci=consInfo(c);return{id:c.key||c.hand,name:ci.name.replace('Almanac: ',''),ic:`<div class="cic tile" style="--jbg:${ci.bg}">${IMG(ci.icon)}</div>`,
     desc:c.kind==='almanac'&&c.hand?`Level up {a:${HAND[c.hand].name}}: {c:+${HAND[c.hand].lc}} Points, {m:+${HAND[c.hand].lm}} Mult. ${HAND[c.hand].desc}.`:ci.desc,note:coinNote(coinRef(c)),tag:ci.badge,tc:ci.bc}});
