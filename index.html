@@ -687,7 +687,6 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
 #title{position:fixed;inset:0;z-index:55;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,3vh,28px);padding:16px;text-align:center}
 .logo{font-family:'Silkscreen','Pixelify Sans',ui-monospace,monospace;font-size:clamp(52px,12vw,132px);font-weight:700;line-height:.95;letter-spacing:.02em}
 .logo .w{display:inline-block;white-space:nowrap}
-#title>.logo{position:relative;top:clamp(-22px,-2.5vh,-8px)}
 #title>.titlebtns,#title>.titlebtns~*:not(#fsbtn):not(.gamever){position:relative;top:clamp(8px,2.5vh,22px)}
 .logo span{display:inline-block;animation:lwob 2.6s ease-in-out infinite;animation-delay:calc(var(--i)*-.18s);
   text-shadow:0 4px 0 var(--sh),0 8px 0 var(--sh2),0 12px 18px rgba(0,0,0,.5)}
@@ -1117,11 +1116,11 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
 </div><div class="bootrays"></div></div>
 <div id="title">
   <button class="btn tiny" id="fsbtn" data-act="fullscreen" hidden style="--c:var(--grey);--cd:var(--grey-d)">Fullscreen</button>
+  <div class="bigcoin t-copper" data-act="titlecoin" role="button" tabindex="0" aria-label="Flip the coin"><div class="spin"><div class="face heads" data-l="H"></div><div class="face tails" data-l="T"></div></div></div>
   <div class="logo" aria-label="Call it.">
     <div class="w" style="--sh:#9a6c08;--sh2:#4d3604"><span style="--i:0">C</span><span style="--i:1">a</span><span style="--i:2">l</span><span style="--i:3">l</span></div>
     <div class="w" style="--sh:#6f7a83;--sh2:#363d43"><span style="--i:5">i</span><span style="--i:6">t</span><span class="fishdot" data-act="fishdot" style="--i:7;--sh:#8a4f1e;--sh2:#45270e">.</span></div>
   </div>
-  <div class="bigcoin t-copper" data-act="titlecoin" role="button" tabindex="0" aria-label="Flip the coin"><div class="spin"><div class="face heads" data-l="H"></div><div class="face tails" data-l="T"></div></div></div>
   <div class="titlebtns">
     <div class="trow">
       <div class="tcont" id="tcont" hidden><button class="btn red big" data-act="cont" id="contbtn" hidden>Continue</button></div>
@@ -1133,7 +1132,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.154</div>
+  <div class="gamever" aria-label="Version">v1.2.155</div>
 </div>
 
 <script>
