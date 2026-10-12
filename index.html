@@ -1082,7 +1082,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.143</div>
+  <div class="gamever" aria-label="Version">v1.2.144</div>
 </div>
 
 <script>
@@ -1168,11 +1168,11 @@ const HANDS=[
 const HAND=Object.fromEntries(HANDS.map(h=>[h.key,h]));
 
 const COINS={
- copper: {name:'Quarter',           chips:5, cost:0, desc:'{c:+5} Points. A plain U.S. quarter'},
- silver: {name:'Loonie',            chips:15,grow:5,cost:3, desc:'{c:+15} Points, and it gains {c:+5} Points {a:permanently} every time it scores. Canada\'s eleven-sided dollar'},
+ copper: {name:'Quarter',           chips:5, cost:0, desc:'{c:+5} Points'},
+ silver: {name:'Loonie',            chips:15,grow:5,cost:3, desc:'{c:+15} Points, and it gains {c:+5} Points {a:permanently} every time it scores'},
  platinum:{name:'Krugerrand',       chips:30,heavy:1,cost:5, desc:'{c:+30} Points. {a:Heavy}: it always lands on the same face as the coin to its left'},
  ruby:   {name:'Casino Chip',       chips:5, mult:12, betX:2, missMoney:-1, cost:4, desc:'{m:+12} Mult when it scores, or {x:X2} Mult on a {$:bet} toss. Each one that lands on your call adds {$:$3} to a winning bet. Lose {$:$1} when it misses'},
- gold:{name:'Doubloon',          chips:10, money:2, bossMoney:5, cost:4, desc:'{c:+10} Points. Earn {$:$2} when it scores, or {$:$5} during a {a:Boss} wager. Pirate treasure'},
+ gold:{name:'Doubloon',          chips:10, money:2, bossMoney:5, cost:4, desc:'{c:+10} Points. Earn {$:$2} when it scores, or {$:$5} during a {a:Boss} wager'},
  jade:   {name:'Cash Coin',         chips:5, held:2, string:10, cost:4, desc:'{c:+5} Points. Earn {$:$2} at the end of each wager while it sits in your purse. Coins {a:next to it} give {c:+10} Points when they score'},
  lucky:{name:'5 Yen Coin',        chips:10, lucky:1, cost:4, desc:'{c:+10} Points. {a:1 in 3} chance for {m:+15} Mult, {a:1 in 8} chance for {$:$8}. Both chances {a:double} while it sits in the {a:middle} of your purse'},
  steel:  {name:'2 Euro Coin',       chips:5, missX:1.5, cost:5, desc:'{c:+5} Points when it scores. {x:X1.5} Mult when it does {a:not} score'},
@@ -1193,11 +1193,11 @@ Object.assign(COINS,{
  sealed:  {name:'Sealed Coin',     chips:10,relic:1,quest:1,cost:0,desc:'{c:+10} Points. A courier\'s sealed coin. Keep it in your purse until the delivery stage'},
  penny:   {name:'Lucky Penny',     chips:1, wild:1, relic:1, cost:0, desc:'{c:+1} Point. Always scores, whatever face it lands on. {a:Relic}: one of a kind'},
  denarius:{name:'Roman Denarius',  chips:15,mult:5,tribute:5,relic:1, cost:0, desc:'{c:+15} Points and {m:+5} Mult. {a:Tribute}: gains another {m:+5} Mult {a:permanently} every time you beat a Boss. {a:Relic}: one of a kind'},
- ecu:     {name:'Gold Ecu',       chips:5,xmult:1.5,euro:1,relic:1,cost:0,desc:'{c:+5} Points, {x:X1.5} Mult when it scores, or {x:X2} when it sits next to another {a:foreign} coin. The coin before the Euro. {a:Relic}: one of a kind'},
- foil:    {name:'Crumpled Gold Foil',chips:3,money:1,meltVal:3,noShop:1,cost:0,desc:'{c:+3} Points. Earn {$:$1} when it scores. Melts down for {$:$3}. All that\'s left of an eaten Chocolate Coin'},
+ ecu:     {name:'Gold Ecu',       chips:5,xmult:1.5,euro:1,relic:1,cost:0,desc:'{c:+5} Points, {x:X1.5} Mult when it scores, or {x:X2} when it sits next to another {a:foreign} coin. {a:Relic}: one of a kind'},
+ foil:    {name:'Crumpled Gold Foil',chips:3,money:1,meltVal:3,noShop:1,cost:0,desc:'{c:+3} Points. Earn {$:$1} when it scores. Melts down for {$:$3}'},
  sanddollar:{name:'Sand Dollar',chips:8,sand:1,fishLocked:1,cost:6,desc:'{c:+8} Points. Whenever it lands, it goes {a:fishing}. If it {r:missed}, land a catch and it flips onto your call. If it {a:scored}, land a catch for bonus Mult: {x:X1.25} for an Old Boot up to {x:X5} for The Pit Boss'},
  bellwether:{name:'The Bellwether',chips:6,bell:4,relic:1,artifact:1,cost:0,desc:'{c:+6} Points. The flock follows it. In your {a:first} slot, every other coin that scores gets {m:+4} Mult. Anywhere else it {r:never scores}. {a:Artifact}: one of a kind'},
- firstdime:{name:'The First Dime',chips:10,firstDime:.2,loseChance:1,relic:1,artifact:1,cost:0,desc:'{c:+10} Points. The very first dime ever earned. In your {a:first} slot when a wager starts, the score needed drops by {a:20%}. Anywhere else, the moment it scores it gets {r:lost} for good. {a:Artifact}: one of a kind'},
+ firstdime:{name:'The First Dime',chips:10,firstDime:.2,loseChance:1,relic:1,artifact:1,cost:0,desc:'{c:+10} Points. In your {a:first} slot when a wager starts, the score needed drops by {a:20%}. Anywhere else, the moment it scores it gets {r:lost} for good. {a:Artifact}: one of a kind'},
  pressed: {name:'Pressed Penny',  chips:3,wild:1,fixed:'H',train:3,flat:1,relic:1,artifact:1,charm:'pressedpenny',cost:0,desc:'{c:+3} Points. A souvenir penny pressed flat with a steam train. It never flips: it always scores, and gives {m:+3} Mult for each scoring coin to its {a:right} (its train cars). {a:Artifact}: drag it up into your Charms and it gives {a:+1} Flip every wager instead'},
  hope:{name:'Hope Diamond Coin',chips:25,money:6,relic:1,cost:0,desc:'{c:+25} Points and earn {$:$6} when it scores. {a:Relic}: one of a kind'},
 });
