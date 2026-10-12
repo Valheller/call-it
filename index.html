@@ -1070,7 +1070,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.127</div>
+  <div class="gamever" aria-label="Version">v1.2.128</div>
 </div>
 
 <script>
@@ -4128,7 +4128,7 @@ function refreshTable(){
   if(cb)cb.innerHTML=S.call&&S.phase!=='call'?`${S.roll==='majority'?'Majority':'Calling'}<b class="${S.call}">${callName(S.call)}</b>`:'';
   const h=$('#hint'),ct=$('#controls');if(!ct)return;
   if(S.phase==='call'){
-    {const base=S.roll==='majority'?'No calls: each toss scores whichever face came up most.':'Every coin that lands on your call scores. Drag coins to rearrange them.';
+    {const base=S.roll==='majority'?'No calls: each toss scores whichever face came up most.':'';
      /* boss, elite and rival rules already sit in the sidebar on computers, so under the coins they only show on phones */
      const foe=S.duel&&!S.duel.general&&!S.duel.table&&S.rival?`<b style="color:var(--orange)">${isRematch()?'Rematch: ':''}${S.rival.name}</b> · ${fmt(rivalInfo().habit)}. Be ahead after your 3rd Flip.`:S.boss?bossDesc(curBlind())+'.':'';
      h.innerHTML=S.boss==='fatal'&&S.boss2?`<b class="fataltxt">FATAL ERROR</b> · next toss: <b>${BOSSES[S.boss2].name}</b>: ${fmt(BOSSES[S.boss2].desc)}.`:foe?`<span class="hmob">${foe}</span><span class="hdesk">${base}</span>`:base}
