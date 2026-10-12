@@ -1066,7 +1066,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.122</div>
+  <div class="gamever" aria-label="Version">v1.2.123</div>
 </div>
 
 <script>
@@ -4617,10 +4617,9 @@ function rollModal(){
   return `<div class="overlay"><div class="panel modal wide rollm"><h2>Choose a Roll</h2>
     <div class="rolldetail ${lock||r.fake?'locked':''}">${rollHTML(ROLLSEL,190,64)}<div class="cbody"><div class="cname" style="font-size:24px;font-weight:600">${r.fake?'Locked':rollName(ROLLSEL)}</div>
       <div class="cdesc">${r.fake?`<b>Locked.</b> Unlock it: open it. ${fmt(r.desc)}`:lock?`<b>Locked.</b> Unlock it: ${r.challenge?'Win any run to open the Challenge Rolls':GOAL_OF['roll:'+ROLLSEL].desc}`:fmt(r.desc)}</div>
-      ${ROLL_UNLOCK[ROLLSEL]?(()=>{const k=ROLL_UNLOCK[ROLLSEL],J=JOKERS[k],got=(PROF.stakes[ROLLSEL]||0)>=1;return `<div class="lbl" style="margin-top:6px">${got?'Beaten · unlocked':'First win unlocks'} <b style="color:${RAR[J.r].c}">${J.name}</b>${J.r===5?' (Fabled)':''}</div>`})():''}
       ${lock||r.challenge?'':`<div class="stakes"><span class="lbl">Stake</span>${[1,2,3,4,5,6].map(n=>`<button class="btn tiny" style="--c:${n<=ms?STAKES[n].col:'var(--grey)'};--cd:rgba(0,0,0,.45);${n===STAKESEL?'outline:2px solid #fff;outline-offset:1px':''}" data-act="stakesel" data-arg="${n}" ${n>ms?'disabled':''} title="${STAKES[n].name}">${n}</button>`).join('')}</div>
-      <div class="stakedesc">${stakeDesc(STAKESEL)}${ms<6?`<div class="k-d">Win a run on ${STAKES[ms].name} to unlock ${STAKES[ms+1].name}</div>`:''}</div>`}
-      ${lock?'':`<div class="seedrow"><span class="lbl">Seed</span><input id="seedin" maxlength="12" placeholder="Random" value="${SEEDTXT}" autocomplete="off" spellcheck="false" aria-label="Seed (leave blank for a random run)"><span class="lbl">Same seed, same run</span></div>`}
+      <div class="stakedesc">${stakeDesc(STAKESEL)}</div>`}
+      ${lock?'':`<div class="seedrow"><span class="lbl">Seed</span><input id="seedin" maxlength="12" placeholder="Random" value="${SEEDTXT}" autocomplete="off" spellcheck="false" aria-label="Seed (leave blank for a random run)"></div>`}
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn blue big" data-act="rollstart" ${lock?'disabled':''}>Open Roll</button><button class="btn orange" data-act="closemodal">Back</button></div></div></div>
     <div class="rollgrid">${Object.keys(ROLLS).sort((a,b)=>(ROLLS[a].challenge?1:0)-(ROLLS[b].challenge?1:0)).map((k,ix,ks)=>`${ROLLS[k].challenge&&!ROLLS[ks[ix-1]].challenge?'<div class="rollsect">Challenge Rolls</div>':''}<button class="rollcard ${k===ROLLSEL?'on':''} ${isUnlocked('roll',k)&&!ROLLS[k].fake?'':'locked'}" data-act="rollsel" data-arg="${k}">${rollHTML(k,92,32)}<span>${isUnlocked('roll',k)&&!ROLLS[k].fake?rollName(k):'Locked'}${(PROF.stakes[k]||0)?` <small style="color:${STAKES[PROF.stakes[k]].col}">★${PROF.stakes[k]}</small>`:''}</span></button>`).join('')}</div>
   </div></div>`;
