@@ -1070,7 +1070,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.126</div>
+  <div class="gamever" aria-label="Version">v1.2.127</div>
 </div>
 
 <script>
@@ -4276,10 +4276,10 @@ function renderOverlay(){
   else{o.hidden=true;o.innerHTML=''}
 }
 let modal=null;
-/* Rival, Boss and Glitched Rolls hide one more unlock past stage 8: hint at it on the win screen until it is earned */
-const WIN_TEASE={rivalroll:['charm','seattable'],boss:['charm','houseedge'],glitched:['pack','glitch']};
-function winTease(){const t=S&&!S.daily&&WIN_TEASE[S.roll];if(!t||isUnlocked(t[0],t[1]))return'';
-  return `<div class="wintease">&#x1F512; There's still more to unlock in the ${rollName(S.roll)}. Keep going in <b>Endless Mode</b>.</div>`}
+/* every roll hides one more unlock past stage 8 (The House, or the Rival and Glitched Rolls' own Endless bosses): hint at it on the win screen until it is earned */
+const WIN_TEASE={rivalroll:['charm','seattable'],glitched:['pack','glitch']};
+function winTease(){if(!S)return'';const t=WIN_TEASE[S.roll]||['charm','houseedge'];if(isUnlocked(t[0],t[1]))return'';
+  return `<div class="wintease">&#x1F512; There's still more to unlock${WIN_TEASE[S.roll]||S.roll==='boss'?` in the ${rollName(S.roll)}`:''}. Keep going in <b>Endless Mode</b>.</div>`}
 const RULES=`<ol class="rules">
  <li>Call <b>Heads</b> or <b>Tails</b>, then every coin in your purse gets tossed.</li>
  <li>Coins that land on your call score. Matches side by side make better tosses: Double, Triple, Four Streak, all the way to a <span class="k-a">Clean Sweep</span>.</li>
