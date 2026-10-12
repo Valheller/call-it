@@ -1071,7 +1071,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.135</div>
+  <div class="gamever" aria-label="Version">v1.2.136</div>
 </div>
 
 <script>
@@ -2019,10 +2019,10 @@ const SPIRITS={
   use:async()=>{S.baseFlips++;S.money=0;play('boss');render()}},
 };
 const KIND_INFO={
- almanac:'An Almanac permanently levels up a toss type, so it scores more base {c:Points} and {m:Mult} for the rest of the run.',
- rune:'A Rune reshapes your coins: it turns coins you select into special coins, copies or melts them, or gives money and items. Use it right away or keep it for later.',
+ almanac:'Almanacs level up a toss type for the rest of the run.',
+ rune:'Runes reshape your coins.',
  spirit:'A Spirit is a rare, powerful effect. Many come with a cost.',
- coin:'Special coins join your purse and add their own bonus every time they land on your call.',
+ coin:'Special coins that join your purse.',
 };
 const PACKS={
  coin:{name:'Coin Pouch',col:'#e0913a',bg:'#4a3018',what:'special coins',word:'Coins'},
@@ -3285,23 +3285,23 @@ Object.assign(PACKS,{
 });
 /* Spirit Select: only Spirits with no downside. Sold only at the Big Spender */
 const SELECT_SPIRITS=['soul','blackhole','cryptid','poltergeist','wisp','counterfeiter','hammerer','wanderer','cracker','aura','shimmer'];
-KIND_INFO.spiritselect='Only {a:Spirits with no downside}. The catch: opening it puts the {r:Inflation} curse on a random Charm you own.';
+KIND_INFO.spiritselect='Only {a:Spirits with no downside}, at the cost of {r:Inflation}.';
 PACKS.glitch={name:'Glitch Pack',col:'#ff1aa8',bg:'#2a0a2a',what:'corrupted items',word:'GL!TCH',w:4,avail:()=>isUnlocked('pack','glitch')};
-KIND_INFO.glitch='Corrupted goods. Names don\'t read right, but everything comes {a:boosted}: coins with Wear and a Defect, Charms with free Wear, consumables that come in {a:pairs}, and Charms you can\'t find anywhere else.';
+KIND_INFO.glitch='Corrupted goods, all {a:boosted}.';
 Object.assign(PACKS.coin,{w:18});Object.assign(PACKS.almanac,{w:18});Object.assign(PACKS.rune,{w:16});Object.assign(PACKS.spirit,{w:6});
 Object.assign(KIND_INFO,{
- charm:'Charms hang in your Charm row and boost every toss. A pack lets you pick one straight away, skipping the shop shelf.',
- fortune:'A Fortune changes your hidden {a:Luck} and {a:Karma}. Luck tips coins and lucky chances your way; Karma changes how the world treats you. Use it now or keep it.',
- forecast:'Choose the weather for the {a:next stage}, or clear the skies right now.',
- contract:'Take on a bounty for your {a:next wager}. Meet its goal and you get paid; fail and nothing happens. Taking a new one replaces the old one.',
- mint:'Apply a Wear or Defect to {a:one coin you select} in your purse below.',
- workshop:'Apply a Wear to {a:one Charm you select} in your Charm row above.',
- exchange:'Trade {a:one coin you select} below for a better coin. It keeps its Wear and Defect.',
+ charm:'Pick a Charm straight from the pack.',
+ fortune:'A Fortune changes your hidden {a:Luck} and {a:Karma}.',
+ forecast:'Choose the weather for the {a:next stage}.',
+ contract:'Take on a bounty for your {a:next wager}.',
+ mint:'Apply a Wear or Defect to {a:one coin}.',
+ workshop:'Apply a Wear to {a:one Charm}.',
+ exchange:'Trade {a:one coin} for a better one.',
  mystery:'What will you get?',
- cursed:'Strong Charms at a price: every one carries a {r:Curse}.',
- relic:'One-of-a-kind relic coins. Pick one for your purse.',
- chest:'A little of everything, and you keep it all: a coin, a Charm, a Rune and an Almanac.',
- dossier:'Swap out the boss of your upcoming {a:Boss wager} for one of these.',
+ cursed:'Strong Charms, each with a {r:Curse}.',
+ relic:'One-of-a-kind relic coins.',
+ chest:'A little of everything, and you keep it all.',
+ dossier:'Swap out your upcoming {a:Boss}.',
 });
 const PACK_ART={
  mystery:{p:{1:'#9a6fdc',2:'#e9d9a8',3:'#ffffff'},s:["...2..2...","....22....","..111111..",".11133111.","1111113111","1111131111","1111111111",".11113111.","..111111..",".........."]},
