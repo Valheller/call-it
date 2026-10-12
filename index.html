@@ -1083,7 +1083,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.146</div>
+  <div class="gamever" aria-label="Version">v1.2.147</div>
 </div>
 
 <script>
@@ -4157,7 +4157,7 @@ function refreshTable(){
     ct.classList.toggle('three',edge);
     ct.innerHTML=auto
       ?`<button class="btn purple big" data-act="call" data-arg="R">Toss<small>${S.roll==='majority'?'most common face':'random call'}</small></button>${mid}`
-      :`<button class="btn orange big" data-act="call" data-arg="H" ${S.lockCall&&bossIs('parrot')&&S.lockCall!=='H'?'disabled':''}>Heads<small>H</small></button>${mid}${edge?`<button class="btn purple big" data-act="call" data-arg="E" ${S.lockCall&&bossIs('parrot')&&S.lockCall!=='E'?'disabled':''}>Edge<small>E</small></button>`:''}<button class="btn blue big" data-act="call" data-arg="T" ${S.lockCall&&bossIs('parrot')&&S.lockCall!=='T'?'disabled':''}>Tails<small>T</small></button>`;
+      :`<button class="btn orange big" data-act="call" data-arg="H" ${S.lockCall&&bossIs('parrot')&&S.lockCall!=='H'?'disabled':''}>Heads</button>${mid}${edge?`<button class="btn purple big" data-act="call" data-arg="E" ${S.lockCall&&bossIs('parrot')&&S.lockCall!=='E'?'disabled':''}>Edge</button>`:''}<button class="btn blue big" data-act="call" data-arg="T" ${S.lockCall&&bossIs('parrot')&&S.lockCall!=='T'?'disabled':''}>Tails</button>`;
   }else{
     const busy=S.phase!=='tossed';ct.classList.remove('three');
     const toll=bossIs('toll'),cant=toll&&S.money<2;
