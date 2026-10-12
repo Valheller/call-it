@@ -1129,7 +1129,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.150</div>
+  <div class="gamever" aria-label="Version">v1.2.151</div>
 </div>
 
 <script>
@@ -5025,7 +5025,7 @@ function collectionInner(){
     <div class="ctabs">${tabs.map(([k,n,c])=>`<button class="btn small ${COL.tab===k?'orange':''}" style="${COL.tab===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="coltab" data-arg="${k}">${n} <small>${c}</small></button>`).join('')}</div>
     ${rars}${wearRow}
     ${sel?`<div class="cdetail anim ${COL.tab}" data-k="${sel.id}">${COL.tab==='coins'&&COINS[sel.id]?`<div class="cic coinc cflip"><div class="cfi"><img src="${coinArt(sel.id,COINS[sel.id].fixed||'H')}" alt=""><img class="cft" src="${coinArt(sel.id,COINS[sel.id].fixed||'T')}" alt=""></div></div>`:sel.ic}<div class="cbody"><div class="cname">${sel.name}<span class="ctag" style="background:${sel.tc}">${sel.tag}</span></div><div class="cdesc">${fmt(sel.desc)}</div>${sel.note||''}</div></div>`:''}
-    ${({almanacs:KIND_INFO.almanac,runes:KIND_INFO.rune,spirits:KIND_INFO.spirit,coins:KIND_INFO.coin,upgrades:'Upgrades are sold in the shop, one per stage, and last for the rest of the run. An Upgrade II only shows up once you own the Upgrade before it.',wears:'Wear is a finish on a coin or Charm that adds Points, Mult or a Charm slot. Each item can have one.',defects:'A Defect is a minting flaw on a coin that pays out money, retriggers it, or creates items. Each coin can have one.'})[COL.tab]?`<div class="cblurb">${fmt(({almanacs:KIND_INFO.almanac,runes:KIND_INFO.rune,spirits:KIND_INFO.spirit,coins:KIND_INFO.coin,upgrades:'Upgrades are sold in the shop, one per stage, and last for the rest of the run. An Upgrade II only shows up once you own the Upgrade before it.',wears:'Wear is a finish on a coin or Charm that adds Points, Mult or a Charm slot. Each item can have one.',defects:'A Defect is a minting flaw on a coin that pays out money, retriggers it, or creates items. Each coin can have one.'})[COL.tab])}</div>`:''}
+    ${({almanacs:KIND_INFO.almanac,runes:KIND_INFO.rune,spirits:KIND_INFO.spirit,fortunes:KIND_INFO.fortune,coins:KIND_INFO.coin,upgrades:'Upgrades are sold in the shop, one per stage, and last for the rest of the run. An Upgrade II only shows up once you own the Upgrade before it.',wears:'Wear is a finish on a coin or Charm that adds Points, Mult or a Charm slot. Each item can have one.',defects:'A Defect is a minting flaw on a coin that pays out money, retriggers it, or creates items. Each coin can have one.'})[COL.tab]?`<div class="cblurb">${fmt(({almanacs:KIND_INFO.almanac,runes:KIND_INFO.rune,spirits:KIND_INFO.spirit,fortunes:KIND_INFO.fortune,coins:KIND_INFO.coin,upgrades:'Upgrades are sold in the shop, one per stage, and last for the rest of the run. An Upgrade II only shows up once you own the Upgrade before it.',wears:'Wear is a finish on a coin or Charm that adds Points, Mult or a Charm slot. Each item can have one.',defects:'A Defect is a minting flaw on a coin that pays out money, retriggers it, or creates items. Each coin can have one.'})[COL.tab])}</div>`:''}
     <div class="cgrid ${COL.tab==='wears'?'wide':''}">${items.map(x=>`<button class="citem ${sel&&x.id===sel.id?'on':''}" data-act="colsel" data-arg="${x.id}">${x.ic}<span>${x.name}</span></button>`).join('')}</div>
     <div class="colfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
 }
@@ -5473,7 +5473,7 @@ function rollPack(){
 /* ================= ROUTE MAP: between stages, pick a path through two stops, then the shop ================= */
 const DEST={
  encounter:{bg:'#2a1a3a',name:'Encounter',col:'#9a6fdc',desc:'Something stirs between the tables: a shade, an omen, a bargain, a debt',
-  spr:{p:{1:'#c9a4ff',2:'#5d3d94'},s:["..2222....",".2....2...",".....2....","....2.....","....2.....","..........","....2.....","..........","..........",".........."].map(r=>r.replace(/2/g,'1'))}},
+  spr:{p:{1:'#c9a4ff',2:'#5d3d94'},s:["..........","...2222...","..2....2..","......2...",".....2....",".....2....","..........",".....2....","..........",".........."].map(r=>r.replace(/2/g,'1'))}},
  elite:{bg:'#3a0a14',name:'Elite Wager',col:'#e04050',desc:'A much harder wager with a boss rule (two from stage 4). Win to pick gear: a Rare Charm, a relic coin or a free Upgrade. Lose and you retreat, dropping half your money',
   spr:{p:{1:'#ececec',2:'#7a7a7a',3:'#1a1a1a'},s:["..111111..",".11111111.","1111111111","1331111331","1331111331","1111221111",".11111111.","..1.11.1..","..111111..",".........."]}},
  bazaar:{bg:'#123a38',name:'Bazaar',col:'#5fd3c8',rare:1,desc:'A rare travelling market with better goods: three Uncommon-or-better Charms (sometimes Legendary) and the biggest packs. Prices are {r:40% higher}',
