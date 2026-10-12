@@ -1071,7 +1071,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.140</div>
+  <div class="gamever" aria-label="Version">v1.2.141</div>
 </div>
 
 <script>
@@ -4007,7 +4007,7 @@ function runChip(){const r=ROLLS[S.roll];if(!r)return '';const st=STAKES[S.stake
 function renderSide(){
   const el=$('#side');let head='';
   if(S.screen==='blind'){
-    head=`<div class="s-blind" style="--bc:var(--panel-hi)"><div class="s-bname">Choose your next Wager</div><div class="s-binfo"><div class="lbl">Floor ${S.ante}: ${floorOf(S.ante).name}. Beat the boss to go up.</div></div></div>`;
+    head=`<div class="s-blind" style="--bc:var(--panel-hi)"><div class="s-bname">Choose your next Wager</div><div class="s-binfo"><div class="lbl">Floor ${S.ante}: ${floorOf(S.ante).name}</div></div></div>`;
   }else if(S.screen==='choose'){
     head=`<div class="s-blind" style="--bc:#a8743a"><div class="s-bname">Where next?</div><div class="s-binfo"><div class="lbl">${S.ways&&S.ways.length===1&&S.ways[0].t==='bigspender'?'The Big Spender is waiting':'The shop, or a detour in its place'}</div></div></div>`;
   }else if(S.screen==='event'){
@@ -4151,7 +4151,7 @@ function refreshTable(){
 }
 function blindSelectHTML(){
   const F=floorOf(S.ante);
-  return `${wxBanner()}<div class="floorname" style="--fc:${F.col}">Floor ${S.ante} · ${F.name}</div><div class="blinds">${S.blinds.map((b,i)=>{
+  return `${wxBanner()}<div class="blinds">${S.blinds.map((b,i)=>{
     const cur=S.screen==='blind'&&i===S.blindIdx&&b.state==='select';
     const lab={upcoming:'Upcoming',defeated:'Defeated',skipped:'Skipped',select:'Next up'}[b.state]||'';
     return `<div class="bcol ${b.state}" style="--bc:${blindColor(b)}">
