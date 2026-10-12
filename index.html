@@ -1070,7 +1070,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.133</div>
+  <div class="gamever" aria-label="Version">v1.2.134</div>
 </div>
 
 <script>
@@ -4241,7 +4241,7 @@ function packHTML(){
     return `<div class="scard popt ${o.kind==='charm'&&JOKERS[o.key]?(JOKERS[o.key].r===5?'fabled':JOKERS[o.key].r===4?'legend':''):''} ${o.taken&&o.kind!=='myst'?'gone':''} ${o.kind==='myst'&&(o.taken||P.done)?'mystup'+(o.taken?'':' missed'):''} ${P.kind==='glitch'?'gpopt':''}"><button class="jcard ${o.kind==='charm'?'':'tile'}" data-tip="popt:${i}" aria-label="${name.replace(/<[^>]+>/g,' ').replace(/"/g,'')}">${face}</button>
       <div class="pname">${name}</div><div class="pbtns">${btns}</div><div class="why">${why&&!o.taken?why:''}</div></div>`}).join('');
   return `<div class="panel packview" style="--pc:${info.col}"><div class="packhead"><div><div class="ptitle" style="color:${info.col}">${packName(P)}</div>
-    <div class="lbl" style="max-width:62ch;line-height:1.35">${P.done?'Here\'s what was inside.':`Choose ${P.picks} more. ${fmt(KIND_INFO[P.kind])}`}</div></div>
+    ${P.done?'<div class="lbl" style="max-width:62ch;line-height:1.35">Here\'s what was inside.</div>':''}</div>
     ${P.done?'<button class="btn orange big" data-act="skippack">Continue</button>':'<button class="btn red" data-act="skippack">Skip</button>'}</div>${P.kind==='fortune'?lkMeters('The Fortune Pack reveals your fortunes'):''}<div class="popts">${opts}</div></div>${purseHTML()}`;
 }
 function renderOverlay(){
