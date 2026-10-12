@@ -641,7 +641,10 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
 .extgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.extgrid .btn{width:100%;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff}
 .trow{display:contents}
 .titlebtns .btn.big{width:100%;min-width:0;justify-content:center}
-#contbtn{grid-column:1/-1;justify-self:center;width:calc(25% - 10.5px)!important}
+/* with a saved run, Continue and New Run share the top row; the other buttons sit below */
+.tcont{grid-column:1/-1;display:flex;justify-content:center;gap:14px}.tcont[hidden]{display:none}
+.tcont .btn.big{width:min(220px,40%)!important;flex:0 0 auto}
+.titlebtns.hascont{grid-template-columns:repeat(3,minmax(0,1fr)) auto}
 #contbtn:not([hidden]){display:flex;flex-direction:column;align-items:center;line-height:1.05;padding-top:8px;padding-bottom:8px}#contbtn small{display:block;font-size:12px;margin:0}
 .trow .btn[hidden]{display:none}
 .bestlines{display:flex;flex-direction:column;align-items:center;gap:2px}
@@ -801,7 +804,8 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
   #toasts .toast{font-size:13px;padding:6px 12px;line-height:1.25}
   body:has(#coach:not([hidden])) #toasts{bottom:calc(100px + env(safe-area-inset-bottom))}
   /* title: Continue gets its own full-width row */
-  #contbtn{width:calc(25% - 4.5px)!important;display:flex;flex-direction:column;align-items:center;line-height:1.1}
+  #contbtn{display:flex;flex-direction:column;align-items:center;line-height:1.1}
+  .tcont{gap:6px}
   #contbtn[hidden]{display:none}
   #contbtn small{display:block;margin:2px 0 0;font-size:11px}
   .modal h2{font-size:24px;margin:2px 0 8px}
@@ -1047,7 +1051,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     <p class="tagline">A coin-flip roguelike. Call it, toss your purse, chain Points × Mult, and beat eight stages of wagers.</p>
   <div class="titlebtns">
     <div class="trow">
-      <button class="btn red big" data-act="cont" id="contbtn" hidden>Continue</button>
+      <div class="tcont" id="tcont" hidden><button class="btn red big" data-act="cont" id="contbtn" hidden>Continue</button></div>
       <button class="btn blue big" data-act="play" id="playbtn">Play</button>
       <button class="btn purple big" data-act="daily">Daily Toss</button>
       <button class="btn orange big" data-act="howto">How to Play</button>
@@ -1056,7 +1060,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.118</div>
+  <div class="gamever" aria-label="Version">v1.2.119</div>
 </div>
 
 <script>
@@ -4896,6 +4900,7 @@ async function titleToss(){
 }
 function updateTitle(){updateStreakLine();
   const sv=savedRun(),c=$('#contbtn');{const pb=$('#playbtn');if(pb)pb.textContent=sv&&sv.S?'New Run':'Play'}if(c){c.hidden=!(sv&&sv.S);if(sv&&sv.S)c.innerHTML=`Continue<small>Stage ${sv.S.ante}${sv.S.daily?' · Daily':''}</small>`}
+  {const tc=$('#tcont'),pb=$('#playbtn'),tb=$('.titlebtns'),has=!!(sv&&sv.S);if(tc&&pb&&tb){tc.hidden=!has;tb.classList.toggle('hascont',has);if(has)tc.appendChild(pb);else{const d=tb.querySelector('[data-act=daily]');d.parentNode.insertBefore(pb,d)}}}
 }
 /* ================= COLLECTION ================= */
 const COL={tab:'charms',rar:0,sel:null,wear:''};
