@@ -377,6 +377,17 @@ body.badges .face::before{display:block}
 .sect.up{flex:0 0 auto}
 .slbl{font-size:13px;color:var(--ink-dim);letter-spacing:.12em;text-transform:uppercase;padding-left:4px}
 .shoprow2{display:flex;gap:14px;flex-wrap:wrap}
+/* desktop: buttons, Charms, Upgrade and Packs share one row, each shelf only as wide as what's on it */
+@media (min-width:761px){
+  .shop{display:grid;width:fit-content;max-width:100%;gap:12px 14px;grid-template-columns:auto auto 1fr;grid-template-areas:"btn ch ch" "btn up pk"}
+  .shop.onerow{grid-template-columns:auto auto auto auto;grid-template-areas:"btn ch up pk"}
+  .shop.noup{grid-template-columns:auto 1fr;grid-template-areas:"btn ch" "btn pk"}
+  .shop.noup.onerow{grid-template-columns:auto auto auto;grid-template-areas:"btn ch pk"}
+  .shophead,.shoprow2{display:contents}
+  .shopbtns{grid-area:btn;justify-content:center}
+  .shop .sect.ch{grid-area:ch}.shop .sect.up{grid-area:up}.shop .sect.pk{grid-area:pk}
+  .shop .shelf{min-width:110px}
+}
 .packview{width:min(860px,100%);display:flex;flex-direction:column;gap:12px;box-shadow:0 5px 0 var(--edge),inset 0 0 0 3px var(--pc)}
 .packhead{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .ptitle{font-size:28px;font-weight:700}
@@ -1071,7 +1082,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.142</div>
+  <div class="gamever" aria-label="Version">v1.2.143</div>
 </div>
 
 <script>
@@ -4206,12 +4217,13 @@ function shopHTML(){
   const brc=S.backroom&&(sh.br||[]).map((o,i)=>{const L=o.k==='loaded',p=L?gp(o,6):0,room=purseUsed()+2<=S.purseMax,dis=o.bought||(L&&(S.money<p||!room));
       return `<div class="scard ${o.bought?'gone':''}"><div class="price">${L?'$'+p:'+$10'}</div><button class="jcard tile" data-tip="brgood:${i}" aria-label="${L?'Loaded coins':'Fence something'}"><div class="jin" style="--jbg:${L?'#3a1414':'#2a2410'};--dl:${-i*.8}s">${L?coinIcon('loaded'):IMG(sprite('fence',SPR_FENCE))}<span class="lab">${L?'Loaded':'Fence'}</span></div></button>
       <button class="btn ${L?'green':'red'} small" data-act="brbuy" data-arg="${i}" ${dis?'disabled':''}>${L&&!room&&!o.bought?'No room':L?'Buy':'Take'}</button><div class="pcap">${L?"A Magician's Coin and a counterfeit. Karma -1":'Easy money. Karma -2'}</div></div>`}).join('');
-  return `<div class="panel shop ${S.backroom?'brshop':S.bigspender?'bsshop':''}"><div class="shophead"><div class="shopbtns">
+  const noup=!!(S.backroom||S.bigspender),items=sh.jokers.length+(S.backroom?(sh.br||[]).length:sh.packs.length)+(noup?0:1);
+  return `<div class="panel shop ${S.backroom?'brshop':S.bigspender?'bsshop':''} ${noup?'noup':''} ${items<=6?'onerow':''}"><div class="shophead"><div class="shopbtns">
       <button class="btn red big" data-act="nextround">${S.backroom||S.bigspender?'Leave':'Next Round'}</button>
       <button class="btn green" data-act="reroll" ${S.money<rerollCost()?'disabled':''}>Reroll $${rerollCost()}</button></div>
-      <div class="sect"><div class="slbl">${S.roll==='ghost'?'Spirits':'Charms'}</div><div class="shelf">${sh.jokers.map(charmCardHTML).join('')}</div></div></div>
-    <div class="shoprow2">${S.backroom?`<div class="sect"><div class="slbl">Under the counter</div><div class="shelf">${brc}</div></div>`:S.bigspender?`<div class="sect"><div class="slbl">Packs</div><div class="shelf">${pc}</div></div>`:`<div class="sect up"><div class="slbl">Upgrade</div><div class="shelf">${uc}</div></div>
-      <div class="sect"><div class="slbl">Packs</div><div class="shelf">${pc}</div></div>`}</div></div>
+      <div class="sect ch"><div class="slbl">${S.roll==='ghost'?'Spirits':'Charms'}</div><div class="shelf">${sh.jokers.map(charmCardHTML).join('')}</div></div></div>
+    <div class="shoprow2">${S.backroom?`<div class="sect pk"><div class="slbl">Under the counter</div><div class="shelf">${brc}</div></div>`:S.bigspender?`<div class="sect pk"><div class="slbl">Packs</div><div class="shelf">${pc}</div></div>`:`<div class="sect up"><div class="slbl">Upgrade</div><div class="shelf">${uc}</div></div>
+      <div class="sect pk"><div class="slbl">Packs</div><div class="shelf">${pc}</div></div>`}</div></div>
     ${purseHTML()}`;
 }
 function purseHTML(){
