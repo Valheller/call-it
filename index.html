@@ -638,7 +638,7 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
 /* title buttons: one 4-column grid so every button is the same size and the columns line up; Continue gets its own row */
 .titlebtns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;gap:12px 14px;width:min(720px,94vw);margin:0 auto}
 .titlebtns .btn.big.gearbtn{width:auto;height:100%;aspect-ratio:1;min-width:0;padding:0;display:grid;place-items:center}
-.titlebtns .btn.gearbtn svg{width:52%;height:52%}
+.titlebtns .btn.gearbtn svg{width:1.4em;height:1.4em}
 .extgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:2px 2px 8px}.extgrid .btn{width:100%;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff}
 .trow{display:contents}
 .titlebtns .btn.big{width:100%;min-width:0;justify-content:center}
@@ -667,6 +667,11 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
   .stat.wide{grid-column:auto}
   .s-contract{display:none}
   .titlebtns{gap:6px;width:min(400px,100%)}
+  /* two rows on phones: Play | Daily Toss, then How to Play | Extras | gear */
+  .titlebtns,.titlebtns.hascont{grid-template-columns:1fr 1fr auto}
+  .titlebtns [data-act=daily]{grid-column:2/4}
+  .titlebtns.hascont [data-act=daily]{grid-column:1}.titlebtns.hascont [data-act=howto]{grid-column:2/4}.titlebtns.hascont [data-act=extras]{grid-column:1/3}
+  .trow .btn.big{font-size:15px;padding:12px 4px}
   .trow .btn.big{flex:1 1 0;min-width:0;font-size:13px;padding:10px 4px;white-space:normal;line-height:1.15}
   .stat.haswx .stl{display:none}
   .wxbanner{font-size:11px;padding:3px 8px}
@@ -1061,7 +1066,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.120</div>
+  <div class="gamever" aria-label="Version">v1.2.121</div>
 </div>
 
 <script>
