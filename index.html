@@ -1070,7 +1070,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.129</div>
+  <div class="gamever" aria-label="Version">v1.2.130</div>
 </div>
 
 <script>
@@ -5007,7 +5007,7 @@ function tipContent(spec){
     return (W?`<div class="tn">${W.name}</div><div class="td">${fmt(W.desc)}</div><span class="tb" style="background:${W.col};color:#1a1a1a">Stage ${S.ante} weather</span>`:`<div class="tn">Stage ${S.ante} of 8</div><div class="td">Clear skies this stage.</div>`)+boss}
   if(k==='runroll'){const r=ROLLS[S.roll],st=STAKES[S.stake]||STAKES[1];
     return `<div class="tn">${rollName(S.roll)}</div><div class="td">${fmt(r.desc)}</div>${S.daily?`<span class="tb" style="background:var(--purple)">Daily Toss</span>`:r.challenge?`<span class="tb" style="background:var(--mult)">Challenge Roll</span>`:`<span class="tb" style="background:${st.col};color:#1a1a1a">${st.name}</span><div class="td" style="margin-top:4px">${stakeDesc(S.stake)}</div>`}${S.seed?`<div class="tkind">Seed ${S.seed}</div>`:''}`}
-  if(k==='way'){const D=DEST[i];return D&&`<div class="tn">${D.name}</div><div class="td">${fmt(D.desc)}</div><span class="tb" style="background:${D.col};color:#1a1a1a">${D.rare?'Rare detour':'Destination'}</span>`}
+  if(k==='way'){const w=S&&S.ways&&S.ways[+i],D=w&&DEST[w.t];return D&&`<div class="tn">${D.name}</div><div class="td">${fmt(wayInfo(w))}</div><span class="tb" style="background:${D.col};color:#1a1a1a">${D.rare?'Rare detour':'Destination'}</span>`}
   if(k==='brgood'){const o=S.shop&&S.shop.br&&S.shop.br[i];if(!o)return null;
     if(o.k==='fence')return `<div class="tn">Fence Something</div><div class="td">${fmt('Take {$:$10} for something you never ask about. {r:-2 Karma}')}</div>`;
     return `<div class="tn">Loaded Coins</div><div class="td">${fmt(`Two coins for your purse, {r:-1 Karma}:<br><b>${COINS.loaded.name}</b>: ${COINS.loaded.desc}<br><b>A counterfeit</b>: a ${COINS.twohead.name} or ${COINS.twotail.name}. It always lands on that face and gives {c:+25} more Points when it scores`)}</div>`}
@@ -5456,12 +5456,11 @@ function wayInfo(w){
   return DEST[w.t].desc;
 }
 function waysHTML(){
-  return `${wxBanner()}<div class="waysbox"><div class="ptitle">Where next?</div><div class="lbl" style="text-align:center">${S.ways.length===1&&S.ways[0].t==='bigspender'?'Money talks. The Big Spender is the only door open to you':'Pick one. A detour takes the place of the shop this time'}</div>
+  return `${wxBanner()}<div class="waysbox"><div class="ptitle">Where next?</div>${S.ways.length===1&&S.ways[0].t==='bigspender'?'<div class="lbl" style="text-align:center">Money talks. The Big Spender is the only door open to you</div>':''}
     <div class="blinds ways">${S.ways.map((w,i)=>{const D=DEST[w.t];return `<div class="bcol select way ${D.rare?'rare':''}" style="--bc:${D.col}">
       <div class="bname">${D.name}</div>
-      <button class="jcard tile" data-act="way" data-arg="${i}" data-tip="way:${w.t}" aria-label="${D.name}"><div class="jin" style="--jbg:${D.bg};--nc:${D.col}">${IMG(destIcon(w.t))}</div></button>
-      <div class="wsub">${fmt(wayInfo(w))}</div>
-      <button class="btn ${w.t==='shop'?'green':'orange'}" style="width:100%" data-act="way" data-arg="${i}">${w.t==='shop'?'Shop':'Go'}</button></div>`}).join('')}</div></div>`;
+      <button class="jcard tile" data-tip="way:${i}" aria-label="${D.name}"><div class="jin" style="--jbg:${D.bg};--nc:${D.col}">${IMG(destIcon(w.t))}</div></button>
+      <button class="btn ${w.t==='shop'?'green':'orange'}" style="width:100%" data-act="way" data-arg="${i}">${w.t==='shop'?'Browse':'Go'}</button></div>`}).join('')}</div></div>`;
 }
 const biggest=k=>{const sz=PACKS[k].sizes||['normal','jumbo','mega'];return sz.includes('mega')?'mega':sz.includes('jumbo')?'jumbo':sz[0]};
 function chooseWay(i){
