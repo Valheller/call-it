@@ -687,6 +687,8 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
 #title{position:fixed;inset:0;z-index:55;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,3vh,28px);padding:16px;text-align:center}
 .logo{font-family:'Silkscreen','Pixelify Sans',ui-monospace,monospace;font-size:clamp(52px,12vw,132px);font-weight:700;line-height:.95;letter-spacing:.02em}
 .logo .w{display:inline-block;white-space:nowrap}
+#title>.logo{position:relative;top:clamp(-22px,-2.5vh,-8px)}
+#title>.titlebtns,#title>.titlebtns~*:not(#fsbtn):not(.gamever){position:relative;top:clamp(8px,2.5vh,22px)}
 .logo span{display:inline-block;animation:lwob 2.6s ease-in-out infinite;animation-delay:calc(var(--i)*-.18s);
   text-shadow:0 4px 0 var(--sh),0 8px 0 var(--sh2),0 12px 18px rgba(0,0,0,.5)}
 @keyframes lwob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
@@ -705,7 +707,7 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
 .titlebtns .btn.gearbtn svg{width:1.4em;height:1.4em}
 .extgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:2px 2px 8px}.extgrid .btn{width:100%;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff}
 .trow{display:contents}
-.titlebtns .btn.big{width:100%;min-width:0;justify-content:center}
+.titlebtns .btn.big{width:100%;min-width:0;justify-content:center;text-align:center;padding-left:6px;padding-right:6px;white-space:nowrap}
 /* with a saved run, Continue and New Run share the top row; the other buttons sit below */
 .tcont{grid-column:1/-1;display:flex;justify-content:center;gap:14px}.tcont[hidden]{display:none}
 .tcont .btn.big{width:min(220px,40%)!important;flex:0 0 auto}
@@ -1131,7 +1133,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.153</div>
+  <div class="gamever" aria-label="Version">v1.2.154</div>
 </div>
 
 <script>
