@@ -1070,7 +1070,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.130</div>
+  <div class="gamever" aria-label="Version">v1.2.131</div>
 </div>
 
 <script>
@@ -4201,7 +4201,7 @@ function shopHTML(){
   const pc=sh.packs.map((pk,i)=>{const p=packPrice(pk),info=PACKS[pk.kind];
     return `<div class="scard ${pk.bought?'gone':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">${p?'$'+p:'Free'}</div>
       <button class="jcard tile ${pk.kind==='glitch'?'gpk':''}" data-tip="pack:${i}" data-drag="shop" data-sk="p:${i}" aria-label="${packName(pk)}"><div class="jin" style="--jbg:${info.bg};--dl:${-i*.8}s">${IMG(packIconFor(pk.kind,pk.size))}<span class="lab">${PACKS[pk.kind].word}</span></div></button>
-      <button class="btn green small" data-act="buypack" data-arg="${i}" ${pk.bought||S.money<p?'disabled':''}>Open</button><div class="pcap">${packName(pk)}</div></div>`}).join('');
+      <button class="btn green small" data-act="buypack" data-arg="${i}" ${pk.bought||S.money<p?'disabled':''}>Open</button></div>`}).join('');
   const brc=S.backroom&&(sh.br||[]).map((o,i)=>{const L=o.k==='loaded',p=L?gp(o,6):0,room=purseUsed()+2<=S.purseMax,dis=o.bought||(L&&(S.money<p||!room));
       return `<div class="scard ${o.bought?'gone':''}"><div class="price">${L?'$'+p:'+$10'}</div><button class="jcard tile" data-tip="brgood:${i}" aria-label="${L?'Loaded coins':'Fence something'}"><div class="jin" style="--jbg:${L?'#3a1414':'#2a2410'};--dl:${-i*.8}s">${L?coinIcon('loaded'):IMG(sprite('fence',SPR_FENCE))}<span class="lab">${L?'Loaded':'Fence'}</span></div></button>
       <button class="btn ${L?'green':'red'} small" data-act="brbuy" data-arg="${i}" ${dis?'disabled':''}>${L&&!room&&!o.bought?'No room':L?'Buy':'Take'}</button><div class="pcap">${L?"A Magician's Coin and a counterfeit. Karma -1":'Easy money. Karma -2'}</div></div>`}).join('');
