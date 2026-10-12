@@ -1071,7 +1071,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.138</div>
+  <div class="gamever" aria-label="Version">v1.2.139</div>
 </div>
 
 <script>
@@ -3523,6 +3523,8 @@ function consInfo(c){
   return{name:d.name,short:d.name,desc:typeof d.desc==='function'?d.desc():d.desc,badge:'Spirit',bc:'#2fa7a0',icon:sprite('sp-'+c.key,SPIRIT_ART[c.key]||{p:{1:d.col,2:'#1b1b2a'},s:SPR_SPIRIT}),bg:'#18333a',sell:2,cost:4};
 }
 const consDef=c=>c.kind==='fortune'?FORTUNES[c.key]:c.kind==='rune'?RUNES[c.key]:c.kind==='spirit'?SPIRITS[c.key]:c.kind==='almanac'&&c.key?ALMS[c.key]:null;
+/* "Select 1 to 2 coins" still blocks Use, but isn't printed: the description already says how many */
+const selWhy=w=>/^Select \d/.test(w||'');
 function consBlock(c,fromSlot){
   const d=consDef(c);
   const canPick=S.screen==='shop'||(S.screen==='play'&&S.phase==='call');
@@ -4074,7 +4076,7 @@ function consSlot(c,i){
   const ci=consInfo(c),sel=S.selCons===i&&canEdit();
   let acts='';
   if(sel){const why=consBlock(c,true);
-    acts=`<div class="jacts"><button class="btn green tiny" data-act="usecons" data-arg="${i}" ${why?'disabled':''}>Use</button>${S.roll==='hoarder'?'':`<button class="btn tiny" data-act="sellcons" data-arg="${i}">Sell $${ci.sell}</button>`}${why?`<div class="why">${why}</div>`:''}</div>`}
+    acts=`<div class="jacts"><button class="btn green tiny" data-act="usecons" data-arg="${i}" ${why?'disabled':''}>Use</button>${S.roll==='hoarder'?'':`<button class="btn tiny" data-act="sellcons" data-arg="${i}">Sell $${ci.sell}</button>`}${why&&!selWhy(why)?`<div class="why">${why}</div>`:''}</div>`}
   return `<div class="jslot ${sel?'sel':''}" data-idx="${i}"><button class="jcard tile" id="cs${i}" data-act="cons" data-arg="${i}" data-drag="cons" data-tip="cons:${i}" aria-label="${ci.name}">
     <div class="jin" style="--jbg:${ci.bg};--dl:${-(i*.9)}s">${IMG(ci.icon)}</div></button>${acts}</div>`;
 }
@@ -4240,7 +4242,7 @@ function packHTML(){
         (o.kind!=='almanac'?`<button class="btn small" data-act="ppick" data-arg="${i},keep" ${consRoom()?'':'disabled'}>Keep</button>`:'')}
     if(P.kind==='glitch'&&!o.taken)name=`<span class="glitchname" aria-label="${name.replace(/<[^>]+>/g,' ').replace(/"/g,'')}">${name.replace(/<[^>]+>/g,' ')}</span>`;
     return `<div class="scard popt ${o.kind==='charm'&&JOKERS[o.key]?(JOKERS[o.key].r===5?'fabled':JOKERS[o.key].r===4?'legend':''):''} ${o.taken&&o.kind!=='myst'?'gone':''} ${o.kind==='myst'&&(o.taken||P.done)?'mystup'+(o.taken?'':' missed'):''} ${P.kind==='glitch'?'gpopt':''}"><button class="jcard ${o.kind==='charm'?'':'tile'}" data-tip="popt:${i}" aria-label="${name.replace(/<[^>]+>/g,' ').replace(/"/g,'')}">${face}</button>
-      <div class="pname">${name}</div><div class="pbtns">${btns}</div><div class="why">${why&&!o.taken?why:''}</div></div>`}).join('');
+      <div class="pname">${name}</div><div class="pbtns">${btns}</div><div class="why">${why&&!o.taken&&!selWhy(why)?why:''}</div></div>`}).join('');
   return `<div class="panel packview" style="--pc:${info.col}"><div class="packhead"><div><div class="ptitle" style="color:${info.col}">${packName(P)}</div>
     ${P.done?'<div class="lbl" style="max-width:62ch;line-height:1.35">Here\'s what was inside.</div>':''}</div>
     ${P.done?'<button class="btn orange big" data-act="skippack">Continue</button>':'<button class="btn red" data-act="skippack">Skip</button>'}</div>${P.kind==='fortune'?lkMeters('The Fortune Pack reveals your fortunes'):''}<div class="popts">${opts}</div></div>${purseHTML()}`;
