@@ -1071,7 +1071,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.141</div>
+  <div class="gamever" aria-label="Version">v1.2.142</div>
 </div>
 
 <script>
@@ -3758,7 +3758,7 @@ const WEATHER={
 const wx=k=>!!S&&S.weather===k;
 function rollWeather(ante){const w=rollWeather0(ante);if(w&&!(S.wxSeen=S.wxSeen||[]).includes(w))S.wxSeen.push(w);return w}
 function rollWeather0(ante){if(S.nextWeather&&ante>1){const w=S.nextWeather;S.nextWeather=null;return w}const always=S.roll==='stormchaser'||hasK('rainmaker');if(!always&&(ante<2||rand()>=.35))return null;return pick(Object.keys(WEATHER).filter(k=>k!==S.weather))}
-const wxBanner=()=>S.weather?`<div class="wxbanner" style="--wc:${WEATHER[S.weather].col}" data-tip="wx"><b>${WEATHER[S.weather].name}</b> · ${fmt(WEATHER[S.weather].desc)}</div>`:'';
+const wxBanner=()=>S.weather?`<div class="wxbanner" style="--wc:${WEATHER[S.weather].col}"><b>${WEATHER[S.weather].name}</b> · ${fmt(WEATHER[S.weather].desc)}</div>`:'';
 
 /* ================= RUN STATE ================= */
 function newRun(roll='standard',o={}){
