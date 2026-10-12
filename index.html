@@ -1082,7 +1082,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.144</div>
+  <div class="gamever" aria-label="Version">v1.2.145</div>
 </div>
 
 <script>
@@ -1177,28 +1177,28 @@ const COINS={
  lucky:{name:'5 Yen Coin',        chips:10, lucky:1, cost:4, desc:'{c:+10} Points. {a:1 in 3} chance for {m:+15} Mult, {a:1 in 8} chance for {$:$8}. Both chances {a:double} while it sits in the {a:middle} of your purse'},
  steel:  {name:'2 Euro Coin',       chips:5, missX:1.5, cost:5, desc:'{c:+5} Points when it scores. {x:X1.5} Mult when it does {a:not} score'},
  glass:  {name:'Chocolate Coin',    chips:5, xmult:2, glass:1, cost:5, desc:'{c:+5} Points, {x:X2} Mult. {a:1 in 10} chance to get eaten when it scores, leaving a {a:Crumpled Gold Foil} coin behind'},
- bronze: {name:'Wooden Nickel',     chips:1, missMult:8, cost:4, desc:'{c:+1} Point when it scores, but {m:+8} Mult when it {a:misses}. Don\'t take any wooden nickels'},
+ bronze: {name:'Wooden Nickel',     chips:1, missMult:8, cost:4, desc:'{c:+1} Point when it scores, but {m:+8} Mult when it {a:misses}'},
  loaded:{name:"Magician's Coin",   chips:15, bias:.8, freeFlip:1, cost:5, desc:'{c:+15} Points. Lands on your call {a:4 in 5} times. Re-flipping only Magician\'s Coins is {a:free}'},
  quicksilver:{name:'Arcade Token',  chips:5, wild:1, arcade:2, cost:6, desc:'{c:+5} Points. Always scores, whatever face it lands on. {m:+2} Mult for each Re-flip you\'ve used this wager. {a:Continue?} If you would run out of Flips short of the target, it gets used up for {a:+1} Flip and {a:+1} Re-flip'},
- twohead:{name:'Two-Headed Fake',   chips:5, fixed:'H', fakeBonus:25, cost:4, desc:'{c:+5} Points. A counterfeit quarter that always lands {a:Heads}, and gives {c:+25} more when it scores. Crooks don\'t sleep well'},
- twotail:{name:'Two-Tailed Fake',   chips:5, fixed:'T', fakeBonus:25, cost:4, desc:'{c:+5} Points. A counterfeit quarter that always lands {a:Tails}, and gives {c:+25} more when it scores. Crooks don\'t sleep well'},
+ twohead:{name:'Two-Headed Fake',   chips:5, fixed:'H', fakeBonus:25, cost:4, desc:'{c:+5} Points. Always lands {a:Heads}, and gives {c:+25} more when it scores'},
+ twotail:{name:'Two-Tailed Fake',   chips:5, fixed:'T', fakeBonus:25, cost:4, desc:'{c:+5} Points. Always lands {a:Tails}, and gives {c:+25} more when it scores'},
 };
 Object.assign(COINS,{
- sixpence:{name:'Silver Sixpence', chips:5, luckmoney:1, cost:4, desc:'{c:+5} Points. {a:1 in 3} chance to earn {$:$4}. Brides keep one in their shoe for good fortune'},
- drachma:{name:'Greek Drachma',     chips:20,owl:1, cost:5, desc:'{c:+20} Points. {a:Wise}: when it misses on a toss, it re-flips itself once, for free. It has an owl on the back'},
+ sixpence:{name:'Silver Sixpence', chips:5, luckmoney:1, cost:4, desc:'{c:+5} Points. {a:1 in 3} chance to earn {$:$4}'},
+ drachma:{name:'Greek Drachma',     chips:20,owl:1, cost:5, desc:'{c:+20} Points. {a:Wise}: when it misses on a toss, it re-flips itself once, for free'},
  peso:{name:'Mexican Peso',      chips:10, pesoMult:4, cost:4, desc:'{c:+10} Points. {m:+4} Mult for each Mexican Peso in your purse (including this one)'},
- krona:{name:'Swedish Krona',     chips:20,tailsWild:1,tailsMult:5, cost:4, desc:'{c:+20} Points. It always scores when it lands on {a:Tails}, whatever you called, and gives {m:+5} Mult when it does. Three crowns on the back'},
- pog:    {name:'Slammer Pog',       chips:5, slam:1, cost:5, desc:'{c:+5} Points. {a:Slam}: when it scores, the coin to its {a:right} scores too, whatever face it shows. A heavy playground slammer'},
- crypto: {name:'Crypto Coin',       chips:5, crypto:1, cost:5, desc:'{c:+5} Points. Earn anywhere from {r:-$2} to {$:$6} when it scores. Very volatile'},
- sealed:  {name:'Sealed Coin',     chips:10,relic:1,quest:1,cost:0,desc:'{c:+10} Points. A courier\'s sealed coin. Keep it in your purse until the delivery stage'},
+ krona:{name:'Swedish Krona',     chips:20,tailsWild:1,tailsMult:5, cost:4, desc:'{c:+20} Points. It always scores when it lands on {a:Tails}, whatever you called, and gives {m:+5} Mult when it does'},
+ pog:    {name:'Slammer Pog',       chips:5, slam:1, cost:5, desc:'{c:+5} Points. {a:Slam}: when it scores, the coin to its {a:right} scores too, whatever face it shows'},
+ crypto: {name:'Crypto Coin',       chips:5, crypto:1, cost:5, desc:'{c:+5} Points. Earn anywhere from {r:-$2} to {$:$6} when it scores'},
+ sealed:  {name:'Sealed Coin',     chips:10,relic:1,quest:1,cost:0,desc:'{c:+10} Points. Keep it in your purse until the delivery stage'},
  penny:   {name:'Lucky Penny',     chips:1, wild:1, relic:1, cost:0, desc:'{c:+1} Point. Always scores, whatever face it lands on. {a:Relic}: one of a kind'},
  denarius:{name:'Roman Denarius',  chips:15,mult:5,tribute:5,relic:1, cost:0, desc:'{c:+15} Points and {m:+5} Mult. {a:Tribute}: gains another {m:+5} Mult {a:permanently} every time you beat a Boss. {a:Relic}: one of a kind'},
  ecu:     {name:'Gold Ecu',       chips:5,xmult:1.5,euro:1,relic:1,cost:0,desc:'{c:+5} Points, {x:X1.5} Mult when it scores, or {x:X2} when it sits next to another {a:foreign} coin. {a:Relic}: one of a kind'},
  foil:    {name:'Crumpled Gold Foil',chips:3,money:1,meltVal:3,noShop:1,cost:0,desc:'{c:+3} Points. Earn {$:$1} when it scores. Melts down for {$:$3}'},
  sanddollar:{name:'Sand Dollar',chips:8,sand:1,fishLocked:1,cost:6,desc:'{c:+8} Points. Whenever it lands, it goes {a:fishing}. If it {r:missed}, land a catch and it flips onto your call. If it {a:scored}, land a catch for bonus Mult: {x:X1.25} for an Old Boot up to {x:X5} for The Pit Boss'},
- bellwether:{name:'The Bellwether',chips:6,bell:4,relic:1,artifact:1,cost:0,desc:'{c:+6} Points. The flock follows it. In your {a:first} slot, every other coin that scores gets {m:+4} Mult. Anywhere else it {r:never scores}. {a:Artifact}: one of a kind'},
+ bellwether:{name:'The Bellwether',chips:6,bell:4,relic:1,artifact:1,cost:0,desc:'{c:+6} Points. In your {a:first} slot, every other coin that scores gets {m:+4} Mult. Anywhere else it {r:never scores}. {a:Artifact}: one of a kind'},
  firstdime:{name:'The First Dime',chips:10,firstDime:.2,loseChance:1,relic:1,artifact:1,cost:0,desc:'{c:+10} Points. In your {a:first} slot when a wager starts, the score needed drops by {a:20%}. Anywhere else, the moment it scores it gets {r:lost} for good. {a:Artifact}: one of a kind'},
- pressed: {name:'Pressed Penny',  chips:3,wild:1,fixed:'H',train:3,flat:1,relic:1,artifact:1,charm:'pressedpenny',cost:0,desc:'{c:+3} Points. A souvenir penny pressed flat with a steam train. It never flips: it always scores, and gives {m:+3} Mult for each scoring coin to its {a:right} (its train cars). {a:Artifact}: drag it up into your Charms and it gives {a:+1} Flip every wager instead'},
+ pressed: {name:'Pressed Penny',  chips:3,wild:1,fixed:'H',train:3,flat:1,relic:1,artifact:1,charm:'pressedpenny',cost:0,desc:'{c:+3} Points. It never flips: it always scores, and gives {m:+3} Mult for each scoring coin to its {a:right}. {a:Artifact}: drag it up into your Charms and it gives {a:+1} Flip every wager instead'},
  hope:{name:'Hope Diamond Coin',chips:25,money:6,relic:1,cost:0,desc:'{c:+25} Points and earn {$:$6} when it scores. {a:Relic}: one of a kind'},
 });
 /* charms that care about a coin make that coin turn up more: each one owned (copies count) adds 3x weight */
