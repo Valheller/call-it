@@ -340,6 +340,8 @@ body.badges .face::before{display:block}
 .bskip{display:flex;flex-direction:column;gap:6px;align-items:center;width:100%}
 .tagd{font-size:13px;color:var(--ink-dim);min-height:30px}
 .tagd b{color:#fff}
+.tagd .tagname{cursor:help;text-decoration:underline dotted rgba(255,255,255,.5);text-underline-offset:3px}
+.tagd{min-height:0}
 .k-c{color:var(--chips)} .k-m{color:var(--mult)} .k-r{color:var(--mult)} .k-a{color:var(--orange)} .k-money{color:var(--money)} .k-g{color:var(--green)} .k-d{color:#8a9b9e}
 .k-x{background:var(--mult);color:#fff;border-radius:4px;padding:0 4px}
 
@@ -1058,7 +1060,6 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     <div class="w" style="--sh:#6f7a83;--sh2:#363d43"><span style="--i:5">i</span><span style="--i:6">t</span><span class="fishdot" data-act="fishdot" style="--i:7;--sh:#8a4f1e;--sh2:#45270e">.</span></div>
   </div>
   <div class="bigcoin t-copper" data-act="titlecoin" role="button" tabindex="0" aria-label="Flip the coin"><div class="spin"><div class="face heads" data-l="H"></div><div class="face tails" data-l="T"></div></div></div>
-    <p class="tagline">A coin-flip roguelike. Call it, toss your purse, chain Points × Mult, and beat eight stages of wagers.</p>
   <div class="titlebtns">
     <div class="trow">
       <div class="tcont" id="tcont" hidden><button class="btn red big" data-act="cont" id="contbtn" hidden>Continue</button></div>
@@ -1070,7 +1071,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.134</div>
+  <div class="gamever" aria-label="Version">v1.2.135</div>
 </div>
 
 <script>
@@ -4159,7 +4160,7 @@ function blindSelectHTML(){
       <div class="bchip" style="--sz:64px">${blindChip(b)}</div>
       ${b.boss?`<div class="bdesc">${b.kind==='boss'?'':`<b>${BOSSES[b.boss].name}</b>: `}${bossDesc(b)}</div>`:''}
       <div class="btgt"><div class="lbl">${b.boss==='general'||b.boss==='tablerivals'?'Beat':'Score at least'}</div><div class="tv">${b.boss==='general'?'The General':b.boss==='tablerivals'?'The Table':S.roll==='glitched'?`<span class="glitchnum" aria-label="Hidden target">${fmtN(blindTarget(b))}</span>`:fmtN(blindTarget(b))}</div><div class="lbl">Reward: <span class="k-money">${'$'.repeat(blindReward(b))}</span></div></div>
-      ${b.kind!=='boss'?`<div class="bskip"><div class="tagd">Skip for <b>${TAGS[b.tag].name}</b><br>${fmt(TAGS[b.tag].desc)}</div>
+      ${b.kind!=='boss'?`<div class="bskip"><div class="tagd">Skip for <b class="tagname" data-tip="tag:${b.tag}">${TAGS[b.tag].name}</b></div>
         <button class="btn red small" data-act="skipblind" ${cur?'':'disabled'}>Skip Wager</button></div>`:''}
       ${b.kind==='boss'&&bossRerollable()?`<div class="bskip">${b.state==='select'?'<button class="btn small" disabled>Too late</button>':bossRRused()?'<button class="btn small" disabled>Boss rerolled</button>':freeBossRR()?'<button class="btn small" style="--c:var(--purple);--cd:var(--purple-d)" data-act="bossrr" data-arg="free">Reroll Boss: Free</button>':`<button class="btn small" style="--c:var(--purple);--cd:var(--purple-d)" data-act="bossrr" ${S.money<bossRerollCost()?'disabled':''}>Reroll Boss $${bossRerollCost()}</button>`}</div>`:''}
     </div>`}).join('')}</div>`;
@@ -5007,6 +5008,7 @@ function tipContent(spec){
     return (W?`<div class="tn">${W.name}</div><div class="td">${fmt(W.desc)}</div><span class="tb" style="background:${W.col};color:#1a1a1a">Stage ${S.ante} weather</span>`:`<div class="tn">Stage ${S.ante} of 8</div><div class="td">Clear skies this stage.</div>`)+boss}
   if(k==='runroll'){const r=ROLLS[S.roll],st=STAKES[S.stake]||STAKES[1];
     return `<div class="tn">${rollName(S.roll)}</div><div class="td">${fmt(r.desc)}</div>${S.daily?`<span class="tb" style="background:var(--purple)">Daily Toss</span>`:r.challenge?`<span class="tb" style="background:var(--mult)">Challenge Roll</span>`:`<span class="tb" style="background:${st.col};color:#1a1a1a">${st.name}</span><div class="td" style="margin-top:4px">${stakeDesc(S.stake)}</div>`}${S.seed?`<div class="tkind">Seed ${S.seed}</div>`:''}`}
+  if(k==='tag'){const T=TAGS[a];return T&&`<div class="tn">${T.name}</div><div class="td">${fmt(T.desc)}</div><span class="tb" style="background:#e8c14a;color:#1a1a1a">Skip reward</span>`}
   if(k==='way'){const w=S&&S.ways&&S.ways[+i],D=w&&DEST[w.t];return D&&`<div class="tn">${D.name}</div><div class="td">${fmt(wayInfo(w))}</div><span class="tb" style="background:${D.col};color:#1a1a1a">${D.rare?'Rare detour':'Destination'}</span>`}
   if(k==='brgood'){const o=S.shop&&S.shop.br&&S.shop.br[i];if(!o)return null;
     if(o.k==='fence')return `<div class="tn">Fence Something</div><div class="td">${fmt('Take {$:$10} for something you never ask about. {r:-2 Karma}')}</div>`;
@@ -5044,7 +5046,7 @@ document.addEventListener('click',e=>{if(!touchUI()||(drag&&drag.active))return;
   const card=!e.target.closest('button[data-act]')&&e.target.closest('.popt,.scard');const t=e.target.closest('[data-tip]')||(card&&card.querySelector('[data-tip]'));if(!t||holdKind(t))return;const spec=t.dataset.tip;
   /* tapping your selected Charm again deselects it and hides its description */
   requestAnimationFrame(()=>{const[k,a]=spec.split(':');if(k==='joker'&&S&&canEdit()&&S.selJoker!==+a){hideTip();return}const el=t.isConnected?t:document.querySelector(`[data-tip="${spec}"]`);if(el){tipFor=el;showTip(el)}})},true);
-document.addEventListener('pointerover',e=>{if(drag&&drag.active)return;const t=e.target.closest('[data-tip]');if(e.pointerType==='mouse'&&t!==tipFor){tipFor=t;t?showTip(t):hideTip()}
+document.addEventListener('pointerover',e=>{if(drag&&drag.active)return;const t=e.target.closest('[data-tip]');if(e.pointerType==='mouse'&&!touchUI()&&t!==tipFor){tipFor=t;t?showTip(t):hideTip()}
   const b=e.target.closest('button');
   if(e.pointerType==='mouse'&&b&&!b.disabled&&b!==lastHover){lastHover=b;play('hover')}
   else if(!b)lastHover=null});
