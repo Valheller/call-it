@@ -127,6 +127,31 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .way .jcard:hover .jin{transform:translateY(-3px) scale(1.06)}
 .way .wsub{font-size:13px;color:#d8d2c4;line-height:1.3;flex:1}
 .way.rare .bname{box-shadow:0 0 14px var(--bc)}
+/* Where next? cards: a lit doorway per destination, icon floating on a glow */
+.waysbox{gap:14px}
+.waysbox .ptitle{font-size:30px;letter-spacing:.04em;display:flex;align-items:center;gap:14px;text-shadow:0 3px 0 rgba(0,0,0,.55)}
+.waysbox .ptitle::before,.waysbox .ptitle::after{content:'';width:clamp(24px,6vw,70px);height:2px;background:linear-gradient(90deg,transparent,#e9d9a8)}
+.waysbox .ptitle::after{transform:scaleX(-1)}
+.blinds.ways{gap:18px;align-items:stretch}
+.bcol.way{flex:0 1 230px;max-width:240px;padding:12px 12px 14px;gap:12px;transform:none;
+  background:radial-gradient(60% 42% at 50% 47%,color-mix(in srgb,var(--bc) 55%,transparent) 0,transparent 100%),linear-gradient(180deg,rgba(255,255,255,.04),rgba(0,0,0,.18)),var(--panel);
+  box-shadow:0 6px 0 var(--edge),0 10px 24px rgba(0,0,0,.35),inset 0 0 0 3px var(--bc);transition:transform .18s,box-shadow .18s}
+.bcol.way:hover{transform:translateY(-6px);box-shadow:0 12px 0 var(--edge),0 18px 34px rgba(0,0,0,.4),0 0 22px color-mix(in srgb,var(--bc) 45%,transparent),inset 0 0 0 3px var(--bc)}
+.way .bname{font-size:20px;letter-spacing:.02em;text-shadow:0 2px 0 rgba(0,0,0,.35);box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.way .jcard{width:clamp(72px,11vmin,104px);margin:8px 0 14px;animation:wayfloat 3s ease-in-out infinite}
+.way .jcard::after{content:'';position:absolute;left:12%;right:12%;bottom:-16px;height:8px;border-radius:50%;background:rgba(0,0,0,.45);filter:blur(3px);animation:wayshadow 3s ease-in-out infinite;pointer-events:none}
+.ways .way:nth-child(2) .jcard,.ways .way:nth-child(2) .jcard::after{animation-delay:-1.5s}
+@keyframes wayfloat{50%{transform:translateY(-6px)}}
+@keyframes wayshadow{50%{transform:scaleX(.8);opacity:.6}}
+.way .btn{margin-top:auto;font-size:18px;padding:10px 12px}
+@media (max-width:760px){
+  .waysbox .ptitle{font-size:22px}
+  .blinds.ways{gap:10px}
+  .bcol.way{flex:1 1 0;max-width:none;padding:8px 8px 10px;gap:8px}
+  .way .bname{font-size:15px}
+  .way .jcard{width:60px;margin:4px 0 10px}
+  .way .btn{font-size:14px;padding:8px}
+}
 .fataltxt{color:#ff5fd2;text-shadow:-2px 0 #00f0e0,2px 0 #ff1aa8}
 .sdfatal .sdname{position:relative;text-shadow:-3px 0 #00f0e0,3px 0 #ff1aa8;animation:glitchjit .9s steps(1) infinite}
 .sdfatal .sdlbl{color:#00f0e0}
@@ -1083,7 +1108,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.147</div>
+  <div class="gamever" aria-label="Version">v1.2.148</div>
 </div>
 
 <script>
