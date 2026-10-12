@@ -1108,7 +1108,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.148</div>
+  <div class="gamever" aria-label="Version">v1.2.149</div>
 </div>
 
 <script>
@@ -2168,7 +2168,7 @@ const CURSES={
  hungry:{name:'Hungry',col:'#c2557a',letter:'¢',desc:'Eats {$:$1} every toss'},
  jinxed:{name:'Jinxed',col:'#3a2a4a',letter:'J',desc:'{r:-2} Luck while you carry it'},
  rented:{name:'Rented',col:'#b8901f',letter:'$',desc:'Bought for {$:$1}. Lose {$:$3} at the end of each wager'},
- inflation:{name:'Inflation',col:'#d9a020',letter:'I',desc:'Shop prices rise with the money you hold: {r:+2%} for every {$:$1} (each Inflation Charm adds more). Never lowers a price, and the Big Spender is exempt. Can\'t be sold or purified'},
+ inflation:{name:'Inflation',col:'#d9a020',letter:'I',desc:'Prices rise {r:+2%} per {$:$1} you hold. Can\'t be sold or purified'},
 };
 /* curses that would cancel a Charm's whole point never land on it */
 const CURSE_BAN={cage:['heavy'],jester:['jinxed'],luckystreak:['jinxed'],potofgold:['jinxed','rented'],
