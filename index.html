@@ -1019,6 +1019,7 @@ html,body,button,a,.pond{touch-action:manipulation}
 .optm .optbody{padding-top:4px}
 .overlay>.endpanel{align-self:center;margin:auto 0}
 body:has(#overlay:not([hidden])) #saybox{display:none}
+.rollm .optfoot{text-align:center;padding-top:8px}
 .colm .cgrid,.rollm .rollgrid{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden}
 </style>
 
@@ -1066,7 +1067,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.123</div>
+  <div class="gamever" aria-label="Version">v1.2.124</div>
 </div>
 
 <script>
@@ -4620,8 +4621,9 @@ function rollModal(){
       ${lock||r.challenge?'':`<div class="stakes"><span class="lbl">Stake</span>${[1,2,3,4,5,6].map(n=>`<button class="btn tiny" style="--c:${n<=ms?STAKES[n].col:'var(--grey)'};--cd:rgba(0,0,0,.45);${n===STAKESEL?'outline:2px solid #fff;outline-offset:1px':''}" data-act="stakesel" data-arg="${n}" ${n>ms?'disabled':''} title="${STAKES[n].name}">${n}</button>`).join('')}</div>
       <div class="stakedesc">${stakeDesc(STAKESEL)}</div>`}
       ${lock?'':`<div class="seedrow"><span class="lbl">Seed</span><input id="seedin" maxlength="12" placeholder="Random" value="${SEEDTXT}" autocomplete="off" spellcheck="false" aria-label="Seed (leave blank for a random run)"></div>`}
-      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn blue big" data-act="rollstart" ${lock?'disabled':''}>Open Roll</button><button class="btn orange" data-act="closemodal">Back</button></div></div></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn blue big" data-act="rollstart" ${lock?'disabled':''}>Open Roll</button></div></div></div>
     <div class="rollgrid">${Object.keys(ROLLS).sort((a,b)=>(ROLLS[a].challenge?1:0)-(ROLLS[b].challenge?1:0)).map((k,ix,ks)=>`${ROLLS[k].challenge&&!ROLLS[ks[ix-1]].challenge?'<div class="rollsect">Challenge Rolls</div>':''}<button class="rollcard ${k===ROLLSEL?'on':''} ${isUnlocked('roll',k)&&!ROLLS[k].fake?'':'locked'}" data-act="rollsel" data-arg="${k}">${rollHTML(k,92,32)}<span>${isUnlocked('roll',k)&&!ROLLS[k].fake?rollName(k):'Locked'}${(PROF.stakes[k]||0)?` <small style="color:${STAKES[PROF.stakes[k]].col}">★${PROF.stakes[k]}</small>`:''}</span></button>`).join('')}</div>
+  <div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div>
   </div></div>`;
 }
 let SEEDTXT='';
