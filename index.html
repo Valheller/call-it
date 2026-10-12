@@ -183,7 +183,7 @@ input.vol{width:150px;accent-color:var(--orange)}
 @media (max-width:520px){.stsg{flex:1 1 100%}
   /* phones: one column in its own scrolling list, title and buttons stay put */
   .stm .sttracks{grid-template-columns:1fr}
-  .stm .sttracks::-webkit-scrollbar{width:6px}.stm .sttracks::-webkit-scrollbar-thumb{background:var(--ink-dim);border-radius:3px}}
+  .stm .stscroll::-webkit-scrollbar{width:6px}.stm .stscroll::-webkit-scrollbar-thumb{background:var(--ink-dim);border-radius:3px}}
 .sbuys{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}.sbuys .btn{white-space:nowrap}
 .sttracks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .sttracks .btn{min-width:0;white-space:normal;line-height:1.15;justify-content:flex-start;text-align:left;gap:8px;display:flex;align-items:center;flex-wrap:wrap}.sttracks small{white-space:normal;min-width:0}
@@ -1078,7 +1078,7 @@ html,body,button,a,.pond{touch-action:manipulation}
 .overlay>.colm,.overlay>.rollm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) / var(--k,1))}
 .colm>*,.rollm>*{flex:none}
 .overlay>.stm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) / var(--k,1))}.stm>*{flex:none}
-.stm .sttracks{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:var(--ink-dim) transparent}
+.stm .stscroll{flex:1 1 auto;min-height:60px;overflow-y:auto;padding:2px 6px 8px 0;scrollbar-width:thin;scrollbar-color:var(--ink-dim) transparent}
 .overlay>.boothm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) / var(--k,1))}.boothm>*{flex:none}.boothm .bgrid{flex:1 1 auto;min-height:0;overflow-y:auto;padding:2px}
 .overlay>.optm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) / var(--k,1))}
 .optm>h2{flex:none;margin-bottom:8px}.optm>.ctabs{flex:none}.optm .optbody{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:2px}
@@ -1134,7 +1134,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.159</div>
+  <div class="gamever" aria-label="Version">v1.2.160</div>
 </div>
 
 <script>
@@ -4391,7 +4391,7 @@ function soundTestModal(){
     <div class="stctl"><div class="optrow"><span>Glitched audio<small>How music sounds on the Glitched Roll</small></span><button class="btn small ${ST.glitch?'green':''}" data-act="stglitch">${ST.glitch?'On':'Off'}</button></div>
       ${(()=>{const tr=SOUNDTEST!=null&&TRACKS[SOUNDTEST],en=tr&&tr[1]==='endless',wg=tr&&tr[0]==='Wager';if(!en&&!wg)return '';const L=en?[9,10,11,12]:[1,2,3,4,5,6,7,8],cur=en?ST.estage:ST.stage;
         return `<div class="optrow"><span>Stage<small>${en?'Layers build toward the final boss':'Music adds layers as a run goes on'}</small></span><div class="stsg">${L.map(n=>`<button class="btn small" style="${cur===n?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ststage" data-arg="${n}" aria-pressed="${cur===n}">${n}</button>`).join('')}</div></div>`})()}</div>
-    <div class="sttracks">${TRACKS.map((t,i)=>`<button class="btn small ${SOUNDTEST===i?'green':''}" style="${SOUNDTEST===i?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="sttrack" data-arg="${i}"><span class="stn">${String(i+1).padStart(2,'0')}</span>${t[0]}${SOUNDTEST===i?'<small>Now playing</small>':''}</button>`).join('')}</div>
+    <div class="stscroll"><div class="sttracks">${TRACKS.map((t,i)=>`<button class="btn small ${SOUNDTEST===i?'green':''}" style="${SOUNDTEST===i?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="sttrack" data-arg="${i}"><span class="stn">${String(i+1).padStart(2,'0')}</span>${t[0]}${SOUNDTEST===i?'<small>Now playing</small>':''}</button>`).join('')}</div></div>
     <div style="text-align:center;margin-top:12px;display:flex;gap:10px;justify-content:center">${SOUNDTEST!=null?'<button class="btn red" data-act="ststop">Stop</button>':''}<button class="btn orange" data-act="stback">Back</button></div></div></div>`}
 let abandonArm=false,resetArm=false;
 /* tutorial tips are still running: a run with tips on (or the next one) has tips left to show */
@@ -4466,9 +4466,9 @@ function creditsModal(){
 }
 function showModal(fn){
   /* re-rendering the same window keeps every scrolled area where it was */
-  const same=modal===fn,sc=same?[...document.querySelectorAll('#overlay .modal,#overlay .sttracks,#overlay .cgrid,#overlay .rollgrid')].map(e=>e.scrollTop):null;
+  const same=modal===fn,sc=same?[...document.querySelectorAll('#overlay .modal,#overlay .stscroll,#overlay .cgrid,#overlay .rollgrid')].map(e=>e.scrollTop):null;
   modal=fn;if(S)renderOverlay();else{const o=$('#overlay');o.innerHTML=fn();o.hidden=false}
-  if(sc)[...document.querySelectorAll('#overlay .modal,#overlay .sttracks,#overlay .cgrid,#overlay .rollgrid')].forEach((e,i)=>{if(sc[i]!=null)e.scrollTop=sc[i]})}
+  if(sc)[...document.querySelectorAll('#overlay .modal,#overlay .stscroll,#overlay .cgrid,#overlay .rollgrid')].forEach((e,i)=>{if(sc[i]!=null)e.scrollTop=sc[i]})}
 function closeModal(){const wasFish=modal===fishModal,wasCred=modal===creditsModal,wasExtras=modal===extrasModal;modal=null;if(wasFish){fishStop();FISH.st='idle';FISH.streak=0;setTimeout(musicMood,0)}if(wasCred)setTimeout(musicMood,0);abandonArm=false;resetArm=false;if(SOUNDTEST!=null){SOUNDTEST=null;musicMood()}const o=$('#overlay');if(S&&(S.screen==='over'||S.screen==='win'))renderOverlay();else{o.hidden=true;o.innerHTML=''}
   if(wasExtras)fromExtras=false;else if(fromExtras&&!S)showModal(extrasModal)}
 
