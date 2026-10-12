@@ -1071,7 +1071,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.136</div>
+  <div class="gamever" aria-label="Version">v1.2.137</div>
 </div>
 
 <script>
@@ -4994,7 +4994,7 @@ function tipContent(spec){
   const jt=(key,j,x)=>{const d=JOKERS[key];const desc=typeof d.desc==='function'?d.desc(j):d.desc;
     return `<div class="tn">${d.name}</div><div class="td">${fmt(desc)}</div>${modsHTML(j||x)}<span class="tb" style="background:${RAR[d.r].c}">${RAR[d.r].n}</span>`};
   const ct=c=>{const ci=consInfo(c);return `<div class="tn">${ci.name}</div><div class="td">${fmt(ci.desc)}</div>${coinNote(coinRef(c))}<span class="tb" style="background:${ci.bc}">${ci.badge}</span><div class="tkind">${fmt(KIND_INFO[c.kind])}</div>`};
-  const cn=(t,o)=>{const d=COINS[t];return `<div class="tn">${d.name}</div><div class="td">${fmt(d.desc)}</div>${modsHTML(o)}${o&&stkGroup(o)?'<div class="tkind">Stacked: lands with its partner, shares one purse space, and re-flips together with it</div>':''}${o&&(o.bonus||o.bm)?`<div class="tkind" style="color:var(--green)">Permanent bonus: ${[o.bonus?'+'+o.bonus+' Points':'',o.bm?'+'+o.bm+' Mult':''].filter(Boolean).join(', ')}</div>`:''}${o&&o.flips?`<div class="tkind">Flipped ${o.flips} time${o.flips>1?'s':''}${o.wear?'':` · Polished at 50`}</div>`:''}`};
+  const cn=(t,o)=>{const d=COINS[t];return `<div class="tn">${d.name}</div><div class="td">${fmt(d.desc)}</div>${modsHTML(o)}${o&&stkGroup(o)?'<div class="tkind">Stacked: lands with its partner, shares one purse space, and re-flips together with it</div>':''}${o&&(o.bonus||o.bm)?`<div class="tkind" style="color:var(--green)">Permanent bonus: ${[o.bonus?'+'+o.bonus+' Points':'',o.bm?'+'+o.bm+' Mult':''].filter(Boolean).join(', ')}</div>`:''}${o&&o.flips?`<div class="tkind">Flipped ${o.flips} time${o.flips>1?'s':''}</div>`:''}`};
   if(k==='joker'){const j=S.jokers[i];const g=j&&(S.roll==='glitched'||j.key==='missingno')&&S.screen==='play'&&S.glitchJ&&S.glitchJ[j.id];return j&&(jt(j.key,j)+(g?`<div class="tkind">Glitched: scoring as ${JOKERS[g].name} this toss (${fmt(typeof JOKERS[g].desc==='function'?JOKERS[g].desc():JOKERS[g].desc)})</div>`:''))}
   if(k==='shopj'){const o=S.shop.jokers[i];return o&&(o.kind==='almanac'||o.kind==='spirit'?ct(o):jt(o.key,null,o))}
   if(k==='coin'){const c=S.purse[i];return c&&(cn(c.type,c)+(S.roll==='glitched'&&S.glitch&&S.glitch[c.id]&&S.screen==='play'?`<div class="tkind">Glitched: acting as a ${COINS[S.glitch[c.id]].name} this toss</div>`:''))}
