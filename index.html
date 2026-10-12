@@ -1070,7 +1070,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.128</div>
+  <div class="gamever" aria-label="Version">v1.2.129</div>
 </div>
 
 <script>
@@ -3703,7 +3703,6 @@ function recordRun(won){
   if(S.daily){PROF.daily[S.daily]={done:1,stage:S.ante,best:S.stats.best,won,roll:S.roll};lbSubmit(S.daily,PROF.daily[S.daily])}
   saveProf();clearSave();checkGoals();
 }
-function wearDown(){let any=false;S.purse.forEach((c,i)=>{if((c.flips||0)>=50&&!c.wear&&!c.worn){c.wear='polished';c.worn=1;any=true}});return any}
 const stingTier=t=>HANDS.length-1-HANDS.findIndex(h=>h.key===t);
 
 /* ================= LUCK & KARMA (hidden) =================
@@ -4128,7 +4127,7 @@ function refreshTable(){
   if(cb)cb.innerHTML=S.call&&S.phase!=='call'?`${S.roll==='majority'?'Majority':'Calling'}<b class="${S.call}">${callName(S.call)}</b>`:'';
   const h=$('#hint'),ct=$('#controls');if(!ct)return;
   if(S.phase==='call'){
-    {const base=S.roll==='majority'?'No calls: each toss scores whichever face came up most.':'';
+    {const base='';
      /* boss, elite and rival rules already sit in the sidebar on computers, so under the coins they only show on phones */
      const foe=S.duel&&!S.duel.general&&!S.duel.table&&S.rival?`<b style="color:var(--orange)">${isRematch()?'Rematch: ':''}${S.rival.name}</b> · ${fmt(rivalInfo().habit)}. Be ahead after your 3rd Flip.`:S.boss?bossDesc(curBlind())+'.':'';
      h.innerHTML=S.boss==='fatal'&&S.boss2?`<b class="fataltxt">FATAL ERROR</b> · next toss: <b>${BOSSES[S.boss2].name}</b>: ${fmt(BOSSES[S.boss2].desc)}.`:foe?`<span class="hmob">${foe}</span><span class="hdesk">${base}</span>`:base}
@@ -4290,7 +4289,7 @@ const RULES=`<ol class="rules">
  <li>Coins and Charms can carry <b>Wear</b> (bonus Points or Mult, or an extra Charm slot). Coins can also carry one <b>Defect</b> (money, retriggers, Runes or Almanacs). Spirits add them, and Coin Pouches sometimes hold modified coins.</li>
  <li>Very rarely a coin lands on its <span class="k-a">edge</span>. Edge coins always score with <span class="k-x">X2</span> Mult.</li>
  <li>On the <b>first toss</b> of a wager you can <b>Bet</b> your money on 4+ hits: double or nothing, up to a <b>table limit</b> that rises each stage. Betting means <b>no re-flips</b> for that toss. Hold more than $100 and the House skims 25% of the extra after each wager.</li>
- <li>Each toss type gains <b>+1 Mult</b> for every 10 times you score it (mastery). There are 8 stages. Targets climb steeply, and on Gold Stake every Boss has a second rule. Coins flipped 50 times get <b>Polished</b> for free.</li>
+ <li>Each toss type gains <b>+1 Mult</b> for every 10 times you score it (mastery). There are 8 stages. Targets climb steeply, and on Gold Stake every Boss has a second rule.</li>
  <li>Encounters bring a choice to make, and are worth about as much as a shop visit. Some Charms are <b>Cursed</b> (Rusted, Bound, Fleeting, Brittle, Heavy, Hungry, Jinxed, Rented). Cursed Charms in the shop cost <b>half</b>.</li>
  <li>The <b>Tightrope</b> Charm and <b>Balance Point</b> Spirit unlock the <b>Edge</b> call.</li>
  <li>Every stage is a <b>floor</b> of the House, and the House is always watching. After each wager, choose <b>where next</b>: the shop, or a detour in its place. Encounters, a Rest, a Treasure, a rare Bazaar, the Pawnshop, a face-down Mystery, a deal with <b>the House</b> itself, your <b>Rival</b> or an <b>Elite Wager</b>. With a bad reputation the Back Room opens; with a good one, the Chapel.</li>
@@ -5257,8 +5256,7 @@ async function doCashIn(){
   S.phase='call';S.selected=[];
   if(S.duel)rivalTurn();
   if(S.boss==='fatal'){fatalCorrupt();renderJokers()}
-  const worn=wearDown();if(worn)toast('A coin got <b>Polished</b> from 50 flips of wear');
-  if(R.shattered.length||(R.lost&&R.lost.length)||worn){const p=$('#purse');p.innerHTML=S.purse.map((c,i)=>coinHTML(c,i)).join('');sizeCoins()}
+  if(R.shattered.length||(R.lost&&R.lost.length)){const p=$('#purse');p.innerHTML=S.purse.map((c,i)=>coinHTML(c,i)).join('');sizeCoins()}
   renderJokers();refreshTable();coach('score');scheduleSave();
 }
 async function blindWon(){
