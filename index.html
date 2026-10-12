@@ -496,6 +496,7 @@ body.badges .face::before{display:block}
 }
 /* challenge rolls */
 .rollsect{grid-column:1/-1;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--mult);padding:8px 4px 0;border-top:2px dashed rgba(255,255,255,.12);margin-top:4px}
+.rollsect.basic{border-top:0;margin-top:0;padding-top:2px;color:var(--chips)}
 .rolltilt:has(.rollghost){transform:none}
 .rollghost{animation:ghostfloat 3.2s ease-in-out infinite!important;transform-style:flat}
 @keyframes ghostfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
@@ -1067,7 +1068,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.124</div>
+  <div class="gamever" aria-label="Version">v1.2.125</div>
 </div>
 
 <script>
@@ -4622,7 +4623,7 @@ function rollModal(){
       <div class="stakedesc">${stakeDesc(STAKESEL)}</div>`}
       ${lock?'':`<div class="seedrow"><span class="lbl">Seed</span><input id="seedin" maxlength="12" placeholder="Random" value="${SEEDTXT}" autocomplete="off" spellcheck="false" aria-label="Seed (leave blank for a random run)"></div>`}
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn blue big" data-act="rollstart" ${lock?'disabled':''}>Open Roll</button></div></div></div>
-    <div class="rollgrid">${Object.keys(ROLLS).sort((a,b)=>(ROLLS[a].challenge?1:0)-(ROLLS[b].challenge?1:0)).map((k,ix,ks)=>`${ROLLS[k].challenge&&!ROLLS[ks[ix-1]].challenge?'<div class="rollsect">Challenge Rolls</div>':''}<button class="rollcard ${k===ROLLSEL?'on':''} ${isUnlocked('roll',k)&&!ROLLS[k].fake?'':'locked'}" data-act="rollsel" data-arg="${k}">${rollHTML(k,92,32)}<span>${isUnlocked('roll',k)&&!ROLLS[k].fake?rollName(k):'Locked'}${(PROF.stakes[k]||0)?` <small style="color:${STAKES[PROF.stakes[k]].col}">★${PROF.stakes[k]}</small>`:''}</span></button>`).join('')}</div>
+    <div class="rollgrid">${Object.keys(ROLLS).sort((a,b)=>(ROLLS[a].challenge?1:0)-(ROLLS[b].challenge?1:0)).map((k,ix,ks)=>`${ix===0?'<div class="rollsect basic">Basic Rolls</div>':''}${ROLLS[k].challenge&&!ROLLS[ks[ix-1]].challenge?'<div class="rollsect">Challenge Rolls</div>':''}<button class="rollcard ${k===ROLLSEL?'on':''} ${isUnlocked('roll',k)&&!ROLLS[k].fake?'':'locked'}" data-act="rollsel" data-arg="${k}">${rollHTML(k,92,32)}<span>${isUnlocked('roll',k)&&!ROLLS[k].fake?rollName(k):'Locked'}${(PROF.stakes[k]||0)?` <small style="color:${STAKES[PROF.stakes[k]].col}">★${PROF.stakes[k]}</small>`:''}</span></button>`).join('')}</div>
   <div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div>
   </div></div>`;
 }
