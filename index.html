@@ -1134,7 +1134,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.156</div>
+  <div class="gamever" aria-label="Version">v1.2.157</div>
 </div>
 
 <script>
@@ -4389,7 +4389,7 @@ function soundTestModal(){
     <div class="stctl"><div class="optrow"><span>Glitched audio<small>How music sounds on the Glitched Roll</small></span><button class="btn small ${ST.glitch?'green':''}" data-act="stglitch">${ST.glitch?'On':'Off'}</button></div>
       ${(()=>{const tr=SOUNDTEST!=null&&TRACKS[SOUNDTEST],en=tr&&tr[1]==='endless',wg=tr&&tr[0]==='Wager';if(!en&&!wg)return '';const L=en?[9,10,11,12]:[1,2,3,4,5,6,7,8],cur=en?ST.estage:ST.stage;
         return `<div class="optrow"><span>Stage<small>${en?'Layers build toward the final boss':'Music adds layers as a run goes on'}</small></span><div class="stsg">${L.map(n=>`<button class="btn small" style="${cur===n?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ststage" data-arg="${n}" aria-pressed="${cur===n}">${n}</button>`).join('')}</div></div>`})()}</div>
-    <div class="sttracks">${TRACKS.map((t,i)=>`<button class="btn small ${SOUNDTEST===i?'green':''}" style="${SOUNDTEST===i?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="sttrack" data-arg="${i}"><span class="stn">${String(i+1).padStart(2,'0')}</span>${t[0]}${SOUNDTEST===i?'<small>Now playing</small>':t[2]&&t[2].sub?`<small>${t[2].sub}</small>`:''}</button>`).join('')}</div>
+    <div class="sttracks">${TRACKS.map((t,i)=>`<button class="btn small ${SOUNDTEST===i?'green':''}" style="${SOUNDTEST===i?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="sttrack" data-arg="${i}"><span class="stn">${String(i+1).padStart(2,'0')}</span>${t[0]}${SOUNDTEST===i?'<small>Now playing</small>':''}</button>`).join('')}</div>
     <div style="text-align:center;margin-top:12px;display:flex;gap:10px;justify-content:center">${SOUNDTEST!=null?'<button class="btn red" data-act="ststop">Stop</button>':''}<button class="btn orange" data-act="stback">Back</button></div></div></div>`}
 let abandonArm=false,resetArm=false;
 /* tutorial tips are still running: a run with tips on (or the next one) has tips left to show */
