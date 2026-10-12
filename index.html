@@ -636,7 +636,9 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
 .bigcoin .face.tails{transform:rotateY(180deg) translateZ(calc(var(--t)/2))}
 .tagline{color:#e3eef0;font-size:18px;max-width:40ch}
 /* title buttons: one 4-column grid so every button is the same size and the columns line up; Continue gets its own row */
-.titlebtns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 14px;width:min(680px,94vw);margin:0 auto}
+.titlebtns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;gap:12px 14px;width:min(720px,94vw);margin:0 auto}
+.titlebtns .btn.gearbtn{width:auto;aspect-ratio:1;padding:0;display:grid;place-items:center}
+.extgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.extgrid .btn{width:100%;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff}
 .trow{display:contents}
 .titlebtns .btn.big{width:100%;min-width:0;justify-content:center}
 #contbtn{grid-column:1/-1;justify-self:center;width:calc(25% - 10.5px)!important}
@@ -1049,17 +1051,12 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
       <button class="btn blue big" data-act="play" id="playbtn">Play</button>
       <button class="btn purple big" data-act="daily">Daily Toss</button>
       <button class="btn orange big" data-act="howto">How to Play</button>
-      <button class="btn big" style="--c:#ff6f9a;--cd:#a8335a" data-act="booth">Prize Booth</button>
-    </div>
-    <div class="trow">
-      <button class="btn green big" data-act="collection">Collection</button>
-      <button class="btn gold big" data-act="records">Records</button>
-      <button class="btn big" style="--c:#5d6bd6;--cd:#343c80" data-act="soundtest">Sound Test</button>
-      <button class="btn big" style="--c:var(--grey);--cd:var(--grey-d)" data-act="options">Options</button>
+      <button class="btn green big" data-act="extras">Extras</button>
+      <button class="btn big gearbtn" style="--c:var(--grey);--cd:var(--grey-d)" data-act="options" aria-label="Options" title="Options"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.03 7.03 0 0 0-1.63-.94l-.36-2.54A.48.48 0 0 0 13.92 2h-3.84a.48.48 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.56-1.63.94l-2.39-.96a.49.49 0 0 0-.59.22L2.71 8.47a.49.49 0 0 0 .12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.13.22.39.3.59.22l2.39-.96c.5.38 1.04.7 1.63.94l.36 2.54c.05.24.25.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.63-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.03-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/></svg></button>
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.117</div>
+  <div class="gamever" aria-label="Version">v1.2.118</div>
 </div>
 
 <script>
@@ -4307,20 +4304,31 @@ function soundTestModal(){
     <div class="sttracks">${TRACKS.map((t,i)=>`<button class="btn small ${SOUNDTEST===i?'green':''}" style="${SOUNDTEST===i?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="sttrack" data-arg="${i}"><span class="stn">${String(i+1).padStart(2,'0')}</span>${t[0]}${SOUNDTEST===i?'<small>Now playing</small>':t[2]&&t[2].sub?`<small>${t[2].sub}</small>`:''}</button>`).join('')}</div>
     <div style="text-align:center;margin-top:12px;display:flex;gap:10px;justify-content:center">${SOUNDTEST!=null?'<button class="btn red" data-act="ststop">Stop</button>':''}<button class="btn orange" data-act="stback">Back</button></div></div></div>`}
 let abandonArm=false,resetArm=false;
+/* tutorial tips are still running: a run with tips on (or the next one) has tips left to show */
+const tipsOn=()=>(S?!!S.tutorial:!PROF.tutorialDone)&&Object.keys(COACH).some(k=>!PROF.tips[k]);
+/* Extras: everything that isn't playing a run */
+let fromExtras=false;
+function extrasModal(){
+  return `<div class="overlay"><div class="panel modal optm" style="width:min(420px,100%)"><h2>Extras</h2><div class="optbody"><div class="extgrid">
+    <button class="btn big" style="--c:#ff6f9a;--cd:#a8335a" data-act="booth">Prize Booth</button>
+    <button class="btn green big" data-act="collection">Collection</button>
+    <button class="btn gold big" data-act="records">Records</button>
+    <button class="btn big" style="--c:#5d6bd6;--cd:#343c80" data-act="soundtest">Sound Test</button>
+    <button class="btn big" style="--c:#c96a8a;--cd:#7a3a55" data-act="credits">Credits</button>
+    <a class="btn big" style="--c:#2a2a33;--cd:#111" href="https://github.com/Valheller/call-it" target="_blank" rel="noopener">GitHub</a>
+    </div></div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`}
 function optionsModal(){
   return `<div class="overlay"><div class="panel modal optm" style="width:min(400px,100%)"><h2>Options</h2><div class="optbody">
     <div class="optrow"><span>Music volume</span><input type="range" class="vol" min="0" max="100" value="${Math.round(OPT.mvol*100)}" data-vol="m" aria-label="Music volume"></div>
     <div class="optrow"><span>Effects volume</span><input type="range" class="vol" min="0" max="100" value="${Math.round(OPT.svol*100)}" data-vol="s" aria-label="Sound effects volume"></div>
     <div class="optrow"><span>H / T labels on coins</span><button class="btn ${OPT.badges?'green':''} small" data-act="tbadges">${OPT.badges?'On':'Off'}</button></div>
-    <div class="optrow"><span>Tutorial tips</span><button class="btn small" data-act="ttips">Replay</button></div>
+    <div class="optrow"><span>Tutorial tips</span>${tipsOn()?'<button class="btn small red" data-act="tipsoff">Disable</button>':'<button class="btn small" data-act="ttips">Replay</button>'}</div>
     <div class="optrow"><span>Unlock everything</span><button class="btn ${PROF.unlockAll?'green':''} small" data-act="tunlock">${PROF.unlockAll?'On':'Off'}</button></div>
     <div class="optrow"><span>${resetArm?'Lock everything again?':'Reset unlocks'}</span><button class="btn red small" data-act="resetunlocks">${resetArm?'Yes, reset':'Reset'}</button></div>
     ${resetArm?'<div class="lbl" style="text-align:center;margin:-4px 0 6px">Locks every Charm and Roll and clears the lifetime stats and stakes that unlock them. Run history is kept.</div>':''}
     ${canFS()?`<div class="optrow"><span>Fullscreen</span><button class="btn ${isFS()?'green':''} small" data-act="fullscreen">${isFS()?'On':'Off'}</button></div>`:''}
     <div class="optrow"><span>Keyboard shortcuts</span><button class="btn small" style="--c:#5d6bd6;--cd:#343c80" data-act="keys">Show</button></div>
     <div class="optrow"><span title="Move your progress between devices">Save code</span><button class="btn small" style="--c:#2a8a6a;--cd:#175a44" data-act="savecode">Open</button></div>
-    <div class="optrow"><span>Links</span><a class="btn small" style="--c:#2a2a33;--cd:#111;text-decoration:none;color:#fff" href="https://github.com/Valheller/call-it" target="_blank" rel="noopener">GitHub</a></div>
-    <div class="optrow"><span>Credits</span><button class="btn small" style="--c:#c96a8a;--cd:#7a3a55" data-act="credits">Credits</button></div>
     </div><div class="optfoot"><div class="optfbtns"><button class="btn orange" data-act="closemodal">Back</button>${S?'<button class="btn red" data-act="mainmenu" title="Your run is saved: Continue picks it up">Main Menu</button>':''}</div><div class="optver">Call it. ${($('.gamever')||{}).textContent||''}</div></div></div></div>`;
 }
 let BOOTH_TAB='skin';
@@ -4371,7 +4379,8 @@ function showModal(fn){
   const same=modal===fn,sc=same?[...document.querySelectorAll('#overlay .modal,#overlay .sttracks,#overlay .cgrid,#overlay .rollgrid')].map(e=>e.scrollTop):null;
   modal=fn;if(S)renderOverlay();else{const o=$('#overlay');o.innerHTML=fn();o.hidden=false}
   if(sc)[...document.querySelectorAll('#overlay .modal,#overlay .sttracks,#overlay .cgrid,#overlay .rollgrid')].forEach((e,i)=>{if(sc[i]!=null)e.scrollTop=sc[i]})}
-function closeModal(){const wasFish=modal===fishModal,wasCred=modal===creditsModal;modal=null;if(wasFish){fishStop();FISH.st='idle';FISH.streak=0;setTimeout(musicMood,0)}if(wasCred)setTimeout(musicMood,0);abandonArm=false;resetArm=false;if(SOUNDTEST!=null){SOUNDTEST=null;musicMood()}const o=$('#overlay');if(S&&(S.screen==='over'||S.screen==='win'))renderOverlay();else{o.hidden=true;o.innerHTML=''}}
+function closeModal(){const wasFish=modal===fishModal,wasCred=modal===creditsModal,wasExtras=modal===extrasModal;modal=null;if(wasFish){fishStop();FISH.st='idle';FISH.streak=0;setTimeout(musicMood,0)}if(wasCred)setTimeout(musicMood,0);abandonArm=false;resetArm=false;if(SOUNDTEST!=null){SOUNDTEST=null;musicMood()}const o=$('#overlay');if(S&&(S.screen==='over'||S.screen==='win'))renderOverlay();else{o.hidden=true;o.innerHTML=''}
+  if(wasExtras)fromExtras=false;else if(fromExtras&&!S)showModal(extrasModal)}
 
 
 
@@ -5702,6 +5711,8 @@ const ACT={
   prizecash(){if((S.tickets||0)<3)return;S.tickets-=3;S.money+=10;play('money');render()},
   prizeleave(){goNext()},
   coachok(a){PROF.tips[a]=true;saveProf();$('#coach').hidden=true},
+  extras(){audioInit();fromExtras=true;showModal(extrasModal)},
+  tipsoff(){Object.keys(COACH).forEach(k=>PROF.tips[k]=true);PROF.tutorialDone=true;saveProf();const c=$('#coach');if(c)c.hidden=true;toast('Tutorial tips turned off');showModal(optionsModal)},
   ttips(){PROF.tutorialDone=false;PROF.tips={};saveProf();toast('Tips will show on your next run');showModal(optionsModal)},
   tunlock(){PROF.unlockAll=!PROF.unlockAll;saveProf();showModal(optionsModal)},
   rollsel(a){const g=document.querySelector('.rollgrid'),st=g?g.scrollTop:0;ROLLSEL=a;showModal(rollModal);const g2=document.querySelector('.rollgrid');if(g2)g2.scrollTop=st},
