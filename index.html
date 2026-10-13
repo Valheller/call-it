@@ -1141,7 +1141,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.165</div>
+  <div class="gamever" aria-label="Version">v1.2.166</div>
 </div>
 
 <script>
@@ -1228,14 +1228,14 @@ const HAND=Object.fromEntries(HANDS.map(h=>[h.key,h]));
 
 const COINS={
  copper: {name:'Quarter',           chips:5, cost:0, desc:'{c:+5} Points'},
- silver: {name:'Loonie',            chips:15,grow:5,cost:3, desc:'{c:+15} Points, and it gains {c:+5} Points {a:permanently} every time it scores'},
- platinum:{name:'Krugerrand',       chips:30,heavy:1,cost:5, desc:'{c:+30} Points. {a:Heavy}: it always lands on the same face as the coin to its left'},
+ silver: {name:'Loonie',            chips:15,grow:5,cost:5, desc:'{c:+15} Points, and it gains {c:+5} Points {a:permanently} every time it scores'},
+ platinum:{name:'Krugerrand',       chips:30,heavy:1,cost:5, desc:'{c:+30} Points. {a:Heavy}: it always lands on the same face as the coin to its left, and gives {m:+3} Mult when that coin scores too'},
  ruby:   {name:'Casino Chip',       chips:5, mult:12, betX:2, missMoney:-1, cost:4, desc:'{m:+12} Mult when it scores, or {x:X2} Mult on a {$:bet} toss. Each one that lands on your call adds {$:$3} to a winning bet. Lose {$:$1} when it misses'},
  gold:{name:'Doubloon',          chips:10, money:2, bossMoney:5, cost:4, desc:'{c:+10} Points. Earn {$:$2} when it scores, or {$:$5} during a {a:Boss} wager'},
  jade:   {name:'Cash Coin',         chips:5, held:2, string:10, cost:4, desc:'{c:+5} Points. Earn {$:$2} at the end of each wager while it sits in your purse. Coins {a:next to it} give {c:+10} Points when they score'},
  lucky:{name:'5 Yen Coin',        chips:10, lucky:1, cost:4, desc:'{c:+10} Points. {a:1 in 3} chance for {m:+15} Mult, {a:1 in 8} chance for {$:$8}. Both chances {a:double} while it sits in the {a:middle} of your purse'},
  steel:  {name:'2 Euro Coin',       chips:5, missX:1.5, cost:5, desc:'{c:+5} Points when it scores. {x:X1.5} Mult when it does {a:not} score'},
- glass:  {name:'Chocolate Coin',    chips:5, xmult:2, glass:1, cost:5, desc:'{c:+5} Points, {x:X2} Mult. {a:1 in 10} chance to get eaten when it scores, leaving a {a:Crumpled Gold Foil} coin behind'},
+ glass:  {name:'Chocolate Coin',    chips:5, xmult:2, glass:1, cost:6, desc:'{c:+5} Points, {x:X2} Mult. {a:1 in 10} chance to get eaten when it scores, leaving a {a:Crumpled Gold Foil} coin behind'},
  bronze: {name:'Wooden Nickel',     chips:1, missMult:8, cost:4, desc:'{c:+1} Point when it scores, but {m:+8} Mult when it {a:misses}'},
  loaded:{name:"Magician's Coin",   chips:15, bias:.8, freeFlip:1, cost:5, desc:'{c:+15} Points. Lands on your call {a:4 in 5} times. Re-flipping only Magician\'s Coins is {a:free}'},
  quicksilver:{name:'Arcade Token',  chips:5, wild:1, arcade:2, cost:6, desc:'{c:+5} Points. Always scores, whatever face it lands on. {m:+2} Mult for each Re-flip you\'ve used this wager. {a:Continue?} If you would run out of Flips short of the target, it gets used up for {a:+1} Flip and {a:+1} Re-flip'},
@@ -1244,13 +1244,13 @@ const COINS={
 };
 Object.assign(COINS,{
  sixpence:{name:'Silver Sixpence', chips:5, luckmoney:1, cost:4, desc:'{c:+5} Points. {a:1 in 3} chance to earn {$:$4}'},
- drachma:{name:'Greek Drachma',     chips:20,owl:1, cost:5, desc:'{c:+20} Points. {a:Wise}: when it misses on a toss, it re-flips itself once, for free'},
- peso:{name:'Mexican Peso',      chips:10, pesoMult:4, cost:4, desc:'{c:+10} Points. {m:+4} Mult for each Mexican Peso in your purse (including this one). Each one you own makes more show up'},
+ drachma:{name:'Greek Drachma',     chips:20,owl:1, cost:5, desc:'{c:+20} Points. {a:Wise}: when it misses on a toss, it re-flips itself once, for free. If that saves it, {m:+4} Mult'},
+ peso:{name:'Mexican Peso',      chips:10, pesoMult:4, cost:4, desc:'{c:+10} Points. {m:+4} Mult for each Mexican Peso in your purse (including this one, up to 6). Each one you own makes more show up'},
  krona:{name:'Swedish Krona',     chips:20,tailsWild:1,tailsMult:5, cost:4, desc:'{c:+20} Points. It always scores when it lands on {a:Tails}, whatever you called, and gives {m:+5} Mult when it does'},
  pog:    {name:'Slammer Pog',       chips:5, slam:1, cost:5, desc:'{c:+5} Points. {a:Slam}: when it scores, the coin to its {a:right} scores too, whatever face it shows'},
- crypto: {name:'Crypto Coin',       chips:5, crypto:1, cost:5, desc:'{c:+5} Points. Earn anywhere from {r:-$2} to {$:$6} when it scores'},
+ crypto: {name:'Crypto Coin',       chips:5, crypto:1, cost:4, desc:'{c:+5} Points. Earn anywhere from {r:-$2} to {$:$6} when it scores'},
  sealed:  {name:'Sealed Coin',     chips:10,relic:1,quest:1,cost:0,desc:'{c:+10} Points. Keep it in your purse until the delivery stage'},
- penny:   {name:'Lucky Penny',     chips:1, wild:1, relic:1, cost:0, desc:'{c:+1} Point. Always scores, whatever face it lands on. {a:Relic}: one of a kind'},
+ penny:   {name:'Lucky Penny',     chips:1, wild:1, relic:1, pennyMult:1, cost:0, desc:'{c:+1} Point and {m:+1} Mult for each coin in your purse. Always scores, whatever face it lands on. {a:Relic}: one of a kind'},
  denarius:{name:'Roman Denarius',  chips:15,mult:5,tribute:5,relic:1, cost:0, desc:'{c:+15} Points and {m:+5} Mult. {a:Tribute}: gains another {m:+5} Mult {a:permanently} every time you beat a Boss. {a:Relic}: one of a kind'},
  ecu:     {name:'Gold Ecu',       chips:5,xmult:1.5,euro:1,relic:1,cost:0,desc:'{c:+5} Points, {x:X1.5} Mult when it scores, or {x:X2} when it sits next to another {a:foreign} coin. {a:Relic}: one of a kind'},
  foil:    {name:'Crumpled Gold Foil',chips:3,money:1,meltVal:3,noShop:1,cost:0,desc:'{c:+3} Points. Earn {$:$1} when it scores. Melts down for {$:$3}'},
@@ -3957,7 +3957,10 @@ function computeHand(){
       if(d.lucky){const mid=i===Math.floor(res.length/2)?2:1;if(rand()<odds(1/3)*mid)e('mult',15);if(rand()<odds(1/8)*mid)e('money',8)}
       if(d.luckmoney&&rand()<odds(1/3))e('money',4);
       if(d.tailsMult&&res[i]==='T')e('mult',d.tailsMult);
-      if(d.pesoMult)e('mult',d.pesoMult*S.purse.filter(c=>ctype(c)==='peso').length);
+      if(d.pesoMult)e('mult',d.pesoMult*Math.min(6,S.purse.filter(c=>ctype(c)==='peso').length));
+      if(d.pennyMult)e('mult',d.pennyMult*S.purse.length);
+      if(d.heavy&&i>0&&E.matched[i-1])e('mult',3);
+      if(d.owl&&(S.owlHit||[]).includes(i))e('mult',4);
       if(d.crypto)e('money',Math.floor(rand()*9)-2);
       if(S.purse[i].defect==='filled'&&rand()<odds(1/6)&&consRoom()){S.cons.push({kind:'fortune',key:pick(Object.keys(FORTUNES))});e('text','+Fortune')}
       if(res[i]==='E')e('xmult',call==='E'?(hasK('tightrope')&&charmsOn()?4:3):2);
@@ -5180,7 +5183,7 @@ async function doCall(call){
   if(S.jokers.some(j=>j.key==='missingno')){if(S.roll!=='glitched')S.glitchJ={};const mp=Object.keys(JOKERS).filter(k=>JOKERS[k].r<=3&&!COPYK[k]&&!JOKERS[k].init&&!JOKERS[k].wager&&!JOKERS[k].glitchOnly&&!JOKERS[k].prize&&!JOKERS[k].artifact&&(JOKERS[k].coin||JOKERS[k].end||JOKERS[k].miss));S.jokers.filter(j=>j.key==='missingno').forEach(j=>S.glitchJ[j.id]=pick(mp));renderJokers()}
   S.betLive=S.bet?betStake():0;S.bet=false;S.betTurn=S.betLive>0;if(S.betLive){S.money-=S.betLive;syncStats()}
   S.results=S.purse.map(c=>tossOne(c,call));S.rfd=[];
-  const owls=S.purse.map((c,i)=>i).filter(i=>coinDef(S.purse[i]).owl&&call!=='E'&&!scores(S.results[i],call));owls.forEach(i=>S.results[i]=tossOne(S.purse[i],call,true));
+  const owls=S.purse.map((c,i)=>i).filter(i=>coinDef(S.purse[i]).owl&&call!=='E'&&!scores(S.results[i],call));owls.forEach(i=>S.results[i]=tossOne(S.purse[i],call,true));S.owlHit=owls.filter(i=>scores(S.results[i],call));
   applyHeavy();applyStacks();
   if(wx('storm'))S.bolt=Math.floor(rand()*S.purse.length);
   const dowse=countEff('dowsing')&&S.roll!=='invisible';
