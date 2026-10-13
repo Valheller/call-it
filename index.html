@@ -1141,7 +1141,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.169</div>
+  <div class="gamever" aria-label="Version">v1.2.170</div>
 </div>
 
 <script>
@@ -1235,7 +1235,7 @@ const COINS={
  jade:   {name:'Cash Coin',         chips:5, held:2, string:10, cost:5,w:.75, desc:'{c:+5} Points. Earn {$:$2} at the end of each wager while it sits in your purse. Coins {a:next to it} give {c:+10} Points when they score'},
  lucky:{name:'5 Yen Coin',        chips:10, lucky:1, cost:4, desc:'{c:+10} Points. {a:1 in 3} chance for {m:+15} Mult, {a:1 in 8} chance for {$:$8}. Both chances {a:double} while it sits in the {a:middle} of your purse'},
  steel:  {name:'2 Euro Coin',       chips:5, missX:1.5, cost:5, desc:'{c:+5} Points when it scores. {x:X1.5} Mult when it does {a:not} score'},
- glass:  {name:'Chocolate Coin',    chips:5, xmult:2, glass:1, cost:6,w:.6, desc:'{c:+5} Points, {x:X2} Mult. {a:1 in 10} chance to get eaten when it scores, leaving a plain {a:Quarter} behind'},
+ glass:  {name:'Chocolate Coin',    chips:5, xmult:2, glass:1, cost:6,w:.6, desc:'{c:+5} Points, {x:X2} Mult. {a:1 in 10} chance to get eaten when it scores'},
  bronze: {name:'Wooden Nickel',     chips:1, missMult:8, cost:4, desc:'{c:+1} Point when it scores, but {m:+8} Mult when it {a:misses}'},
  loaded:{name:"Magician's Coin",   chips:15, bias:.8, freeFlip:1, cost:5, desc:'{c:+15} Points. Lands on your call {a:4 in 5} times. Re-flipping only Magician\'s Coins is {a:free}'},
  quicksilver:{name:'Arcade Token',  chips:5, wild:1, arcade:2, cost:6, desc:'{c:+5} Points. Always scores, whatever face it lands on. {m:+2} Mult for each Re-flip you\'ve used this wager. {a:Continue?} If you would run out of Flips short of the target, it gets used up for {a:+1} Flip and {a:+1} Re-flip'},
@@ -5309,15 +5309,18 @@ async function doCashIn(){
     popup($('#callb'),`The House calls ${callName(face)}`,'text');if(took.length){play('boss');shake(4);took.forEach(i=>{const el=$('#c'+i);if(el){el.classList.add('frozen');popup(el,'Taken','miss')}})}await wait(700)}
   if(total>S.stats.best){S.stats.best=total;S.stats.bestType=R.type}
   if(hb)hb.classList.remove('fire');
+  const eaten=[];
   if(R.shattered.length){
     for(const i of R.shattered){const el=$('#c'+i);if(el){el.classList.add('shatter');popup(el,'Eaten!','text')}}
     play('shatter');await wait(520);
-    /* the chocolate is gone; a plain Quarter is left in its place */
-    R.shattered.forEach(i=>{const c=S.purse[i];c.type='copper';c.bonus=0;const el=$('#c'+i);if(el)setTimeout(()=>{const e2=$('#c'+i);if(e2)popup(e2,'Eaten!','miss')},60)});
+    /* the chocolate is gone without a trace; only if the purse is already at its minimum does a plain Quarter stay behind */
+    R.shattered.slice().sort((a,b)=>b-a).forEach(i=>{if(S.purse.length-eaten.length>PURSE_MIN)eaten.push(i);else{S.purse[i].type='copper';S.purse[i].bonus=0}});
     if(charmsOn())S.jokers.forEach((j,ji)=>{if(j.key==='glasscannon'){j.st.x+=.5*R.shattered.length;popup($('#jk'+ji),'Upgrade!','text')}});
   }
   if(R.lost&&R.lost.length){for(const i of R.lost){const el=$('#c'+i);if(el){el.classList.add('shatter');popup(el,'Lost!','miss')}}play('miss');await wait(520);
-    R.lost.sort((a,b)=>b-a).forEach(i=>{const nm=COINS[S.purse[i].type].name;S.purse.splice(i,1);S.results.splice(i,1);toast(`<b>${nm}</b> rolled away and was lost`)})}
+    R.lost.forEach(i=>toast(`<b>${COINS[S.purse[i].type].name}</b> rolled away and was lost`))}
+  /* take eaten and lost coins out together, highest index first, so the positions stay right */
+  [...new Set([...eaten,...(R.lost||[])])].sort((a,b)=>b-a).forEach(i=>{S.purse.splice(i,1);S.results.splice(i,1)});
   setHB('&nbsp;',0,0);
   S.lastTotal=total;
   if(S.duel){if(S.duel.shown>=S.duel.n&&S.roundScore>S.target){await blindWon();return}}
