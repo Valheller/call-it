@@ -1134,7 +1134,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.162</div>
+  <div class="gamever" aria-label="Version">v1.2.163</div>
 </div>
 
 <script>
@@ -1283,6 +1283,8 @@ function applyStacks(){const seen={};S.purse.forEach((c,i)=>{const g=stkGroup(c)
 /* ring colours on Charm cards: light, dark */
 const RAR_RING=[null,['#9cc8ff','#2f5f9e'],['#7fe0a8','#23784a'],['#ff9a8f','#a8322a'],['#d9b0ff','#6a3aa8'],['#ffc8ef','#b0508a']];
 const rarVars=k=>{const r=RAR_RING[JOKERS[k].r]||RAR_RING[1];return `--rc:${r[0]};--rcd:${r[1]}`};
+/* stages past the first, for charms that grow as the run goes on */
+const stgN=()=>typeof S!=='undefined'&&S&&S.ante?Math.max(0,S.ante-1):0;
 const RAR=[null,{n:'Common',c:'#5fb2ff'},{n:'Uncommon',c:'var(--green)'},{n:'Rare',c:'#ff6f63'},{n:'Legendary',c:'var(--purple)'},{n:'Fabled',c:'#ff9de2'}];
 const JOKERS={
  jester:{name:'Four-Leaf Clover',r:1,cost:4,bg:'#dff3d8',p:{1:'#4bd18f',2:'#2e7d4f'},
@@ -1357,10 +1359,10 @@ const JOKERS={
  abacus:{name:'Abacus',r:1,cost:5,bg:'#5a3a22',p:{1:'#c9a06a',2:'#ff5f6d',3:'#0b9bff'},
   s:["1111111111","1........1","1.22..22.1","1........1","1.33.33..1","1........1","1..22.22.1","1........1","1111111111",".........."],
   desc:'Every coin that scores gives {c:+8} Points', coin:(c,i,e)=>e('chips',8)},
- earlybird:{name:'Early Bird',r:1,cost:5,bg:'#ffe9a8',p:{1:'#ff9a1f',2:'#3a2a1a',3:'#e8443a'},
+ earlybird:{name:'Early Bird',r:2,cost:6,bg:'#ffe9a8',p:{1:'#ff9a1f',2:'#3a2a1a',3:'#e8443a'},
   s:["..........","...111....","..11121...","..111113..",".1111111..","11111111..",".111111...","..2..2....","..........",".........."],
   desc:'{x:X2} Mult on the {a:first} toss of each wager', end:(c,e)=>{if(c.first)e('xmult',2)}},
- laststand:{name:'Last Stand',r:2,cost:6,bg:'#3a1e1e',p:{1:'#d3dde3',3:'#c9a06a'},
+ laststand:{name:'Last Stand',r:3,cost:8,bg:'#3a1e1e',p:{1:'#d3dde3',3:'#c9a06a'},
   s:["........1.",".......11.","......11..",".....11...","....11....",".3.11.....","..33......",".3.3......","3.........",".........."],
   desc:'{x:X3} Mult on the {a:final} Flip of each wager', end:(c,e)=>{if(c.last)e('xmult',3)}},
  watch:{name:'Pocket Watch',r:2,cost:6,bg:'#2a3742',p:{1:'#ffd34d',2:'#ffffff',3:'#222222'},
@@ -1375,7 +1377,7 @@ const JOKERS={
  rebate:{name:'Rebate',r:1,cost:4,bg:'#2d4f2d',p:{1:'#3fbf8b',2:'#ffffff'},
   s:["..111111..","..122221..","..111111..","..122111..","..111111..","..122221..","..111111..","..1.1.1...","..........",".........."],
   desc:'Earn {$:$1} for each unused Re-flip at the end of each wager'},
- dice:{name:'Loaded Dice',r:2,cost:6,bg:'#7a1f2b',p:{1:'#ffffff',4:'#222222'},
+ dice:{name:'Loaded Dice',r:3,cost:8,bg:'#7a1f2b',p:{1:'#ffffff',4:'#222222'},
   s:["..........","11111.....","14111.....","11411.....","11141.....","11111.....",".....11111",".....14141",".....11111",".....14141"],
   desc:'Doubles every listed chance ({a:1 in 4} becomes {a:2 in 4})'},
  glasscannon:{name:'Sweet Tooth',r:2,cost:6,bg:'#4a2a14',p:{1:'#e8c14a',2:'#fff2b0',3:'#8a5a22'},init:{x:1},
@@ -1391,13 +1393,13 @@ const JOKERS={
   s:["...1221...","..1....1..",".3......3.",".1......1.",".4......4.",".1......1.","..2....2..","...1331...","..........",".........."],
   desc:()=>`{m:+4} Mult for each other Charm you own {d:(Currently +${S?Math.max(0,S.jokers.length-1)*4:0} Mult)}`, end:(c,e)=>{if(S.jokers.length>1)e('mult',4*(S.jokers.length-1))}},
  /* --- legendary: only from The Soul --- */
- sol:{name:'Sol Invictus',r:4,cost:20,bg:'#ffcf4d',p:{1:'#ff9a1f',2:'#fff27a',3:'#c8102e'},
+ sol:{name:'Sol Invictus',r:4,cost:16,bg:'#ffcf4d',p:{1:'#ff9a1f',2:'#fff27a',3:'#c8102e'},
   s:["1...1...1.",".1.222.1..","..22222...","1222322221","..22222...",".1.222.1..","1...1...1.","..........","..........",".........."],
   desc:'Coins that score on {a:Heads} give {x:X1.5} Mult', coin:(c,i,e)=>{if(c.res[i]==='H')e('xmult',1.5)}},
- selene:{name:'Selene',r:4,cost:20,bg:'#1a2340',p:{1:'#e6eefc',2:'#9cc4ff'},
+ selene:{name:'Selene',r:4,cost:16,bg:'#1a2340',p:{1:'#e6eefc',2:'#9cc4ff'},
   s:["...1111...","..11......",".11.....2.",".11.......",".11...2...",".11.......","..11......","...1111...","..........",".........."],
   desc:'Retrigger every coin that scores on {a:Tails}'},
- mintmaster:{name:'The Mintmaster',r:4,cost:20,bg:'#3a2a10',p:{1:'#ffd34d',2:'#c48a12'},
+ mintmaster:{name:'The Mintmaster',r:4,cost:16,bg:'#3a2a10',p:{1:'#ffd34d',2:'#c48a12'},
   s:["..........","1...1...1.","11.111.11.","111111111.","121212121.","111111111.","222222222.","..........","..........",".........."],
   desc:()=>`{x:X0.5} Mult for each special coin in your purse {d:(Currently X${S?1+specialCount()*.5:1})}`, end:(c,e)=>{const n=specialCount();if(n)e('xmult',1+n*.5)}},
 };
@@ -1405,7 +1407,7 @@ const JOKERS={
 
 /* Prize Counter charms: only bought with Tickets */
 Object.assign(JOKERS,{
- houseedge:{name:'The House Edge',r:5,cost:12,bg:'#14141c',p:{1:'#d9b552',2:'#1a1a22',3:'#ffffff'},s:["..111111..",".12222221.","1222222221","1223333221","1233223321","1223333221","1222222221","1222222221","1222222221","1111111111"],
+ houseedge:{name:'The House Edge',r:5,cost:17,bg:'#14141c',p:{1:'#d9b552',2:'#1a1a22',3:'#ffffff'},s:["..111111..",".12222221.","1222222221","1223333221","1233223321","1223333221","1222222221","1222222221","1222222221","1111111111"],
   desc:'The House is on your side now. Before every toss scores it calls a face: your coins that land on it are {a:retriggered}'},
  goldbell:{name:'Golden Bell',r:3,cost:8,tix:5,prize:1,bg:'#3a2a10',init:{n:0},p:{1:'#ffd34d',2:'#c48a12',3:'#ffffff'},s:["....11....","...1111...","..111111..","..113111..","..111111..",".11111111.","1111111111","2222222222","....22....",".........."],
   desc:j=>`Every {a:5th} toss rings it: {x:X3} Mult {d:(${j?5-(j.st.n%5):5} to go)}`,end:(c,e,j,copy)=>{if(!copy)j.st.n++;if(j.st.n%5===0){e('text','Ding!');e('xmult',3)}}},
@@ -1447,7 +1449,7 @@ Object.assign(JOKERS,{
  whiffle:{name:'Whiffle Bat',r:1,cost:4,bg:'#2a4060',p:{1:'#ffd34d',2:'#c48a12'},s:["........11",".......111","......111.",".....111..","....111...","...111....","..222.....",".22.......","22........",".........."],
   desc:'{x:X3} Mult if the toss is a {a:Whiff}',end:(c,e)=>{if(c.type==='whiff')e('xmult',3)}},
  opening:{name:'Opening Act',r:1,cost:4,bg:'#2a1a3a',p:{1:'#fff27a'},s:["....1.....","....1.....","...111....","1111111111",".1111111..","..11111...","..11.11...",".11...11..","1.......1.",".........."],
-  desc:'The {a:first} coin that scores gives {c:+25} Points',coin:(c,i,e)=>{if(i===c.firstMatch)e('chips',25)}},
+  desc:()=>`The {a:first} coin that scores gives {c:+${25+10*stgN()}} Points (+10 more each stage)`,coin:(c,i,e)=>{if(i===c.firstMatch)e('chips',25+10*stgN())}},
  caboose:{name:'Caboose',r:1,cost:4,bg:'#cfe8ff',p:{1:'#c8102e',2:'#222222',3:'#ffd34d'},s:["..........","..111111..","..133131..","1111111111","1111111111","1111111111",".22....22.",".22....22.","..........",".........."],
   desc:'The {a:last} coin in your purse gives {m:+6} Mult when it scores',coin:(c,i,e)=>{if(i===c.n-1)e('mult',6)}},
  center:{name:'Center Stage',r:1,cost:4,bg:'#2a1a2a',p:{1:'#fff27a',2:'#c8102e'},s:["....11....","...1111...","..111111..",".11111111.","1111111111","..........","2222222222","2........2","..........",".........."],
@@ -1510,7 +1512,7 @@ Object.assign(JOKERS,{
   desc:'Melting a coin pays {$:$4} instead of {$:$1}'},
  lucky7:{name:'Lucky Seven',r:2,cost:6,bg:'#fff1d6',p:{1:'#fe5f55',2:'#ffd34d'},s:["2111111112",".......11.","......11..",".....11...","....11....","...11.....","...11.....","...11.....","2........2",".........."],
   desc:'{m:+7} Mult. {a:1 in 7} chance to also give {$:$7}',end:(c,e)=>{e('mult',7);if(rand()<odds(1/7))e('money',7)}},
- seesaw:{name:'Seesaw',r:2,cost:6,bg:'#e6f2ff',p:{1:'#8a5a28',2:'#fe5f55',3:'#0b9bff'},s:["........33","22......33","22.....111","1111111...","...1111...","....11....","...1111...","..111111..","..........",".........."],
+ seesaw:{name:'Seesaw',r:3,cost:8,bg:'#e6f2ff',p:{1:'#8a5a28',2:'#fe5f55',3:'#0b9bff'},s:["........33","22......33","22.....111","1111111...","...1111...","....11....","...1111...","..111111..","..........",".........."],
   desc:'{x:X2} Mult on {a:every other} toss',end:(c,e)=>{if(S.stats.tosses%2===1)e('xmult',2)}},
  pendulum:{name:'Pendulum',r:2,cost:6,bg:'#2a2a3a',p:{1:'#c9a06a',2:'#ffd34d'},s:["1111111111","....1.....","....1.....",".....1....",".....1....","......1...","......1...","......22..",".....2222.","......22.."],
   desc:'{x:X1.5} Mult if this toss type is {a:different} from your last one',end:(c,e)=>{if(c.prevType&&c.prevType!==c.type)e('xmult',1.5)}},
@@ -1547,7 +1549,7 @@ Object.assign(JOKERS,{
   desc:'One random scoring coin gives {a:10x} its Points',coin:(c,i,e)=>{if(i===c.chaos)e('chips',coinDef(c.purse[i]).chips*9)}},
  blackcat:{name:'Black Cat',r:3,cost:7,bg:'#9a6fdc',p:{1:'#222222',2:'#ffd34d'},s:["1........1","11......11","1111111111","1121111211","1111111111","1111111111",".11111111.","..111111..","..........",".........."],
   desc:'{x:X3} Mult. {a:1 in 6} chance it gives {x:X0.5} instead',end:(c,e)=>e('xmult',rand()<odds(1/6,false)?.5:3)},
- cage:{name:'Gilded Cage',r:3,cost:8,bg:'#2a1a10',p:{1:'#ffd34d',2:'#c48a12'},s:["....11....","..111111..",".1.1..1.1.","1.1.11.1.1","1.1.11.1.1","1.1.11.1.1","1.1.11.1.1","1111111111","2222222222",".........."],
+ cage:{name:'Gilded Cage',r:3,cost:10,bg:'#2a1a10',p:{1:'#ffd34d',2:'#c48a12'},s:["....11....","..111111..",".1.1..1.1.","1.1.11.1.1","1.1.11.1.1","1.1.11.1.1","1.1.11.1.1","1111111111","2222222222",".........."],
   desc:'Takes up no space: {a:+1} Charm slot. {m:+5} Mult',end:(c,e)=>e('mult',5)},
  hydra:{name:'Hydra',r:3,cost:8,bg:'#1e2a1a',p:{1:'#4bd18f',2:'#2e7d4f',3:'#fe5f55'},s:["11..11..11","13.13..13.","11.11..11.",".1.1...1..",".1.1..1...","..1.1.1...","...111....","..22222...",".2222222..",".........."],
   desc:'{m:+8} Mult. When sold, it grows back as {a:2} random Common Charms',end:(c,e)=>e('mult',8)},
@@ -1560,11 +1562,11 @@ Object.assign(JOKERS,{
  lastlaugh:{name:'Last Laugh',r:3,cost:8,init:{x:1},bg:'#3a1e1e',p:{1:'#fe5f55',2:'#ffffff',3:'#222222'},s:["..........",".11111111.","1111111111","1322222231","1322222231","1132222311",".11333311.","..111111..","..........",".........."],
   desc:j=>`Gains {x:X0.5} Mult every time you win a wager on its {a:final} Flip {d:(Currently X${j?fmtM(j.st.x):1})}`,end:(c,e,j)=>{if(j.st.x>1)e('xmult',j.st.x)}},
  /* ---- legendary ---- */
- gyges:{name:'Ring of Gyges',r:4,cost:20,bg:'#1a1a2a',p:{1:'#ffd34d',2:'#c48a12',3:'#c8102e'},s:["....33....","...3333...","....33....","..111111..",".11....11.","11......11","11......11",".11....11.","..111111..",".........."],
+ gyges:{name:'Ring of Gyges',r:4,cost:16,bg:'#1a1a2a',p:{1:'#ffd34d',2:'#c48a12',3:'#c8102e'},s:["....33....","...3333...","....33....","..111111..",".11....11.","11......11","11......11",".11....11.","..111111..",".........."],
   desc:'Coins that {a:miss} still give their Points',miss:(c,i,e)=>e('chips',coinDef(c.purse[i]).chips)},
- janus:{name:'Janus',r:4,cost:20,bg:'#2a2a3a',p:{1:'#c9a06a',2:'#222222'},s:["111....111","1111..1111",".211..112.",".111..111.","1111..1111",".11.22.11.","..1....1..","..11..11..","...1111...",".........."],
+ janus:{name:'Janus',r:4,cost:18,bg:'#2a2a3a',p:{1:'#c9a06a',2:'#222222'},s:["111....111","1111..1111",".211..112.",".111..111.","1111..1111",".11.22.11.","..1....1..","..11..11..","...1111...",".........."],
   desc:'Retrigger {a:every} coin that scores'},
- fortuna:{name:'Fortuna',r:4,cost:20,bg:'#2a1a3a',p:{1:'#ffd34d',2:'#c8102e',3:'#ffffff'},s:["...1111...","..121121..",".11.11.11.","1211331121","1113333111","1211331121",".11.11.11.","..121121..","...1111...",".........."],
+ fortuna:{name:'Fortuna',r:4,cost:18,bg:'#2a1a3a',p:{1:'#ffd34d',2:'#c8102e',3:'#ffffff'},s:["...1111...","..121121..",".11.11.11.","1211331121","1113333111","1211331121",".11.11.11.","..121121..","...1111...",".........."],
   desc:'Every {a:lucky} chance always comes true. Coins land on their edge {a:1 in 4} times'},
 });
 Object.assign(JOKERS,{
@@ -1577,7 +1579,7 @@ Object.assign(JOKERS,{
  rabbitfoot:{name:"Rabbit's Foot",r:1,cost:4,bg:'#f3e6d0',luck:2,p:{1:'#d9c3a0',2:'#fff6e6',3:'#ffd34d'},s:["....22....","...2222...","...2112...","...2112...","...2112...","..211112..","..211112..","...2222...","....33....","....33...."],
   desc:'{m:+2} Mult. Said to bring good luck',end:(c,e)=>e('mult',2)},
  horseshoe:{name:'Horseshoe',r:1,cost:4,bg:'#3a3a44',luck:1,p:{1:'#c9ced6',2:'#5a6270'},s:["..........",".11....11.",".12....21.",".11....11.",".12....21.",".11....11.","..11..11..","...1111...","..........",".........."],
-  desc:'{c:+30} Points. Hang it the right way up',end:(c,e)=>e('chips',30)},
+  desc:()=>`{c:+${30+10*stgN()}} Points (+10 more each stage). Hang it the right way up`,end:(c,e)=>e('chips',30+10*stgN())},
  wishbone:{name:'Wishbone',r:1,cost:4,bg:'#fbe9d6',luck:1,p:{1:'#e8d2b0',2:'#b89a6a'},s:["1........1",".1......1.","..1....1..","...1..1...","....11....","....11....","....22....","....22....","....22....",".........."],
   desc:'Skipping a wager gives you its {a:Tag} twice. Make a wish'},
  brokenmirror:{name:'Broken Mirror',r:1,cost:4,bg:'#24303a',luck:-3,p:{1:'#bfe6ff',2:'#5a7a8a',3:'#ffffff'},s:[".22222222.",".21113112.",".21131112.",".23111312.",".21113112.",".21311132.",".21131112.",".22222222.","..........",".........."],
@@ -1585,7 +1587,7 @@ Object.assign(JOKERS,{
  ladder:{name:'Under the Ladder',r:1,cost:4,bg:'#2e2a22',luck:-2,p:{1:'#c48a12',2:'#7a5a1a'},s:[".1......1.",".11111111.",".1......1.",".1......1.",".11111111.",".1......1.",".1......1.",".11111111.",".2......2.",".........."],
   desc:'{c:+80} Points. Walking under it is a bad idea',end:(c,e)=>e('chips',80)},
  halo:{name:'Tin Halo',r:1,cost:4,bg:'#2a3550',karma:2,p:{1:'#fff27a',2:'#c9a020'},s:["..........","..111111..",".12....21.","1........1",".12....21.","..111111..","..........","..........","..........",".........."],
-  desc:'{c:+25} Points. Being good feels good',end:(c,e)=>e('chips',25)},
+  desc:()=>`{c:+${25+10*stgN()}} Points (+10 more each stage). Being good feels good`,end:(c,e)=>e('chips',25+10*stgN())},
  pennyjar:{name:'Penny Jar',r:1,cost:4,init:{v:0},bg:'#dff1f2',p:{1:'#9fd3d8',2:'#c8743a',3:'#ffffff'},s:["...1111...","..1....1..","..111111..",".1......1.",".1.2..2.1.",".12.22.21.",".1222222.1",".12222221.","..111111..",".........."],
   desc:j=>`Keep the change: {$:$1} of every {$:$5} you spend in the shop drops into the jar. Sell the jar to empty it {d:(Currently $${j?Math.floor((j.st.v||0)/5):0})}`},
  dowsing:{name:'Dowsing Rod',r:1,cost:4,bg:'#2c3a2a',p:{1:'#a8743a',2:'#0b9bff'},s:["1........1",".1......1.","..1....1..","...1..1...","....11....","....1.....","....1.....","....1.....","...222....","....2....."],
@@ -1676,38 +1678,38 @@ Object.assign(JOKERS,{
  potofgold:{name:'Pot of Gold',r:3,cost:8,bg:'#1f3d22',luck:2,p:{1:'#222222',2:'#ffd34d',3:'#fe5f55',4:'#0b9bff'},s:["3........4","..3....4..","...2222...","..222222..","1111111111",".11111111.",".11111111.","..111111..","..........",".........."],
   desc:'Earn {$:$1} for each point of good {a:Luck} at the end of each wager'},
  /* ---- legendary ---- */
- tyche:{name:'Tyche',r:4,cost:10,bg:'#3a2a10',p:{1:'#ffd34d',2:'#fff6e6',3:'#4bd18f'},s:["..3.33.3..","...3333...","...2222...","...2222...","..111111..",".11111111.","..111111..","..111111..",".11111111.",".........."],
+ tyche:{name:'Tyche',r:4,cost:13,bg:'#3a2a10',p:{1:'#ffd34d',2:'#fff6e6',3:'#4bd18f'},s:["..3.33.3..","...3333...","...2222...","...2222...","..111111..",".11111111.","..111111..","..111111..",".11111111.",".........."],
   desc:'Your {a:Luck} is always at its peak. {x:X1.5} Mult',end:(c,e)=>e('xmult',1.5)},
- nemesis:{name:'Nemesis',r:4,cost:10,bg:'#1a1a2e',p:{1:'#c9a4ff',2:'#fe5f55',3:'#ffffff'},s:["1........1",".1......1.","..111111..",".11311311.",".11111111.","..112211..","...1111...","..1....1..",".1......1.",".........."],
+ nemesis:{name:'Nemesis',r:4,cost:13,bg:'#1a1a2e',p:{1:'#c9a4ff',2:'#fe5f55',3:'#ffffff'},s:["1........1",".1......1.","..111111..",".11311311.",".11111111.","..112211..","...1111...","..1....1..",".1......1.",".........."],
   desc:'{x:X0.3} Mult for each point of {a:Karma} away from zero, good or bad',end:(c,e)=>{const k=Math.abs(karmaNow());if(k)e('xmult',1+.3*k)}},
- bodhi:{name:'Bodhi Leaf',r:4,cost:10,bg:'#1f3d22',p:{1:'#4bd18f',2:'#2e7d4f',3:'#fff27a'},s:["....11....","...1111...","..111111..",".11121111.",".11112111.","..111211..","...1121...","....12....","....33....",".........."],
+ bodhi:{name:'Bodhi Leaf',r:4,cost:13,bg:'#1f3d22',p:{1:'#4bd18f',2:'#2e7d4f',3:'#fff27a'},s:["....11....","...1111...","..111111..",".11121111.",".11112111.","..111211..","...1121...","....12....","....33....",".........."],
   desc:'Your {a:Karma} is always perfect. {x:X2} Mult',end:(c,e)=>e('xmult',2)},
- moirai:{name:'The Fates',r:4,cost:10,bg:'#2a2140',p:{1:'#ffffff',2:'#c9a4ff',3:'#ffd34d'},s:["3.3.3.3.3.","1.1.1.1.1.","1.1.1.1.1.","1.1.1.1.1.","2.2.2.2.2.","2222222222","2.......2.","2222222222","..........",".........."],
+ moirai:{name:'The Fates',r:4,cost:13,bg:'#2a2140',p:{1:'#ffffff',2:'#c9a4ff',3:'#ffd34d'},s:["3.3.3.3.3.","1.1.1.1.1.","1.1.1.1.1.","1.1.1.1.1.","2.2.2.2.2.","2222222222","2.......2.","2222222222","..........",".........."],
   desc:'Each scoring coin gives {x:X1.25} Mult while both your {a:Luck} and {a:Karma} are good',coin:(c,i,e)=>{if(luckNow()>=3&&karmaNow()>=3)e('xmult',1.25)}},
 });
 /* ---- Fabled: vanishingly rare charms with fantastical effects ---- */
 Object.assign(JOKERS,{
- schrodinger:{name:"Schrödinger's Cat",r:5,cost:12,bg:'#2a2a3a',p:{1:'#c9a06a',2:'#222222',3:'#ffd34d',4:'#9be7ff'},s:["..2....2..","..22..22..","..222222..","..232232..","..222222..","1111111111","1........1","1..4..4..1","1111111111",".........."],
+ schrodinger:{name:"Schrödinger's Cat",r:5,cost:20,bg:'#2a2a3a',p:{1:'#c9a06a',2:'#222222',3:'#ffd34d',4:'#9be7ff'},s:["..2....2..","..22..22..","..222222..","..232232..","..222222..","1111111111","1........1","1..4..4..1","1111111111",".........."],
   desc:'Until you look, a coin is both. Every coin that misses has a {a:1 in 2} chance to {a:collapse} onto your call'},
- chronos:{name:"Chronos' Hourglass",r:5,cost:12,bg:'#2a1e10',p:{1:'#ffd34d',2:'#c48a12',3:'#fff6e6'},s:["1111111111",".2333332..","..23332...","...232....","....3.....","...2.2....","..2.3.2...",".2.333.2..","1111111111",".........."],
+ chronos:{name:"Chronos' Hourglass",r:5,cost:20,bg:'#2a1e10',p:{1:'#ffd34d',2:'#c48a12',3:'#fff6e6'},s:["1111111111",".2333332..","..23332...","...232....","....3.....","...2.2....","..2.3.2...",".2.333.2..","1111111111",".........."],
   desc:'Once per wager, when you run out of Flips short of the target, {a:time rewinds}: gain {a:1} more Flip'},
- dragonhoard:{name:"Dragon's Hoard",r:5,cost:12,init:{x:1},bg:'#3a1010',p:{1:'#4bd18f',2:'#ffd34d',3:'#fe5f55',4:'#2e7d4f'},s:["1......1..",".11..11...","..1111....",".113111...",".1111111..","..44111...","2.2.2.2.2.","222222222.","2222222222",".........."],
+ dragonhoard:{name:"Dragon's Hoard",r:5,cost:17,init:{x:1},bg:'#3a1010',p:{1:'#4bd18f',2:'#ffd34d',3:'#fe5f55',4:'#2e7d4f'},s:["1......1..",".11..11...","..1111....",".113111...",".1111111..","..44111...","2.2.2.2.2.","222222222.","2222222222",".........."],
   desc:j=>`Gains {x:X0.25} Mult every time you leave a wager with {$:$25} or more. A dragon never spends {d:(Currently X${j?fmtM(j.st.x):1})}`,end:(c,e,j)=>{if(j.st.x>1)e('xmult',j.st.x)}},
- genielamp:{name:"Genie's Lamp",r:5,cost:12,bg:'#2a1a3a',init:{w:3},p:{1:'#ffd34d',2:'#c48a12',3:'#c9a4ff'},s:["......3...",".....33...","....3.....","..........","...1111...",".11111111.","1111111112",".1111111.2","..22222...",".........."],
+ genielamp:{name:"Genie's Lamp",r:5,cost:20,bg:'#2a1a3a',init:{w:3},p:{1:'#ffd34d',2:'#c48a12',3:'#c9a4ff'},s:["......3...",".....33...","....3.....","..........","...1111...",".11111111.","1111111112",".1111111.2","..22222...",".........."],
   desc:j=>`Grants {a:3 wishes}: after each {a:Boss} wager, wish up a {p:Legendary} Charm (if you have room). Vanishes when the wishes run out {d:(${j?j.st.w:3} left)}`},
- excalibur:{name:'Sword in the Stone',r:5,cost:12,bg:'#22262e',init:{x:1},p:{1:'#d9dee6',2:'#ffd34d',3:'#7a7f8a',4:'#4a4f5a'},s:["....1.....","....1.....","....1.....","....1.....","..22222...","....2.....","..33333...",".3344433..","3344444433",".........."],
+ excalibur:{name:'Sword in the Stone',r:5,cost:17,bg:'#22262e',init:{x:1},p:{1:'#d9dee6',2:'#ffd34d',3:'#7a7f8a',4:'#4a4f5a'},s:["....1.....","....1.....","....1.....","....1.....","..22222...","....2.....","..33333...",".3344433..","3344444433",".........."],
   desc:j=>`Gains {x:X1} Mult every time you beat a {a:Boss} wager, as long as you are worthy (Karma isn't bad) {d:(Currently X${j?j.st.x:1})}`,end:(c,e,j)=>{if(j.st.x>1)e('xmult',j.st.x)}},
- phoenix:{name:'Phoenix Feather',r:5,cost:12,bg:'#3a1a0a',p:{1:'#ff4b2b',2:'#ffa21f',3:'#fff27a'},s:["......3...",".....32...","....321...","...3211...","..3211....",".3211.....","3211......","211.......","1.........",".........."],
+ phoenix:{name:'Phoenix Feather',r:5,cost:20,bg:'#3a1a0a',p:{1:'#ff4b2b',2:'#ffa21f',3:'#fff27a'},s:["......3...",".....32...","....321...","...3211...","..3211....",".3211.....","3211......","211.......","1.........",".........."],
   desc:'If you would lose the run, you {a:rise from the ashes}: the wager counts as won and the Feather burns away'},
- pandora:{name:"Pandora's Box",r:5,cost:12,bg:'#2a1a1a',init:{e:''},p:{1:'#7a5a3a',2:'#ffd34d',3:'#c9a4ff',4:'#fff27a'},s:[".3..4..3..","..3.4.3...","...444....","1111111111","1222222221","1111111111","1111221111","1111111111","1111111111",".........."],
+ pandora:{name:"Pandora's Box",r:5,cost:20,bg:'#2a1a1a',init:{e:''},p:{1:'#7a5a3a',2:'#ffd34d',3:'#c9a4ff',4:'#fff27a'},s:[".3..4..3..","..3.4.3...","...444....","1111111111","1222222221","1111111111","1111221111","1111111111","1111111111",".........."],
   desc:j=>`Opens at the start of every wager: {x:X4} Mult all wager, {a:+3} Flips, {$:$15}, or something {r:awful}. Hope always remains: {r:+1} Re-flip${j&&j.st.e?` {d:(This wager: ${PANDORA[j.st.e]})}`:''}`,
   wager:j=>{const x=rand(),k=x<.3?'x':x<.55?'f':x<.8?'m':'bad';j.st.e=k;S.reflipsLeft++;if(k==='f')S.flipsLeft+=3;else if(k==='m')S.money+=15;else if(k==='bad')S.flipsLeft=Math.max(1,S.flipsLeft-2);setTimeout(()=>toast(`<b>Pandora's Box</b>: ${PANDORA[k]}`),500)},
   end:(c,e,j)=>{if(j.st.e==='x')e('xmult',4)}},
- goldenticket:{name:'Golden Ticket',r:5,cost:12,bg:'#3a2a10',p:{1:'#ffd34d',2:'#c48a12',3:'#fff6e6'},s:["..........","1111111111","1.3....3.1","1..2222..1","1..2..2..1","1..2222..1","1.3....3.1","1111111111","..........",".........."],
+ goldenticket:{name:'Golden Ticket',r:5,cost:20,bg:'#3a2a10',p:{1:'#ffd34d',2:'#c48a12',3:'#fff6e6'},s:["..........","1111111111","1.3....3.1","1..2222..1","1..2..2..1","1..2222..1","1.3....3.1","1111111111","..........",".........."],
   desc:'The first item on the shop\'s Charm shelf is always {a:free}'},
- kraken:{name:'The Kraken',r:5,cost:12,bg:'#102a3a',p:{1:'#c9478a',2:'#ff8fab',3:'#ffffff'},s:["...1111...","..111111..","..131131..","..111111..",".1.1.1.1..",".1.1.1.1..","1..1..1..1","1.1..1..1.",".1..1..1..",".........."],
+ kraken:{name:'The Kraken',r:5,cost:20,bg:'#102a3a',p:{1:'#c9478a',2:'#ff8fab',3:'#ffffff'},s:["...1111...","..111111..","..131131..","..111111..",".1.1.1.1..",".1.1.1.1..","1..1..1..1","1.1..1..1.",".1..1..1..",".........."],
   desc:'Every toss, the Kraken drags one scoring coin into the deep: it triggers {a:5 times}'},
- cornucopia:{name:'Cornucopia',r:5,cost:12,bg:'#3a2a10',p:{1:'#c48a12',2:'#fe5f55',3:'#4bd18f',4:'#ffd34d'},s:["1.........","11........",".111......","..1111.2..","...11143..","....112334",".....12443","......1243","........3.",".........."],
+ cornucopia:{name:'Cornucopia',r:5,cost:20,bg:'#3a2a10',p:{1:'#c48a12',2:'#fe5f55',3:'#4bd18f',4:'#ffd34d'},s:["1.........","11........",".111......","..1111.2..","...11143..","....112334",".....12443","......1243","........3.",".........."],
   desc:'Shop rerolls are {a:free}, and every wager you win fills your empty Consumable slots'},
 });
 Object.assign(JOKERS,{
@@ -1758,29 +1760,29 @@ Object.assign(JOKERS,{
  wildcard:{name:'Wild Card',r:3,cost:8,bg:'#3a3a3a',p:{1:'#ffffff',2:'#ff5f6d',3:'#0b9bff',4:'#ffd34d'},s:["..........",".11111111.",".12111131.",".11111111.",".11144111.",".11144111.",".11111111.",".13111121.",".11111111.",".........."],
   desc:'Every toss, gives one at random: {c:+100} Points, {m:+12} Mult, or {x:X1.75} Mult',end:(c,e)=>{const r=rand();if(r<1/3)e('chips',100);else if(r<2/3)e('mult',12);else e('xmult',1.75)}},
  /* challenge rolls unlock Fabled ones */
- mirrorimage:{name:'Mirror Image',r:5,cost:12,bg:'#9fb4c8',p:{1:'#eef6ff',2:'#5a6a80',3:'#ffffff'},s:["..222222..",".21111112.",".21131112.",".21311112.",".21111112.",".21111312.",".21113112.",".21111112.","..222222..","....22...."],
+ mirrorimage:{name:'Mirror Image',r:5,cost:17,bg:'#9fb4c8',p:{1:'#eef6ff',2:'#5a6a80',3:'#ffffff'},s:["..222222..",".21111112.",".21131112.",".21311112.",".21111112.",".21111312.",".21113112.",".21111112.","..222222..","....22...."],
   desc:'Every coin that {a:misses} gives {x:X1.25} Mult',miss:(c,i,e)=>e('xmult',1.25)},
- quickdraw:{name:'Quick Draw',r:5,cost:12,bg:'#2a2a2a',p:{1:'#c3c9ce',2:'#8a5a28',3:'#ff4b2b'},s:["..........","..........","1111111111","1111111113","..1122....","..12.2....","..12......","..22......","..........",".........."],
+ quickdraw:{name:'Quick Draw',r:5,cost:17,bg:'#2a2a2a',p:{1:'#c3c9ce',2:'#8a5a28',3:'#ff4b2b'},s:["..........","..........","1111111111","1111111113","..1122....","..12.2....","..12......","..22......","..........",".........."],
   desc:()=>`{x:X1} Mult, plus {x:X1} for every Flip you have left this wager {d:(Currently X${S?1+S.flipsLeft:1})}`,end:(c,e)=>{if(S.flipsLeft)e('xmult',1+S.flipsLeft)}},
- whale:{name:'The Whale',r:5,cost:12,bg:'#0f5a36',p:{1:'#2a6fd6',2:'#bfe6ff',3:'#ffffff',4:'#222222'},s:["....3.3...",".....3....","..........",".111111..1","11111111.1","1411111111","1111111111","2222222221",".22222222.",".........."],
+ whale:{name:'The Whale',r:5,cost:17,bg:'#0f5a36',p:{1:'#2a6fd6',2:'#bfe6ff',3:'#ffffff',4:'#222222'},s:["....3.3...",".....3....","..........",".111111..1","11111111.1","1411111111","1111111111","2222222221",".22222222.",".........."],
   desc:'Bets you win pay {$:triple} instead of double'},
- cauldron:{name:"Witch's Cauldron",r:5,cost:12,bg:'#251a2e',p:{1:'#2a2a33',2:'#4bd18f',3:'#c9a4ff'},s:["...3..3...","....3.....","..3...3...","1222222221",".11111111.","1111111111","1111111111",".11111111.","..111111..",".1......1."],
+ cauldron:{name:"Witch's Cauldron",r:5,cost:17,bg:'#251a2e',p:{1:'#2a2a33',2:'#4bd18f',3:'#c9a4ff'},s:["...3..3...","....3.....","..3...3...","1222222221",".11111111.","1111111111","1111111111",".11111111.","..111111..",".1......1."],
   desc:()=>`{x:X0.75} Mult for each {r:cursed} Charm you own {d:(Currently X${S?fmtM(1+.75*S.jokers.filter(j=>j.curse).length):1})}`,end:(c,e)=>{const k=S.jokers.filter(j=>j.curse).length;if(k)e('xmult',1+.75*k)}},
- lantern:{name:'Spirit Lantern',r:5,cost:12,init:{x:1},bg:'#18333a',p:{1:'#c9a06a',2:'#c4f5ea',3:'#ffffff'},s:["....11....","...1..1...","..111111..","..122221..","..123321..","..123321..","..122221..","..111111..","...1111...",".........."],
+ lantern:{name:'Spirit Lantern',r:5,cost:17,init:{x:1},bg:'#18333a',p:{1:'#c9a06a',2:'#c4f5ea',3:'#ffffff'},s:["....11....","...1..1...","..111111..","..122221..","..123321..","..123321..","..122221..","..111111..","...1111...",".........."],
   desc:j=>`Gains {x:X0.5} Mult every time you use a {a:Spirit} {d:(Currently X${j?fmtM(j.st.x):1})}`,end:(c,e,j)=>{if(j.st.x>1)e('xmult',j.st.x)}},
- ragsriches:{name:'Rags to Riches',r:5,cost:12,bg:'#5a4a3a',p:{1:'#c9b48a',2:'#7a5a3a',3:'#ffd34d'},s:["..........","...2..2...","..111111..",".11211211.",".11111111.",".12111131.",".11111111.","..11..11..","..........",".........."],
+ ragsriches:{name:'Rags to Riches',r:5,cost:17,bg:'#5a4a3a',p:{1:'#c9b48a',2:'#7a5a3a',3:'#ffd34d'},s:["..........","...2..2...","..111111..",".11211211.",".11111111.",".12111131.",".11111111.","..11..11..","..........",".........."],
   desc:'{x:X3} Mult while you have {$:$5} or less',end:(c,e)=>{if(S.money<=5)e('xmult',3)}},
- everypenny:{name:'Every Penny Counts',r:5,cost:12,bg:'#b0602a',p:{1:'#ffd9b0',2:'#d9824a',3:'#8e4a22'},s:["..........","...2222...","..233332..",".23311332.",".23133132.",".23133132.",".23311332.","..233332..","...2222...",".........."],
+ everypenny:{name:'Every Penny Counts',r:5,cost:17,bg:'#b0602a',p:{1:'#ffd9b0',2:'#d9824a',3:'#8e4a22'},s:["..........","...2222...","..233332..",".23311332.",".23133132.",".23133132.",".23311332.","..233332..","...2222...",".........."],
   desc:'Coins that {a:miss} still give their {c:Points}, and {m:+2} Mult',miss:(c,i,e)=>{const x=c.purse[i];e('chips',coinDef(x).chips+(x.bonus||0));e('mult',2)}},
- packrat:{name:'Packrat',r:5,cost:12,bg:'#4a3a6a',p:{1:'#8a8a99',2:'#ffc0cf',3:'#222222',4:'#ffd34d'},s:["..........","..........",".11....4..","1311..444.","1111111.4.",".111111...","..1111....","..2..2....","22222222..",".........."],
+ packrat:{name:'Packrat',r:5,cost:17,bg:'#4a3a6a',p:{1:'#8a8a99',2:'#ffc0cf',3:'#222222',4:'#ffd34d'},s:["..........","..........",".11....4..","1311..444.","1111111.4.",".111111...","..1111....","..2..2....","22222222..",".........."],
   desc:()=>`{x:X0.15} Mult for every Charm, Consumable and coin you own {d:(Currently X${S?fmtM(1+.15*(S.jokers.length+S.cons.length+S.purse.length)):1})}`,end:(c,e)=>e('xmult',1+.15*(S.jokers.length+S.cons.length+S.purse.length))},
- cherrytree:{name:'Cherry Tree',r:5,cost:12,init:{x:1},bg:'#3a2210',p:{1:'#4bd18f',2:'#c8102e',3:'#8a5a28'},s:["..111111..",".11111111.","1121111211","1111111111",".11121111.","..111111..","....33....","....33....","....33....","...3333..."],
+ cherrytree:{name:'Cherry Tree',r:5,cost:17,init:{x:1},bg:'#3a2210',p:{1:'#4bd18f',2:'#c8102e',3:'#8a5a28'},s:["..111111..",".11111111.","1121111211","1111111111",".11121111.","..111111..","....33....","....33....","....33....","...3333..."],
   desc:j=>`Gains {x:X1} Mult every time you win a {a:Rival} duel. Cannot tell a lie {d:(Currently X${j?fmtM(j.st.x):1})}`,end:(c,e,j)=>{if(j.st.x>1)e('xmult',j.st.x)}},
- giantslayer:{name:'Giant Slayer',r:5,cost:12,bg:'#3a0a10',p:{1:'#8a5a28',2:'#c3c9ce',3:'#c8102e'},s:["..........","..1....1..","..1....1..","..11..11..","...1111...","....11....","....11....","....22....","...2332...","....22...."],
+ giantslayer:{name:'Giant Slayer',r:5,cost:17,bg:'#3a0a10',p:{1:'#8a5a28',2:'#c3c9ce',3:'#c8102e'},s:["..........","..1....1..","..1....1..","..11..11..","...1111...","....11....","....11....","....22....","...2332...","....22...."],
   desc:'{x:X2.5} Mult during {a:Boss} wagers',end:(c,e)=>{if(c.boss)e('xmult',2.5)}},
- blindfaith:{name:'Blind Faith',r:5,cost:12,bg:'#000000',p:{1:'#ffffff',2:'#222222',3:'#c8102e'},s:["..........","..........","3333333333","3111111113","3122112213","3111111113","3333333333","..3....3..","...3....3.",".........."],
+ blindfaith:{name:'Blind Faith',r:5,cost:17,bg:'#000000',p:{1:'#ffffff',2:'#222222',3:'#c8102e'},s:["..........","..........","3333333333","3111111113","3122112213","3111111113","3333333333","..3....3..","...3....3.",".........."],
   desc:'{x:X3} Mult. Your coins land {r:face down} until they score',end:(c,e)=>e('xmult',3)},
- randomaccess:{name:'Random Access',r:5,cost:12,bg:'#ff1aa8',p:{1:'#00f0e0',2:'#222222',3:'#ffffff'},s:["1111111111","1222222221","1213121321","1222222221","1231213121","1222222221","1213131221","1222222221","1111111111",".1.1.1.1.."],
+ randomaccess:{name:'Random Access',r:5,cost:17,bg:'#ff1aa8',p:{1:'#00f0e0',2:'#222222',3:'#ffffff'},s:["1111111111","1222222221","1213121321","1222222221","1231213121","1222222221","1213131221","1222222221","1111111111",".1.1.1.1.."],
   desc:'Every toss, runs the ability of a {a:random Charm} from anywhere'},
 });
 /* ---- Fishing charms: earned at the Drowned Fountain (a secret on the title screen) ---- */
@@ -1793,9 +1795,9 @@ Object.assign(JOKERS,{
   desc:()=>`{m:+2} Mult for every kind of catch in your fishing log {d:(Currently +${2*fishKinds()} Mult)}`,end:(c,e)=>{const k=fishKinds();if(k)e('mult',2*k)}},
  bottle:{name:'Message in a Bottle',r:2,cost:6,bg:'#123a48',p:{1:'#9be7ff',2:'#4bd18f',3:'#c9a06a',4:'#f5e3c0'},s:["......33..",".....2112.","....21142.","...211412.","..2114112.",".2114112..","21141112..","2111112...",".22222....",".........."],
   desc:()=>`Earn {$:$1} at the end of each wager for each Consumable you hold {d:(Currently $${S?S.cons.length:0})}`},
- goldenkoi:{name:'Golden Koi',r:4,cost:10,bg:'#123a48',p:{1:'#ffd34d',2:'#fff6d0',3:'#222222',4:'#c48a12'},s:["..........","....44....","..1121211.","411111131.","441111111.","441111122.","411121111.","..1111111.","....44....",".........."],
+ goldenkoi:{name:'Golden Koi',r:4,cost:13,bg:'#123a48',p:{1:'#ffd34d',2:'#fff6d0',3:'#222222',4:'#c48a12'},s:["..........","....44....","..1121211.","411111131.","441111111.","441111122.","411121111.","..1111111.","....44....",".........."],
   desc:'Every coin that scores has a {a:1 in 3} chance to give {x:X1.3} Mult',coin:(c,i,e)=>{if(rand()<odds(1/3))e('xmult',1.3)}},
- hookline:{name:'Hook, Line & Sinker',r:5,cost:12,bg:'#0a1f29',p:{1:'#c3c9ce',2:'#9be7ff',3:'#5a5a6a'},s:["....2.....","....2.....","....2.....","....2.....","...111....","...1.1....","1..1......","11.1......",".111...33.",".......33."],
+ hookline:{name:'Hook, Line & Sinker',r:5,cost:17,bg:'#0a1f29',p:{1:'#c3c9ce',2:'#9be7ff',3:'#5a5a6a'},s:["....2.....","....2.....","....2.....","....2.....","...111....","...1.1....","1..1......","11.1......",".111...33.",".......33."],
   desc:'Retrigger every coin that scores on the {a:first} toss of each wager'},
 });
 /* earned by calling the title coin three times running */
@@ -1815,7 +1817,7 @@ Object.assign(JOKERS,{
   desc:j=>`Copies the ability of a random one of your other Charms, picked again every wager${j&&S&&S.jokers.includes(j)?` {d:(Now: ${copyName(j)})}`:''}`},
  understudy:{name:'Understudy',r:2,cost:7,bg:'#1e2440',p:{1:'#f2ead8',2:'#222222',3:'#ffd34d'},s:["..111111..",".11111111.","1122112211","1122112211","1111111111","1111111111",".11222211.","..111111..","...3333...","..333333.."],
   desc:j=>`Copies the ability of the Charm in your {a:first} slot${j&&S&&S.jokers.includes(j)?` {d:(Now: ${copyName(j)})}`:''}`},
- paradox:{name:'Paradox',r:4,cost:14,bg:'#140a24',p:{1:'#b48cff',2:'#00f0e0',3:'#ffffff'},s:["....11....","...1..1...","..1.22.1..",".1.2..2.1.","1.2.33.2.1","1.2.33.2.1",".1.2..2.1.","..1.22.1..","...1..1...","....11...."],
+ paradox:{name:'Paradox',r:4,cost:15,bg:'#140a24',p:{1:'#b48cff',2:'#00f0e0',3:'#ffffff'},s:["....11....","...1..1...","..1.22.1..",".1.2..2.1.","1.2.33.2.1","1.2.33.2.1",".1.2..2.1.","..1.22.1..","...1..1...","....11...."],
   desc:()=>{const n=S?S.jokers.filter(j=>COPYK[j.key]).length:0;return `{x:X2} Mult, plus {x:X1} more for every copy Charm you own (Copycat, Mimic, Understudy) {d:(Currently X${2+n})}`},
   end:(c,e)=>e('xmult',2+S.jokers.filter(j=>COPYK[j.key]).length)},
  skeletonkey:{name:'Skeleton Key',r:3,cost:8,bg:'#1c1a24',p:{1:'#e8e2d0',2:'#9a948a',3:'#222222'},s:["...1111...","..112211..","..12..21..","..12..21..","..112211..","...1111...","....12....","....1211..","....12....","....1211.."],
@@ -1853,7 +1855,7 @@ Object.assign(JOKERS,{
 });
 /* earned by beating The Table of Rivals */
 Object.assign(JOKERS,{
- seattable:{name:'Seat at the Table',r:4,cost:10,bg:'#3a2210',p:{1:'#8a5a28',2:'#c48a4a',3:'#ff8f1f',4:'#2a1a0a'},s:["..........","..3....3..","..1....1..","..1....1..","2222222222","4444444444",".1......1.",".1......1.",".1......1.",".........."],
+ seattable:{name:'Seat at the Table',r:4,cost:13,bg:'#3a2210',p:{1:'#8a5a28',2:'#c48a4a',3:'#ff8f1f',4:'#2a1a0a'},s:["..........","..3....3..","..1....1..","..1....1..","2222222222","4444444444",".1......1.",".1......1.",".1......1.",".........."],
   desc:()=>{const n=Object.keys(PS().rivalsBeat||{}).filter(k=>RIVAL_OF[k]).length;return `{x:X0.5} Mult for every different rival you\\'ve beaten in a duel (across all runs) {d:(Currently X${fmtM(1+.5*n)})}`},
   end:(c,e)=>{const n=Object.keys(PS().rivalsBeat||{}).filter(k=>RIVAL_OF[k]).length;if(n)e('xmult',1+.5*n)}},
 });
@@ -5442,7 +5444,7 @@ function rollJokerKey(minR){
   const owned=new Set([...S.jokers.map(j=>j.key),...(S.shop?S.shop.jokers.filter(j=>j.key).map(j=>j.key):[])]);
   if(!minR&&rand()<rareOdds(1/200)){const fb=Object.keys(JOKERS).filter(k=>JOKERS[k].r===5&&!owned.has(k)&&isUnlocked('charm',k));if(fb.length)return pick(fb)}
   if(!minR&&S.curator&&rand()<1/40){const lg=Object.keys(JOKERS).filter(k=>JOKERS[k].r===4&&!owned.has(k));if(lg.length)return pick(lg)}
-  const x=clamp(rand()-luckNow()*.012,0,.999);let r=minR||(x<(S.patron?.5:.7)?1:x<(S.patron?.85:.95)?2:3);
+  const x=clamp(rand()-luckNow()*.012,0,.999);let r=minR||(x<(S.patron?.48:.64)?1:x<(S.patron?.8:.9)?2:3); /* 64% Common, 26% Uncommon, 10% Rare */
   const base=Object.keys(JOKERS).filter(k=>JOKERS[k].r<4&&!JOKERS[k].glitchOnly&&!JOKERS[k].prize&&!JOKERS[k].artifact&&isUnlocked('charm',k));
   let pool=base.filter(k=>JOKERS[k].r===r&&!owned.has(k));
   if(!pool.length)pool=base.filter(k=>!owned.has(k));
