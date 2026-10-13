@@ -1141,7 +1141,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.168</div>
+  <div class="gamever" aria-label="Version">v1.2.169</div>
 </div>
 
 <script>
@@ -1235,7 +1235,7 @@ const COINS={
  jade:   {name:'Cash Coin',         chips:5, held:2, string:10, cost:5,w:.75, desc:'{c:+5} Points. Earn {$:$2} at the end of each wager while it sits in your purse. Coins {a:next to it} give {c:+10} Points when they score'},
  lucky:{name:'5 Yen Coin',        chips:10, lucky:1, cost:4, desc:'{c:+10} Points. {a:1 in 3} chance for {m:+15} Mult, {a:1 in 8} chance for {$:$8}. Both chances {a:double} while it sits in the {a:middle} of your purse'},
  steel:  {name:'2 Euro Coin',       chips:5, missX:1.5, cost:5, desc:'{c:+5} Points when it scores. {x:X1.5} Mult when it does {a:not} score'},
- glass:  {name:'Chocolate Coin',    chips:5, xmult:2, glass:1, cost:6,w:.6, desc:'{c:+5} Points, {x:X2} Mult. {a:1 in 10} chance to get eaten when it scores, leaving a {a:Crumpled Gold Foil} coin behind'},
+ glass:  {name:'Chocolate Coin',    chips:5, xmult:2, glass:1, cost:6,w:.6, desc:'{c:+5} Points, {x:X2} Mult. {a:1 in 10} chance to get eaten when it scores, leaving a plain {a:Quarter} behind'},
  bronze: {name:'Wooden Nickel',     chips:1, missMult:8, cost:4, desc:'{c:+1} Point when it scores, but {m:+8} Mult when it {a:misses}'},
  loaded:{name:"Magician's Coin",   chips:15, bias:.8, freeFlip:1, cost:5, desc:'{c:+15} Points. Lands on your call {a:4 in 5} times. Re-flipping only Magician\'s Coins is {a:free}'},
  quicksilver:{name:'Arcade Token',  chips:5, wild:1, arcade:2, cost:6, desc:'{c:+5} Points. Always scores, whatever face it lands on. {m:+2} Mult for each Re-flip you\'ve used this wager. {a:Continue?} If you would run out of Flips short of the target, it gets used up for {a:+1} Flip and {a:+1} Re-flip'},
@@ -1253,7 +1253,6 @@ Object.assign(COINS,{
  penny:   {name:'Lucky Penny',     chips:1, wild:1, relic:1, pennyMult:1, cost:0, desc:'{c:+1} Point and {m:+1} Mult for each coin in your purse. Always scores, whatever face it lands on. {a:Relic}: one of a kind'},
  denarius:{name:'Roman Denarius',  chips:15,mult:5,tribute:5,relic:1, cost:0, desc:'{c:+15} Points and {m:+5} Mult. {a:Tribute}: gains another {m:+5} Mult {a:permanently} every time you beat a Boss. {a:Relic}: one of a kind'},
  ecu:     {name:'Gold Ecu',       chips:5,xmult:1.5,euro:1,relic:1,cost:0,desc:'{c:+5} Points, {x:X1.5} Mult when it scores, or {x:X2} when it sits next to another {a:foreign} coin. {a:Relic}: one of a kind'},
- foil:    {name:'Crumpled Gold Foil',chips:3,money:1,meltVal:3,noShop:1,cost:0,desc:'{c:+3} Points. Earn {$:$1} when it scores. Melts down for {$:$3}'},
  sanddollar:{name:'Sand Dollar',chips:8,sand:1,fishLocked:1,cost:6,desc:'{c:+8} Points. Whenever it lands, it goes {a:fishing}. If it {r:missed}, land a catch and it flips onto your call. If it {a:scored}, land a catch for bonus Mult: {x:X1.25} for an Old Boot up to {x:X5} for The Pit Boss'},
  bellwether:{name:'The Bellwether',chips:6,bell:4,relic:1,artifact:1,cost:0,desc:'{c:+6} Points. In your {a:first} slot, every other coin that scores gets {m:+4} Mult. Anywhere else it {r:never scores}. {a:Artifact}: one of a kind'},
  firstdime:{name:'The First Dime',chips:10,firstDime:.2,loseChance:1,relic:1,artifact:1,cost:0,desc:'{c:+10} Points. In your {a:first} slot when a wager starts, the score needed drops by {a:20%}. Anywhere else, the moment it scores it gets {r:lost} for good. {a:Artifact}: one of a kind'},
@@ -1836,7 +1835,7 @@ Object.assign(JOKERS,{
  pricetag:{name:'Price Tag',r:2,cost:6,bg:'#3a3010',p:{1:'#f5e3c0',2:'#c8102e',3:'#222222'},s:["....111111","...1111111","..11131111",".111111111","1111111111","1111222111","111111111.","11111111..","1111111...","111111...."],
   desc:()=>`{m:+1} Mult for every {$:$2} you\'ve spent this run {d:(Currently +${S?Math.floor((S.spentRun||0)/2):0} Mult)}`,end:(c,e)=>{const n=Math.floor((S.spentRun||0)/2);if(n)e('mult',n)}},
  candywrapper:{name:'Candy Wrapper',r:2,cost:6,bg:'#4a2a14',p:{1:'#e8c14a',2:'#fff2b0',3:'#8a5a2a'},s:["1........1","11......11","1.1....1.1","1..1111..1","1..1221..1","1..1221..1","1..1111..1","1.1....1.1","11......11","1........1"],
-  desc:'Crumpled Gold Foil coins give {m:+8} Mult when they score',coin:(c,i,e)=>{if(ctype(c.purse[i])==='foil')e('mult',8)}},
+  desc:'Chocolate Coins give {m:+8} Mult when they score',coin:(c,i,e)=>{if(ctype(c.purse[i])==='glass')e('mult',8)}},
  stopwatch:{name:'Stopwatch',r:3,cost:8,bg:'#3a0a10',p:{1:'#e8eef2',2:'#c8102e',3:'#222222',4:'#ffd34d'},s:["....44....","...1111...","..122221..",".12223321.",".12223221.",".12232221.",".12222221.","..122221..","...1111...",".........."],
   desc:'{x:X2} Mult on tosses you call within {a:3 seconds}',end:(c,e)=>{if(S.fastCall)e('xmult',2)}},
  rewind:{name:'Rewind Tape',r:3,cost:9,bg:'#1a1a2a',init:{u:3},p:{1:'#3a3a4a',2:'#e8eef2',3:'#c8102e',4:'#111111'},s:["1111111111","1222222221","1244224421","1244224421","1222222221","1233333321","1111111111",".1.1..1.1.","..........",".........."],
@@ -2111,7 +2110,7 @@ const coinRef=c=>c&&c.kind==='rune'?RUNES[c.key].to:c&&c.kind==='spirit'?({wisp:
 const COIN_FLAV={copper:'A plain U.S. quarter.',silver:'Canada\'s eleven-sided dollar.',gold:'Pirate treasure.',bronze:'Don\'t take any wooden nickels.',
  twohead:'A counterfeit quarter. Crooks don\'t sleep well.',twotail:'A counterfeit quarter. Crooks don\'t sleep well.',sixpence:'Brides keep one in their shoe for good fortune.',
  drachma:'It has an owl on the back.',krona:'Three crowns on the back.',pog:'A heavy playground slammer.',crypto:'Very volatile.',sealed:'A courier\'s sealed coin.',
- ecu:'The coin before the Euro.',foil:'All that\'s left of an eaten Chocolate Coin.',bellwether:'The flock follows it.',firstdime:'The very first dime ever earned.',
+ ecu:'The coin before the Euro.',bellwether:'The flock follows it.',firstdime:'The very first dime ever earned.',
  pressed:'A souvenir penny pressed flat with a steam train. The coins to its right are its train cars.'};
 const coinNote=t=>t?`<div class="tmod" style="--mc:#e9d9a8"><b>${COINS[t].name}</b> · ${fmt(COINS[t].desc)}</div>`:'';
 
@@ -3860,6 +3859,8 @@ function newRun(roll='standard',o={}){
   setTimeout(()=>{if(S&&S.ante===1&&S.round===1)houseSay('Welcome back. You never really left.')},1600);
 }
 function migrate(s){
+  /* Crumpled Gold Foil was removed: any left in an old save becomes a Quarter */
+  if(s&&s.purse)s.purse.forEach(c=>{if(c.type==='foil'){c.type='copper';c.bonus=0}});
   const d={stake:1,rng:null,daily:null,tutorial:false,edgeCall:false,bet:0,betLive:0,shopCharms:2,shopPacks:2,flags:{},recorded:false,boss2:null,event:null,reflipCap:2,roll:'standard',cons:[],consSlots:2,purseMax:8,rerollBase:5,csel:[],selCons:null,pack:null,lastUsed:null,tossNo:0,usedTypes:[]};
   for(const k in d)if(s[k]===undefined)s[k]=d[k];
   s.stats.runes=s.stats.runes||0;s.stats.almanacs=s.stats.almanacs||0;s.stats.tosses=s.stats.tosses||0;s.stats.reflips=s.stats.reflips||0;
@@ -4515,7 +4516,7 @@ const ROLLS={
  hoarder:{name:'Hoarder Roll',challenge:1,paper:'#4a3a6a',band:'#ffd34d',cap:'gold',desc:'{a:Challenge.} You can\'t sell Charms or Consumables, or melt coins. {a:+1} Charm slot and {a:+1} Consumable slot',apply:()=>{S.jokerSlots++;S.consSlots++}},
  oneflip:{name:'One Flip Roll',challenge:1,paper:'#2a2a3a',band:'#bfe6ff',cap:'silver',desc:'{a:Challenge.} Just {r:1} Flip every wager. You get {a:+3} Re-flips, and can re-flip up to {a:3} coins at once',apply:()=>{S.baseFlips=1;S.baseReflips+=3;S.reflipCap=3}},
  inflation:{name:'Inflation Roll',challenge:1,paper:'#6a5a1a',band:'#ffe08a',cap:'gold',desc:'{a:Challenge.} Everything in the shop costs {r:$1 more} for every stage you\'ve reached, rerolls included, and the House skims money over {r:$50} instead of $100'},
- chocolate:{name:'Chocolate Roll',challenge:1,paper:'#4a2a14',band:'#e8c14a',cap:'glass',desc:'{a:Challenge.} Start with {a:5 Chocolate Coins} instead of Quarters ({x:X2} Mult, but {a:1 in 10} get eaten when they score, leaving Gold Foil)',apply:()=>{S.purse.forEach(c=>c.type='glass')}},
+ chocolate:{name:'Chocolate Roll',challenge:1,paper:'#4a2a14',band:'#e8c14a',cap:'glass',desc:'{a:Challenge.} Start with {a:5 Chocolate Coins} instead of Quarters ({x:X2} Mult, but {a:1 in 10} get eaten when they score)',apply:()=>{S.purse.forEach(c=>c.type='glass')}},
  speedrun:{name:'Speedrun Roll',challenge:1,paper:'#c8102e',band:'#ffd34d',cap:'quicksilver',desc:'{a:Challenge.} Every move is on the clock: {r:12 seconds} to make each call, and to re-flip or cash in. Run out of time and something {r:very fast} comes for your coins and Charms'},
  invisible:{name:'Invisible Roll',challenge:1,paper:'#000000',band:'#ffffff',cap:'copper',desc:'{a:Challenge.} Every coin lands face down until it scores, so you toss and re-flip blind. Start with {$:$10}',apply:()=>{S.money=10}},
  rivalroll:{name:'Rival Roll',challenge:1,paper:'#3a2210',band:'#ff8f1f',cap:'platinum',desc:'{a:Challenge.} Your rival shows up after almost every boss and wager until you duel them, and you face a {a:new rival} every stage. The final boss is {r:The General}: the face on the Quarter himself'},
@@ -5311,8 +5312,8 @@ async function doCashIn(){
   if(R.shattered.length){
     for(const i of R.shattered){const el=$('#c'+i);if(el){el.classList.add('shatter');popup(el,'Eaten!','text')}}
     play('shatter');await wait(520);
-    /* the chocolate is gone, but the gold foil wrapper stays in the purse */
-    R.shattered.forEach(i=>{const c=S.purse[i];c.type='foil';c.bonus=0;const el=$('#c'+i);if(el)setTimeout(()=>{const e2=$('#c'+i);if(e2)popup(e2,'Gold foil!','money')},60)});
+    /* the chocolate is gone; a plain Quarter is left in its place */
+    R.shattered.forEach(i=>{const c=S.purse[i];c.type='copper';c.bonus=0;const el=$('#c'+i);if(el)setTimeout(()=>{const e2=$('#c'+i);if(e2)popup(e2,'Eaten!','miss')},60)});
     if(charmsOn())S.jokers.forEach((j,ji)=>{if(j.key==='glasscannon'){j.st.x+=.5*R.shattered.length;popup($('#jk'+ji),'Upgrade!','text')}});
   }
   if(R.lost&&R.lost.length){for(const i of R.lost){const el=$('#c'+i);if(el){el.classList.add('shatter');popup(el,'Lost!','miss')}}play('miss');await wait(520);
@@ -6190,7 +6191,7 @@ function syncFSBtn(){const b=$('#fsbtn');if(b){b.hidden=!canFS();b.textContent=i
 fitScale();
 document.body.classList.toggle('badges',!!OPT.badges);
 /* the title coin (and the intro coin) is a random coin every time the game boots */
-const TITLE_COIN=vpick(Object.keys(COINS).filter(k=>!COINS[k].quest&&!['pressed','twohead','twotail','foil'].includes(k)));
+const TITLE_COIN=vpick(Object.keys(COINS).filter(k=>!COINS[k].quest&&!['pressed','twohead','twotail'].includes(k)));
 {const bc=$('.bigcoin');bc.classList.remove('t-copper');bc.classList.add('t-'+TITLE_COIN);const sp=$('.bigcoin .spin');sp.insertAdjacentHTML('afterbegin',SLABS);sp.style.setProperty('--shape',`url(${coinArt(TITLE_COIN,'H')})`)}
 document.querySelectorAll('.bigcoin .face').forEach((f,i)=>f.style.setProperty('--art',`url(${coinArt(TITLE_COIN,i?'T':'H')})`));
 /* the game's icon is the Quarter */
