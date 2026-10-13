@@ -1071,6 +1071,7 @@ body.rewinding #app{animation:rewindfx .9s steps(9) both}@keyframes rewindfx{0%{
 .optver{text-align:center;font-size:13px;color:var(--ink-dim);opacity:.7;letter-spacing:.06em;margin-top:8px}
 .gamever{position:fixed;left:calc(12px + env(safe-area-inset-left));bottom:calc(8px + env(safe-area-inset-bottom));font-size:13px;color:var(--ink-dim);opacity:.7;letter-spacing:.06em;pointer-events:none;z-index:2}
 .colfoot{position:sticky;bottom:-14px;margin:10px -14px -14px;padding:10px 14px 14px;border-radius:0 0 14px 14px;text-align:center;background:linear-gradient(transparent,var(--panel) 35%);z-index:3}
+.lkmini{font-size:10px;line-height:1.2;margin-top:2px;white-space:nowrap}.lkmini span{display:inline-block}
 .flav{margin-top:6px;font-size:13px;font-style:italic;opacity:.7}
 .lkline{margin-top:6px;font-size:13px;color:inherit;opacity:.9}
 html.pwa,html.pwa body{background:#171512}
@@ -1141,7 +1142,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.174</div>
+  <div class="gamever" aria-label="Version">v1.2.175</div>
 </div>
 
 <script>
@@ -1232,7 +1233,7 @@ const COINS={
  platinum:{name:'Krugerrand',       chips:30,heavy:1,cost:5, desc:'{c:+30} Points. {a:Heavy}: it always lands on the same face as the coin to its left, and gives {m:+3} Mult when that coin scores too'},
  ruby:   {name:'Casino Chip',       chips:5, mult:12, betX:2, missMoney:-1, cost:4, desc:'{m:+12} Mult when it scores, or {x:X2} Mult on a {$:bet} toss. Each one that lands on your call adds {$:$3} to a winning bet. Lose {$:$1} when it misses'},
  gold:{name:'Doubloon',          chips:10, money:2, bossMoney:5, cost:4, desc:'{c:+10} Points. Earn {$:$2} when it scores, or {$:$5} during a {a:Boss} wager'},
- jade:   {name:'Cash Coin',         chips:5, held:2, string:10, cost:5,w:.75, desc:'{c:+5} Points. Earn {$:$2} at the end of each wager while it sits in your purse. Coins {a:next to it} give {c:+10} Points when they score'},
+ jade:   {name:'Cash Coin',         chips:5, held:2, string:10, cost:5,w:.75, desc:'{c:+5} Points. Earn {$:$2} at the end of each wager while it sits in your purse (only {a:2} Cash Coins pay). Coins {a:next to it} give {c:+10} Points when they score'},
  lucky:{name:'5 Yen Coin',        chips:10, lucky:1, cost:4, desc:'{c:+10} Points. {a:1 in 3} chance for {m:+15} Mult, {a:1 in 8} chance for {$:$8}. Both chances {a:double} while it sits in the {a:middle} of your purse'},
  steel:  {name:'2 Euro Coin',       chips:5, missX:1.5, cost:5, desc:'{c:+5} Points when it scores. {x:X1.5} Mult when it does {a:not} score'},
  glass:  {name:'Chocolate Coin',    chips:5, xmult:2, glass:1, cost:6,w:.6, desc:'{c:+5} Points, {x:X2} Mult. {a:1 in 10} chance to get eaten when it scores'},
@@ -1561,7 +1562,7 @@ Object.assign(JOKERS,{
  hydra:{name:'Hydra',r:3,cost:8,bg:'#1e2a1a',p:{1:'#4bd18f',2:'#2e7d4f',3:'#fe5f55'},s:["11..11..11","13.13..13.","11.11..11.",".1.1...1..",".1.1..1...","..1.1.1...","...111....","..22222...",".2222222..",".........."],
   desc:'{m:+8} Mult. When sold, it grows back as {a:2} random Common Charms',end:(c,e)=>e('mult',8)},
  goose:{name:'Golden Goose',r:3,cost:8,bg:'#2a4060',p:{1:'#ffffff',2:'#ff9a1f',3:'#ffd34d'},s:["..11......",".1122.....","..11......","..11......","..111111..",".11111111.",".11111111.","..111111.3","...2..2.33",".......333"],
-  desc:'Earn {$:$1} for every {a:1,000} points you score over the target (max {$:$20})'},
+  desc:'Earn {$:$1} for every {a:1,000} points you score over the target (max {$:$10})'},
  leviathan:{name:'Leviathan',r:3,cost:8,bg:'#bfe3ff',p:{1:'#0b9bff',2:'#ffffff',3:'#20304a'},s:["......2.2.",".......2..","..111111..",".11111111.","1131111111","1111111111",".1111111.1","..11111.11","......1...",".........."],
   desc:()=>`Gains {x:X0.1} Mult for every {a:25} coins you flip {d:(Currently X${S?(1+Math.floor(S.stats.flips/25)*.1).toFixed(1):1})}`,end:(c,e)=>{const x=1+Math.floor(S.stats.flips/25)*.1;if(x>1)e('xmult',x)}},
  foolsgold:{name:"Fool's Gold",r:3,cost:7,bg:'#3a2a10',p:{1:'#ffd34d',2:'#c48a12',3:'#fff27a'},s:["..........","...111....","..13311...",".1131112..",".11111122.","..1111122.","...11222..","..........","..........",".........."],
@@ -1621,9 +1622,9 @@ Object.assign(JOKERS,{
   desc:'{c:+50} Points on {a:Boss} wagers',end:(c,e)=>{if(c.boss)e('chips',50)}},
  /* ---- uncommon ---- */
  crystalball:{name:'Crystal Ball',r:2,cost:6,bg:'#1e1a3a',p:{1:'#9be7ff',2:'#c9a4ff',3:'#ffffff',4:'#7a5a3a'},s:["...1111...","..122221..",".12322221.",".12232221.",".12222221.","..122221..","...1111...","..444444..",".44444444.",".........."],
-  desc:()=>S&&hasK('crystalball')?`{m:+5} Mult. Reveals your hidden fortunes: {a:Luck ${fmtSign(luckNow())}} (${luckWord(luckNow())}), {a:Karma ${fmtSign(karmaNow())}} (${karmaWord(karmaNow())})`:'{m:+5} Mult. Reveals hidden fortunes you can\'t otherwise see',end:(c,e)=>e('mult',5)},
+  desc:'{m:+5} Mult. You see it coming: your {a:Luck} can\'t drop below even',end:(c,e)=>e('mult',5)},
  mirroroftruth:{name:'Mirror of Truth',r:2,cost:6,bg:'#22263a',p:{1:'#c9ced6',2:'#9be7ff',3:'#ffffff',4:'#c9a020'},s:["...4444...","..422224..",".42322224.",".42232224.",".42222224.",".42222224.","..422224..","...4444...","....44....","...4444..."],
-  desc:()=>S&&hasK('mirroroftruth')?`{m:+4} Mult. Shows your true reflection: {a:Karma ${fmtSign(karmaNow())}} (${karmaWord(karmaNow())})`:'{m:+4} Mult. Shows your true reflection, and the Karma behind it',end:(c,e)=>e('mult',4)},
+  desc:'{m:+4} Mult. Your reflection keeps you honest: your {a:Karma} can\'t drop below even',end:(c,e)=>e('mult',4)},
  karmawheel:{name:'Wheel of Karma',r:2,cost:6,bg:'#3a2a10',p:{1:'#ffd34d',2:'#c48a12',3:'#fe5f55'},s:["...1111...","..1.22.1..",".1..22..1.",".1222222..",".13222231.",".1..22..1.","..1.22.1..","...1111...","..........",".........."],
   desc:'Gives {m:Mult} for good {a:Karma}: {m:+3} Mult per point. Good deeds pay off',end:(c,e)=>{const k=karmaNow();if(k>0)e('mult',3*k)}},
  luckystreak:{name:'Lucky Streak',r:2,cost:7,bg:'#1f3d22',p:{1:'#4bd18f',2:'#ffd34d'},s:["........2.",".......22.","......222.",".....1....","....11....","...111....","..1111....",".11111....","111111....",".........."],
@@ -1985,7 +1986,7 @@ const DEFECTS={
  doublestrike:{name:'Double Strike',col:'#fe5f55',desc:'Retrigger this coin'},
  offcenter:{name:'Off-Center',col:'#3d8fe0',desc:'At the end of each wager, create an Almanac for your last toss type (if you have room)'},
  clipped:{name:'Clipped Edge',col:'#e8eef2',desc:'Lands on its {a:edge} 1 in 10 times'},
- filled:{name:'Filled Die',col:'#ff8fab',desc:'{a:1 in 6} chance to create a Fortune when this coin scores (if you have room)'},
+ filled:{name:'Filled Die',col:'#ff8fab',desc:'{a:1 in 6} chance to create a minor {a:Spirit} when this coin scores (if you have room)'},
  brockage:{name:'Brockage',col:'#c48a12',desc:'Earn {$:$2} whenever this coin misses'},
  mule:{name:'Mule',col:'#4bd18f',desc:'Struck with two mismatched dies: it {a:always scores}, whatever face it lands on'},
  diecrack:{name:'Die Crack',col:'#9a6fdc',desc:'Create a Rune each time this coin is re-flipped (if you have room)'},
@@ -2251,8 +2252,8 @@ const fmtM=m=>m>=1e9?fmtN(m):(Math.round(m*10)/10).toLocaleString('en-US');
 /* Luck and Karma are always named, but how much changes stays hidden ("+?") until something reveals it:
    Luck amounts: a Crystal Ball, or an open Fortune Pack. Karma amounts: a Crystal Ball, a Mirror of Truth, or an open Fortune Pack */
 const fortunePackOpen=()=>!!(S&&S.pack&&S.pack.kind==='fortune');
-const luckSeen=()=>!!S&&(hasK('crystalball')||fortunePackOpen());
-const karmaSeen=()=>!!S&&((hasK('crystalball')||hasK('mirroroftruth'))||fortunePackOpen());
+const luckSeen=()=>!!S;
+const karmaSeen=()=>!!S;
 /* when the amount can't be seen, these lines are swapped for a vague one (L = needs Luck revealed, K = Karma) */
 const VAGUE=[
  ['A {a:1 in 2} chance for {a:+6} Luck, otherwise {r:-4} Luck','Roll the dice on your fortune: it could go very well, or badly','L'],
@@ -3339,7 +3340,7 @@ const IMG=src=>`<img src="${src}" alt="" draggable="false">`;
 /* ================= MORE PACKS ================= */
 Object.assign(PACKS,{
  charm:   {name:'Charm Pack',col:'#e8c14a',bg:'#4a3a10',what:'Charms',word:'Charms',w:12,n:{normal:[2,1],jumbo:[4,1],mega:[4,2]}},
- fortune: {name:'Fortune Pack',col:'#ff8fab',bg:'#3a1a2a',what:'Fortunes',word:'Fortune',w:7},
+ fortune: {name:'Fortune Pack',col:'#ff8fab',bg:'#3a1a2a',what:'Fortunes',word:'Fortune',w:0,avail:()=>false},
  forecast:{name:'Forecast Pack',col:'#7ac8e8',bg:'#16364a',what:'forecasts',word:'Forecast',w:5,sizes:['normal','jumbo']},
  contract:{name:'Contract Pack',col:'#c9b48a',bg:'#3a3022',what:'contracts',word:'Contract',w:5,sizes:['normal']},
  mint:    {name:'Mint Pack',col:'#4bd18f',bg:'#163a2a',what:'coin finishes',word:'Mint',w:5,sizes:['normal','jumbo']},
@@ -3434,6 +3435,9 @@ const FORTUNES={
  fatedice:{name:"Fate's Dice",col:'#fe5f55',desc:'A {a:1 in 2} chance for {a:+6} Luck, otherwise {r:-4} Luck',use:async()=>{const w=rand()<.5;addLuck(w?6:-4);play(w?'win':'miss');toast(w?"Fate's Dice: <b>fortune smiles</b>":"Fate's Dice: <b>bad roll</b>")}},
  blessing:{name:"Saint's Blessing",col:'#fff6e6',desc:'{a:+5} Karma and {a:+1} Luck',use:async()=>{addKarma(5);addLuck(1);play('levelup');syncStats()}},
 };
+/* the best Fortunes live on as minor Spirits; the Fortune type itself is retired */
+const MINOR_SPIRITS=['luckybreak', 'goodomen', 'darkpact', 'palm', 'fatedice'];
+MINOR_SPIRITS.forEach(k=>{SPIRITS[k]={...FORTUNES[k],minor:1}});
 const SPR_FORTUNE=["..1111111.",".1222222..",".12.33.21.",".12.33.21.",".1233332..",".12.33.21.",".12.33.21.",".1222222..","..1111111.",".........."];
 /* every Fortune is its own little tarot card: a dark frame around a symbol */
 const FORTUNE_ART={
@@ -3535,7 +3539,7 @@ function mysteryInner(){const x=rand();
   if(x<.44)return{kind:'rune',key:pick(Object.keys(RUNES))};
   if(x<.56)return randAlmanac();
   if(x<.64)return{kind:'spirit',key:pick(Object.keys(SPIRITS).filter(k=>k!=='soul'))};
-  if(x<.74)return{kind:'fortune',key:pick(Object.keys(FORTUNES))};
+  if(x<.74)return{kind:'spirit',key:pick(MINOR_SPIRITS)};
   if(x<.90)return{kind:'cash',v:1+Math.floor(rand()*9)};
   if(x<.92&&relicsLeft().length)return{kind:'coin',type:pick(relicsLeft())};
   return{kind:'junk'}}
@@ -3556,7 +3560,7 @@ function genPackOpts(pk,n){
   const opts=[],k=pk.kind,uniq=(f,key)=>{let v,t=0;do{v=f();t++}while(opts.some(o=>o[key]===v[key]&&o.kind===v.kind)&&t<30);opts.push(v)};
   for(let i=0;i<n;i++){
     if(k==='charm')uniq(()=>{if(pk.size==='mega'&&rand()<rareOdds(1/40)){const fb=Object.keys(JOKERS).filter(x=>JOKERS[x].r===5&&!S.jokers.some(j=>j.key===x));if(fb.length)return{kind:'charm',key:pick(fb)}}return{kind:'charm',key:rollJokerKey()}},'key');
-    else if(k==='fortune')uniq(()=>({kind:'fortune',key:pick(Object.keys(FORTUNES))}),'key');
+    else if(k==='fortune')uniq(()=>({kind:'spirit',key:pick(MINOR_SPIRITS)}),'key');
     else if(k==='forecast')uniq(()=>({kind:'wx',key:i===0&&S.weather?'clear':pick(Object.keys(WEATHER))}),'key');
     else if(k==='contract')uniq(()=>({kind:'contract',key:pick(Object.keys(CONTRACTS))}),'key');
     else if(k==='mint')uniq(()=>rand()<.55?{kind:'mod',mod:'wear',key:pick(COIN_WEARS)}:{kind:'mod',mod:'defect',key:pick(Object.keys(DEFECTS))},'key');
@@ -3571,7 +3575,7 @@ function genPackOpts(pk,n){
       if(x<.25){const gl=Object.keys(JOKERS).filter(q=>JOKERS[q].glitchOnly&&!S.jokers.some(j=>j.key===q));if(gl.length)return{kind:'charm',key:pick(gl)}}
       if(x<.45)return{kind:'coin',type:pickSpecial(SPC()),wear:pick(COIN_WEARS),defect:pick(Object.keys(DEFECTS))};
       if(x<.65)return{kind:'charm',key:rollJokerKey(rand()<.5?3:2),wear:pick(COIN_WEARS)};
-      const y=rand(),it=y<.3?{kind:'rune',key:pick(Object.keys(RUNES))}:y<.5?{kind:'spirit',key:pick(Object.keys(SPIRITS).filter(q=>q!=='soul'))}:y<.75?{kind:'fortune',key:pick(Object.keys(FORTUNES))}:randAlmanac();
+      const y=rand(),it=y<.3?{kind:'rune',key:pick(Object.keys(RUNES))}:y<.5?{kind:'spirit',key:pick(Object.keys(SPIRITS).filter(q=>q!=='soul'))}:y<.75?{kind:'spirit',key:pick(MINOR_SPIRITS)}:randAlmanac();
       return{kind:'gdup',item:it,key:'d'+(it.key||it.hand)}},'key');
     else if(k==='dossier'){const cur=S.blinds[2].boss,fin=BOSSES[cur].final;uniq(()=>({kind:'boss',key:pick(Object.keys(BOSSES).filter(b=>b!==cur&&!BOSSES[b].glitchOnly&&!BOSSES[b].rivalOnly&&!BOSSES[b].houseOnly&&!!BOSSES[b].final===!!fin))}),'key')}
   }
@@ -3589,7 +3593,7 @@ function consInfo(c){
     return{name:d.name,short:d.name.replace('Rune of ','').replace('the ',''),desc:typeof d.desc==='function'?d.desc():d.desc,badge:'Rune',bc:'var(--purple)',icon:sprite('rune-'+c.key,{p:{1:'#4b3f63',2:d.col,3:'#7a6b99'},s:runeSprite(c.key)}),bg:'#2a2140',sell:1,cost:3}}
   if(c.kind==='fortune'){const d=FORTUNES[c.key];return{name:d.name,short:d.name,desc:d.desc,badge:'Fortune',bc:'#ff8fab',icon:fortuneIcon(c.key),bg:'#3a1a2a',sell:1,cost:3}}
   const d=SPIRITS[c.key];
-  return{name:d.name,short:d.name,desc:typeof d.desc==='function'?d.desc():d.desc,badge:'Spirit',bc:'#2fa7a0',icon:sprite('sp-'+c.key,SPIRIT_ART[c.key]||{p:{1:d.col,2:'#1b1b2a'},s:SPR_SPIRIT}),bg:'#18333a',sell:2,cost:4};
+  return{name:d.name,short:d.name,desc:typeof d.desc==='function'?d.desc():d.desc,badge:'Spirit',bc:'#2fa7a0',icon:d.minor?fortuneIcon(c.key):sprite('sp-'+c.key,SPIRIT_ART[c.key]||{p:{1:d.col,2:'#1b1b2a'},s:SPR_SPIRIT}),bg:'#18333a',sell:2,cost:4};
 }
 const consDef=c=>c.kind==='fortune'?FORTUNES[c.key]:c.kind==='rune'?RUNES[c.key]:c.kind==='spirit'?SPIRITS[c.key]:c.kind==='almanac'&&c.key?ALMS[c.key]:null;
 function consBlock(c,fromSlot){
@@ -3614,7 +3618,7 @@ async function applyCons(c,fromSlot){
     if(c.kind==='spirit'){S.jokers.forEach(j=>{if(j.key==='lantern')j.st.x=Math.round((j.st.x+.5)*100)/100});
       for(let k=0;k<countEff('ouija');k++)setTimeout(()=>{if(consRoom()){S.cons.push({kind:'rune',key:pick(Object.keys(RUNES))});toast('The <b>Ouija Board</b> spells out a Rune');render()}},700)}}
   if(d.to){PS().transmutes+=sel.length;sel.forEach(i=>{S.purse[i].type=d.to});render();sel.forEach(i=>juiceCoin(i,'Transmuted!'));play('levelup');return}
-  const lk0=c.kind==='fortune'?[luckNow(),karmaNow()]:null;
+  const lk0=c.kind==='fortune'||(c.kind==='spirit'&&SPIRITS[c.key]&&SPIRITS[c.key].minor)?[luckNow(),karmaNow()]:null;
   usingFromSlot=!!fromSlot;try{await d.use(sel)}finally{usingFromSlot=false}
   if(lk0){const L=luckNow(),K=karmaNow(),ar=(a,b,w)=>a===b?`${fmtSign(b)} (${w(b)})`:`${fmtSign(a)} → <b>${fmtSign(b)}</b> (${w(b)})`;setTimeout(()=>toast(`Luck ${ar(lk0[0],L,luckWord)} · Karma ${ar(lk0[1],K,karmaWord)}`,4500),300)}
 }
@@ -3788,6 +3792,7 @@ function luckNow(){
   S.purse.forEach(c=>{if(c.type==='lucky')v+=1;else if(c.type==='penny')v+=2;else if(c.type==='hope')v-=2});
   if(hasK('blackcat'))v-=2;v+=nK('jester');v-=2*S.jokers.filter(j=>j.curse==='jinxed'&&!hasK('guardianangel')).length;
   if(S.screen==='play'&&bossIs('blackcat'))v=Math.min(v,-8);
+  if(hasK('crystalball'))v=Math.max(v,0);
   return clamp(Math.round(v),-10,10);
 }
 function karmaNow(){
@@ -3795,6 +3800,7 @@ function karmaNow(){
   let v=S.karma||0;ownKeys().forEach(k=>{if(k)v+=JOKERS[k].karma||0});S.jokers.forEach(j=>{if(j.curse)v+=1});
   v-=S.purse.filter(c=>c.type==='twohead'||c.type==='twotail').length;
   if(hasK('pickpocket'))v-=2;
+  if(hasK('mirroroftruth'))v=Math.max(v,0);
   return clamp(Math.round(v),-10,10);
 }
 const fmtSign=v=>(v>0?'+':'')+v;
@@ -3804,7 +3810,10 @@ function addLuck(n){if(!S)return;S.luck=clamp((S.luck||0)+n,-10,10);lkCheck()}
 function addKarma(n){if(!S)return;S.karma=clamp((S.karma||0)+n,-10,10);if(n>0)PS().goodDeeds++;lkCheck()}
 const LUCK_MSG={2:'You feel <b>incredibly lucky</b>.',1:'You feel <b>lucky</b>.',0:'Your luck <b>evens out</b>.',[-1]:'You feel <b>a little unlucky</b>.',[-2]:'A <b>black cloud</b> follows you.'};
 const KARMA_MSG={2:'You feel a <b>warm glow</b>.',1:'You feel <b>at peace</b>.',0:'You feel <b>balanced</b>.',[-1]:'You feel <b>watched</b>.',[-2]:'Something <b>wants payment</b>.'};
+/* the small Luck / Karma readout in the sidebar */
+const lkMini=()=>{if(!S)return'';const L=luckNow(),K=karmaNow(),c=v=>v>0?'var(--green)':v<0?'var(--mult)':'var(--ink-dim)';return `<span style="color:${c(L)}">Luck ${fmtSign(L)}</span> <span style="color:${c(K)}">Karma ${fmtSign(K)}</span>`};
 function lkCheck(){
+  {const e=$('#slk');if(e)e.innerHTML=lkMini()}
   if(!S||S.screen==='over'||S.screen==='win')return;
   const L=luckNow(),K=karmaNow(),P=PS();
   P.luckHi=Math.max(P.luckHi,L);P.luckLo=Math.min(P.luckLo,L);P.karmaHi=Math.max(P.karmaHi,K);P.karmaLo=Math.min(P.karmaLo,K);
@@ -3850,6 +3859,8 @@ function newRun(roll='standard',o={}){
   setTimeout(()=>{if(S&&S.ante===1&&S.round===1)houseSay('Welcome back. You never really left.')},1600);
 }
 function migrate(s){
+  /* retired Fortunes: merged ones become Spirits, the rest are dropped */
+  {const fx=c=>c&&c.kind==='fortune'?(MINOR_SPIRITS.includes(c.key)?{kind:'spirit',key:c.key}:null):c;if(s&&s.cons)s.cons=s.cons.map(fx).filter(Boolean)}
   /* removed Spirits: drop them from old saves */
   {const ok=c=>!c||c.kind!=='spirit'||!!SPIRITS[c.key];if(s&&s.cons)s.cons=s.cons.filter(ok);if(s&&s.lastUsed&&!ok(s.lastUsed))s.lastUsed=null;if(s&&s.shop&&s.shop.jokers)s.shop.jokers=s.shop.jokers.filter(ok);if(s&&s.pack&&s.pack.opts)s.pack.opts=s.pack.opts.filter(ok)}
   /* Crumpled Gold Foil was removed: any left in an old save becomes a Quarter */
@@ -3957,7 +3968,7 @@ function computeHand(){
       if(d.heavy&&i>0&&E.matched[i-1])e('mult',3);
       if(d.owl&&(S.owlHit||[]).includes(i))e('mult',4);
       if(d.crypto)e('money',Math.floor(rand()*9)-2);
-      if(S.purse[i].defect==='filled'&&rand()<odds(1/6)&&consRoom()){S.cons.push({kind:'fortune',key:pick(Object.keys(FORTUNES))});e('text','+Fortune')}
+      if(S.purse[i].defect==='filled'&&rand()<odds(1/6)&&consRoom()){S.cons.push({kind:'spirit',key:pick(MINOR_SPIRITS)});e('text','+Spirit')}
       if(res[i]==='E')e('xmult',call==='E'?(hasK('tightrope')&&charmsOn()?4:3):2);
       if(wx('sunshine')&&res[i]==='H')e('mult',2);if(wx('moonlit')&&res[i]==='T')e('mult',2);if(wx('storm')&&i===S.bolt){e('text','Zap!');e('xmult',2)}
       if(bossIs('tax'))e('money',-1);
@@ -4108,7 +4119,7 @@ function renderSide(){
      <div class="stat"><div class="lbl">Re-flips</div><div class="num red" id="sreflips">${S.screen==='play'?S.reflipsLeft:S.baseReflips}</div></div>
      <div class="stat wide"><div class="lbl">Money</div><div class="num gold" id="smoney">$${S.money}</div><div class="tix" id="stix">${tixTxt()}</div></div>
      <div class="stat ${S.weather?'haswx':''}" data-tip="wx"><div class="lbl"><span class="stl">Stage${S.weather?' · ':''}</span>${S.weather?`<span class="wxl" style="color:${WEATHER[S.weather].col}">${WEATHER[S.weather].short}</span>`:''}</div><div class="num orange">${S.ante}<small>/${STAGES}</small></div></div>
-     <div class="stat"><div class="lbl">Round</div><div class="num orange">${S.round}</div></div>
+     <div class="stat" data-tip="lk"><div class="lbl">Round</div><div class="num orange">${S.round}</div><div class="lkmini" id="slk">${lkMini()}</div></div>
    </div>
    <div class="s-btns">${runChip()}<button class="btn red small" data-act="runinfo">Run Info</button><button class="btn orange small" data-act="options">Options</button></div>`;
   updatePreview();
@@ -4130,7 +4141,7 @@ function updatePreview(){
   }else setHB('&nbsp;',0,0);
 }
 function setStat(id,v){const e=$(id);if(e&&e.textContent!==String(v)){e.textContent=v;bump(e)}}
-function syncStats(){if(!S)return;if(S.money>(PS().maxMoney||0))PS().maxMoney=S.money;{const e=$('#scoins');if(e)e.innerHTML=`${purseUsed()}<small>/${S.purseMax}</small>`}syncPurseCnt();{const t=$('#stix');if(t)t.textContent=tixTxt()}setStat('#sflips',S.flipsLeft);setStat('#sreflips',S.reflipsLeft);setStat('#smoney','$'+S.money)}
+function syncStats(){if(!S)return;{const e=$('#slk');if(e)e.innerHTML=lkMini()}if(S.money>(PS().maxMoney||0))PS().maxMoney=S.money;{const e=$('#scoins');if(e)e.innerHTML=`${purseUsed()}<small>/${S.purseMax}</small>`}syncPurseCnt();{const t=$('#stix');if(t)t.textContent=tixTxt()}setStat('#sflips',S.flipsLeft);setStat('#sreflips',S.reflipsLeft);setStat('#smoney','$'+S.money)}
 
 function renderJokers(){
   const el=$('#jokerbar');const n=S.jokers.length;
@@ -4382,7 +4393,7 @@ function runInfoModal(){
   if(RI_TAB==='upgrades'){const U=S?S.upgrades.filter(k=>UPGRADES[k]):[];
     return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${U.length?`<div class="upglist">${U.map(k=>{const u=UPGRADES[k];return `<div class="upgrow"><div class="cic tile" style="--jbg:#5d3d94">${IMG(upgIcon(k))}</div><div><div class="cname">${u.name}${u.req?' <small class="k-a">II</small>':''}</div><div class="ds">${fmt(u.desc)}</div></div></div>`}).join('')}</div>`:'<div class="cdesc" style="text-align:center;padding:20px 0">No Upgrades yet. The shop sells one each stage.</div>'}</div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`}
   if(RI_TAB==='howto')return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${RULES}</div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
-  return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${S?questsHTML():''}${S&&S.seed?`<div class="lbl" style="text-align:center;margin:2px 0 6px">Seed <b style="color:#fff;letter-spacing:.08em">${S.seed}</b> <button class="btn tiny" data-act="copyseed">Copy</button></div>`:''}${S&&(hasK('crystalball')||hasK('mirroroftruth'))?lkMeters(hasK('crystalball')?'Revealed by your Crystal Ball':'Revealed by your Mirror of Truth',hasK('crystalball'),true):''}${S&&ROLLS[S.roll]?`<div class="lbl" style="text-align:center;margin:-6px 0 8px">Playing the <b style="color:#fff">${rollName(S.roll)}</b> on <b style="color:${STAKES[S.stake].col}">${STAKES[S.stake].name}</b>${S.daily?' (Daily Toss)':''}: ${fmt(ROLLS[S.roll].desc)}</div>`:''}<div class="lbl" style="text-align:center;margin:-4px 0 10px">Collection: ${Object.keys(JOKERS).length} Charms · ${ALM_POOL().length} Almanacs · ${Object.keys(RUNES).length} Runes · ${Object.keys(SPIRITS).length} Spirits</div>
+  return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${S?questsHTML():''}${S&&S.seed?`<div class="lbl" style="text-align:center;margin:2px 0 6px">Seed <b style="color:#fff;letter-spacing:.08em">${S.seed}</b> <button class="btn tiny" data-act="copyseed">Copy</button></div>`:''}${S?lkMeters('Your Luck and Karma right now'):''}${S&&ROLLS[S.roll]?`<div class="lbl" style="text-align:center;margin:-6px 0 8px">Playing the <b style="color:#fff">${rollName(S.roll)}</b> on <b style="color:${STAKES[S.stake].col}">${STAKES[S.stake].name}</b>${S.daily?' (Daily Toss)':''}: ${fmt(ROLLS[S.roll].desc)}</div>`:''}<div class="lbl" style="text-align:center;margin:-4px 0 10px">Collection: ${Object.keys(JOKERS).length} Charms · ${ALM_POOL().length} Almanacs · ${Object.keys(RUNES).length} Runes · ${Object.keys(SPIRITS).length} Spirits</div>
     <table class="htable">${HANDS.map(h=>{const pl=S?S.hands[h.key].played:0;const hv=S?handLv(h.key):{chips:h.chips,mult:h.mult,lv:1,mast:0};const lv=hv.lv,c=hv.chips,m=hv.mult;
     return `<tr><td class="lv">lvl.${lv}</td><td><div>${h.name}</div><div class="ds">${h.desc}${hv.mast?` · <span class="k-m">Mastery +${hv.mast} Mult</span>`:''}</div></td><td class="cmv"><span class="c">${c}</span> X <span class="m">${m}</span></td><td class="lv">#${pl}</td></tr>`}).join('')}</table>
     </div><div class="optfoot" style="display:flex;gap:10px;justify-content:center"><button class="btn green" data-act="collection">Collection</button><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
@@ -4775,7 +4786,7 @@ const EVENTS={
    {label:'Buy the warm coin ($5)',ok:()=>S.money>=5&&purseUsed()<S.purseMax,why:'Needs $5 and room in your purse',run:()=>{S.money-=5;const t=pickSpecial(SPC());S.purse.push({...mkCoin(t),wear:pick(COIN_WEARS),defect:pick(Object.keys(DEFECTS))});play('buy');return `The coin is a {a:${COINS[t].name}}, worn smooth and struck oddly. It has a Wear and a Defect.`}},declineC('You leave the table. The dealer does not look up. It has no eyes to look up with.')]},
  fortune:{title:'The Cartomancer',text:'A woman deals cards onto a table that is not there. "The one waiting for you at the end of this floor," she says, "need not be the one you meet."',
   choices:[{label:'Reshuffle the boss',ok:()=>S.blinds[2].state!=='defeated',why:'No boss ahead',run:()=>{const b=S.blinds[2],old=BOSSES[b.boss].name;let nb=b.boss;for(let k=0;k<8&&nb===b.boss;k++)nb=pickBoss(S.ante);b.boss=nb;b.boss2=b.boss2&&b.boss2!==nb?b.boss2:(S.stake>=3?pick(SECOND_BOSS.filter(k=>k!==nb)):null);return `${old} dissolves back into the deck. {a:${BOSSES[nb].name}} rises in its place.`}},
-   {label:'Ask what the cards hold',ok:()=>consRoom(),why:'No room for consumables',run:()=>{for(let k=0;k<2&&consRoom();k++)S.cons.push({kind:'fortune',key:pick(Object.keys(FORTUNES))});play('spirit');return 'She turns two cards face up and presses them into your hand: {a:Fortunes}, for when you need them.'}}]},
+   {label:'Ask what the cards hold',ok:()=>consRoom(),why:'No room for consumables',run:()=>{for(let k=0;k<2&&consRoom();k++)S.cons.push({kind:'spirit',key:pick(MINOR_SPIRITS)});play('spirit');return 'She turns two cards face up and presses them into your hand: two little {a:Spirits}, for when you need them.'}}]},
  well:{title:'The Bottomless Well',text:'A well with no bottom. Coins have been falling down it for so long that you can still hear them, very faintly, landing.',
   choices:[{label:'Drop in a coin and wish',ok:()=>S.purse.length>PURSE_MIN&&S.jokers.length<slots(),why:'Needs a free Charm slot and more than 3 coins',run:()=>{S.purse.splice(Math.floor(rand()*S.purse.length),1);PS().wished++;addKarma(1);const k=rollJokerKey();addJoker(k,JOKERS[k].cost);play('win');return `Something drifts up out of the dark in its place: a {a:${JOKERS[k].name}}.`}},declineC('You keep your coins. The falling sound goes on without you.')]},
  hustler:{title:'The Endless Game',text:'A gambler who has been sitting at this table for a hundred years looks up. "One flip. Double or nothing, up to $30. Call it."',
@@ -4798,7 +4809,7 @@ const EVENTS={
    {label:'Tip the attendant to lead you around ($3)',ok:()=>S.money>=3,why:'Not enough money',run:()=>{S.money-=3;return 'A silent attendant leads you the long way around the tables. Better safe than sorry.'}},
    {label:'Walk right past',run:()=>{addLuck(-1);return 'Its eyes follow you down the hall. Something feels {r:slightly off}.'}}]},
  o_star:{omen:1,title:'A Falling Light',text:()=>`Far above the endless ceiling, a light falls like a dropped coin. ${luckHint()}`,
-  choices:[{label:'Wish for luck',run:()=>{addLuck(3);if(consRoom())S.cons.push({kind:'fortune',key:pick(Object.keys(FORTUNES))});play('levelup');return 'The light flares as it falls and leaves a {a:Fortune} at your feet. You feel {a:lucky}.'}},
+  choices:[{label:'Wish for luck',run:()=>{addLuck(3);if(consRoom())S.cons.push({kind:'spirit',key:pick(MINOR_SPIRITS)});play('levelup');return 'The light flares as it falls and leaves a {a:Spirit} at your feet. You feel {a:lucky}.'}},
    {label:'Wish for riches (+$12)',run:()=>{S.money+=12;addLuck(-1);play('money');return 'You find {$:$12} in a pocket you did not have before. Greedy wishes cost a little luck.'}}]},
  o_crows:{omen:1,title:'The Watchers',text:()=>`Crows perch along the balcony rail, counting the chips at every table. ${karmaHint()}`,
   choices:[{label:'Feed them ($3)',ok:()=>S.money>=3,why:'Not enough money',run:()=>{S.money-=3;addKarma(3);play('text');return 'They take the coins one by one and bow their heads. Your {a:Karma} improves.'}},
@@ -5032,7 +5043,7 @@ function colItems(){
 function collectionModal(){COL_RAW=1;try{return collectionInner()}finally{COL_RAW=0}}
 function collectionInner(){
   const items=colItems();const sel=items.find(x=>x.id===COL.sel)||items[0];
-  const tabs=[['charms','Charms',Object.keys(JOKERS).length],['almanacs','Almanacs',ALM_POOL().length],['runes','Runes',Object.keys(RUNES).length],['spirits','Spirits',Object.keys(SPIRITS).length],['fortunes','Fortunes',Object.keys(FORTUNES).length],['coins','Coins',Object.keys(COINS).length],['wears','Wear',Object.keys(WEARS).length],['defects','Defects',Object.keys(DEFECTS).length],['upgrades','Upgrades',Object.keys(UPGRADES).length],['curses','Curses',Object.keys(CURSES).length],['bosses','Bosses',Object.keys(BOSSES).length],['rivals','Rivals',RIVALS.length]];
+  const tabs=[['charms','Charms',Object.keys(JOKERS).length],['almanacs','Almanacs',ALM_POOL().length],['runes','Runes',Object.keys(RUNES).length],['spirits','Spirits',Object.keys(SPIRITS).length],['coins','Coins',Object.keys(COINS).length],['wears','Wear',Object.keys(WEARS).length],['defects','Defects',Object.keys(DEFECTS).length],['upgrades','Upgrades',Object.keys(UPGRADES).length],['curses','Curses',Object.keys(CURSES).length],['bosses','Bosses',Object.keys(BOSSES).length],['rivals','Rivals',RIVALS.length]];
   const rars=COL.tab==='charms'?`<div class="ctabs">${[0,1,2,3,4,5].map(r=>`<button class="btn tiny ${COL.rar===r?(r?'':'orange'):''}" style="${COL.rar===r&&r?`--c:${RAR[r].c};--cd:rgba(0,0,0,.4)`:COL.rar!==r?'--c:var(--grey);--cd:var(--grey-d)':''}" data-act="colrar" data-arg="${r}">${r?RAR[r].n:'All'} <small>${r?Object.values(JOKERS).filter(j=>j.r===r).length:Object.keys(JOKERS).length}</small></button>`).join('')}</div>`:'';
   const wearRow='';
   return `<div class="overlay"><div class="panel modal wide colm"><h2>Collection</h2>
@@ -5089,6 +5100,7 @@ function tipContent(spec){
   if(k==='runroll'){const r=ROLLS[S.roll],st=STAKES[S.stake]||STAKES[1];
     return `<div class="tn">${rollName(S.roll)}</div><div class="td">${fmt(r.desc)}</div>${S.daily?`<span class="tb" style="background:var(--purple)">Daily Toss</span>`:r.challenge?`<span class="tb" style="background:var(--mult)">Challenge Roll</span>`:`<span class="tb" style="background:${st.col};color:#1a1a1a">${st.name}</span><div class="td" style="margin-top:4px">${stakeDesc(S.stake)}</div>`}${S.seed?`<div class="tkind">Seed ${S.seed}</div>`:''}`}
   if(k==='tag'){const T=TAGS[a];return T&&`<div class="tn">${T.name}</div><div class="td">${fmt(T.desc)}</div><span class="tb" style="background:#e8c14a;color:#1a1a1a">Skip reward</span>`}
+  if(k==='lk'){const L=luckNow(),K=karmaNow();return `<div class="tn">Luck and Karma</div><div class="td"><b>Luck ${fmtSign(L)}</b> (${luckWord(L)}): tips every chance your way, nudges coins onto your call and improves the shop.<br><b>Karma ${fmtSign(K)}</b> (${karmaWord(K)}): shapes prices, events, detours and some Bosses.</div>`}
   if(k==='way'){const w=S&&S.ways&&S.ways[+i],D=w&&DEST[w.t];return D&&`<div class="tn">${D.name}</div><div class="td">${fmt(wayInfo(w))}</div><span class="tb" style="background:${D.col};color:#1a1a1a">${D.rare?'Rare detour':'Destination'}</span>`}
   if(k==='brgood'){const o=S.shop&&S.shop.br&&S.shop.br[i];if(!o)return null;
     if(o.k==='fence')return `<div class="tn">Fence Something</div><div class="td">${fmt('Take {$:$10} for something you never ask about. {r:-2 Karma}')}</div>`;
@@ -5395,10 +5407,10 @@ function enterCashout(){
   const reb=countEff('rebate')*S.reflipsLeft;if(reb)lines.push({l:`Rebate (${S.reflipsLeft} unused Re-flips)`,v:reb});
   const btl=countEff('bottle')*S.cons.length;if(btl)lines.push({l:'Message in a Bottle',v:btl});
   const loy=countEff('loyalty')*S.upgrades.length;if(loy)lines.push({l:'Loyalty Card',v:loy});
-  const jade=S.purse.filter(c=>c.type==='jade').length*2;if(jade)lines.push({l:'Jade Coins in your purse',v:jade});
+  const jade=Math.min(2,S.purse.filter(c=>c.type==='jade').length)*2;if(jade)lines.push({l:'Jade Coins in your purse',v:jade});
   const jar=countEff('changejar')*Math.floor(S.purse.filter(c=>c.type==='copper').length/3);if(jar)lines.push({l:'Change Jar',v:jar});
   const refund=b.kind==='boss'?5*countEff('taxrefund'):0;if(refund)lines.push({l:'Tax Refund',v:refund});
-  const goose=countEff('goose')*Math.min(20,Math.floor(Math.max(0,S.roundScore-S.target)/1000));if(goose)lines.push({l:'Golden Goose',v:goose});
+  const goose=countEff('goose')*Math.min(10,Math.floor(Math.max(0,S.roundScore-S.target)/1000));if(goose)lines.push({l:'Golden Goose',v:goose});
   const rust=S.jokers.filter(j=>cursed(j,'rusted')).length;if(rust)lines.push({l:'Rusted Charms',v:-rust});
   const rent=S.jokers.filter(j=>cursed(j,'rented')).length*3;if(rent)lines.push({l:'Rent on Charms',v:-rent});
   if(S.roll==='stormchaser')lines.push({l:'Stormchaser bonus',v:2});
