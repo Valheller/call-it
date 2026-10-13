@@ -648,6 +648,13 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
 .cdetail .cpair .cic{--sz:72px}
 .cic{position:relative;--sz:54px;width:var(--sz);height:var(--sz);flex:none;border-radius:50%;display:grid;place-items:center;background:var(--jbg);
   box-shadow:inset 0 0 0 3px #e9d9a8,inset 0 0 0 5px #8a6a2a,0 3px 0 rgba(0,0,0,.4)}
+.cic.charm{margin-top:7px;background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.35),transparent 45%),var(--jbg);
+  box-shadow:0 3px 0 rgba(0,0,0,.45),inset 0 0 0 3px var(--rc,#e9d9a8),inset 0 0 0 5px var(--rcd,#8a6a2a),inset 0 0 0 7px rgba(0,0,0,.2)}
+.cic.charm::before{content:'';position:absolute;top:-8px;left:50%;width:10px;height:10px;margin-left:-5px;border-radius:50%;box-shadow:inset 0 0 0 3px var(--rc,#e9d9a8),0 2px 0 rgba(0,0,0,.35)}
+.cic.charm.cleg,.cic.charm.cfab{isolation:isolate}
+.cic.charm.cleg::after,.cic.charm.cfab::after{content:'';position:absolute;inset:-4px;border-radius:50%;pointer-events:none;animation:fabspin 4.5s linear infinite;-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px))}
+.cic.charm.cleg::after{background:conic-gradient(#ffd34d,#fff2b0,#c98a12,#ffd34d,#fff2b0,#c98a12,#ffd34d);box-shadow:0 0 10px rgba(255,200,60,.5)}
+.cic.charm.cfab::after{background:conic-gradient(#ff5f6d,#ffd34d,#4bd18f,#0b9bff,#c9a4ff,#ff5f6d);animation-duration:2.6s;box-shadow:0 0 12px rgba(255,157,226,.55)}
 .cic.tile{border-radius:24%;box-shadow:inset 0 0 0 3px rgba(255,255,255,.85),0 3px 0 rgba(0,0,0,.4)}
 .cic.coinc{background:none;box-shadow:none}
 .cic img{width:66%;image-rendering:pixelated}
@@ -1134,7 +1141,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.164</div>
+  <div class="gamever" aria-label="Version">v1.2.165</div>
 </div>
 
 <script>
@@ -4993,7 +5000,7 @@ function updateTitle(){updateStreakLine();
 }
 /* ================= COLLECTION ================= */
 const COL={tab:'charms',rar:0,sel:null,wear:''};
-const charmIc=(k,w)=>`<div class="cic ${w==='weightless'?'weightless':''}" style="--jbg:${JOKERS[k].bg}">${IMG(icon(k))}${w&&w!=='weightless'?`<i class="wfx w-${w}"></i>`:''}</div>`;
+const charmIc=(k,w)=>`<div class="cic charm ${w==='weightless'?'weightless':''} ${JOKERS[k].r===5?'cfab':JOKERS[k].r===4?'cleg':''}" style="--jbg:${JOKERS[k].bg};${rarVars(k)}">${IMG(icon(k))}${w&&w!=='weightless'?`<i class="wfx w-${w}"></i>`:''}</div>`;
 /* what an item quietly does to your Luck and Karma (shown openly in the Collection) */
 function lkOf(kind,k){let L=0,K=0,note='';
   if(kind==='charm'){const d=JOKERS[k];L+=d.luck||0;K+=d.karma||0;if(k==='blackcat')L-=2;if(k==='jester')L+=1;if(k==='pickpocket')K-=2;if(k==='tyche')note='Your Luck is always {a:perfect} while you carry it';if(k==='bodhi')note='Your Karma is always {a:perfect} while you carry it'}
@@ -5004,7 +5011,7 @@ function lkOf(kind,k){let L=0,K=0,note='';
 let COL_RAW=0;
 function colItems(){
   if(COL.tab==='charms')return Object.keys(JOKERS).filter(k=>!COL.rar||JOKERS[k].r===COL.rar).sort((a,b)=>JOKERS[a].r-JOKERS[b].r).map(k=>{const d=JOKERS[k];
-    if(!isUnlocked('charm',k))return{id:k,name:'Locked',ic:`<div class="cic locked" style="--jbg:#2a2a2a">${IMG(icon(k))}</div>`,desc:`Unlock it: {a:${GOAL_OF['charm:'+k].desc}}`,tag:RAR[d.r].n+' · Locked',tc:'var(--grey)'};
+    if(!isUnlocked('charm',k))return{id:k,name:'Locked',ic:`<div class="cic charm locked" style="--jbg:#2a2a2a;--rc:#6a6a6a;--rcd:#333">${IMG(icon(k))}</div>`,desc:`Unlock it: {a:${GOAL_OF['charm:'+k].desc}}`,tag:RAR[d.r].n+' · Locked',tc:'var(--grey)'};
     const lk=lkOf('charm',k);return{id:k,name:d.name,ic:charmIc(k,''),desc:(typeof d.desc==='function'?d.desc(null):d.desc)+(lk?`<div class="lkline">${lk}</div>`:''),tag:RAR[d.r].n,tc:RAR[d.r].c}});
   if(COL.tab==='upgrades')return Object.keys(UPGRADES).map(k=>{const u=UPGRADES[k];return{id:'u-'+k,name:u.name,ic:`<div class="cic tile" style="--jbg:#5d3d94">${IMG(upgIcon(k))}</div>`,desc:u.desc+'.'+(u.req?` Needs {a:${UPGRADES[u.req].name}} first.`:''),tag:u.req?'Upgrade II':'Upgrade',tc:'var(--purple)'}});
   if(COL.tab==='curses')return Object.keys(CURSES).map(k=>({id:'c-'+k,name:CURSES[k].name,ic:`<div class="cic" style="--jbg:${JOKERS.jester.bg};position:relative">${IMG(icon('jester'))}${curseBadge(k)}</div>`,desc:CURSES[k].desc+'. Cursed Charms cost less in the shop.'+`<div class="lkline">${lkOf('curse',k)}</div>`,tag:'Curse · Charms only',tc:CURSES[k].col}));
