@@ -1141,7 +1141,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.173</div>
+  <div class="gamever" aria-label="Version">v1.2.174</div>
 </div>
 
 <script>
@@ -1914,15 +1914,16 @@ const ALMS={
  dusk:{name:'Almanac of Dusk',col:'#c97a5a',desc:'Level up {a:Four Streak}, {a:Five Streak} and {a:Six Streak} twice each',use:async()=>levelMany(['four','five','six'],2)},
  patterns:{name:'Almanac of Patterns',col:'#9a6fdc',desc:'Level up {a:Zigzag}, {a:Mirror} and {a:Bookends} twice each',use:async()=>levelMany(['zigzag','mirror','bookends'],2)},
  fortune:{name:'Almanac of Fortune',col:'#4bd18f',desc:'Level up a {a:random} toss type 3 times',use:async()=>levelUp(randHand(),3)},
- ruin:{name:'Almanac of Ruin',col:'#8a8a8a',desc:'Level up {a:Bust} and {a:Whiff} 4 times each',use:async()=>{await levelUp('bust',4);await levelUp('whiff',4)}},
- balance:{name:'Almanac of Balance',col:'#bfe6ff',desc:'Level up your {a:least played} toss type 3 times',
-  use:async()=>levelUp(HANDS.filter(h=>h.key!=='bust').reduce((a,h)=>S.hands[h.key].played<S.hands[a].played?h.key:a,'sweep'),3)},
- saros:{name:'Saros Almanac',col:'#5d6bd6',desc:'Level up {a:every} toss type you have scored this run',ok:()=>HANDS.some(h=>S.hands[h.key].played),why:'Score a toss first',
-  use:async()=>levelMany(HANDS.filter(h=>S.hands[h.key].played).map(h=>h.key))},
+ ruin:{name:'Almanac of Ruin',col:'#8a8a8a',desc:'Level up {a:Bust} and {a:Whiff} 4 times each. For the rest of the run, every Bust or Whiff earns {$:$2}',use:async()=>{S.ruinPay=(S.ruinPay||0)+2;await levelUp('bust',4);await levelUp('whiff',4)}},
+ balance:{name:'Almanac of Balance',col:'#bfe6ff',desc:'Level up your {a:2 least played} toss types twice each, and gain {$:$4}',
+  use:async()=>{S.money+=4;play('money');await levelMany(HANDS.filter(h=>h.key!=='bust').sort((a,b)=>S.hands[a.key].played-S.hands[b.key].played).slice(0,2).map(h=>h.key),2)}},
+ saros:{name:'Saros Almanac',col:'#5d6bd6',desc:'Level up the toss types you have scored this run, up to {a:4} (your most played)',ok:()=>HANDS.some(h=>S.hands[h.key].played),why:'Score a toss first',
+  use:async()=>levelMany(HANDS.filter(h=>S.hands[h.key].played).sort((a,b)=>S.hands[b.key].played-S.hands[a.key].played).slice(0,4).map(h=>h.key))},
  leap:{name:'Leap Year Almanac',col:'#3fbf8b',desc:'Level up the toss type you scored {a:last} 3 times',ok:()=>!!S.lastType,why:'Score a toss first',use:async()=>levelUp(S.lastType,3)},
 };
 const ALM_POOL=()=>[...HANDS.filter(h=>h.key!=='bust').map(h=>({kind:'almanac',hand:h.key})),...Object.keys(ALMS).map(k=>({kind:'almanac',key:k}))];
-const randAlmanac=()=>({...pick(ALM_POOL())});
+/* the 9 named Almanacs come up twice as often as each single-type one */
+const randAlmanac=()=>{const p=ALM_POOL(),w=p.map(a=>a.key?2:1);let x=rand()*w.reduce((a,b)=>a+b,0);for(let i=0;i<p.length;i++){x-=w[i];if(x<0)return{...p[i]}}return{...p[p.length-1]}};
 
 /* each Rune carves its own 6x6 glyph into the stone */
 const RUNE_GLYPH={
@@ -3583,7 +3584,7 @@ function consInfo(c){
   if(c.kind==='almanac'&&c.key){const d=ALMS[c.key];
     return{name:d.name,short:d.name.replace('Almanac of ','').replace(' Almanac',''),desc:d.desc,badge:'Almanac',bc:'var(--cyan)',icon:almIcon(c.key),bg:'#16495a',sell:1,cost:4}}
   if(c.kind==='almanac'){const h=HAND[c.hand],lv=S?S.hands[c.hand].level:1;
-    return{name:'Almanac: '+h.name,short:h.name,desc:`{a:${h.name}}: ${h.desc}.<br>Level it up to lvl.${lv+1}: {c:+${h.lc}} Points, {m:+${h.lm}} Mult`,badge:'Almanac',bc:'var(--cyan)',icon:almIcon(c.hand),bg:'#16495a',sell:1,cost:3}}
+    return{name:'Almanac: '+h.name,short:h.name,desc:`{a:${h.name}}: ${h.desc}.<br>Level it up {a:twice}, to lvl.${lv+2}: {c:+${2*h.lc}} Points, {m:+${2*h.lm}} Mult`,badge:'Almanac',bc:'var(--cyan)',icon:almIcon(c.hand),bg:'#16495a',sell:1,cost:3}}
   if(c.kind==='rune'){const d=RUNES[c.key];
     return{name:d.name,short:d.name.replace('Rune of ','').replace('the ',''),desc:typeof d.desc==='function'?d.desc():d.desc,badge:'Rune',bc:'var(--purple)',icon:sprite('rune-'+c.key,{p:{1:'#4b3f63',2:d.col,3:'#7a6b99'},s:runeSprite(c.key)}),bg:'#2a2140',sell:1,cost:3}}
   if(c.kind==='fortune'){const d=FORTUNES[c.key];return{name:d.name,short:d.name,desc:d.desc,badge:'Fortune',bc:'#ff8fab',icon:fortuneIcon(c.key),bg:'#3a1a2a',sell:1,cost:3}}
@@ -3603,7 +3604,7 @@ function consBlock(c,fromSlot){
 }
 async function applyCons(c,fromSlot){
   const sel=S.csel.slice().sort((a,b)=>a-b);S.csel=[];
-  if(c.kind==='almanac'){S.stats.almanacs++;PS().almanacs++;S.lastUsed=c.key?{kind:'almanac',key:c.key}:{kind:'almanac',hand:c.hand};render();if(c.key)await ALMS[c.key].use();else await levelUp(c.hand);return}
+  if(c.kind==='almanac'){S.stats.almanacs++;PS().almanacs++;S.lastUsed=c.key?{kind:'almanac',key:c.key}:{kind:'almanac',hand:c.hand};render();if(c.key)await ALMS[c.key].use();else await levelUp(c.hand,2);return}
   const d=consDef(c);
   if(c.kind==='rune')PS().runes++;else if(c.kind==='spirit')PS().spirits++;
   if(c.kind==='rune'){S.stats.runes++;if(c.key!=='echo')S.lastUsed={kind:'rune',key:c.key}}
@@ -5026,7 +5027,7 @@ function colItems(){
     desc:d.desc+(COIN_FLAV[k]?`<div class="flav">${COIN_FLAV[k]}</div>`:'')+(lkOf('coin',k)?`<div class="lkline">${lkOf('coin',k)}</div>`:''),tag:k==='copper'?'Starting coin':d.relic?'Relic coin':'Special coin',tc:'var(--orange)'}});
   const list=COL.tab==='almanacs'?ALM_POOL():COL.tab==='runes'?Object.keys(RUNES).map(k=>({kind:'rune',key:k})):COL.tab==='fortunes'?Object.keys(FORTUNES).map(k=>({kind:'fortune',key:k})):Object.keys(SPIRITS).map(k=>({kind:'spirit',key:k}));
   return list.map(c=>{const ci=consInfo(c);return{id:c.key||c.hand,name:ci.name.replace('Almanac: ',''),ic:`<div class="cic tile" style="--jbg:${ci.bg}">${IMG(ci.icon)}</div>`,
-    desc:c.kind==='almanac'&&c.hand?`Level up {a:${HAND[c.hand].name}}: {c:+${HAND[c.hand].lc}} Points, {m:+${HAND[c.hand].lm}} Mult. ${HAND[c.hand].desc}.`:ci.desc,note:coinNote(coinRef(c)),tag:ci.badge,tc:ci.bc}});
+    desc:c.kind==='almanac'&&c.hand?`Level up {a:${HAND[c.hand].name}} twice: {c:+${2*HAND[c.hand].lc}} Points, {m:+${2*HAND[c.hand].lm}} Mult. ${HAND[c.hand].desc}.`:ci.desc,note:coinNote(coinRef(c)),tag:ci.badge,tc:ci.bc}});
 }
 function collectionModal(){COL_RAW=1;try{return collectionInner()}finally{COL_RAW=0}}
 function collectionInner(){
@@ -5291,6 +5292,7 @@ async function doCashIn(){
   await tween(before,before+total,650,v=>{const r=$('#rscore');if(r)r.textContent=fmtN(v);const t=performance.now();if(t-lastTick>45){lastTick=t;play('tick')}});
   S.roundScore+=total;S.hands[R.type].played++;S.lastCall=S.call;S.tossNo++;S.lastType=R.type;S.stats.tosses++;
   {const st=PS();st.types[R.type]=(st.types[R.type]||0)+1;st.bestToss=Math.max(st.bestToss,total);if(R.type==='sweep')st.bigSweep=Math.max(st.bigSweep,S.purse.length);
+   if((R.type==='bust'||R.type==='whiff')&&S.ruinPay){S.money+=S.ruinPay;toast(`Almanac of Ruin: <b>+$${S.ruinPay}</b>`)}
    if(R.type==='bust'||R.type==='whiff')addLuck(1);else if(R.type==='sweep')addLuck(-1);if(S.results.includes('E'))addLuck(-1);
    if(S.hands[R.type].played%(S.mastN||10)===0){toast(`<b>${HAND[R.type].name}</b> mastery: +1 Mult${S.mast2?' and +15 Points':''} forever this run`)}}
   const phil=countEff('philosopher');
