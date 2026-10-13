@@ -1134,7 +1134,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.163</div>
+  <div class="gamever" aria-label="Version">v1.2.164</div>
 </div>
 
 <script>
@@ -1407,7 +1407,7 @@ const JOKERS={
 
 /* Prize Counter charms: only bought with Tickets */
 Object.assign(JOKERS,{
- houseedge:{name:'The House Edge',r:5,cost:17,bg:'#14141c',p:{1:'#d9b552',2:'#1a1a22',3:'#ffffff'},s:["..111111..",".12222221.","1222222221","1223333221","1233223321","1223333221","1222222221","1222222221","1222222221","1111111111"],
+ houseedge:{name:'The House Edge',r:5,cost:20,bg:'#14141c',p:{1:'#d9b552',2:'#1a1a22',3:'#ffffff'},s:["..111111..",".12222221.","1222222221","1223333221","1233223321","1223333221","1222222221","1222222221","1222222221","1111111111"],
   desc:'The House is on your side now. Before every toss scores it calls a face: your coins that land on it are {a:retriggered}'},
  goldbell:{name:'Golden Bell',r:3,cost:8,tix:5,prize:1,bg:'#3a2a10',init:{n:0},p:{1:'#ffd34d',2:'#c48a12',3:'#ffffff'},s:["....11....","...1111...","..111111..","..113111..","..111111..",".11111111.","1111111111","2222222222","....22....",".........."],
   desc:j=>`Every {a:5th} toss rings it: {x:X3} Mult {d:(${j?5-(j.st.n%5):5} to go)}`,end:(c,e,j,copy)=>{if(!copy)j.st.n++;if(j.st.n%5===0){e('text','Ding!');e('xmult',3)}}},
@@ -1562,11 +1562,11 @@ Object.assign(JOKERS,{
  lastlaugh:{name:'Last Laugh',r:3,cost:8,init:{x:1},bg:'#3a1e1e',p:{1:'#fe5f55',2:'#ffffff',3:'#222222'},s:["..........",".11111111.","1111111111","1322222231","1322222231","1132222311",".11333311.","..111111..","..........",".........."],
   desc:j=>`Gains {x:X0.5} Mult every time you win a wager on its {a:final} Flip {d:(Currently X${j?fmtM(j.st.x):1})}`,end:(c,e,j)=>{if(j.st.x>1)e('xmult',j.st.x)}},
  /* ---- legendary ---- */
- gyges:{name:'Ring of Gyges',r:4,cost:16,bg:'#1a1a2a',p:{1:'#ffd34d',2:'#c48a12',3:'#c8102e'},s:["....33....","...3333...","....33....","..111111..",".11....11.","11......11","11......11",".11....11.","..111111..",".........."],
-  desc:'Coins that {a:miss} still give their Points',miss:(c,i,e)=>e('chips',coinDef(c.purse[i]).chips)},
+ gyges:{name:'Ring of Gyges',r:5,cost:20,bg:'#1a1a2a',p:{1:'#ffd34d',2:'#c48a12',3:'#c8102e'},s:["....33....","...3333...","....33....","..111111..",".11....11.","11......11","11......11",".11....11.","..111111..",".........."],
+  desc:'You are {a:invisible} to Bosses: their rules never affect you (the score to beat stays)'},
  janus:{name:'Janus',r:4,cost:18,bg:'#2a2a3a',p:{1:'#c9a06a',2:'#222222'},s:["111....111","1111..1111",".211..112.",".111..111.","1111..1111",".11.22.11.","..1....1..","..11..11..","...1111...",".........."],
   desc:'Retrigger {a:every} coin that scores'},
- fortuna:{name:'Fortuna',r:4,cost:18,bg:'#2a1a3a',p:{1:'#ffd34d',2:'#c8102e',3:'#ffffff'},s:["...1111...","..121121..",".11.11.11.","1211331121","1113333111","1211331121",".11.11.11.","..121121..","...1111...",".........."],
+ fortuna:{name:'Fortuna',r:5,cost:20,bg:'#2a1a3a',p:{1:'#ffd34d',2:'#c8102e',3:'#ffffff'},s:["...1111...","..121121..",".11.11.11.","1211331121","1113333111","1211331121",".11.11.11.","..121121..","...1111...",".........."],
   desc:'Every {a:lucky} chance always comes true. Coins land on their edge {a:1 in 4} times'},
 });
 Object.assign(JOKERS,{
@@ -1693,11 +1693,11 @@ Object.assign(JOKERS,{
   desc:'Until you look, a coin is both. Every coin that misses has a {a:1 in 2} chance to {a:collapse} onto your call'},
  chronos:{name:"Chronos' Hourglass",r:5,cost:20,bg:'#2a1e10',p:{1:'#ffd34d',2:'#c48a12',3:'#fff6e6'},s:["1111111111",".2333332..","..23332...","...232....","....3.....","...2.2....","..2.3.2...",".2.333.2..","1111111111",".........."],
   desc:'Once per wager, when you run out of Flips short of the target, {a:time rewinds}: gain {a:1} more Flip'},
- dragonhoard:{name:"Dragon's Hoard",r:5,cost:17,init:{x:1},bg:'#3a1010',p:{1:'#4bd18f',2:'#ffd34d',3:'#fe5f55',4:'#2e7d4f'},s:["1......1..",".11..11...","..1111....",".113111...",".1111111..","..44111...","2.2.2.2.2.","222222222.","2222222222",".........."],
+ dragonhoard:{name:"Dragon's Hoard",r:4,cost:14,init:{x:1},bg:'#3a1010',p:{1:'#4bd18f',2:'#ffd34d',3:'#fe5f55',4:'#2e7d4f'},s:["1......1..",".11..11...","..1111....",".113111...",".1111111..","..44111...","2.2.2.2.2.","222222222.","2222222222",".........."],
   desc:j=>`Gains {x:X0.25} Mult every time you leave a wager with {$:$25} or more. A dragon never spends {d:(Currently X${j?fmtM(j.st.x):1})}`,end:(c,e,j)=>{if(j.st.x>1)e('xmult',j.st.x)}},
  genielamp:{name:"Genie's Lamp",r:5,cost:20,bg:'#2a1a3a',init:{w:3},p:{1:'#ffd34d',2:'#c48a12',3:'#c9a4ff'},s:["......3...",".....33...","....3.....","..........","...1111...",".11111111.","1111111112",".1111111.2","..22222...",".........."],
   desc:j=>`Grants {a:3 wishes}: after each {a:Boss} wager, wish up a {p:Legendary} Charm (if you have room). Vanishes when the wishes run out {d:(${j?j.st.w:3} left)}`},
- excalibur:{name:'Sword in the Stone',r:5,cost:17,bg:'#22262e',init:{x:1},p:{1:'#d9dee6',2:'#ffd34d',3:'#7a7f8a',4:'#4a4f5a'},s:["....1.....","....1.....","....1.....","....1.....","..22222...","....2.....","..33333...",".3344433..","3344444433",".........."],
+ excalibur:{name:'Sword in the Stone',r:4,cost:15,bg:'#22262e',init:{x:1},p:{1:'#d9dee6',2:'#ffd34d',3:'#7a7f8a',4:'#4a4f5a'},s:["....1.....","....1.....","....1.....","....1.....","..22222...","....2.....","..33333...",".3344433..","3344444433",".........."],
   desc:j=>`Gains {x:X1} Mult every time you beat a {a:Boss} wager, as long as you are worthy (Karma isn't bad) {d:(Currently X${j?j.st.x:1})}`,end:(c,e,j)=>{if(j.st.x>1)e('xmult',j.st.x)}},
  phoenix:{name:'Phoenix Feather',r:5,cost:20,bg:'#3a1a0a',p:{1:'#ff4b2b',2:'#ffa21f',3:'#fff27a'},s:["......3...",".....32...","....321...","...3211...","..3211....",".3211.....","3211......","211.......","1.........",".........."],
   desc:'If you would lose the run, you {a:rise from the ashes}: the wager counts as won and the Feather burns away'},
@@ -1707,7 +1707,7 @@ Object.assign(JOKERS,{
   end:(c,e,j)=>{if(j.st.e==='x')e('xmult',4)}},
  goldenticket:{name:'Golden Ticket',r:5,cost:20,bg:'#3a2a10',p:{1:'#ffd34d',2:'#c48a12',3:'#fff6e6'},s:["..........","1111111111","1.3....3.1","1..2222..1","1..2..2..1","1..2222..1","1.3....3.1","1111111111","..........",".........."],
   desc:'The first item on the shop\'s Charm shelf is always {a:free}'},
- kraken:{name:'The Kraken',r:5,cost:20,bg:'#102a3a',p:{1:'#c9478a',2:'#ff8fab',3:'#ffffff'},s:["...1111...","..111111..","..131131..","..111111..",".1.1.1.1..",".1.1.1.1..","1..1..1..1","1.1..1..1.",".1..1..1..",".........."],
+ kraken:{name:'The Kraken',r:4,cost:18,bg:'#102a3a',p:{1:'#c9478a',2:'#ff8fab',3:'#ffffff'},s:["...1111...","..111111..","..131131..","..111111..",".1.1.1.1..",".1.1.1.1..","1..1..1..1","1.1..1..1.",".1..1..1..",".........."],
   desc:'Every toss, the Kraken drags one scoring coin into the deep: it triggers {a:5 times}'},
  cornucopia:{name:'Cornucopia',r:5,cost:20,bg:'#3a2a10',p:{1:'#c48a12',2:'#fe5f55',3:'#4bd18f',4:'#ffd34d'},s:["1.........","11........",".111......","..1111.2..","...11143..","....112334",".....12443","......1243","........3.",".........."],
   desc:'Shop rerolls are {a:free}, and every wager you win fills your empty Consumable slots'},
@@ -1760,29 +1760,29 @@ Object.assign(JOKERS,{
  wildcard:{name:'Wild Card',r:3,cost:8,bg:'#3a3a3a',p:{1:'#ffffff',2:'#ff5f6d',3:'#0b9bff',4:'#ffd34d'},s:["..........",".11111111.",".12111131.",".11111111.",".11144111.",".11144111.",".11111111.",".13111121.",".11111111.",".........."],
   desc:'Every toss, gives one at random: {c:+100} Points, {m:+12} Mult, or {x:X1.75} Mult',end:(c,e)=>{const r=rand();if(r<1/3)e('chips',100);else if(r<2/3)e('mult',12);else e('xmult',1.75)}},
  /* challenge rolls unlock Fabled ones */
- mirrorimage:{name:'Mirror Image',r:5,cost:17,bg:'#9fb4c8',p:{1:'#eef6ff',2:'#5a6a80',3:'#ffffff'},s:["..222222..",".21111112.",".21131112.",".21311112.",".21111112.",".21111312.",".21113112.",".21111112.","..222222..","....22...."],
+ mirrorimage:{name:'Mirror Image',r:4,cost:15,bg:'#9fb4c8',p:{1:'#eef6ff',2:'#5a6a80',3:'#ffffff'},s:["..222222..",".21111112.",".21131112.",".21311112.",".21111112.",".21111312.",".21113112.",".21111112.","..222222..","....22...."],
   desc:'Every coin that {a:misses} gives {x:X1.25} Mult',miss:(c,i,e)=>e('xmult',1.25)},
- quickdraw:{name:'Quick Draw',r:5,cost:17,bg:'#2a2a2a',p:{1:'#c3c9ce',2:'#8a5a28',3:'#ff4b2b'},s:["..........","..........","1111111111","1111111113","..1122....","..12.2....","..12......","..22......","..........",".........."],
+ quickdraw:{name:'Quick Draw',r:4,cost:15,bg:'#2a2a2a',p:{1:'#c3c9ce',2:'#8a5a28',3:'#ff4b2b'},s:["..........","..........","1111111111","1111111113","..1122....","..12.2....","..12......","..22......","..........",".........."],
   desc:()=>`{x:X1} Mult, plus {x:X1} for every Flip you have left this wager {d:(Currently X${S?1+S.flipsLeft:1})}`,end:(c,e)=>{if(S.flipsLeft)e('xmult',1+S.flipsLeft)}},
- whale:{name:'The Whale',r:5,cost:17,bg:'#0f5a36',p:{1:'#2a6fd6',2:'#bfe6ff',3:'#ffffff',4:'#222222'},s:["....3.3...",".....3....","..........",".111111..1","11111111.1","1411111111","1111111111","2222222221",".22222222.",".........."],
+ whale:{name:'The Whale',r:5,cost:20,bg:'#0f5a36',p:{1:'#2a6fd6',2:'#bfe6ff',3:'#ffffff',4:'#222222'},s:["....3.3...",".....3....","..........",".111111..1","11111111.1","1411111111","1111111111","2222222221",".22222222.",".........."],
   desc:'Bets you win pay {$:triple} instead of double'},
- cauldron:{name:"Witch's Cauldron",r:5,cost:17,bg:'#251a2e',p:{1:'#2a2a33',2:'#4bd18f',3:'#c9a4ff'},s:["...3..3...","....3.....","..3...3...","1222222221",".11111111.","1111111111","1111111111",".11111111.","..111111..",".1......1."],
+ cauldron:{name:"Witch's Cauldron",r:4,cost:13,bg:'#251a2e',p:{1:'#2a2a33',2:'#4bd18f',3:'#c9a4ff'},s:["...3..3...","....3.....","..3...3...","1222222221",".11111111.","1111111111","1111111111",".11111111.","..111111..",".1......1."],
   desc:()=>`{x:X0.75} Mult for each {r:cursed} Charm you own {d:(Currently X${S?fmtM(1+.75*S.jokers.filter(j=>j.curse).length):1})}`,end:(c,e)=>{const k=S.jokers.filter(j=>j.curse).length;if(k)e('xmult',1+.75*k)}},
- lantern:{name:'Spirit Lantern',r:5,cost:17,init:{x:1},bg:'#18333a',p:{1:'#c9a06a',2:'#c4f5ea',3:'#ffffff'},s:["....11....","...1..1...","..111111..","..122221..","..123321..","..123321..","..122221..","..111111..","...1111...",".........."],
+ lantern:{name:'Spirit Lantern',r:4,cost:14,init:{x:1},bg:'#18333a',p:{1:'#c9a06a',2:'#c4f5ea',3:'#ffffff'},s:["....11....","...1..1...","..111111..","..122221..","..123321..","..123321..","..122221..","..111111..","...1111...",".........."],
   desc:j=>`Gains {x:X0.5} Mult every time you use a {a:Spirit} {d:(Currently X${j?fmtM(j.st.x):1})}`,end:(c,e,j)=>{if(j.st.x>1)e('xmult',j.st.x)}},
- ragsriches:{name:'Rags to Riches',r:5,cost:17,bg:'#5a4a3a',p:{1:'#c9b48a',2:'#7a5a3a',3:'#ffd34d'},s:["..........","...2..2...","..111111..",".11211211.",".11111111.",".12111131.",".11111111.","..11..11..","..........",".........."],
+ ragsriches:{name:'Rags to Riches',r:4,cost:13,bg:'#5a4a3a',p:{1:'#c9b48a',2:'#7a5a3a',3:'#ffd34d'},s:["..........","...2..2...","..111111..",".11211211.",".11111111.",".12111131.",".11111111.","..11..11..","..........",".........."],
   desc:'{x:X3} Mult while you have {$:$5} or less',end:(c,e)=>{if(S.money<=5)e('xmult',3)}},
- everypenny:{name:'Every Penny Counts',r:5,cost:17,bg:'#b0602a',p:{1:'#ffd9b0',2:'#d9824a',3:'#8e4a22'},s:["..........","...2222...","..233332..",".23311332.",".23133132.",".23133132.",".23311332.","..233332..","...2222...",".........."],
+ everypenny:{name:'Every Penny Counts',r:4,cost:16,bg:'#b0602a',p:{1:'#ffd9b0',2:'#d9824a',3:'#8e4a22'},s:["..........","...2222...","..233332..",".23311332.",".23133132.",".23133132.",".23311332.","..233332..","...2222...",".........."],
   desc:'Coins that {a:miss} still give their {c:Points}, and {m:+2} Mult',miss:(c,i,e)=>{const x=c.purse[i];e('chips',coinDef(x).chips+(x.bonus||0));e('mult',2)}},
- packrat:{name:'Packrat',r:5,cost:17,bg:'#4a3a6a',p:{1:'#8a8a99',2:'#ffc0cf',3:'#222222',4:'#ffd34d'},s:["..........","..........",".11....4..","1311..444.","1111111.4.",".111111...","..1111....","..2..2....","22222222..",".........."],
+ packrat:{name:'Packrat',r:4,cost:15,bg:'#4a3a6a',p:{1:'#8a8a99',2:'#ffc0cf',3:'#222222',4:'#ffd34d'},s:["..........","..........",".11....4..","1311..444.","1111111.4.",".111111...","..1111....","..2..2....","22222222..",".........."],
   desc:()=>`{x:X0.15} Mult for every Charm, Consumable and coin you own {d:(Currently X${S?fmtM(1+.15*(S.jokers.length+S.cons.length+S.purse.length)):1})}`,end:(c,e)=>e('xmult',1+.15*(S.jokers.length+S.cons.length+S.purse.length))},
- cherrytree:{name:'Cherry Tree',r:5,cost:17,init:{x:1},bg:'#3a2210',p:{1:'#4bd18f',2:'#c8102e',3:'#8a5a28'},s:["..111111..",".11111111.","1121111211","1111111111",".11121111.","..111111..","....33....","....33....","....33....","...3333..."],
+ cherrytree:{name:'Cherry Tree',r:4,cost:14,init:{x:1},bg:'#3a2210',p:{1:'#4bd18f',2:'#c8102e',3:'#8a5a28'},s:["..111111..",".11111111.","1121111211","1111111111",".11121111.","..111111..","....33....","....33....","....33....","...3333..."],
   desc:j=>`Gains {x:X1} Mult every time you win a {a:Rival} duel. Cannot tell a lie {d:(Currently X${j?fmtM(j.st.x):1})}`,end:(c,e,j)=>{if(j.st.x>1)e('xmult',j.st.x)}},
- giantslayer:{name:'Giant Slayer',r:5,cost:17,bg:'#3a0a10',p:{1:'#8a5a28',2:'#c3c9ce',3:'#c8102e'},s:["..........","..1....1..","..1....1..","..11..11..","...1111...","....11....","....11....","....22....","...2332...","....22...."],
+ giantslayer:{name:'Giant Slayer',r:4,cost:13,bg:'#3a0a10',p:{1:'#8a5a28',2:'#c3c9ce',3:'#c8102e'},s:["..........","..1....1..","..1....1..","..11..11..","...1111...","....11....","....11....","....22....","...2332...","....22...."],
   desc:'{x:X2.5} Mult during {a:Boss} wagers',end:(c,e)=>{if(c.boss)e('xmult',2.5)}},
- blindfaith:{name:'Blind Faith',r:5,cost:17,bg:'#000000',p:{1:'#ffffff',2:'#222222',3:'#c8102e'},s:["..........","..........","3333333333","3111111113","3122112213","3111111113","3333333333","..3....3..","...3....3.",".........."],
+ blindfaith:{name:'Blind Faith',r:4,cost:15,bg:'#000000',p:{1:'#ffffff',2:'#222222',3:'#c8102e'},s:["..........","..........","3333333333","3111111113","3122112213","3111111113","3333333333","..3....3..","...3....3.",".........."],
   desc:'{x:X3} Mult. Your coins land {r:face down} until they score',end:(c,e)=>e('xmult',3)},
- randomaccess:{name:'Random Access',r:5,cost:17,bg:'#ff1aa8',p:{1:'#00f0e0',2:'#222222',3:'#ffffff'},s:["1111111111","1222222221","1213121321","1222222221","1231213121","1222222221","1213131221","1222222221","1111111111",".1.1.1.1.."],
+ randomaccess:{name:'Random Access',r:5,cost:20,bg:'#ff1aa8',p:{1:'#00f0e0',2:'#222222',3:'#ffffff'},s:["1111111111","1222222221","1213121321","1222222221","1231213121","1222222221","1213131221","1222222221","1111111111",".1.1.1.1.."],
   desc:'Every toss, runs the ability of a {a:random Charm} from anywhere'},
 });
 /* ---- Fishing charms: earned at the Drowned Fountain (a secret on the title screen) ---- */
@@ -1797,7 +1797,7 @@ Object.assign(JOKERS,{
   desc:()=>`Earn {$:$1} at the end of each wager for each Consumable you hold {d:(Currently $${S?S.cons.length:0})}`},
  goldenkoi:{name:'Golden Koi',r:4,cost:13,bg:'#123a48',p:{1:'#ffd34d',2:'#fff6d0',3:'#222222',4:'#c48a12'},s:["..........","....44....","..1121211.","411111131.","441111111.","441111122.","411121111.","..1111111.","....44....",".........."],
   desc:'Every coin that scores has a {a:1 in 3} chance to give {x:X1.3} Mult',coin:(c,i,e)=>{if(rand()<odds(1/3))e('xmult',1.3)}},
- hookline:{name:'Hook, Line & Sinker',r:5,cost:17,bg:'#0a1f29',p:{1:'#c3c9ce',2:'#9be7ff',3:'#5a5a6a'},s:["....2.....","....2.....","....2.....","....2.....","...111....","...1.1....","1..1......","11.1......",".111...33.",".......33."],
+ hookline:{name:'Hook, Line & Sinker',r:4,cost:16,bg:'#0a1f29',p:{1:'#c3c9ce',2:'#9be7ff',3:'#5a5a6a'},s:["....2.....","....2.....","....2.....","....2.....","...111....","...1.1....","1..1......","11.1......",".111...33.",".......33."],
   desc:'Retrigger every coin that scores on the {a:first} toss of each wager'},
 });
 /* earned by calling the title coin three times running */
@@ -2224,7 +2224,7 @@ function fatalCorrupt(){const cur=S.boss2;S.boss2=pick(FATAL_POOL.filter(k=>k!==
 const bossMult=k=>k==='judge'?(karmaNow()<0?3:1.5):k==='scales'?clamp(3-.12*karmaNow(),1.8,4.2):(BOSSES[k].mult||2);
 /* Silver Bullet: on the final Flip of a Boss wager the boss's rules stop applying */
 const bulleted=()=>!!S&&S.screen==='play'&&S.boss&&['call','tossing','tossed','scoring'].includes(S.phase)&&S.flipsLeft===(S.phase==='scoring'?0:1)&&S.blinds&&curBlind().kind==='boss'&&hasOn('silverbullet');
-const bossIs=k=>!!S&&(S.boss===k||S.boss2===k)&&!bulleted();
+const bossIs=k=>!!S&&(S.boss===k||S.boss2===k)&&!bulleted()&&!hasOn('gyges');
 const bossDesc=b=>fmt(BOSSES[b.boss].desc+(b.boss2?`. Also: ${BOSSES[b.boss2].desc}`:''));
 const callName=c=>c==='H'?'Heads':c==='T'?'Tails':'Edge';
 const edgeOK=()=>!!S&&(S.edgeCall||countEff('tightrope')>0);
