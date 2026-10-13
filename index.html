@@ -1141,7 +1141,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.170</div>
+  <div class="gamever" aria-label="Version">v1.2.171</div>
 </div>
 
 <script>
@@ -2005,23 +2005,24 @@ async function setCoinMod(i,kind,v){const c=S.purse[i];if(!c)return;c[kind]=v;re
 
 /* Runes: shape your coins (target coins by selecting them first) */
 const RUNES={
- change:{name:'Rune of Change',col:'#c3c9ce',min:1,max:3,to:'copper',desc:'Turn up to {a:3} selected coins into {a:Quarters}'},
+ change:{name:'Rune of Change',col:'#c3c9ce',min:1,max:1,desc:'Turn {a:1} selected coin into a {a:random special coin}',
+  use:async sel=>{const i=sel[0],c=S.purse[i];if(!c)return;const t=pickSpecial(SPC().filter(x=>x!==c.type));c.type=t;c.bonus=0;PS().transmutes=(PS().transmutes||0)+1;render();juiceCoin(i,COINS[t].name+'!');play('levelup')}},
  iron:{name:'Rune of Iron',col:'#a9b6c4',min:1,max:2,to:'steel',desc:'Turn up to {a:2} selected coins into {a:2 Euro Coins}'},
- glass:{name:'Rune of Cocoa',col:'#c98a4a',min:1,max:2,to:'glass',desc:'Turn up to {a:2} selected coins into {a:Chocolate Coins}'},
+ glass:{name:'Rune of Cocoa',col:'#c98a4a',min:1,max:1,to:'glass',desc:'Turn {a:1} selected coin into a {a:Chocolate Coin}'},
  gold:{name:'Rune of Gold',col:'#ffd34d',min:1,max:2,to:'gold',desc:'Turn up to {a:2} selected coins into {a:Doubloons}'},
  luck:{name:'Rune of Luck',col:'#5fd38d',min:1,max:2,to:'lucky',desc:'Turn up to {a:2} selected coins into {a:5 Yen Coins}'},
  blood:{name:'Rune of Blood',col:'#ff5f6d',min:1,max:2,to:'ruby',desc:'Turn up to {a:2} selected coins into {a:Casino Chips}'},
- frost:{name:'Rune of Frost',col:'#e6eefc',min:1,max:2,to:'silver',desc:'Turn up to {a:2} selected coins into {a:Loonies}'},
- earth:{name:'Rune of Earth',col:'#3fae8a',min:1,max:2,to:'jade',desc:'Turn up to {a:2} selected coins into {a:Cash Coins}'},
+ frost:{name:'Rune of Frost',col:'#e6eefc',min:1,max:1,to:'silver',desc:'Turn {a:1} selected coin into a {a:Loonie}'},
+ earth:{name:'Rune of Earth',col:'#3fae8a',min:1,max:1,to:'jade',desc:'Turn {a:1} selected coin into a {a:Cash Coin}'},
  twins:{name:'Rune of Twins',col:'#c9a4ff',min:2,max:2,desc:'Select {a:2} coins. The left one becomes a copy of the right one',
   use:async sel=>{const a=S.purse[sel[0]],b=S.purse[sel[1]];a.type=b.type;a.wear=b.wear;a.defect=b.defect;render();juiceCoin(sel[0],'Copied!');play('levelup')}},
  stack:{name:'Rune of Stacking',col:'#d9a86a',min:2,max:2,desc:'Stack {a:2} selected coins: they always land on the same face, only take up {a:one} space in your purse, and re-flip together as one',
   ok:()=>S.csel.every(i=>!stkGroup(S.purse[i])),why:'One of them is already stacked',
   use:async sel=>{const g=uid++,[a,b]=sel.slice().sort((x,y)=>x-y),cb=S.purse[b];S.purse[a].stk=g;cb.stk=g;S.purse.splice(b,1);S.purse.splice(a+1,0,cb);play('levelup');render();juiceCoin(a,'Stacked!')}},
- ruin:{name:'Rune of Ruin',col:'#b0564f',min:1,max:2,desc:'Melt up to {a:2} selected coins',ok:()=>S.purse.length-S.csel.length>=PURSE_MIN,why:`Purse needs ${PURSE_MIN}+ coins`,
-  use:async sel=>{sel.forEach(i=>{const el=$('#c'+i);if(el)el.classList.add('shatter')});play('shatter');await wait(380);sel.sort((a,b)=>b-a).forEach(i=>S.purse.splice(i,1));PS().melts=(PS().melts||0)+sel.length;render()}},
- exile:{name:'Rune of Exile',col:'#e04050',desc:'Send this stage\'s {a:boss} away: a different boss takes its place',ok:()=>bossRerollable(),why:'No boss to change right now',
-  use:async()=>{rerollBoss();render()}},
+ ruin:{name:'Rune of Ruin',col:'#b0564f',min:1,max:2,desc:'Destroy up to {a:2} selected coins and earn {$:$4} for each',ok:()=>S.purse.length-S.csel.length>=PURSE_MIN,why:`Purse needs ${PURSE_MIN}+ coins`,
+  use:async sel=>{sel.forEach(i=>{const el=$('#c'+i);if(el)el.classList.add('shatter')});play('shatter');await wait(380);sel.sort((a,b)=>b-a).forEach(i=>S.purse.splice(i,1));PS().melts=(PS().melts||0)+sel.length;S.money+=4*sel.length;play('money');toast(`Rune of Ruin: <b>+$${4*sel.length}</b>`);render()}},
+ exile:{name:'Rune of Exile',col:'#e04050',desc:'Exile this stage\'s {a:Boss}: its rules have no effect this stage (the score to beat stays)',ok:()=>bossRerollable()&&S.exileAnte!==S.ante,why:'No boss to exile right now',
+  use:async()=>{S.exileAnte=S.ante;const b=bossBlind();toast(`<b>${BOSSES[b.boss].name}</b> is exiled. Its rules are gone this stage`);play('boss');render()}},
  wealth:{name:'Rune of Wealth',col:'#f5b744',desc:'Double your money (max {$:+$20})',
   use:async()=>{const g=Math.min(S.money,20);S.money+=g;play('money');render();popup($('#smoney'),'+$'+g,'money')}},
  fate:{name:'Rune of Fate',col:'#e8443a',desc:'{a:1 in 2} chance to gain a random {a:Uncommon or better} Charm. Otherwise, earn {$:$4}',ok:()=>S.jokers.length<slots(),why:'No room for a Charm',
@@ -2231,8 +2232,8 @@ function fatalCorrupt(){const cur=S.boss2;S.boss2=pick(FATAL_POOL.filter(k=>k!==
 const bossMult=k=>k==='judge'?(karmaNow()<0?3:1.5):k==='scales'?clamp(3-.12*karmaNow(),1.8,4.2):(BOSSES[k].mult||2);
 /* Silver Bullet: on the final Flip of a Boss wager the boss's rules stop applying */
 const bulleted=()=>!!S&&S.screen==='play'&&S.boss&&['call','tossing','tossed','scoring'].includes(S.phase)&&S.flipsLeft===(S.phase==='scoring'?0:1)&&S.blinds&&curBlind().kind==='boss'&&hasOn('silverbullet');
-const bossIs=k=>!!S&&(S.boss===k||S.boss2===k)&&!bulleted()&&!hasOn('gyges');
-const bossDesc=b=>fmt(BOSSES[b.boss].desc+(b.boss2?`. Also: ${BOSSES[b.boss2].desc}`:''));
+const bossIs=k=>!!S&&(S.boss===k||S.boss2===k)&&!bulleted()&&S.exileAnte!==S.ante&&!hasOn('gyges');
+const bossDesc=b=>S&&S.exileAnte===S.ante?fmt('{a:Exiled}: no rules this stage'):fmt(BOSSES[b.boss].desc+(b.boss2?`. Also: ${BOSSES[b.boss2].desc}`:''));
 const callName=c=>c==='H'?'Heads':c==='T'?'Tails':'Edge';
 const edgeOK=()=>!!S&&(S.edgeCall||countEff('tightrope')>0);
 function setMajority(){const h=S.results.filter(r=>r==='H'||r==='E').length,t=S.results.filter(r=>r==='T'||r==='E').length;S.call=t>h?'T':'H'}
