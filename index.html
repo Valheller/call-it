@@ -1137,7 +1137,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.182</div>
+  <div class="gamever" aria-label="Version">v1.2.183</div>
 </div>
 
 <script>
@@ -2042,34 +2042,34 @@ const BOSSES={
  wall:    {name:'The Wall',    col:'#8a59a8', mult:4, desc:'Extra large target'},
  anchor:  {name:'The Anchor',  col:'#3f7f8c', noRe:1, desc:'No Re-flips this wager'},
  fog:     {name:'The Fog',     col:'#7d8a93', fog:1, desc:'Coins land face down until they score'},
- eclipse: {name:'The Eclipse', col:'#c9961a', desc:'Heads never score'},
- undertow:{name:'The Undertow',col:'#2a5fb0', desc:'Tails never score'},
- tax:     {name:'The Tax',     col:'#3e9d5c', desc:'Lose $1 for every coin that scores'},
+ eclipse: {name:'The Eclipse', col:'#c9961a', desc:'Coins land Heads {r:2 in 3} times, and Heads never score'},
+ undertow:{name:'The Undertow',col:'#2a5fb0', desc:'Coins land Tails {r:2 in 3} times, and Tails never score'},
+ tax:     {name:'The Tax',     col:'#3e9d5c', desc:'Lose $1 for every coin that scores (up to $6 a wager)'},
  needle:  {name:'The Needle',  col:'#6f7d2f', mult:1, desc:'Only 1 Flip this wager'},
  pinch:   {name:'The Pinch',   col:'#c2557a', halve:1, desc:'Base Points and Mult are halved'},
- whim:    {name:'The Whim',    col:'#d46a2a', desc:'Your call is picked at random'},
- hollow:  {name:'The Hollow',  col:'#4d4f5c', desc:'All Charms are disabled'},
+ whim:    {name:'The Whim',    col:'#d46a2a', desc:'After each toss, one coin that landed on your call flips over'},
+ hollow:  {name:'The Hollow',  col:'#4d4f5c', desc:'All Charms are disabled until you sell one'},
  rust:    {name:'The Rust',    col:'#9a4f2a', desc:'Every coin acts like a plain Quarter'},
  toll:    {name:'The Toll',    col:'#b8901f', desc:'Each Re-flip costs $2'},
  gale:    {name:'The Gale',    col:'#5aa3b8', desc:'Re-flips toss every coin, not just the ones you pick'},
  shroud:  {name:'The Shroud',  col:'#5b3f7a', desc:'Your coins are shuffled before every toss'},
  eye:     {name:'The Eye',     col:'#2f6f9e', desc:'Each toss type only scores once this wager'},
- blackcat:{name:'The Black Cat',col:'#2a2a2a',desc:'Every {a:lucky chance} fails this wager (no "1 in X" effect ever triggers)'},
+ blackcat:{name:'The Black Cat',col:'#2a2a2a',desc:'Every {a:lucky chance} fails, and one random coin is crossed each toss: it never scores'},
  judge:   {name:'The Judge',   col:'#8a6a2a',desc:'Target is {a:X1.5}, or {r:X3} if you carry a cursed Charm'},
- reflection:{name:'The Reflection',col:'#9fb4c8',desc:'Your call is mirrored: call Heads and the coins score on Tails'},
+ reflection:{name:'The Reflection',col:'#9fb4c8',desc:'A coin only scores if a coin next to it scores too'},
  miser:   {name:'The Miser',   col:'#6a7a2a',desc:'You can\'t earn money this wager'},
  thief:   {name:'The Thief',   col:'#3a3a4a',desc:'One random Charm is stolen for this wager'},
  gravity: {name:'The Gravity', col:'#4a3a8a',desc:'Coins land {r:against} your call 3 in 5 times'},
  frost:   {name:'The Frost',   col:'#7ac8e8',desc:'The first and last coins are frozen and never score'},
  clock:   {name:'The Clock',   col:'#b86a2a',desc:'Each toss scores {r:20%} less than the one before'},
  sleeper: {name:'The Sleeper', col:'#3a4a7a',desc:'Your first toss scores nothing'},
- parrot:  {name:'The Parrot',  col:'#2fa36a',desc:'After your first call, you must keep making the same call'},
- shards:  {name:'The Shards',  col:'#5a7a8a',desc:'Every coin that misses costs you {r:$1}'},
+ parrot:  {name:'The Parrot',  col:'#2fa36a',desc:'After your first call, you must keep making the same call. Every coin that misses costs {r:$1} (up to $5 a wager)'},
+ shards:  {name:'The Shards',  col:'#5a7a8a',desc:'Every coin that misses costs you {r:$1} (up to $6 a wager)'},
  crown:   {name:'Crimson Crown',col:'#c8102e', noRe:1, halve:1, final:1, desc:'No Re-flips. Base Points and Mult are halved'},
  vessel:  {name:'Violet Vessel',col:'#7b3fbf', mult:6, final:1, desc:'Enormous target'},
  amber:   {name:'Amber Seal',  col:'#e08a1a', fog:1, noRe:1, final:1, desc:'Coins land face down. No Re-flips'},
  treasury:{name:'The Treasury',col:'#2f7a4a', final:1, desc:'Every toss loses 20% of its score to taxes'},
- obsidian:{name:'Obsidian Omen',col:'#1a1a22',noRe:1,final:1,desc:'Every {a:lucky chance} fails. No Re-flips'},
+ obsidian:{name:'Obsidian Omen',col:'#1a1a22',noRe:1,final:1,desc:'Coins land against your call {r:3 in 5} times. No Re-flips'},
  house:{name:'The House',col:'#d9b552',mult:5,final:1,houseOnly:1,desc:'The House plays against you. After every toss it picks a face: up to {r:2} of your coins that {r:missed} on that face now belong to the House, and {r:never scores again} this wager'},
  general:{name:'The General',col:'#3a5ba8',mult:4,final:1,rivalOnly:1,desc:'A duel. He tosses first each Flip, every {a:Quarter} in your purse makes his tosses {r:8%} stronger, and his last toss is stronger still. Be {a:ahead} after it'},
  drhouse: {name:'House',col:'#4a7ab8',mult:6,final:1,glitchOnly:1,desc:'The diagnostician. Before every toss he benches your {a:best} coin (the most Points): it {r:can\'t score} that toss. Everybody lies'},
@@ -2228,7 +2228,7 @@ function spend(p){S.money-=p;if(p>0)S.spentRun=(S.spentRun||0)+p;S.jokers.forEac
 const sellVal=j=>Math.max(1,Math.floor(j.cost/2))+3*countEff('pawnticket')+(j.key==='pennyjar'?Math.floor((j.st.v||0)/5):j.key==='savings'?(j.st.v||0):0);
 const burnBonus=()=>S.burn?S.burn.rate*(S.ante-S.burn.from)-2:0;
 const handLv=k=>{const h=HAND[k],lv=S.hands[k].level,mast=Math.floor((S.hands[k].played||0)/(S.mastN||10));return {chips:h.chips+h.lc*(lv-1)+(S.mast2?15*mast:0),mult:Math.max(1,h.mult+h.lm*(lv-1)+mast*(S.mastM||1)+burnBonus()),lv,mast}};
-const charmsOn=()=>!(S&&S.screen==='play'&&bossIs('hollow'));
+const charmsOn=()=>!(S&&S.screen==='play'&&bossIs('hollow')&&!S.hollowFree);
 const COPYK={copycat:1,mimic:1,understudy:1};
 function copyNext(k){const j=S.jokers[k];if(j.key==='copycat')return k+1;if(j.key==='understudy')return 0;
   if(j.key==='mimic'){S.mimicT=S.mimicT||{};let t=S.jokers.findIndex(x=>x.id===S.mimicT[j.id]);
@@ -2261,7 +2261,7 @@ const freeReflip=()=>!!S&&!bossIs('gale')&&S.selected.length>0&&(rubyFree()||S.s
 /* rarity rolls (Fabled in shops and packs, The Soul's upgrade): Rainbow nudges them, but Fortuna and Loaded Dice don't, or every shop fills with Fabled Charms */
 const rareOdds=p=>Math.min(1,p*(wx('rainbow')?2:1));
 /* the Black Cat and the Obsidian Omen make every good chance fail */
-const odds=(p,good=true)=>good&&S&&S.screen==='play'&&(bossIs('blackcat')||bossIs('obsidian'))?0:good&&countEff('fortuna')?1:Math.min(1,p*Math.pow(2,countEff('dice'))*(good&&wx('rainbow')?2:1));
+const odds=(p,good=true)=>good&&S&&S.screen==='play'&&bossIs('blackcat')?0:good&&countEff('fortuna')?1:Math.min(1,p*Math.pow(2,countEff('dice'))*(good&&wx('rainbow')?2:1));
 const coinKinds=()=>new Set(S.purse.map(c=>c.type)).size;
 const specialCount=()=>S.purse.filter(c=>c.type!=='copper').length;
 const consRoom=()=>S.cons.length<S.consSlots;
@@ -3737,6 +3737,8 @@ function evalHand(res,call){
   for(let i=0;i<n-1;i++)if(matched[i]&&S.purse[i]&&coinDef(S.purse[i]).slam&&!(frz&&i+1===n-1))matched[i+1]=true;
   if(bossIs('drhouse')&&S.benched)matched.forEach((m,i)=>{if(S.purse[i]&&S.purse[i].id===S.benched)matched[i]=false});
   matched.forEach((m,i)=>{if(m&&i>0&&S.purse[i]&&coinDef(S.purse[i]).bell)matched[i]=false});
+  if(bossIs('blackcat')&&S.catI>=0&&S.catI<n)matched[S.catI]=false;
+  if(bossIs('reflection')){const m0=matched.slice();matched.forEach((m,i)=>{if(m&&!m0[i-1]&&!m0[i+1])matched[i]=false})}
   if(bossIs('house')&&S.houseOwned&&S.houseOwned.length)matched.forEach((m,i)=>{if(S.purse[i]&&S.houseOwned.includes(S.purse[i].id))matched[i]=false});
   const runs=[];let run=0;matched.forEach(m=>{if(m)run++;else{if(run)runs.push(run);run=0}});if(run)runs.push(run);
   const longest=runs.length?Math.max(...runs):0,count=matched.filter(Boolean).length;
@@ -3815,7 +3817,7 @@ function computeHand(){
       if(S.purse[i].defect==='filled'&&rand()<odds(1/6)&&consRoom()){S.cons.push({kind:'spirit',key:pick(MINOR_SPIRITS)});e('text','+Spirit')}
       if(res[i]==='E')e('xmult',call==='E'?(hasK('tightrope')&&charmsOn()?4:3):2);
       if(wx('sunshine')&&res[i]==='H')e('mult',2);if(wx('moonlit')&&res[i]==='T')e('mult',2);if(wx('storm')&&i===S.bolt){e('text','Zap!');e('xmult',2)}
-      if(bossIs('tax'))e('money',-1);
+      if(bossIs('tax')&&(S.paidTax||0)<6){S.paidTax=(S.paidTax||0)+1;e('money',-1)}
       jk.forEach((j,ji)=>{const t=resolveJ(ji);if(t<0||!jOn(j)||!jOn(jk[t]))return;const def=jdef(jk[t]);if(def.coin)def.coin(ctx,i,emitter('joker',ji),jk[t],t!==ji)});
     }
   }
@@ -3838,7 +3840,9 @@ function tossOne(coin,call,reflip,r=rand){
   if(d.fixed)return d.fixed;
   if(r()<edge)return 'E';
   if(call!=='E'&&wx('rain')&&r()<.1)return call==='H'?'T':'H';
-  if(call!=='E'&&bossIs('gravity'))return r()<.6?(call==='H'?'T':'H'):call;
+  if(bossIs('eclipse'))return r()<2/3?'H':'T';
+  if(bossIs('undertow'))return r()<2/3?'T':'H';
+  if(call!=='E'&&(bossIs('gravity')||bossIs('obsidian')))return r()<.6?(call==='H'?'T':'H'):call;
   if(call!=='E'&&reflip&&countEff('magnet'))return r()<.67?call:(call==='H'?'T':'H');
   if(call!=='E'&&d.bias)return r()<d.bias?call:(call==='H'?'T':'H');
   return r()<.5?'H':'T';
@@ -3987,7 +3991,7 @@ function syncStats(){if(!S)return;if(S.money>(PS().maxMoney||0))PS().maxMoney=S.
 
 function renderJokers(){
   const el=$('#jokerbar');const n=S.jokers.length;
-  const hollow=S.screen==='play'&&bossIs('hollow');
+  const hollow=S.screen==='play'&&bossIs('hollow')&&!S.hollowFree;
   el.innerHTML=`<div class="tray ${hollow?'hollow':''}"><div class="cards jrow" style="--n:${Math.max(n,1)}">${n?S.jokers.map(jokerSlot).join(''):'<div class="empty"></div>'}</div>
    <div class="trayfoot"><span>Charms · drag to reorder</span><span>${n}/${slots()}</span></div></div>
    <div class="tray cons"><div class="cards">${S.cons.length?S.cons.map(consSlot).join(''):'<div class="empty"></div>'}</div>
@@ -4016,7 +4020,7 @@ function coinHTML(c,i,opts={}){
   const hl=d.fixed==='T'?'T':'H',tl=d.fixed==='H'?'H':'T';
   const ang=c.face==='T'?180:c.face==='E'?56:0;
   const bolted=S&&S.screen==='play'&&wx('storm')&&S.bolt===i&&(S.phase==='tossed'||S.phase==='scoring');
-  const frozen=S&&S.screen==='play'&&(bossIs('frost')&&S.purse.length>2&&(i===0||i===S.purse.length-1)||bossIs('house')&&(S.houseOwned||[]).includes(c.id)||bossIs('drhouse')&&S.benched===c.id);
+  const frozen=S&&S.screen==='play'&&(bossIs('blackcat')&&S.phase!=='call'&&S.catI===i||bossIs('frost')&&S.purse.length>2&&(i===0||i===S.purse.length-1)||bossIs('house')&&(S.houseOwned||[]).includes(c.id)||bossIs('drhouse')&&S.benched===c.id);
   const sg=stkGroup(c);
   return `<button class="coin t-${c.type} ${sg?'stk':''} ${frozen?'frozen':''} ${bolted?'bolted':''} ${S&&S.roll==='glitched'?'glitchy':''} ${c.face==='E'?'edge':''} ${c.fog?'fog':''} ${opts.enter?'enter':''} ${opts.sel?'sel':''}" id="c${i}" data-act="coin" data-arg="${i}" data-drag="coin" data-idx="${i}" data-tip="coin:${i}" style="--d:${i*60}ms" aria-label="${d.name}">
     <div class="lift"><div class="tilt" style="--sw:${-((c.id*1.37)%4.6).toFixed(2)}s"><div class="spin" style="transform:rotateX(${ang}deg);--shape:url(${coinArt(c.type,hl)})">${SLABS}<div class="face heads" data-l="${hl}" style="--art:url(${coinArt(c.type,hl)})">${coinMods(c)}</div><div class="face tails" data-l="${tl}" style="--art:url(${coinArt(c.type,tl)})">${coinMods(c)}</div></div></div></div>
@@ -4063,7 +4067,7 @@ function refreshTable(){
      /* boss, elite and rival rules already sit in the sidebar on computers, so under the coins they only show on phones */
      const foe=S.duel&&!S.duel.general&&!S.duel.table&&S.rival?`<b style="color:var(--orange)">${isRematch()?'Rematch: ':''}${S.rival.name}</b> · ${fmt(rivalInfo().habit)}. Be ahead after your 3rd Flip.`:S.boss?bossDesc(curBlind())+'.':'';
      h.innerHTML=S.boss==='fatal'&&S.boss2?`<b class="fataltxt">FATAL ERROR</b> · next toss: <b>${BOSSES[S.boss2].name}</b>: ${fmt(BOSSES[S.boss2].desc)}.`:foe?`<span class="hmob">${foe}</span><span class="hdesk">${base}</span>`:base}
-    const auto=bossIs('whim')||S.roll==='majority',edge=edgeOK()&&!auto;
+    const auto=S.roll==='majority',edge=edgeOK()&&!auto;
     ct.classList.toggle('three',edge);
     ct.innerHTML=auto
       ?`<button class="btn purple big" data-act="call" data-arg="R">Toss<small>${S.roll==='majority'?'most common face':'random call'}</small></button>`
@@ -4962,7 +4966,7 @@ addEventListener('scroll',hideTip,true);
 let REWIND_SNAP=null;
 function startBlind(){
   REWIND_SNAP=S.jokers.some(j=>j.key==='rewind')&&!S.inElite?JSON.stringify({S,uid}):null;
-  hazardsOff();S.wagerTime=0;S.turnTime=0;S.ghostWarned=false;S.ghost=false;S.scorp=false;
+  hazardsOff();S.wagerTime=0;S.turnTime=0;S.paidTax=0;S.paidShards=0;S.paidParrot=0;S.hollowFree=false;S.catI=-1;S.whimI=-1;S.ghostWarned=false;S.ghost=false;S.scorp=false;
   const b=curBlind();S.boss=b.boss||null;S.target=blindTarget(b);S.screen='play';
   if(S.purse[0]&&coinDef(S.purse[0]).firstDime){S.target=Math.ceil(S.target*(1-coinDef(S.purse[0]).firstDime));setTimeout(()=>{const el=$('#c0');if(el)popup(el,'The First Dime: -20% target','text')},500)}
   const watch=countEff('watch');
@@ -4989,12 +4993,12 @@ function startBlind(){
 }
 async function doCall(call){
   if(S.screen!=='play'||S.phase!=='call')return;S.fastCall=(S.turnTime||0)<=3;
-  if(bossIs('whim')||call==='R')call=rand()<.5?'H':'T';
+  if(call==='R')call=rand()<.5?'H':'T';
   if(S.roll==='majority')call='H';
   if(call==='E'&&!edgeOK())return;
   if(bossIs('drhouse')){let bi=0,bv=-1;S.purse.forEach((c,i)=>{const v=(coinDef(c).chips||0)+(c.bonus||0);if(v>bv){bv=v;bi=i}});S.benched=S.purse[bi]&&S.purse[bi].id;const el=$('#c'+bi);if(el)popup(el,'Benched','miss');drSay()}
   if(bossIs('parrot')){if(S.lockCall&&call!==S.lockCall)return;if(!S.lockCall){S.lockCall=call;setTimeout(()=>popup($('#callb'),'Locked: '+callName(call),'text'),300)}}
-  const mirrored=(S.roll==='mirror'||bossIs('reflection'))&&call!=='E';if(mirrored)call=call==='H'?'T':'H';
+  const mirrored=S.roll==='mirror'&&call!=='E';if(mirrored)call=call==='H'?'T':'H';
   S.call=call;(S.wcalls=S.wcalls||[]).push(call);S.phase='tossing';S.selected=[];S.tossReflips=0;S.csel=[];S.selJoker=null;S.selCons=null;
   if(bossIs('shroud')){for(let i=S.purse.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[S.purse[i],S.purse[j]]=[S.purse[j],S.purse[i]]}
     $('#purse').innerHTML=S.purse.map((c,i)=>coinHTML(c,i)).join('');play('reroll')}
@@ -5003,6 +5007,8 @@ async function doCall(call){
   if(S.jokers.some(j=>j.key==='missingno')){if(S.roll!=='glitched')S.glitchJ={};const mp=Object.keys(JOKERS).filter(k=>JOKERS[k].r<=3&&!COPYK[k]&&!JOKERS[k].init&&!JOKERS[k].wager&&!JOKERS[k].glitchOnly&&!JOKERS[k].prize&&!JOKERS[k].artifact&&(JOKERS[k].coin||JOKERS[k].end||JOKERS[k].miss));S.jokers.filter(j=>j.key==='missingno').forEach(j=>S.glitchJ[j.id]=pick(mp));renderJokers()}
   S.results=S.purse.map(c=>tossOne(c,call));S.rfd=[];
   const owls=S.purse.map((c,i)=>i).filter(i=>coinDef(S.purse[i]).owl&&call!=='E'&&!scores(S.results[i],call));owls.forEach(i=>S.results[i]=tossOne(S.purse[i],call,true));S.owlHit=owls.filter(i=>scores(S.results[i],call));
+  S.whimI=-1;if(bossIs('whim')&&call!=='E'){const hits=S.purse.map((c,i)=>i).filter(i=>S.results[i]!=='E'&&scores(S.results[i],call)&&!coinDef(S.purse[i]).fixed);if(hits.length){const wi=pick(hits);S.results[wi]=S.results[wi]==='H'?'T':'H';S.whimI=wi}}
+  S.catI=bossIs('blackcat')&&S.purse.length?Math.floor(rand()*S.purse.length):-1;
   applyHeavy();applyStacks();
   if(wx('storm'))S.bolt=Math.floor(rand()*S.purse.length);
   const dowse=countEff('dowsing')&&S.roll!=='invisible';
@@ -5012,9 +5018,10 @@ async function doCall(call){
   PS().flips+=S.purse.length;tallyFlips(S.purse.map((_,i)=>i));PS().edges+=S.results.filter(r=>r==='E').length;S.wedges=(S.wedges||0)+S.results.filter(r=>r==='E').length;
   renderJokers();refreshTable();setHB('&nbsp;',0,0);
   owls.forEach(i=>{const el=$('#c'+i);if(el)setTimeout(()=>popup(el,'Owl re-flip','text'),i*70+500)});
-  if(bossIs('whim'))popup($('#callb'),call==='H'?'Heads!':'Tails!','text');
   if(mirrored)popup($('#callb'),'Mirrored: '+callName(call)+'!','text');
   await Promise.all(S.purse.map((c,i)=>animateToss(i,i*70)));
+  if(S.whimI>=0){const el=$('#c'+S.whimI);if(el)popup(el,'Whim!','miss')}
+  if(S.catI>=0){const el=$('#c'+S.catI);if(el)popup(el,'Crossed','miss')}
   if(wx('storm')&&S.purse[S.bolt]){const el=$('#c'+S.bolt);if(el){el.classList.add('bolted');popup(el,'Struck!','text')}if(window.wxFlash)wxFlash();play('thunder');shake(5)}
   S.stats.flips+=S.purse.length;
   S.phase='tossed';refreshTable();updatePreview();coach('tossed');scheduleSave();
@@ -5104,7 +5111,7 @@ async function doCashIn(){
   let total=R.total;
   if(bossIs('sleeper')&&S.tossNo===0&&total>0){popup($('#hbox'),'Asleep... 0','miss');play('miss');total=0}
   if(bossIs('clock')&&S.tossNo>0&&total>0){const cut=total-Math.floor(total*Math.pow(.8,S.tossNo));total-=cut;popup($('#hbox'),'Late -'+fmtN(cut),'miss');play('miss')}
-  if(bossIs('shards')&&R.matched){const m=R.matched.filter(x=>!x).length;if(m&&S.money>0){S.money=Math.max(0,S.money-m);syncStats();popup($('#callb'),'-$'+m,'miss')}}
+  for(const [bk,cap,key] of [['shards',6,'paidShards'],['parrot',5,'paidParrot']])if(bossIs(bk)&&R.matched){const m=Math.min(R.matched.filter(x=>!x).length,cap-(S[key]||0),Math.max(0,S.money));if(m>0){S.money-=m;S[key]=(S[key]||0)+m;syncStats();popup($('#callb'),'-$'+m,'miss')}}
   if(bossIs('treasury')&&total>0){const tax=Math.floor(total*.2);total-=tax;popup($('#hbox'),'Taxed -'+fmtN(tax),'miss');play('miss')}
   setHB(`<span style="font-size:1.25em">${fmtN(total)}</span>`,null,null);juice($('#hname'));play('total');
   shake(clamp(Math.log10(Math.max(10,total))*2,2,14));
@@ -5661,7 +5668,7 @@ const ACT={
     if(S&&S.roll==='glitched'&&consRoom()&&rand()<.2){S.cons.push({...c});render();const el=$('#cs'+(S.cons.length-1));if(el){popup(el,'Glitch! It came back','text');juice(el)}play('glitch');return}
     render()},
   sellcons(a){const i=+a,c=S.cons[i];if(!c||S.roll==='hoarder')return;S.money+=consInfo(c).sell;S.cons.splice(i,1);S.selCons=null;play('money');if(S.screen==='play'){renderJokers();syncStats()}else render()},
-  sell(a){const i=+a,j=S.jokers[i];if(!j||!canEdit()||noSell(j)||S.roll==='hoarder')return;PS().sold++;S.money+=sellVal(j);S.jokers.splice(i,1);S.selJoker=null;play('money');S.lastSold=j.key;if(j.key==='confession'){const c=S.jokers.find(purifiable);if(c){const nm=CURSES[c.curse].name;c.curse=null;delete c.left;toast(`You feel <b>forgiven</b>. Your ${JOKERS[c.key].name} is free of <b>${nm}</b>.`)}else toast('You feel <b>forgiven</b>.')}
+  sell(a){const i=+a,j=S.jokers[i];if(!j||!canEdit()||noSell(j)||S.roll==='hoarder')return;PS().sold++;S.money+=sellVal(j);S.jokers.splice(i,1);S.selJoker=null;play('money');S.lastSold=j.key;if(S.screen==='play'&&bossIs('hollow')&&!S.hollowFree){S.hollowFree=true;setTimeout(()=>toast('<b>The Hollow</b> lets go. Your Charms wake up.'),300);renderJokers()}if(j.key==='confession'){const c=S.jokers.find(purifiable);if(c){const nm=CURSES[c.curse].name;c.curse=null;delete c.left;toast(`You feel <b>forgiven</b>. Your ${JOKERS[c.key].name} is free of <b>${nm}</b>.`)}else toast('You feel <b>forgiven</b>.')}
     if(j.key==='hydra')for(let k=0;k<2&&S.jokers.length<slots();k++){const nk=rollJokerKey(1);addJoker(nk,JOKERS[nk].cost)}
     if(S.screen==='play'){renderJokers();syncStats()}else render()},
   move(a){const[i,d]=a.split(',').map(Number),k=i+d;if(k<0||k>=S.jokers.length||S.jokers[i].curse==='bound'||S.jokers[k].curse==='bound')return;[S.jokers[i],S.jokers[k]]=[S.jokers[k],S.jokers[i]];S.selJoker=k;renderJokers()},
