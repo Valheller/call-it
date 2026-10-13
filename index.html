@@ -345,7 +345,6 @@ body.badges .face::before{display:block}
 .coinimg{width:64%;filter:drop-shadow(0 3px 0 rgba(0,0,0,.45))}
 .hint{color:var(--ink-dim);font-size:15px;text-align:center;min-height:18px;max-width:46ch}
 .controls{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;padding-bottom:6px}
-.controls .mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:70px}
 
 /* panels for blind select / cashout / shop */
 .panel{background:var(--panel);border-radius:14px;padding:14px;box-shadow:0 5px 0 var(--edge),inset 0 0 0 2px rgba(255,255,255,.06)}
@@ -809,7 +808,6 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
   .hint{font-size:12px;min-height:0}
   .controls{gap:8px;padding-bottom:7px}
   .shop,.packview,.bcol,.panel{margin-bottom:6px}
-  .controls .mid{min-width:52px}
   .btn.big{font-size:18px;padding:10px 12px;min-width:104px}
   .blinds{flex-wrap:nowrap;gap:5px}
   .bcol{flex:1 1 0;min-width:0;padding:6px 4px;gap:6px}
@@ -1139,7 +1137,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.178</div>
+  <div class="gamever" aria-label="Version">v1.2.179</div>
 </div>
 
 <script>
@@ -4097,12 +4095,11 @@ function refreshTable(){
      /* boss, elite and rival rules already sit in the sidebar on computers, so under the coins they only show on phones */
      const foe=S.duel&&!S.duel.general&&!S.duel.table&&S.rival?`<b style="color:var(--orange)">${isRematch()?'Rematch: ':''}${S.rival.name}</b> · ${fmt(rivalInfo().habit)}. Be ahead after your 3rd Flip.`:S.boss?bossDesc(curBlind())+'.':'';
      h.innerHTML=S.boss==='fatal'&&S.boss2?`<b class="fataltxt">FATAL ERROR</b> · next toss: <b>${BOSSES[S.boss2].name}</b>: ${fmt(BOSSES[S.boss2].desc)}.`:foe?`<span class="hmob">${foe}</span><span class="hdesk">${base}</span>`:base}
-    const mid='<div class="mid"></div>';
     const auto=bossIs('whim')||S.roll==='majority',edge=edgeOK()&&!auto;
     ct.classList.toggle('three',edge);
     ct.innerHTML=auto
-      ?`<button class="btn purple big" data-act="call" data-arg="R">Toss<small>${S.roll==='majority'?'most common face':'random call'}</small></button>${mid}`
-      :`<button class="btn orange big" data-act="call" data-arg="H" ${S.lockCall&&bossIs('parrot')&&S.lockCall!=='H'?'disabled':''}>Heads</button>${mid}${edge?`<button class="btn purple big" data-act="call" data-arg="E" ${S.lockCall&&bossIs('parrot')&&S.lockCall!=='E'?'disabled':''}>Edge</button>`:''}<button class="btn blue big" data-act="call" data-arg="T" ${S.lockCall&&bossIs('parrot')&&S.lockCall!=='T'?'disabled':''}>Tails</button>`;
+      ?`<button class="btn purple big" data-act="call" data-arg="R">Toss<small>${S.roll==='majority'?'most common face':'random call'}</small></button>`
+      :`<button class="btn orange big" data-act="call" data-arg="H" ${S.lockCall&&bossIs('parrot')&&S.lockCall!=='H'?'disabled':''}>Heads</button>${edge?`<button class="btn purple big" data-act="call" data-arg="E" ${S.lockCall&&bossIs('parrot')&&S.lockCall!=='E'?'disabled':''}>Edge</button>`:''}<button class="btn blue big" data-act="call" data-arg="T" ${S.lockCall&&bossIs('parrot')&&S.lockCall!=='T'?'disabled':''}>Tails</button>`;
   }else{
     const busy=S.phase!=='tossed';ct.classList.remove('three');
     const toll=bossIs('toll'),cant=toll&&S.money<2;
