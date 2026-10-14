@@ -1139,7 +1139,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.187</div>
+  <div class="gamever" aria-label="Version">v1.2.188</div>
 </div>
 
 <script>
@@ -1881,7 +1881,7 @@ const RUNE_GLYPH={
 };
 const runeSprite=k=>{const g=RUNE_GLYPH[k]||RUNE_GLYPH.iron;return["..........","..333333..",...g.map(r=>'.3'+r.replace(/\./g,'1')+'3.'),"..333333..",".........."]};
 /* each Spirit has its own figure */
-const SPIRIT_ART={
+const SPIRIT_ART={luckybreak:{p:{"1": "#c8102e", "2": "#ffd34d", "3": "#1b1b2a"},s:["1........1", "11......11", ".11111111.", ".12211221.", ".11111111.", ".11333311.", "..111111..", "...1111...", "..1....1..", ".11....11."]},goodomen:{p:{"1": "#f4f1ea", "2": "#1b1b2a", "3": "#ff8fab"},s:["...1111...", "..111111..", ".11111111.", ".12111121.", ".13111131.", ".11211211.", ".11122111.", ".11111111.", ".11111111.", ".1.11.1.1."]},darkpact:{p:{"1": "#7a8a5a", "2": "#1b1b2a", "3": "#c8102e", "4": "#e8e0c0"},s:["..111111..", ".11111111.", "1122112211", "1132113211", "1111111111", "1111221111", ".11111111.", "..141414..", "..111111..", ".1.1..1.1."]},
  forge:{p:{1:'#9aa6b0',2:'#ff8a3d',3:'#fff27a'},s:["...2......","..232.....","..2332....","...22.....","1111111111",".11111111.","...1111...","...1111...","..111111..",".........."]},
  ankh:{p:{1:'#ffd34d'},s:["...1111...","..1....1..","..1....1..","...1..1...","1111111111","....11....","....11....","....11....","....11....","....11...."]},
  soul:{p:{1:'#e6eefc',2:'#9cc4ff',3:'#ffffff'},s:["....3.....","..22222...","1.23332.1.","1123332211","1.23332.1.","..22222...","...222....","....2.....","..........",".........."]},
@@ -1902,9 +1902,9 @@ const SPIRIT_ART={
  lich:{p:{1:'#3fae8a',2:'#222222',3:'#ffd34d'},s:["3.3.33.3.3","3333333333","..111111..",".11111111.","1122112211","1111221111",".11111111.","..1.11.1..","..........",".........."]},
  hex:{p:{1:'#c8102e',2:'#ffd34d'},s:["....1.....","...1.1....","1111111111",".1.1.1.1..","..1...1...","..1.2.1...",".1.1.1.1..","1111111111","...1.1....","....1....."]},
  phantasm:{p:{1:'#9be7ff',2:'#e6eefc'},s:["...1111...","..1....1..",".1.2..2.1.",".1......1.",".1......1.",".1......1.",".1......1.",".1......1.",".1.11.1.1.",".........."]},
- shimmer:{p:{1:'#ffffff',2:'#ff8fab',3:'#9be7ff',4:'#fff27a'},s:["....1.....","...111....","....1...2.","........2.","..3...2222","..3.....2.",".333....2.","..3...4...","..3..444..","......4..."]},
- balancepoint:{p:{1:'#c9a4ff',2:'#ffffff'},s:["....11....","....11....","1111111111","1...11...1","1...11...1","11..11..11","....11....","..111111..","..........",".........."]},
- pact:{p:{1:'#f5e3c0',2:'#c8102e',3:'#a8743a'},s:["3333333333",".11111111.",".12222221.",".11111111.",".12221111.",".11111111.",".11111.2..",".1111.222.",".11111.2..","3333333333"]},
+ shimmer:{p:{"1": "#9be7ff", "2": "#e8fbff", "3": "#ffffff", "4": "#5fa8d3"},s:["....1.....", "...11.....", "...121....", "..12221...", ".1223221..", ".1233321..", ".1223221..", "..12221...", "...111.4..", ".....4..4."]},
+ balancepoint:{p:{"1": "#c9a4ff", "2": "#1b1b2a", "3": "#ffd34d"},s:["...1111...", "..111111..", ".11211211.", ".11111111.", ".11111111.", "..111111..", "...1111...", "....11....", "..333333..", ".........."]},
+ pact:{p:{"1": "#3a3a4a", "2": "#ffd34d", "3": "#c8102e", "4": "#6a6a7a"},s:[".1......1.", ".11....11.", ".14444441.", "1122442211", "1144444411", "1144334411", ".14444441.", ".14444441.", ".1.14.1.1.", ".........."]},
 };
 /* ================= MODIFIERS ================= */
 const WEARS={
@@ -1975,14 +1975,14 @@ const SPIRITS={
   use:async()=>{const j=pick(S.jokers);S.jokers=[j,{id:uid++,key:j.key,st:{...j.st},cost:j.cost},...S.jokers.filter(x=>x!==j&&x.curse==='rusted')];play('xmult');render()}},
  soul:{name:'The Soul',col:'#e6eefc',desc:'Create a {p:Legendary} Charm. It carries a random {r:Curse}',ok:()=>S.jokers.length<slots(),why:'No room for a Charm',
   use:async()=>{const own=new Set(S.jokers.map(j=>j.key));const fab=rand()<rareOdds(.1);const pool=Object.keys(JOKERS).filter(k=>JOKERS[k].r===(fab?5:4)&&!own.has(k)&&isUnlocked('charm',k));const k=pool.length?pick(pool):rollJokerKey(3);addJoker(k,JOKERS[k].cost);{const nj=S.jokers[S.jokers.length-1],cu=pickCurse(k);if(nj&&cu){nj.curse=cu;if(cu==='fleeting')nj.left=5}}play('win');render();juice($('#jk'+(S.jokers.length-1)))}},
- blackhole:{name:'Black Hole',col:'#7a55c2',desc:'Level up {a:every} toss type. Lose {$:$10}',
-  use:async()=>{S.money=Math.max(0,S.money-10);render();await levelMany(HANDS.map(h=>h.key))}},
+ blackhole:{name:'Black Hole',col:'#7a55c2',desc:'Level up {a:every} toss type. Costs {$:$10}',ok:()=>S.money>=10,why:'Needs $10',
+  use:async()=>{S.money-=10;render();await levelMany(HANDS.map(h=>h.key))}},
  wraith:{name:'Wraith',col:'#c8102e',desc:'Create a random {r:Rare} Charm. Lose {r:half} your money',ok:()=>S.jokers.length<slots(),why:'No room for a Charm',
   use:async()=>{const k=rollJokerKey(3);addJoker(k,JOKERS[k].cost);S.money=Math.floor(S.money/2);play('boss');render();juice($('#jk'+(S.jokers.length-1)))}},
  cryptid:{name:'Cryptid',col:'#4bd18f',min:1,max:1,desc:'Add {a:2} copies of {a:1} selected coin to your purse',ok:()=>S.purse.length+2<=S.purseMax,why:'Purse is too full',
   use:async sel=>{const src=S.purse[sel[0]];for(let k=0;k<2;k++)S.purse.push({...mkCoin(src.type),wear:src.wear,defect:src.defect});play('levelup');render();juiceAll()}},
- immolate:{name:'Immolate',col:'#fe5f55',min:1,max:3,desc:'Melt up to {a:3} selected coins and gain {$:$7} for each',ok:()=>S.purse.length-S.csel.length>=PURSE_MIN,why:`Purse needs ${PURSE_MIN}+ coins left`,
-  use:async sel=>{sel.sort((a,b)=>b-a).forEach(i=>S.purse.splice(i,1));S.money+=7*sel.length;play('shatter');play('money');render()}},
+ immolate:{name:'Immolate',col:'#fe5f55',min:1,max:3,desc:'Melt up to {a:3} selected coins and gain {$:$4} for each',ok:()=>S.purse.length-S.csel.length>=PURSE_MIN,why:`Purse needs ${PURSE_MIN}+ coins left`,
+  use:async sel=>{sel.sort((a,b)=>b-a).forEach(i=>S.purse.splice(i,1));S.money+=4*sel.length;play('shatter');play('money');render()}},
  ectoplasm:{name:'Ectoplasm',col:'#9be7ff',desc:'{a:+1} Charm slot. {r:-1} Re-flip every wager',
   use:async()=>{S.jokerSlots++;S.baseReflips=Math.max(0,S.baseReflips-1);play('xmult');render()}},
  unison:{name:'Unison',col:'#9a6fdc',desc:'Turn every coin into the same random special coin. {r:-1} Flip every wager',ok:()=>S.baseFlips>1,why:'You need 2+ Flips',
@@ -1991,14 +1991,14 @@ const SPIRITS={
   use:async()=>{const own=new Set();S.jokers=S.jokers.map(j=>{const r=JOKERS[j.key].r;const pool=Object.keys(JOKERS).filter(k=>JOKERS[k].r===r&&!JOKERS[k].prize&&!JOKERS[k].artifact&&k!==j.key&&!own.has(k)&&isUnlocked('charm',k));const k=pool.length?pick(pool):j.key;own.add(k);const d=JOKERS[k];return{id:uid++,key:k,st:d.init?{...d.init}:{},cost:d.cost,wear:j.wear,curse:j.curse,left:j.left}});play('reroll');render()}},
  banshee:{name:'Banshee',col:'#e6eefc',desc:'Level up {a:every} toss type {a:3 times}. {r:Destroy} a random Charm',ok:()=>S.jokers.length>0,why:'You need a Charm',
   use:async()=>{{const c=S.jokers.filter(x=>x.curse!=='rusted');if(c.length)S.jokers.splice(S.jokers.indexOf(pick(c)),1)}play('shatter');render();await levelMany(HANDS.map(h=>h.key),3)}},
- specter:{name:'Specter',col:'#a8b4ba',desc:'Turn every special coin back into a Quarter. Earn {$:$8} for each one',ok:()=>specialCount()>0,why:'No special coins',
-  use:async()=>{const n=specialCount();S.purse.forEach(c=>c.type='copper');S.money+=8*n;play('money');render();juiceAll()}},
- doppelganger:{name:'Doppelganger',col:'#4bd18f',desc:'Copy a random Charm. Lose {$:$10}',ok:()=>S.jokers.length>0&&S.jokers.length<slots(),why:'You need a Charm and room for another',
-  use:async()=>{const j=pick(S.jokers);S.jokers.push({id:uid++,key:j.key,st:{...j.st},cost:j.cost});S.money=Math.max(0,S.money-10);play('xmult');render()}},
+ specter:{name:'Specter',col:'#a8b4ba',desc:'Turn every special coin back into a Quarter. Earn {$:$5} for each one',ok:()=>specialCount()>0,why:'No special coins',
+  use:async()=>{const n=specialCount();S.purse.forEach(c=>c.type='copper');S.money+=5*n;play('money');render();juiceAll()}},
+ doppelganger:{name:'Doppelganger',col:'#4bd18f',desc:'Copy a random Charm. Costs {$:$10}',ok:()=>S.jokers.length>0&&S.jokers.length<slots()&&S.money>=10,why:'Needs $10, a Charm and room for another',
+  use:async()=>{const j=pick(S.jokers);S.jokers.push({id:uid++,key:j.key,st:{...j.st},cost:j.cost});S.money-=10;play('xmult');render()}},
  rkey:{name:'R Key',col:'#e8eef2',desc:'{r:Restart} the run from Stage 1, Small Wager. You keep your Charms, coins, Consumables, upgrades and toss levels, but your money drops to {r:$0}. Works {a:once} per run',ok:()=>!S.pack&&S.screen!=='play'&&!(S.ante===1&&S.blindIdx===0)&&!S.rkeyUsed,why:'Use it between wagers, after Stage 1 has begun, once per run',
   use:async()=>{S.rkeyUsed=true;S.money=0;S.ante=1;S.blindIdx=0;S.round=1;S.endless=false;S.boss=null;S.boss2=null;S.weather=null;S.blinds=makeAnteBlinds(1);S.shop=null;S.event=null;S.screen='blind';PS().rkeys=(PS().rkeys||0)+1;
     play('levelup');shake(8);toast('<b>R Key.</b> Back to the start, with everything you own',4500);houseSay('Again? Fine. From the top.');render()}},
- wraith:{name:'Wraith',col:'#ff9de2',desc:'Summon a random {f:Fabled} Charm. It carries a random {r:Curse}, and you lose {r:all} your money',ok:()=>S.jokers.length<slots()&&wraithPool().length>0,why:'No room for a Charm',
+ wraith:{name:'Wraith',col:'#ff9de2',desc:'Summon a random {f:Fabled} Charm. It carries a random {r:Curse}, and you lose {r:all} your money (needs at least {$:$10})',ok:()=>S.jokers.length<slots()&&wraithPool().length>0&&S.money>=10,why:'Needs $10 and room for a Charm',
   use:async()=>{const k=pick(wraithPool());addJoker(k,0);const j=S.jokers[S.jokers.length-1];j.curse=pickCurse(k,Object.keys(CURSES).filter(c=>c!=='rented'));if(j.curse==='fleeting')j.left=5;S.money=Math.min(S.money,0);play('unlock');shake(6);render();juice($('#jk'+(S.jokers.length-1)));toast(`The <b>Wraith</b> leaves you <b style="color:#ff9de2">${JOKERS[k].name}</b>, cursed <b>${CURSES[j.curse].name}</b>`)}},
  shade:{name:'Shade',col:'#5a5a6a',min:2,max:2,desc:'Your purse holds {a:2} more coins. Melt {a:2} selected coins',ok:()=>S.purse.length-2>=PURSE_MIN,why:`Purse needs ${PURSE_MIN+2}+ coins`,
   use:async sel=>{S.purseMax+=2;sel.sort((a,b)=>b-a).forEach(i=>S.purse.splice(i,1));play('shatter');render()}},
@@ -2011,11 +2011,11 @@ const SPIRITS={
  phantasm:{name:'Phantasm',col:'#9be7ff',desc:'Add {a:Weightless} (+1 Charm slot) to a random Charm without Wear. Your purse holds {r:1} fewer coin',
   ok:()=>S.jokers.some(j=>!j.wear)&&S.purse.length<=S.purseMax-1,why:'Needs a Charm without Wear and a free purse spot',
   use:async()=>{const j=pick(S.jokers.filter(x=>!x.wear));j.wear='weightless';S.purseMax--;play('spirit');render();juice($('#jk'+S.jokers.indexOf(j)))}},
- shimmer:{name:'Shimmer',col:'#ff8fab',desc:'{a:1 in 2} chance to add random Wear to a random Charm without Wear',ok:()=>S.jokers.some(j=>!j.wear),why:'Every Charm already has Wear',
-  use:async()=>{if(rand()<odds(.5)){const j=pick(S.jokers.filter(x=>!x.wear));j.wear=pickCoinWear();play('win');render();const k=S.jokers.indexOf(j);juice($('#jk'+k));popup($('#jk'+k),WEARS[j.wear].name+'!','text')}else{render();popup($('#jokerbar'),'Nope!','text');play('miss')}}},
- balancepoint:{name:'Balance Point',col:'#c9a4ff',desc:'Unlock the {a:Edge} call for the rest of this run: only edge coins score, edges land {a:1 in 5} times and give {x:X3} Mult',ok:()=>!S.edgeCall,why:'Already unlocked',
+ shimmer:{name:"Will-o'-Wisp",col:'#9be7ff',desc:'Add random Wear to a random Charm without Wear',ok:()=>S.jokers.some(j=>!j.wear),why:'Every Charm already has Wear',
+  use:async()=>{const j=pick(S.jokers.filter(x=>!x.wear));j.wear=pickCoinWear();play('win');render();const k=S.jokers.indexOf(j);juice($('#jk'+k));popup($('#jk'+k),WEARS[j.wear].name+'!','text')}},
+ balancepoint:{name:'Limbo',col:'#c9a4ff',desc:'Unlock the {a:Edge} call for the rest of this run: only edge coins score, edges land {a:1 in 5} times and give {x:X3} Mult',ok:()=>!S.edgeCall,why:'Already unlocked',
   use:async()=>{S.edgeCall=true;play('spirit');render()}},
- pact:{name:'Pact',col:'#5a5a6a',desc:'{a:+1} Flip every wager. Lose {r:all} your money',
+ pact:{name:'Familiar',col:'#5a5a6a',desc:'{a:+1} Flip every wager. Lose {r:all} your money (needs at least {$:$10})',ok:()=>S.money>=10,why:'Needs at least $10',
   use:async()=>{S.baseFlips++;S.money=0;play('boss');render()}},
 };
 const KIND_INFO={
@@ -3340,9 +3340,9 @@ const packCostOf=pk=>PACKS[pk.kind].cost?PACKS[pk.kind].cost+(pk.size==='jumbo'?
 
 /* ---- minor Spirits: small one-shot effects (once their own Fortune type) ---- */
 const FORTUNES={
- luckybreak:{name:'Lucky Break',col:'#4bd18f',desc:'Your next {a:2} shop rerolls are {a:free}',use:async()=>{S.freeRR=(S.freeRR||0)+2;play('levelup');render()}},
- goodomen:{name:'Good Omen',col:'#9be7ff',desc:'{a:+1} Re-flip next wager, and {$:$3}',use:async()=>{S.bonusReflip=(S.bonusReflip||0)+1;S.money+=3;play('levelup');syncStats()}},
- darkpact:{name:'Dark Pact',col:'#c2557a',desc:'Gain a random {r:Rare} Charm. It carries a random {r:Curse}',ok:()=>S.jokers.length<slots(),why:'No room for a Charm',use:async()=>{const k=rollJokerKey(3);addJoker(k,JOKERS[k].cost);{const nj=S.jokers[S.jokers.length-1],cu=pickCurse(k);if(nj&&cu){nj.curse=cu;if(cu==='fleeting')nj.left=5}}play('boss');render()}},
+ luckybreak:{name:'Imp',col:'#4bd18f',desc:'Your next {a:2} shop rerolls are {a:free}',use:async()=>{S.freeRR=(S.freeRR||0)+2;play('levelup');render()}},
+ goodomen:{name:'Friendly Ghost',col:'#9be7ff',desc:'{a:+1} Flip and {a:+1} Re-flip next wager, and {$:$3}',use:async()=>{S.bonusReflip=(S.bonusReflip||0)+1;S.bonusFlip=(S.bonusFlip||0)+1;S.money+=3;play('levelup');syncStats()}},
+ darkpact:{name:'Ghoul',col:'#c2557a',desc:'Gain a random {r:Rare} Charm. It carries a random {r:Curse}',ok:()=>S.jokers.length<slots(),why:'No room for a Charm',use:async()=>{const k=rollJokerKey(3);addJoker(k,JOKERS[k].cost);{const nj=S.jokers[S.jokers.length-1],cu=pickCurse(k);if(nj&&cu){nj.curse=cu;if(cu==='fleeting')nj.left=5}}play('boss');render()}},
 };
 const MINOR_SPIRITS=['luckybreak','goodomen','darkpact'];
 MINOR_SPIRITS.forEach(k=>{SPIRITS[k]={...FORTUNES[k],minor:1}});
@@ -3497,7 +3497,7 @@ function consInfo(c){
   if(c.kind==='rune'){const d=RUNES[c.key];
     return{name:d.name,short:d.name.replace('Rune of ','').replace('the ',''),desc:typeof d.desc==='function'?d.desc():d.desc,badge:'Rune',bc:'var(--purple)',icon:sprite('rune-'+c.key,{p:{1:'#4b3f63',2:d.col,3:'#7a6b99'},s:runeSprite(c.key)}),bg:'#2a2140',sell:1,cost:3}}
   const d=SPIRITS[c.key];
-  return{name:d.name,short:d.name,desc:typeof d.desc==='function'?d.desc():d.desc,badge:'Spirit',bc:'#2fa7a0',icon:d.minor?fortuneIcon(c.key):sprite('sp-'+c.key,SPIRIT_ART[c.key]||{p:{1:d.col,2:'#1b1b2a'},s:SPR_SPIRIT}),bg:'#18333a',sell:2,cost:4};
+  return{name:d.name,short:d.name,desc:typeof d.desc==='function'?d.desc():d.desc,badge:'Spirit',bc:'#2fa7a0',icon:sprite('sp-'+c.key,SPIRIT_ART[c.key]||{p:{1:d.col,2:'#1b1b2a'},s:SPR_SPIRIT}),bg:'#18333a',sell:2,cost:4};
 }
 const consDef=c=>c.kind==='rune'?RUNES[c.key]:c.kind==='spirit'?SPIRITS[c.key]:c.kind==='almanac'&&c.key?ALMS[c.key]:null;
 function consBlock(c,fromSlot){
@@ -4228,7 +4228,7 @@ const RULES=`<ol class="rules">
  <li>Very rarely a coin lands on its <span class="k-a">edge</span>. Edge coins always score with <span class="k-x">X2</span> Mult.</li>
  <li>Each toss type gains <b>+1 Mult</b> for every 10 times you score it (mastery). There are 8 stages. Targets climb steeply, and on Gold Stake every Boss has a second rule.</li>
  <li>Encounters bring a choice to make, and are worth about as much as a shop visit. Some Charms are <b>Cursed</b> (Rusted, Bound, Fleeting, Brittle, Heavy, Hungry, Jinxed, Rented). Cursed Charms in the shop cost <b>half</b>.</li>
- <li>The <b>Tightrope</b> Charm and <b>Balance Point</b> Spirit unlock the <b>Edge</b> call.</li>
+ <li>The <b>Tightrope</b> Charm and <b>Limbo</b> Spirit unlock the <b>Edge</b> call.</li>
  <li>Every stage is a <b>floor</b> of the House, and the House is always watching. After each wager, choose <b>where next</b>: the shop, or a detour in its place. Encounters, a Rest, a Treasure, a rare Bazaar, the Pawnshop, a face-down Mystery, a deal with <b>the House</b> itself, your <b>Rival</b> or an <b>Elite Wager</b>. The Back Room and the Chapel turn up too.</li>
  <li><b>Tickets</b> come from duels, Elite Wagers and contracts. Spend them at the Prize Counter on Charms you can't buy anywhere else.</li>
  <li>The <b>Rune of Stacking</b> stacks two coins: they always land on the same face, share one purse space, and re-flip together as one.</li>
