@@ -434,6 +434,8 @@ body.badges .face::before{display:block}
 .w-brushed{background:repeating-linear-gradient(90deg,rgba(255,255,255,.28) 0 1px,transparent 1px 3px);mix-blend-mode:overlay;opacity:.9}
 .w-holo{background:linear-gradient(135deg,rgba(255,95,109,.55),rgba(255,211,77,.45),rgba(75,209,143,.45),rgba(11,155,255,.5),rgba(201,164,255,.55)) 0 0/300% 300%;mix-blend-mode:screen;opacity:.75;animation:holoshift 3s ease-in-out infinite alternate}
 @keyframes holoshift{to{background-position:100% 100%}}
+.w-weightless{background:radial-gradient(circle at 50% 50%,rgba(155,231,255,.35),transparent 70%);outline:2px dashed #9be7ff;outline-offset:-4px;border-radius:50%;animation:wfloat 2.4s ease-in-out infinite}
+@keyframes wfloat{50%{opacity:.55}}
 .w-antique{background:radial-gradient(circle at 50% 50%,transparent 45%,rgba(90,55,20,.55) 100%),rgba(160,110,50,.25);mix-blend-mode:multiply}
 .jin.weightless>img,.cic.weightless>img{filter:invert(1) hue-rotate(180deg) drop-shadow(0 2px 0 rgba(0,0,0,.35))}
 .jin.weightless,.cic.weightless{background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.25),transparent 45%),#0d1a22!important;outline:2px dashed #9be7ff;outline-offset:2px}
@@ -1137,7 +1139,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.184</div>
+  <div class="gamever" aria-label="Version">v1.2.185</div>
 </div>
 
 <script>
@@ -1278,7 +1280,7 @@ const polterPairs=()=>{const free={},out=[];S.purse.forEach((c,i)=>{if(stkGroup(
 const stkGroup=c=>!!S&&!!c&&!!c.stk&&S.purse.filter(x=>x.stk===c.stk).length>=2?c.stk:null;
 const purseCnt=()=>`${purseUsed()}/${S.purseMax}`;
 const syncPurseCnt=()=>{if(S)document.querySelectorAll('.purse').forEach(p=>p.dataset.count=purseCnt())};
-const purseUsed=()=>S.purse.length-new Set(S.purse.filter(c=>stkGroup(c)).map(c=>c.stk)).size;
+const purseUsed=()=>S.purse.length-S.purse.filter(c=>c.wear==='weightless').length-new Set(S.purse.filter(c=>stkGroup(c)).map(c=>c.stk)).size;
 function applyStacks(){const seen={};S.purse.forEach((c,i)=>{const g=stkGroup(c);if(!g)return;if(g in seen)S.results[i]=S.results[seen[g]];else seen[g]=i})}
 
 /* ring colours on Charm cards: light, dark */
@@ -1912,9 +1914,9 @@ const WEARS={
  brushed:{name:'Brushed',col:'#c9ced6',desc:'{c:+25} Points and {m:+4} Mult'},
  holo:{name:'Holographic',col:'#ff9de2',desc:'{a:1 in 2} chance for {x:X2} Mult'},
  antique:{name:'Antique',col:'#c9a06a',desc:'{m:+2} Mult for every stage you have reached'},
- weightless:{name:'Weightless',col:'#9be7ff',desc:'{a:+1} Charm slot',charmOnly:1},
+ weightless:{name:'Weightless',col:'#9be7ff',desc:'On a Charm: {a:+1} Charm slot. On a coin: takes up {a:no space} in your purse'},
 };
-const COIN_WEARS=['polished','patina','proof','brushed','holo','antique'];
+const COIN_WEARS=['polished','patina','proof','brushed','holo','antique','weightless'];
 const DEFECTS={
  misprint:{name:'Misprint',col:'#ffd34d',desc:'Earn {$:$3} each time this coin scores'},
  doublestrike:{name:'Double Strike',col:'#fe5f55',desc:'Retrigger this coin'},
@@ -4846,7 +4848,7 @@ function colItems(){
   if(COL.tab==='curses')return Object.keys(CURSES).map(k=>({id:'c-'+k,name:CURSES[k].name,ic:`<div class="cic" style="--jbg:${JOKERS.jester.bg};position:relative">${IMG(icon('jester'))}${curseBadge(k)}</div>`,desc:CURSES[k].desc+'. Cursed Charms cost less in the shop.',tag:'Curse · Charms only',tc:CURSES[k].col}));
   if(COL.tab==='wears')return Object.keys(WEARS).map(k=>({id:'w-'+k,name:WEARS[k].name,
       ic:`<div class="cpair">${WEARS[k].charmOnly?'':`<div class="cic coinc">${coinIcon('copper',{wear:k})}</div>`}${charmIc(k==='weightless'?'copycat':'jester',k)}</div>`,
-      desc:WEARS[k].desc+(WEARS[k].charmOnly?'. Charms only.':'. On a coin it triggers when the coin scores. On a Charm it triggers when the Charm does.'),tag:WEARS[k].charmOnly?'Wear · Charms only':'Wear · Coins and Charms',tc:'#7a8a99'}));
+      desc:WEARS[k].desc+(k==='weightless'?'.':WEARS[k].charmOnly?'. Charms only.':'. On a coin it triggers when the coin scores. On a Charm it triggers when the Charm does.'),tag:WEARS[k].charmOnly?'Wear · Charms only':'Wear · Coins and Charms',tc:'#7a8a99'}));
   if(COL.tab==='defects')return Object.keys(DEFECTS).map(k=>({id:'d-'+k,name:DEFECTS[k].name,ic:`<div class="cic coinc">${coinIcon('copper',{defect:k})}</div>`,desc:DEFECTS[k].desc+'.',tag:'Defect · Coins only',tc:DEFECTS[k].col}));
   if(COL.tab==='bosses'){const seen=PS().seenBoss||{};return Object.keys(BOSSES).sort((a,b)=>(BOSSES[a].final?1:0)-(BOSSES[b].final?1:0)).map(k=>{const d=BOSSES[k],ok=seen[k]||PROF.unlockAll;
     return ok?{id:'b-'+k,name:d.name,ic:`<div class="cic" style="--jbg:${d.col}">${IMG(bossSil(k))}</div>`,desc:d.desc,tag:d.final?'Final boss':'Boss',tc:d.col}
@@ -4944,8 +4946,7 @@ let lastHover=null;
 /* touch screens: tap something to pin its tooltip; it stays until you tap anywhere else */
 const touchUI=()=>matchMedia('(hover: none)').matches;
 document.addEventListener('contextmenu',e=>{if(e.target.closest('img,canvas,[data-drag],[data-tip],.jcard,.coin'))e.preventDefault()});
-/* coins and Charms: the description shows only while a finger is held on them (and while dragging them) */
-const holdKind=t=>{const[k,a]=t.dataset.tip.split(':');if(k==='coin')return true; /* Charms and shop goods pin on tap instead */if(k==='popt'){const o=S&&S.pack&&S.pack.opts[+a];return !!o&&o.kind==='coin'}return false};
+const holdKind=()=>false; /* coins, Charms and shop goods all pin on tap */
 let holdTip=null;
 document.addEventListener('pointerup',()=>{if(holdTip){holdTip=null;hideTip()}},true);
 document.addEventListener('pointercancel',()=>{if(holdTip){holdTip=null;hideTip()}},true);
@@ -5334,7 +5335,7 @@ const DEST={
   spr:{p:{1:'#ffd34d',2:'#a8743a'},s:["2222222222","..2....2..",".111..111.","1111111111",".111..111.","....22....","...1111...","..111111..","...1111...",".........."]}},
  backroom:{bg:'#2a0a0a',name:'The Back Room',col:'#c8102e',desc:'A door behind the bar. Cheap goods, none of them clean: cursed Charms, loaded coins, easy money',
   spr:{p:{1:'#5a3a2a',2:'#ff3b3b',3:'#1a1010'},s:["....22....","...2222...","..111111..","..133331..","..133331..","..133331..","..133311..","..133331..","..133331..","..111111.."]}},
- bigspender:{bg:'#3a2a08',name:'Big Spender',col:'#ffd34d',desc:'Opens for the rich (over $50), and keeps turning up until you buy something there. Legendary and Fabled Charms at eye-watering prices, all carrying {r:Inflation}, and the Collector\'s Pack',
+ bigspender:{bg:'#3a2a08',name:'Big Spender',col:'#ffd34d',desc:'Opens for the rich (over $100), and keeps turning up until you buy something there. Legendary and Fabled Charms at eye-watering prices, all carrying {r:Inflation}, and the Collector\'s Pack',
   spr:{p:{1:'#ffd34d',2:'#b8650a',3:'#fff6d0',4:'#5fd3c8'},s:["...4..4...","....44....","...4444...","..122221..",".12222221.",".12233221.",".12322221.",".12223321.",".12233221.","..111111.."]}},
  chapel:{bg:'#1e2a3a',name:'The Chapel',col:'#bfe6ff',desc:'A small chapel out of the noise. Turn a curse into a blessing, pray for guidance, or bless a coin',
   spr:{p:{1:'#fff2b0',2:'#ffa21f',3:'#e9d9a8'},s:["....2.....","...222....","...222....","....2.....","...333....","...333....","...333....","...333....","..33333...",".3333333.."]}},
@@ -5359,7 +5360,7 @@ function genWays(){
   if(!used.includes('rival'))pool.push(['rival',rr?50:2]);
   if(!used.includes('elite')&&S.ante>=2&&!rr)pool.push(['elite',2]);
   /* rich and still hasn't bought at the Big Spender: it's the detour every time until they do */
-  if(S.money>50&&!S.bigBought)return [{t:'bigspender'}];
+  if(S.money>100&&!S.bigBought)return [{t:'bigspender'}];
   const out=[];let n=S.upgrades.includes('signpost')?2:1; /* the shop and one detour (two with Signpost) */
   while(n-->0&&pool.length){const tot=pool.reduce((a,x)=>a+x[1],0);let x=rand()*tot,k=0;for(;k<pool.length-1;k++){x-=pool[k][1];if(x<0)break}out.push(pool.splice(k,1)[0][0])}
   return [{t:'shop'},...out.map(t=>{const w={t};if(t==='elite'){w.boss=pick(BOSS_POOL.filter(b=>!['wall','needle','judge'].includes(b)));w.boss2=S.ante>=4?pick(SECOND_BOSS.filter(k=>k!==w.boss)):null}return w})];
