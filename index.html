@@ -1342,7 +1342,7 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.202</div>
+  <div class="gamever" aria-label="Version">v1.2.203</div>
 </div>
 
 <script>
@@ -4181,16 +4181,29 @@ function tossOne(coin,call,reflip,r=rand){
   if(call!=='E'&&d.bias)return r()<d.bias?call:(call==='H'?'T':'H');
   return r()<.5?'H':'T';
 }
-/* chance that re-flipping the selected coins beats the current toss type (simulated, never touches the run RNG) */
+/* chance that re-flipping the selected coins beats the current toss type.
+   Each coin's odds of Heads, Tails and Edge are measured with a fixed-seed generator (so the number holds steady and never
+   touches the run RNG), then every combination of faces is played through the same steps a real re-flip takes:
+   heavy coins, stacks, Majority, Zero Hero and The Eye */
+let RF_CACHE={k:null,v:null};
 function reflipOdds(){
-  const idx=bossIs('gale')?S.purse.map((c,i)=>i):S.selected;if(!idx.length)return null;
-  const val=t=>{const b=baseOf(t);return b.chips*b.mult};
-  const cur=val(evalHand(S.results,S.call).type);let better=0;const N=300;
+  const idx=bossIs('gale')?S.purse.map((c,i)=>i):S.selected.slice().sort((a,b)=>a-b);if(!idx.length)return null;
   const nc=S.roll==='mirror'&&S.call!=='E'?(S.call==='H'?'T':'H'):S.call;
-  for(let k=0;k<N;k++){const res=S.results.slice();idx.forEach(i=>res[i]=tossOne(S.purse[i],nc,true,Math.random));idx.forEach(i=>{const c=S.purse[i];if(stkGroup(c))res[i]=res[S.purse.findIndex(x=>x.stk===c.stk)]});
-    let call=nc;if(S.roll==='majority'){const h=res.filter(r=>r!=='T').length,t=res.filter(r=>r!=='H').length;call=t>h?'T':'H'}
-    if(val(evalHand(res,call).type)>cur)better++}
-  return Math.round(better/N*100);
+  const key=JSON.stringify([idx,S.results,S.call,nc,S.purse.map(c=>[c.id,c.type,c.defect||'',c.stk||'']),S.jokers.map(j=>j.key),S.boss,S.weather,S.usedTypes||[],Object.values(S.hands).map(h=>h.level)]);
+  if(RF_CACHE.k===key)return RF_CACHE.v;
+  const typeOf=(res,call)=>{const E=evalHand(res,call);return E.type==='single'&&countEff('zerohero')?'triple':E.type};
+  const worth=(res,call)=>{const t=typeOf(res,call);if(bossIs('eye')&&(S.usedTypes||[]).includes(t))return 0;const b=baseOf(t);return b.chips*b.mult};
+  const cur=worth(S.results,S.call);
+  const dist=c=>{let s=0x9e3779b9;const r=()=>{s=(s+0x6D2B79F5)|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+    const n={H:0,T:0,E:0},N=4000;for(let k=0;k<N;k++)n[tossOne(c,nc,true,r)]++;return [['H',n.H/N],['T',n.T/N],['E',n.E/N]].filter(f=>f[1]>0)};
+  const D=idx.map(i=>dist(S.purse[i])),sR=S.results,sC=S.call;let p=0;
+  const leaf=(faces,pr)=>{S.results=sR.slice();S.call=nc;idx.forEach((i,k)=>S.results[i]=faces[k]);applyHeavy();applyStacks();if(S.roll==='majority')setMajority();if(worth(S.results,S.call)>cur)p+=pr};
+  try{
+    if(idx.length<=8){const go=(k,faces,pr)=>{if(k===idx.length){leaf(faces,pr);return}D[k].forEach(([f,q])=>go(k+1,[...faces,f],pr*q))};go(0,[],1)}
+    else{let s=7;const r=()=>(s=(s*16807)%2147483647)/2147483647,M=3000;
+      for(let m=0;m<M;m++)leaf(D.map(d=>{let u=r(),acc=0;for(const[f,q]of d){acc+=q;if(u<acc)return f}return d[d.length-1][0]}),1/M)}
+  }finally{S.results=sR;S.call=sC}
+  const v=Math.round(p*100);RF_CACHE={k:key,v};return v;
 }
 
 /* ================= RENDER ================= */
@@ -4409,7 +4422,7 @@ function refreshTable(){
   }else{
     const busy=S.phase!=='tossed';ct.classList.remove('three');
     const toll=bossIs('toll'),cant=toll&&S.money<2;
-    const od=S.phase==='tossed'&&S.reflipsLeft&&!S.purse.some(c=>c.fog)?reflipOdds():null;
+    const od=S.phase==='tossed'&&S.reflipsLeft&&!S.tut&&!S.purse.some(c=>c.fog)?reflipOdds():null;
     h.textContent=S.phase==='tossed'?(S.reflipsLeft?(od!=null?`Re-flipping ${bossIs('gale')?'every coin':'these'}: ${od}% chance of a better toss.`:bossIs('gale')?'A re-flip tosses every coin.':`Pick up to ${S.reflipCap||2} coins to re-flip, or cash in what you have.`):(S.purse.some(c=>coinDef(c).freeFlip)?'No re-flips left, but Magician\'s Coins re-flip for free.':'No re-flips left. Cash in.')):'';
     ct.innerHTML=`<button class="btn blue big" data-act="cashin" ${busy?'disabled':''}>Cash In<small>Space</small></button>
       <button class="btn red big" data-act="reflip" ${busy||(!S.selected.length&&!bossIs('gale'))||(!S.reflipsLeft&&!freeReflip())||cant?'disabled':''}>Re-flip<small>${toll?'$2 · ':''}${freeReflip()?'free':S.reflipsLeft+' left'}</small></button>`;
@@ -6229,9 +6242,10 @@ function beginDrag(){
 function dragFrame(){
   if(!drag||!drag.active)return;drag.raf=0;
   const x=drag.px,y=drag.py,vx=x-drag.lx;drag.lx=x;
-  {const t=artTarget(drag,x,y);document.querySelectorAll('.droptarget').forEach(e=>{if(e!==t)e.classList.remove('droptarget')});if(t){t.classList.add('droptarget');return}}
   drag.tilt=clamp(drag.tilt*.75+vx*.9,-20,20);
   drag.ghost.style.transform=`translate3d(${x-drag.ox}px,${y-drag.oy}px,0) rotate(${reduced?0:drag.tilt}deg) scale(1.12)`;
+  // over the other tray, an Artifact keeps following the pointer but stops reordering its own row
+  {const t=artTarget(drag,x,y);document.querySelectorAll('.droptarget').forEach(e=>{if(e!==t)e.classList.remove('droptarget')});if(t){t.classList.add('droptarget');return}}
   {const q=zoneAt(drag,x,y);(drag.zones||[]).forEach(o=>o.e.classList.toggle('hot',o===q));if(q||drag.kind==='shop')return}
   const kids=[...drag.list.children].filter(c=>c.dataset.idx!=null),cur=kids.indexOf(drag.item);
   let j=0,best=1e9;drag.centers.forEach((cx,k)=>{const d=Math.abs(x-cx);if(d<best){best=d;j=k}});
