@@ -434,8 +434,12 @@ body.badges .face::before{display:block}
 .w-brushed{background:repeating-linear-gradient(90deg,rgba(255,255,255,.28) 0 1px,transparent 1px 3px);mix-blend-mode:overlay;opacity:.9}
 .w-holo{background:linear-gradient(135deg,rgba(255,95,109,.55),rgba(255,211,77,.45),rgba(75,209,143,.45),rgba(11,155,255,.5),rgba(201,164,255,.55)) 0 0/300% 300%;mix-blend-mode:screen;opacity:.75;animation:holoshift 3s ease-in-out infinite alternate}
 @keyframes holoshift{to{background-position:100% 100%}}
-.w-weightless{background:radial-gradient(circle at 50% 50%,rgba(155,231,255,.35),transparent 70%);outline:2px dashed #9be7ff;outline-offset:-4px;border-radius:50%;animation:wfloat 2.4s ease-in-out infinite}
-@keyframes wfloat{50%{opacity:.55}}
+/* Weightless coins: inverted like a photo negative, with a dashed halo (each face and edge piece separately, so the 3D flip keeps working) */
+.coin.wl .face{filter:invert(1) contrast(1.1);box-shadow:0 0 0 2px #641800,0 0 16px 3px rgba(100,24,0,.75)} /* drawn under the invert, so these come out as the Weightless cyan */
+.coin.wl .shadow{background:radial-gradient(ellipse,rgba(155,231,255,.35),transparent 70%)}
+.coin.wl .slab{filter:invert(1) brightness(.6)}
+.cimgw.wl .coinimg{filter:invert(1) contrast(1.1)}
+.cimgw.wl{outline:2px dashed #9be7ff;outline-offset:2px;border-radius:50%}
 .w-antique{background:radial-gradient(circle at 50% 50%,transparent 45%,rgba(90,55,20,.55) 100%),rgba(160,110,50,.25);mix-blend-mode:multiply}
 .jin.weightless>img,.cic.weightless>img{filter:invert(1) hue-rotate(180deg) drop-shadow(0 2px 0 rgba(0,0,0,.35))}
 .jin.weightless,.cic.weightless{background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.25),transparent 45%),#0d1a22!important;outline:2px dashed #9be7ff;outline-offset:2px}
@@ -1139,7 +1143,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.189</div>
+  <div class="gamever" aria-label="Version">v1.2.190</div>
 </div>
 
 <script>
@@ -1930,11 +1934,11 @@ const DEFECTS={
  diecrack:{name:'Die Crack',col:'#9a6fdc',desc:'Create a Rune each time this coin is re-flipped (if you have room)'},
 };
 function applyWear(w,e){if(w==='polished')e('chips',50);else if(w==='patina')e('mult',10);else if(w==='proof')e('xmult',1.5);else if(w==='brushed'){e('chips',25);e('mult',4)}else if(w==='holo'){if(rand()<odds(.5))e('xmult',2)}else if(w==='antique')e('mult',2*S.ante)}
-const coinMods=c=>`${c.wear&&!WEARS[c.wear].charmOnly?`<i class="wfx w-${c.wear}"></i>`:''}${c.defect?`<i class="dfx d-${c.defect}"></i>`:''}`;
+const coinMods=c=>`${c.wear&&c.wear!=='weightless'&&!WEARS[c.wear].charmOnly?`<i class="wfx w-${c.wear}"></i>`:''}${c.defect?`<i class="dfx d-${c.defect}"></i>`:''}`;
 const modsHTML=o=>(o&&o.curse?`<div class="tmod" style="--mc:${CURSES[o.curse].col}"><b>${CURSES[o.curse].name}</b> · ${fmt(CURSES[o.curse].desc)}${o.curse==='fleeting'?` (${o.left??5} left)`:''}</div>`:'')+(o&&o.wear?`<div class="tmod" style="--mc:${WEARS[o.wear].col}"><b>${WEARS[o.wear].name}</b> · ${fmt(WEARS[o.wear].desc)}</div>`:'')+(o&&o.defect?`<div class="tmod" style="--mc:${DEFECTS[o.defect].col}"><b>${DEFECTS[o.defect].name}</b> · ${fmt(DEFECTS[o.defect].desc)}</div>`:'');
 const modName=o=>[o.wear&&WEARS[o.wear].name,o.defect&&DEFECTS[o.defect].name].filter(Boolean).join(' · ');
 function coinIcon(type,o={}){const art=coinArt(type,COINS[type].fixed||'H');
-  return `<span class="cimgw" style="--art:url(${art})"><img class="coinimg" src="${art}" alt="" draggable="false">${coinMods(o)}</span>`}
+  return `<span class="cimgw ${o.wear==='weightless'?'wl':''}" style="--art:url(${art})"><img class="coinimg" src="${art}" alt="" draggable="false">${coinMods(o)}</span>`}
 async function setCoinMod(i,kind,v){const c=S.purse[i];if(!c)return;c[kind]=v;render();juiceCoin(i,(kind==='wear'?WEARS:DEFECTS)[v].name+'!');play('levelup')}
 
 /* Runes: shape your coins (target coins by selecting them first) */
@@ -4026,7 +4030,7 @@ function coinHTML(c,i,opts={}){
   const bolted=S&&S.screen==='play'&&wx('storm')&&S.bolt===i&&(S.phase==='tossed'||S.phase==='scoring');
   const frozen=S&&S.screen==='play'&&(bossIs('blackcat')&&S.phase!=='call'&&S.catI===i||bossIs('frost')&&S.purse.length>2&&(i===0||i===S.purse.length-1)||bossIs('house')&&(S.houseOwned||[]).includes(c.id)||bossIs('drhouse')&&S.benched===c.id);
   const sg=stkGroup(c);
-  return `<button class="coin t-${c.type} ${sg?'stk':''} ${frozen?'frozen':''} ${bolted?'bolted':''} ${S&&S.roll==='glitched'?'glitchy':''} ${c.face==='E'?'edge':''} ${c.fog?'fog':''} ${opts.enter?'enter':''} ${opts.sel?'sel':''}" id="c${i}" data-act="coin" data-arg="${i}" data-drag="coin" data-idx="${i}" data-tip="coin:${i}" style="--d:${i*60}ms" aria-label="${d.name}">
+  return `<button class="coin t-${c.type} ${c.wear==='weightless'?'wl':''} ${sg?'stk':''} ${frozen?'frozen':''} ${bolted?'bolted':''} ${S&&S.roll==='glitched'?'glitchy':''} ${c.face==='E'?'edge':''} ${c.fog?'fog':''} ${opts.enter?'enter':''} ${opts.sel?'sel':''}" id="c${i}" data-act="coin" data-arg="${i}" data-drag="coin" data-idx="${i}" data-tip="coin:${i}" style="--d:${i*60}ms" aria-label="${d.name}">
     <div class="lift"><div class="tilt" style="--sw:${-((c.id*1.37)%4.6).toFixed(2)}s"><div class="spin" style="transform:rotateX(${ang}deg);--shape:url(${coinArt(c.type,hl)})">${SLABS}<div class="face heads" data-l="${hl}" style="--art:url(${coinArt(c.type,hl)})">${coinMods(c)}</div><div class="face tails" data-l="${tl}" style="--art:url(${coinArt(c.type,tl)})">${coinMods(c)}</div></div></div></div>
     ${sg?`<i class="stkb" style="--sc:hsl(${(sg*67)%360} 70% 62%)"></i>`:''}<div class="shadow"></div></button>`;
 }
