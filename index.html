@@ -1328,6 +1328,10 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
   .chqmemo{font-size:13px;margin:0}.chqmemo .chqlbl{display:none}
   .bcol.way>.btn{grid-column:1/-1;padding:7px 12px;font-size:16px}
   .way.rare::before{right:4px;top:-10px}}
+
+/* pack colours were picked for a dark table: on paper the title and frame use them darkened into ink */
+.packview{box-shadow:inset 0 0 0 1.5px var(--pk),inset 0 0 0 5px var(--panel),inset 0 0 0 6px var(--pk);border-color:var(--pk)}
+.packview .ptitle{color:var(--pk)!important}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1374,7 +1378,7 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.212</div>
+  <div class="gamever" aria-label="Version">v1.2.213</div>
 </div>
 
 <script>
@@ -4327,7 +4331,7 @@ function renderSide(){
   }else if(S.screen==='event'){
     head=`<div class="s-blind" style="--bc:var(--purple)"><div class="s-bname">${EVENTS[S.event.key]&&EVENTS[S.event.key].omen?'Omen':EVENTS[S.event.key]&&EVENTS[S.event.key].mapOnly?EVENTS[S.event.key].title:'Encounter'}</div><div class="s-binfo"><div class="lbl">${EVENTS[S.event.key]&&EVENTS[S.event.key].omen?'The halls are trying to tell you something':'Something stirs between the tables'}</div></div></div>`;
   }else if(S.screen==='shop'){
-    head=S.pack?`<div class="s-blind" style="--bc:${PACKS[S.pack.kind].col}"><div class="s-bname">${packName(S.pack)}</div><div class="s-binfo"><div class="lbl">Choose ${S.pack.picks} of ${S.pack.opts.length}</div></div></div>`
+    head=S.pack?`<div class="s-blind" style="--bc:rgb(${mintInk(hex2rgb(PACKS[S.pack.kind].col)).join(',')})"><div class="s-bname">${packName(S.pack)}</div><div class="s-binfo"><div class="lbl">Choose ${S.pack.picks} of ${S.pack.opts.length}</div></div></div>`
       :`<div class="s-blind" style="--bc:${S.bigspender?'#ffd34d':S.backroom?'#c8102e':S.bazaar?'#5fd3c8':'var(--green)'}"><div class="s-bname">${S.bigspender?'Big Spender':S.backroom?'The Back Room':S.bazaar?'Bazaar':'Shop'}</div><div class="s-binfo"><div class="lbl">${S.bigspender?'Only the finest. Inflation doesn\'t reach in here':S.backroom?'Cheap goods, none of them clean':S.bazaar?'Rare goods, 20% dearer':'Charms, packs and upgrades'}${inflMult()>1?` · <span style="color:${CURSES.inflation.col}">Inflation ×${inflMult().toFixed(1)}</span>`:''}</div></div></div>`;
   }else{
     const b=curBlind();
@@ -4553,7 +4557,7 @@ function packHTML(){
     if(P.kind==='glitch'&&!o.taken)name=`<span class="glitchname" aria-label="${name.replace(/<[^>]+>/g,' ').replace(/"/g,'')}">${name.replace(/<[^>]+>/g,' ')}</span>`;
     return `<div class="scard popt ${o.kind==='charm'&&JOKERS[o.key]?(JOKERS[o.key].r===5?'fabled':JOKERS[o.key].r===4?'legend':''):''} ${o.taken&&o.kind!=='myst'?'gone':''} ${o.kind==='myst'&&(o.taken||P.done)?'mystup'+(o.taken?'':' missed'):''} ${P.kind==='glitch'?'gpopt':''}"><button class="jcard ${o.kind==='charm'?'':'tile'}" data-tip="popt:${i}" aria-label="${name.replace(/<[^>]+>/g,' ').replace(/"/g,'')}">${face}</button>
       <div class="pname">${name}</div><div class="pbtns">${btns}</div></div>`}).join('');
-  return `<div class="panel packview" style="--pc:${info.col}"><div class="packhead"><div><div class="ptitle" style="color:${info.col}">${packName(P)}</div>
+  return `<div class="panel packview" style="--pc:${info.col};--pk:rgb(${mintInk(hex2rgb(info.col)).join(',')})"><div class="packhead"><div><div class="ptitle" style="color:${info.col}">${packName(P)}</div>
     ${P.done?'<div class="lbl" style="max-width:62ch;line-height:1.35">Here\'s what was inside.</div>':''}</div>
     ${P.done?'<button class="btn orange big" data-act="skippack">Continue</button>':'<button class="btn red" data-act="skippack">Skip</button>'}</div><div class="popts">${opts}</div></div>${purseHTML()}`;
 }
