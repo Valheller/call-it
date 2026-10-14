@@ -1139,7 +1139,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.185</div>
+  <div class="gamever" aria-label="Version">v1.2.186</div>
 </div>
 
 <script>
@@ -1916,7 +1916,9 @@ const WEARS={
  antique:{name:'Antique',col:'#c9a06a',desc:'{m:+2} Mult for every stage you have reached'},
  weightless:{name:'Weightless',col:'#9be7ff',desc:'On a Charm: {a:+1} Charm slot. On a coin: takes up {a:no space} in your purse'},
 };
-const COIN_WEARS=['polished','patina','proof','brushed','holo','antique','weightless'];
+const COIN_WEARS=['polished','patina','proof','brushed','holo','antique'];
+/* Weightless is rare on coins (1 in 25 wears): each one is a free extra coin */
+const pickCoinWear=()=>rand()<.04?'weightless':pick(COIN_WEARS);
 const DEFECTS={
  misprint:{name:'Misprint',col:'#ffd34d',desc:'Earn {$:$3} each time this coin scores'},
  doublestrike:{name:'Double Strike',col:'#fe5f55',desc:'Retrigger this coin'},
@@ -2010,7 +2012,7 @@ const SPIRITS={
   ok:()=>S.jokers.some(j=>!j.wear)&&S.purse.length<=S.purseMax-1,why:'Needs a Charm without Wear and a free purse spot',
   use:async()=>{const j=pick(S.jokers.filter(x=>!x.wear));j.wear='weightless';S.purseMax--;play('spirit');render();juice($('#jk'+S.jokers.indexOf(j)))}},
  shimmer:{name:'Shimmer',col:'#ff8fab',desc:'{a:1 in 2} chance to add random Wear to a random Charm without Wear',ok:()=>S.jokers.some(j=>!j.wear),why:'Every Charm already has Wear',
-  use:async()=>{if(rand()<odds(.5)){const j=pick(S.jokers.filter(x=>!x.wear));j.wear=pick(COIN_WEARS);play('win');render();const k=S.jokers.indexOf(j);juice($('#jk'+k));popup($('#jk'+k),WEARS[j.wear].name+'!','text')}else{render();popup($('#jokerbar'),'Nope!','text');play('miss')}}},
+  use:async()=>{if(rand()<odds(.5)){const j=pick(S.jokers.filter(x=>!x.wear));j.wear=pickCoinWear();play('win');render();const k=S.jokers.indexOf(j);juice($('#jk'+k));popup($('#jk'+k),WEARS[j.wear].name+'!','text')}else{render();popup($('#jokerbar'),'Nope!','text');play('miss')}}},
  balancepoint:{name:'Balance Point',col:'#c9a4ff',desc:'Unlock the {a:Edge} call for the rest of this run: only edge coins score, edges land {a:1 in 5} times and give {x:X3} Mult',ok:()=>!S.edgeCall,why:'Already unlocked',
   use:async()=>{S.edgeCall=true;play('spirit');render()}},
  pact:{name:'Pact',col:'#5a5a6a',desc:'{a:+1} Flip every wager. Lose {r:all} your money',
@@ -3438,7 +3440,7 @@ const PX={
 };
 function mysteryInner(){const x=rand();
   if(x<.06)return{kind:'coin',type:'copper'};
-  if(x<.16)return{kind:'coin',type:pickSpecial(SPC()),wear:rand()<.3?pick(COIN_WEARS):null};
+  if(x<.16)return{kind:'coin',type:pickSpecial(SPC()),wear:rand()<.3?pickCoinWear():null};
   if(x<.30)return{kind:'charm',key:rollJokerKey()};
   if(x<.44)return{kind:'rune',key:pick(Object.keys(RUNES))};
   if(x<.56)return randAlmanac();
@@ -3466,18 +3468,18 @@ function genPackOpts(pk,n){
     if(k==='charm')uniq(()=>{if(pk.size==='mega'&&rand()<rareOdds(1/40)){const fb=Object.keys(JOKERS).filter(x=>JOKERS[x].r===5&&!S.jokers.some(j=>j.key===x));if(fb.length)return{kind:'charm',key:pick(fb)}}return{kind:'charm',key:rollJokerKey()}},'key');
     else if(k==='forecast')uniq(()=>({kind:'wx',key:i===0&&S.weather?'clear':pick(Object.keys(WEATHER))}),'key');
     else if(k==='contract')uniq(()=>({kind:'contract',key:pick(Object.keys(CONTRACTS))}),'key');
-    else if(k==='mint')uniq(()=>rand()<.55?{kind:'mod',mod:'wear',key:pick(COIN_WEARS)}:{kind:'mod',mod:'defect',key:pick(Object.keys(DEFECTS))},'key');
+    else if(k==='mint')uniq(()=>rand()<.55?{kind:'mod',mod:'wear',key:pickCoinWear()}:{kind:'mod',mod:'defect',key:pick(Object.keys(DEFECTS))},'key');
     else if(k==='workshop')uniq(()=>({kind:'cwear',key:pick(Object.keys(WEARS))}),'key');
     else if(k==='exchange')uniq(()=>({kind:'swap',type:rand()<.12&&relicsLeft().length?pick(relicsLeft()):pickSpecial(SPC().filter(t=>COINS[t].cost>=4))}),'type');
     else if(k==='mystery')opts.push({kind:'myst',inner:mysteryInner()});
-    else if(k==='spiritselect')uniq(()=>({kind:'coin',type:pickSpecial(COLLECTOR_COINS),wear:pick(COIN_WEARS),defect:pick(Object.keys(DEFECTS))}),'type');
+    else if(k==='spiritselect')uniq(()=>({kind:'coin',type:pickSpecial(COLLECTOR_COINS),wear:pickCoinWear(),defect:pick(Object.keys(DEFECTS))}),'type');
     else if(k==='cursed')uniq(()=>{const legs=Object.keys(JOKERS).filter(x=>JOKERS[x].r===4&&isUnlocked('charm',x));const key=legs.length&&rand()<.12?pick(legs):rollJokerKey(rand()<.4?3:2);return{kind:'charm',key,curse:pickCurse(key)}},'key');
     else if(k==='relic')uniq(()=>{const rl=relicsLeft().filter(t=>!opts.some(o=>o.type===t));return{kind:'coin',type:rl.length?pick(rl):pickSpecial(SPC())}},'type');
-    else if(k==='chest'){[{kind:'coin',type:pickSpecial(SPC()),wear:rand()<.3?pick(COIN_WEARS):null},{kind:'charm',key:rollJokerKey()},{kind:'rune',key:pick(Object.keys(RUNES))},randAlmanac()].forEach(o=>opts.push(o));break}
+    else if(k==='chest'){[{kind:'coin',type:pickSpecial(SPC()),wear:rand()<.3?pickCoinWear():null},{kind:'charm',key:rollJokerKey()},{kind:'rune',key:pick(Object.keys(RUNES))},randAlmanac()].forEach(o=>opts.push(o));break}
     else if(k==='glitch')uniq(()=>{const x=rand();
       if(x<.25){const gl=Object.keys(JOKERS).filter(q=>JOKERS[q].glitchOnly&&!S.jokers.some(j=>j.key===q));if(gl.length)return{kind:'charm',key:pick(gl)}}
-      if(x<.45)return{kind:'coin',type:pickSpecial(SPC()),wear:pick(COIN_WEARS),defect:pick(Object.keys(DEFECTS))};
-      if(x<.65)return{kind:'charm',key:rollJokerKey(rand()<.5?3:2),wear:pick(COIN_WEARS)};
+      if(x<.45)return{kind:'coin',type:pickSpecial(SPC()),wear:pickCoinWear(),defect:pick(Object.keys(DEFECTS))};
+      if(x<.65)return{kind:'charm',key:rollJokerKey(rand()<.5?3:2),wear:pickCoinWear()};
       const y=rand(),it=y<.3?{kind:'rune',key:pick(Object.keys(RUNES))}:y<.5?{kind:'spirit',key:pick(Object.keys(SPIRITS).filter(q=>q!=='soul'))}:y<.75?{kind:'spirit',key:pick(MINOR_SPIRITS)}:randAlmanac();
       return{kind:'gdup',item:it,key:'d'+(it.key||it.hand)}},'key');
     else if(k==='dossier'){const cur=S.blinds[2].boss,fin=BOSSES[cur].final;uniq(()=>({kind:'boss',key:pick(Object.keys(BOSSES).filter(b=>b!==cur&&!BOSSES[b].glitchOnly&&!BOSSES[b].rivalOnly&&!BOSSES[b].houseOnly&&!!BOSSES[b].final===!!fin))}),'key')}
@@ -4369,7 +4371,7 @@ const ROLLS={
  glitched:{name:'Glitched Roll',challenge:1,paper:'#ff1aa8',band:'#00f0e0',cap:'quicksilver',desc:'{a:Challenge.} Everything is glitched, right up to a final boss you won\'t meet anywhere else. Every toss, each coin acts like a random coin and one Charm acts like a random Charm. Shop prices shift, wager targets ({r:X1.2} to {r:X1.8}) stay hidden until you play, and used items sometimes glitch back into your slots'},
  locked:{name:'Locked Roll',fake:1,paper:'#4a4a4a',band:'#9a9a9a',cap:'copper',desc:'It only {a:looks} locked. Inside, nothing you\'ve unlocked shows up: just the {a:base} Charms, coins and packs, as if it were your very first run'},
  chaos:{name:'Chaos Roll',paper:'#3a3a3a',band:'#ff5f6d',cap:'quicksilver',desc:'Start with {a:6} random coins, most carrying random Wear or a Defect',
-  apply:()=>{S.purse=Array.from({length:6},()=>({...mkCoin(pick(Object.keys(COINS))),wear:rand()<.5?pick(COIN_WEARS):null,defect:rand()<.5?pick(Object.keys(DEFECTS)):null}))}},
+  apply:()=>{S.purse=Array.from({length:6},()=>({...mkCoin(pick(Object.keys(COINS))),wear:rand()<.5?pickCoinWear():null,defect:rand()<.5?pick(Object.keys(DEFECTS)):null}))}},
 };
 /* winning a roll for the first time unlocks its own Charm (challenge rolls unlock Fabled ones) */
 const RA_POOL=()=>Object.keys(JOKERS).filter(k=>{const d=JOKERS[k];return d.end&&d.end.length<=2&&!d.init&&!d.prize&&!d.artifact&&!d.glitchOnly&&k!=='randomaccess'});
@@ -4617,13 +4619,13 @@ const HOUSE_DEALS={
  money:{label:'All your money for a Legendary Charm',ok:()=>S.money>=10&&S.jokers.length<slots(),run:()=>{const own=new Set(S.jokers.map(j=>j.key)),k=pick(Object.keys(JOKERS).filter(x=>JOKERS[x].r===4&&!own.has(x)));S.money=0;addJoker(k,JOKERS[k].cost);return `Every coin you had is gone. You hold {p:${JOKERS[k].name}}.`}},
  reflip:{label:'Give up a Re-flip every wager: every toss type +1 level',ok:()=>S.baseReflips>1,run:()=>{S.baseReflips--;HANDS.forEach(h=>S.hands[h.key].level++);return 'Your fingers stiffen: {r:-1 Re-flip} every wager. But every toss type rises {a:one level}.'}},
 };
-const evOffer=()=>S.event.offer||(S.event.offer={k:rollJokerKey(rand()<.4?2:1),c:pickSpecial(SPC()),w:pick(COIN_WEARS)});
+const evOffer=()=>S.event.offer||(S.event.offer={k:rollJokerKey(rand()<.4?2:1),c:pickSpecial(SPC()),w:pickCoinWear()});
 const declineC=t=>({label:'Decline',run:()=>t});
 function hustle(c){const amt=Math.min(S.money,30),r=rand()<.5?'H':'T';if(r===c){S.money+=amt;play('win');return `It lands ${callName(r)}! You win {$:$${amt}}.`}S.money-=amt;play('lose');return `It lands ${callName(r)}. You lose {$:$${amt}}.`}
 const EVENTS={
  stranger:{title:'The Faceless Dealer',text:'At an empty table, a dealer with no face slides a coin toward you. It is warm, as if someone only just let go of it.',
-  choices:[{label:'Trade him a Quarter',ok:()=>S.purse.some(c=>c.type==='copper'),why:'You have no Quarters',run:()=>{const c=pick(S.purse.filter(x=>x.type==='copper')),i=S.purse.indexOf(c),t=pickSpecial(SPC());S.purse[i]={...mkCoin(t),wear:pick(COIN_WEARS),defect:rand()<.4?pick(Object.keys(DEFECTS)):null};return `Your Quarter slides across the felt and comes back a {a:${COINS[t].name}}, gleaming like it remembers better days.`}},
-   {label:'Buy the warm coin ($5)',ok:()=>S.money>=5&&purseUsed()<S.purseMax,why:'Needs $5 and room in your purse',run:()=>{S.money-=5;const t=pickSpecial(SPC());S.purse.push({...mkCoin(t),wear:pick(COIN_WEARS),defect:pick(Object.keys(DEFECTS))});play('buy');return `The coin is a {a:${COINS[t].name}}, worn smooth and struck oddly. It has a Wear and a Defect.`}},declineC('You leave the table. The dealer does not look up. It has no eyes to look up with.')]},
+  choices:[{label:'Trade him a Quarter',ok:()=>S.purse.some(c=>c.type==='copper'),why:'You have no Quarters',run:()=>{const c=pick(S.purse.filter(x=>x.type==='copper')),i=S.purse.indexOf(c),t=pickSpecial(SPC());S.purse[i]={...mkCoin(t),wear:pickCoinWear(),defect:rand()<.4?pick(Object.keys(DEFECTS)):null};return `Your Quarter slides across the felt and comes back a {a:${COINS[t].name}}, gleaming like it remembers better days.`}},
+   {label:'Buy the warm coin ($5)',ok:()=>S.money>=5&&purseUsed()<S.purseMax,why:'Needs $5 and room in your purse',run:()=>{S.money-=5;const t=pickSpecial(SPC());S.purse.push({...mkCoin(t),wear:pickCoinWear(),defect:pick(Object.keys(DEFECTS))});play('buy');return `The coin is a {a:${COINS[t].name}}, worn smooth and struck oddly. It has a Wear and a Defect.`}},declineC('You leave the table. The dealer does not look up. It has no eyes to look up with.')]},
  fortune:{title:'The Cartomancer',text:'A woman deals cards onto a table that is not there. "The one waiting for you at the end of this floor," she says, "need not be the one you meet."',
   choices:[{label:'Reshuffle the boss',ok:()=>S.blinds[2].state!=='defeated',why:'No boss ahead',run:()=>{const b=S.blinds[2],old=BOSSES[b.boss].name;let nb=b.boss;for(let k=0;k<8&&nb===b.boss;k++)nb=pickBoss(S.ante);b.boss=nb;b.boss2=b.boss2&&b.boss2!==nb?b.boss2:(S.stake>=3?pick(SECOND_BOSS.filter(k=>k!==nb)):null);return `${old} dissolves back into the deck. {a:${BOSSES[nb].name}} rises in its place.`}},
    {label:'Ask what the cards hold',ok:()=>consRoom(),why:'No room for consumables',run:()=>{for(let k=0;k<2&&consRoom();k++)S.cons.push({kind:'spirit',key:pick(MINOR_SPIRITS)});play('spirit');return 'She turns two cards face up and presses them into your hand: two little {a:Spirits}, for when you need them.'}}]},
@@ -4632,7 +4634,7 @@ const EVENTS={
  hustler:{title:'The Endless Game',text:'A gambler who has been sitting at this table for a hundred years looks up. "One flip. Double or nothing, up to $30. Call it."',
   choices:[{label:'Call Heads',ok:()=>S.money>0,why:'You have no money',run:()=>hustle('H')},{label:'Call Tails',ok:()=>S.money>0,why:'You have no money',run:()=>hustle('T')},declineC('You walk on. Behind you, the coin keeps spinning on its edge.')]},
  mint:{title:'The Ghost Mint',text:'Presses still stamp in a mint that closed long ago. A pale figure at the die offers to finish one of your coins. The first is free. Everything here is free, eventually.',
-  choices:[{label:'Hand over a coin',ok:()=>S.purse.some(c=>!c.wear),why:'Needs a coin without Wear',run:()=>{const c=pick(S.purse.filter(x=>!x.wear));c.wear=pick(COIN_WEARS);return `Your ${COINS[c.type].name} comes back {a:${WEARS[c.wear].name}}, still warm from the press.`}},declineC('You keep your coins as they are.')]},
+  choices:[{label:'Hand over a coin',ok:()=>S.purse.some(c=>!c.wear),why:'Needs a coin without Wear',run:()=>{const c=pick(S.purse.filter(x=>!x.wear));c.wear=pickCoinWear();return `Your ${COINS[c.type].name} comes back {a:${WEARS[c.wear].name}}, still warm from the press.`}},declineC('You keep your coins as they are.')]},
  collector:{title:'The Hoarder',text:'Someone sits on a mountain of other people\'s coins, sorting them forever. They point at your purse. "That one. $15."',avail:()=>specialCount()>0,
   choices:[{label:'Sell them a special coin',ok:()=>specialCount()>0&&S.purse.length>PURSE_MIN,why:'Needs a special coin and more than 3 coins',run:()=>{const c=pick(S.purse.filter(x=>x.type!=='copper'));S.purse.splice(S.purse.indexOf(c),1);S.money+=15;play('money');return `Your ${COINS[c.type].name} vanishes into the pile. You get {$:$15}.`}},declineC('You close your purse. The sorting continues.')]},
  lostpurse:{title:'A Purse on the Floor',text:'A purse lies under a table, still heavy. Whoever lost it is long gone. Maybe they won. Maybe they are still looking for it.',
@@ -5586,7 +5588,7 @@ function buyPack(i){
   else for(let k=0;k<n;k++){
     if(pk.kind==='coin'&&S.roll==='pennyroll'&&S.ante<4)opts.push({kind:'coin',type:'penny'});
     else if(pk.kind==='coin'){const rl=relicsLeft().filter(t=>!opts.some(o=>o.type===t));const mods=!(S.tutorial&&S.ante<3);
-      const qf=ownKeys().filter(k=>k&&(coinFav()[k]||[]).includes('copper')).length;if(!opts.some(o=>o.qroll)&&rand()<.1+.2*qf)opts.push({kind:'coin',type:'copper',qroll:3});else if(rl.length&&rand()<(S.upgrades.includes('mintcond')?.18:.06))opts.push({kind:'coin',type:pick(rl)});else if(mods&&rand()<.12)opts.push({kind:'coin',type:pickSpecial(SPC()),pair:true});else opts.push({kind:'coin',type:pickSpecial(SPC()),wear:mods&&rand()<.2?pick(COIN_WEARS):null,defect:mods&&!S.upgrades.includes('mintcond')&&rand()<.15?pick(Object.keys(DEFECTS)):null})}
+      const qf=ownKeys().filter(k=>k&&(coinFav()[k]||[]).includes('copper')).length;if(!opts.some(o=>o.qroll)&&rand()<.1+.2*qf)opts.push({kind:'coin',type:'copper',qroll:3});else if(rl.length&&rand()<(S.upgrades.includes('mintcond')?.18:.06))opts.push({kind:'coin',type:pick(rl)});else if(mods&&rand()<.12)opts.push({kind:'coin',type:pickSpecial(SPC()),pair:true});else opts.push({kind:'coin',type:pickSpecial(SPC()),wear:mods&&rand()<.2?pickCoinWear():null,defect:mods&&!S.upgrades.includes('mintcond')&&rand()<.15?pick(Object.keys(DEFECTS)):null})}
     else if(pk.kind==='almanac'){let a;do a=randAlmanac();while(opts.some(o=>(o.hand||o.key)===(a.hand||a.key)));opts.push(a)}
     else if(pk.kind==='rune'){let r;do r=pick(Object.keys(RUNES));while(opts.some(o=>o.key===r));opts.push({kind:'rune',key:r})}
     else{let s;do s=rand()<.05?'soul':pick(Object.keys(SPIRITS).filter(x=>x!=='soul'));while(opts.some(o=>o.key===s));opts.push({kind:'spirit',key:s})}
