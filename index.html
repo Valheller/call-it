@@ -511,6 +511,12 @@ body.badges .face::before{display:block}
 @keyframes coachglow{0%,100%{box-shadow:0 5px 0 var(--edge),inset 0 0 0 3px var(--orange),0 0 0 0 rgba(255,154,31,.5)}50%{box-shadow:0 5px 0 var(--edge),inset 0 0 0 3px var(--orange),0 0 18px 4px rgba(255,154,31,.45)}}
 @keyframes coachbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
 @media (prefers-reduced-motion:reduce){#coach,#coach .coachtag i{animation:none}}
+/* tutorial: the thing to press next pulses gold */
+.tutglow:not(.coin){animation:tutpulse 1.1s ease-in-out infinite;position:relative;z-index:6}
+.coin.tutglow .shadow{background:radial-gradient(ellipse,rgba(255,211,77,.95),transparent 70%);animation:tutfade 1.1s ease-in-out infinite}
+.coin.tutglow::after{content:'';position:absolute;inset:-8%;border-radius:50%;border:3px solid #ffd34d;pointer-events:none;animation:tutfade 1.1s ease-in-out infinite}
+@keyframes tutpulse{0%,100%{outline:3px solid rgba(255,211,77,.55);outline-offset:3px;filter:brightness(1)}50%{outline:3px solid #ffd34d;outline-offset:6px;filter:brightness(1.25) drop-shadow(0 0 10px rgba(255,211,77,.9))}}
+@keyframes tutfade{50%{opacity:.35}}
 .evpanel{width:min(520px,100%);display:flex;flex-direction:column;gap:12px;text-align:center;box-shadow:0 5px 0 var(--edge),inset 0 0 0 3px var(--purple)}
 .evtitle{font-size:26px;font-weight:700;color:#d9c4ff}
 .evtext{background:var(--panel-deep);border-radius:10px;padding:10px 12px;font-size:16px;line-height:1.4}
@@ -711,7 +717,7 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
 .bigcoin .face.tails{transform:rotateY(180deg) translateZ(calc(var(--t)/2))}
 .tagline{color:#e3eef0;font-size:18px;max-width:40ch}
 /* title buttons: one 4-column grid so every button is the same size and the columns line up; Continue gets its own row */
-.titlebtns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;gap:12px 14px;width:min(720px,94vw);margin:0 auto}
+.titlebtns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:12px 14px;width:min(720px,94vw);margin:0 auto}
 .titlebtns .btn.big.gearbtn{width:auto;height:100%;aspect-ratio:1;min-width:0;padding:0;display:grid;place-items:center}
 .titlebtns .btn.gearbtn svg{width:1.4em;height:1.4em}
 .extgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:2px 2px 8px}.extgrid .btn{width:100%;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff}
@@ -746,7 +752,7 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
   .titlebtns,.titlebtns.hascont{grid-template-columns:1fr 1fr 46px}
   .titlebtns .btn.big.gearbtn{width:46px;height:auto;aspect-ratio:auto;align-self:stretch}
   .titlebtns [data-act=daily]{grid-column:2/4}
-  .titlebtns.hascont [data-act=daily]{grid-column:1}.titlebtns.hascont [data-act=howto]{grid-column:2/4}.titlebtns.hascont [data-act=extras]{grid-column:1/3}
+  .titlebtns.hascont [data-act=daily]{grid-column:1}.titlebtns:not(.hascont) [data-act=extras]{grid-column:1/3}.titlebtns.hascont [data-act=extras]{grid-column:2/4}
   .trow .btn.big{font-size:15px;padding:12px 4px}
   .trow .btn.big{flex:1 1 0;min-width:0;font-size:13px;padding:10px 4px;white-space:normal;line-height:1.15}
   .stat.haswx .stl{display:none}
@@ -1137,13 +1143,12 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
       <div class="tcont" id="tcont" hidden><button class="btn red big" data-act="cont" id="contbtn" hidden>Continue</button></div>
       <button class="btn blue big" data-act="play" id="playbtn">Play</button>
       <button class="btn purple big" data-act="daily">Daily Toss</button>
-      <button class="btn orange big" data-act="howto">How to Play</button>
       <button class="btn green big" data-act="extras">Extras</button>
       <button class="btn big gearbtn" style="--c:var(--grey);--cd:var(--grey-d)" data-act="options" aria-label="Options" title="Options"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.03 7.03 0 0 0-1.63-.94l-.36-2.54A.48.48 0 0 0 13.92 2h-3.84a.48.48 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.56-1.63.94l-2.39-.96a.49.49 0 0 0-.59.22L2.71 8.47a.49.49 0 0 0 .12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.13.22.39.3.59.22l2.39-.96c.5.38 1.04.7 1.63.94l.36 2.54c.05.24.25.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.63-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.03-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/></svg></button>
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.190</div>
+  <div class="gamever" aria-label="Version">v1.2.191</div>
 </div>
 
 <script>
@@ -2187,7 +2192,7 @@ const FLOORS=[
  {name:'The House Itself',col:'#6a6a7a',line:'You have come all this way to see me. Good.'}];
 const floorOf=a=>a<=STAGES?FLOORS[a-1]:{name:`Sub-basement ${a-STAGES}`,col:'#3a1a1a',line:'Below the House, there is only more House.'};
 const introUp=()=>!!$('#ripstage')||!!(($('#stageintro')||{}).hidden===false);
-function houseSay(t,ms=5000){if(introUp()){setTimeout(()=>houseSay(t,ms),300);return}toast(`<b class="housesay">The House</b> · ${t}`,ms,false,'say')}
+function houseSay(t,ms=5000){if(S&&S.tut)return;if(introUp()){setTimeout(()=>houseSay(t,ms),300);return}toast(`<b class="housesay">The House</b> · ${t}`,ms,false,'say')}
 const HOUSE_MD=['Did you try the medicine drug?','you are stupid','don\'t care','more mouse bites!','I am very smart.'];
 function drSay(t,ms=4200){if(introUp()){setTimeout(()=>drSay(t,ms),300);return}toast(`<b style="color:#7fb0ff">House</b> · ${t||pick(HOUSE_MD)}`,ms,false,'say')}
 const ANTE_BASE=[300,1000,3200,9000,25000,65000,150000,320000];
@@ -3639,28 +3644,68 @@ function sayPos(){const b=$('#saybox');if(!b)return;const side=$('#side'),app=$(
 addEventListener('resize',sayPos);
 function toast(html,ms=3800,raw,box){const say=box==='say'&&innerWidth>700;if(say){sayPos();document.querySelectorAll('#saybox .toast').forEach(o=>{o.classList.add('out');setTimeout(()=>o.remove(),300)})}const t=document.createElement('div');t.className='toast'+(say?' saytoast':'');t.innerHTML=raw?html:String(html);$(say?'#saybox':'#toasts').appendChild(t);setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),400)},ms)}
 /* tutorial coach */
-const COACH={
- choose:'After each wager you pick where to go: the <b>shop</b>, or a detour in its place. Each detour is shown with its card, and some only open for certain kinds of people.',
- call:'Pick <b>Heads</b> or <b>Tails</b>. Every coin that lands on your call scores, and matches side by side make better tosses.',
- tossed:'Tap up to 2 coins that missed and press <b>Re-flip</b> to try again, or <b>Cash In</b> to score what you have.',
- score:'Each toss scores <span class="k-c">Points</span> × <span class="k-m">Mult</span>. Reach the target before you run out of Flips.',
- shop:'Spend your winnings here. <b>Charms</b> are permanent bonuses that trigger every toss. Packs hold coins and items.',
- pack:'Pick from the pack. Hover or tap an item to see what it does.',
- stage2:'Stage 2: <b>Rune</b> and <b>Spirit</b> packs can now show up in the shop.',
- stage3:'Stage 3: coins from Coin Pouches can now carry <b>Wear</b> and <b>Defects</b> for extra effects.',
-};
-function coach(id){
-  if(!S||!S.tutorial||PROF.tips[id])return;
-  const c=$('#coach');const fresh=c.hidden||c.dataset.id!==id;c.innerHTML=`<div class="coachtag"><i>!</i>Tip</div><div>${COACH[id]}</div><button class="btn small orange" data-act="coachok" data-arg="${id}">Got it</button>`;c.hidden=false;c.dataset.id=id;if(fresh){c.style.animation='none';void c.offsetWidth;c.style.animation='';play('click')}
-}
+/* ================= TUTORIAL: a scripted first run that ends after the first boss =================
+   every toss is planned (1 = lands on your call), every step names what to press, and anything else is held back */
+const TUT_PLAN={0:{toss:[[1,1,0,1,0]],re:[[1,1]]},1:{toss:[[1,1,1,1,0],[1,1,1,1,1]],re:[[1,1]]},2:{toss:[[1,1,1,0,1],[1,1,1,1,1],[1,1,1,1,1]],re:[[1,1]]}};
+function tutFaces(kind,call,n){const P=TUT_PLAN[S.blindIdx]||{},u=S.tut.used=S.tut.used||{},key=S.blindIdx+kind,i=u[key]||0;u[key]=i+1;
+  const pat=(P[kind]||[])[i]||[1],opp=call==='H'?'T':'H';return Array.from({length:n},(_,k)=>(pat[k]??1)?call:opp)}
+function tutState(){
+  const b=S.blindIdx,sc=S.screen,ph=S.phase,G=(say,glow,allow)=>({say,glow,allow});
+  if(S.pack)return G(S.pack.kind==='coin'?'Pick a coin to add to your purse. Every coin you own is tossed on every Flip.':'Pick one, or skip.','.popt [data-act=ppick]',a=>a==='ppick'||a==='skippack');
+  if(sc==='blind')return G(['Welcome to <b>Call it.</b> Each stage has three wagers. Win this <b>Small Wager</b> by scoring at least its target before your Flips run out.',
+    'Next is the <b>Big Wager</b>: a bigger target and a bigger payout.',
+    'Every stage ends with a <b>Boss</b>, and bosses bend the rules. <b>The Anchor</b> takes away your Re-flips. Beat it to finish the tutorial.'][b]||'','[data-act=selectblind]',a=>a==='selectblind');
+  if(sc==='play'){
+    if(ph==='call')return G(['Call it! Pick <b>Heads</b> or <b>Tails</b>, and every coin in your purse is tossed.',
+      'Your <b>Four-Leaf Clover</b> adds <span class="k-m">+4 Mult</span> to every toss. Call it!',
+      'No Re-flips against The Anchor, so every toss counts. Call it!'][b]||'Call it!','[data-act=call]',a=>a==='call');
+    if(ph==='tossed'){
+      if(b===0&&!S.tut.re0){const miss=S.purse.map((c,i)=>i).filter(i=>!scores(S.results[i],S.call));
+        if(S.selected.length<miss.length)return G('Coins that land on your call <b>score</b>. Tap the coins that <b>missed</b> to pick them up.',miss.filter(i=>!S.selected.includes(i)).map(i=>'#c'+i).join(','),(a,x)=>a==='coin'&&miss.includes(+x));
+        return G('Press <b>Re-flip</b> to toss them again. You only get a few Re-flips each wager.','[data-act=reflip]',(a,x)=>a==='reflip'||a==='coin'&&miss.includes(+x))}
+      if(b===0)return G('Every coin on your call: a <b>Clean Sweep</b>! Matching coins side by side make better tosses. Press <b>Cash In</b> to score it.','[data-act=cashin]',a=>a==='cashin');
+      if(b===1)return G('Four in a row is a <b>Four Streak</b>. Every toss scores <span class="k-c">Points</span> × <span class="k-m">Mult</span>. Re-flip the miss, or Cash In.','[data-act=cashin]',a=>['cashin','reflip','coin'].includes(a));
+      return G('Cash In to score this toss. If it falls short, you still have Flips left.','[data-act=cashin]',a=>a==='cashin')}
+    return null}
+  if(sc==='cashout')return curBlind().kind==='boss'?G('You beat the Boss! Collect your winnings to finish the tutorial.','[data-act=cashout]',a=>a==='cashout')
+    :G('Wager won! You get its payout, <b>$1</b> for every Flip you didn\'t need, and interest on the money you hold. Collect it.','[data-act=cashout]',a=>a==='cashout');
+  if(sc==='choose')return G('After each wager you choose where to go: the <b>shop</b>, or sometimes a detour in its place.','[data-act=way]',a=>a==='way');
+  if(sc==='shop'){
+    if(S.tut.shop===1){const ci=S.shop.jokers.findIndex(o=>o.key==='jester'),pi=S.shop.packs.findIndex(p=>p.kind==='coin');
+      if(ci>=0&&!S.shop.jokers[ci].bought)return G('<b>Charms</b> are permanent bonuses that trigger on every toss. Buy the <b>Four-Leaf Clover</b>.',`[data-act=buyjoker][data-arg="${ci}"]`,(a,x)=>a==='buyjoker'&&+x===ci);
+      if(pi>=0&&!S.shop.packs[pi].bought)return G(`<b>Packs</b> hold coins, Charms and one-use items. Open the <b>${PACKS.coin.name}</b>.`,`[data-act=buypack][data-arg="${pi}"]`,(a,x)=>a==='buypack'&&+x===pi);
+      return G('Press <b>Next Round</b> when you are done shopping.','[data-act=nextround]',a=>a==='nextround')}
+    return G('Shop as you like, then press <b>Next Round</b>.','[data-act=nextround]',()=>true)}
+  return null}
+function tutRender(){
+  if(!S||!S.tut)return;const t=S.screen==='play'&&(S.phase==='tossing'||S.phase==='scoring')?null:tutState(),c=$('#coach');
+  document.querySelectorAll('.tutglow').forEach(e=>{if(!t||!t.glow||!e.matches(t.glow))e.classList.remove('tutglow')});
+  if(!t||modal)return;
+  if(c.dataset.say!==t.say){c.innerHTML=`<div class="coachtag"><i>!</i>Tutorial</div><div>${t.say}</div><button class="btn small" style="--c:var(--grey);--cd:var(--grey-d)" data-act="tutskip">Skip tutorial</button>`;c.dataset.say=t.say;c.style.animation='none';void c.offsetWidth;c.style.animation=''}
+  c.hidden=false;if(t.glow)document.querySelectorAll(t.glow).forEach(e=>e.classList.add('tutglow'))}
+function tutNudge(){const c=$('#coach');if(c&&!c.hidden)c.animate([{transform:'none'},{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'none'}],{duration:280});play('miss')}
+setInterval(tutRender,200);
+function startTutorial(){
+  audioInit();modal=null;{const ov=$('#overlay');ov.hidden=true;ov.innerHTML=''}hazardsOff();
+  newRun('standard',{stake:1,seed:hashStr('TUTORIAL')});S.tut={shop:0};S.tutorial=true;
+  const bb=S.blinds[2];bb.boss='anchor';bb.boss2=null;S.weather=null;$('#coach').dataset.say='';render();tutRender()}
+function tutFinish(skipped){
+  PROF.tutorialDone=true;saveProf();hazardsOff();S=null;modal=null;const c=$('#coach');c.hidden=true;c.dataset.say='';
+  document.querySelectorAll('.tutglow').forEach(e=>e.classList.remove('tutglow'));render();
+  if(!skipped){play('unlock');showModal(()=>`<div class="overlay"><div class="panel modal optm"><h2>Tutorial complete</h2><div class="optbody" style="text-align:center;line-height:1.5">
+    <p>That's the basics. A full run is <b>8 stages</b>, each ending in a Boss, and the targets climb fast.</p>
+    <p>Build a run that keeps up: <b>Charms</b> that work together, better <b>coins</b>, and one-use <b>Runes</b>, <b>Almanacs</b> and <b>Spirits</b> from packs. Between wagers, detours like <b>Encounters</b>, <b>Rivals</b> and <b>Elite Wagers</b> can take the shop's place.</p>
+    <p>You can replay this tutorial any time from Options.</p></div>
+    <div class="optfoot" style="display:flex;gap:10px;justify-content:center"><button class="btn blue" data-act="play">Start a run</button><button class="btn orange" data-act="closemodal">Main menu</button></div></div></div>`)}}
+/* the tutorial holds back every game action that isn't the current step */
 /* autosave */
 let saveT=0;
-function scheduleSave(){clearTimeout(saveT);saveT=setTimeout(()=>{checkGoals();
+function scheduleSave(){if(S&&S.tut)return;clearTimeout(saveT);saveT=setTimeout(()=>{checkGoals();
   try{if(S&&!['over','win'].includes(S.screen)&&S.phase!=='scoring'&&S.phase!=='tossing')localStorage.setItem('hwr-run',JSON.stringify({S,uid}))}catch(e){}},250)}
 const savedRun=()=>{try{return JSON.parse(localStorage.getItem('hwr-run')||'null')}catch(e){return null}};
 const clearSave=()=>{try{localStorage.removeItem('hwr-run')}catch(e){}};
 function recordRun(won){
-  if(!S||S.recorded)return;S.recorded=true;const st=PS();
+  if(!S||S.recorded||S.tut)return;S.recorded=true;const st=PS();
   if(won&&(st.wins||0)===0)setTimeout(()=>toast('<b>Challenge Rolls unlocked!</b> Find them at the bottom of the roll list',6000),2500);
   if(S.daily){st.dailyPlayed=(st.dailyPlayed||0)+1;if(won)st.dailyWins=(st.dailyWins||0)+1}
   st.runs++;st.streak=won?(st.streak||0)+1:0;st.bestStreak=Math.max(st.bestStreak||0,st.streak);if(won)st.wins++;st.bestStage=Math.max(st.bestStage,S.ante);
@@ -3691,7 +3736,7 @@ const wxBanner=()=>S.weather?`<div class="wxbanner" style="--wc:${WEATHER[S.weat
 
 /* ================= RUN STATE ================= */
 function newRun(roll='standard',o={}){
-  S={screen:'blind',roll,stake:o.stake||1,rng:o.seed!=null?o.seed:null,daily:o.daily||null,tutorial:!PROF.tutorialDone&&!o.daily,
+  S={screen:'blind',roll,stake:o.stake||1,rng:o.seed!=null?o.seed:null,daily:o.daily||null,tutorial:false,
     edgeCall:false,shopCharms:2,shopPacks:2,flags:{},recorded:false,boss2:null,event:null,ante:1,blindIdx:0,round:1,money:4,endless:false,
     purse:Array.from({length:5},()=>mkCoin('copper')),jokers:[],jokerSlots:5,
     cons:[],consSlots:2,purseMax:8,rerollBase:5,
@@ -4221,28 +4266,12 @@ let modal=null;
 const WIN_TEASE={rivalroll:['charm','seattable'],glitched:['pack','glitch']};
 function winTease(){if(!S)return'';const t=WIN_TEASE[S.roll]||['charm','houseedge'];if(isUnlocked(t[0],t[1]))return'';
   return `<div class="wintease">&#x1F512; There's still more to unlock${WIN_TEASE[S.roll]||S.roll==='boss'?` in the ${rollName(S.roll)}`:''}. Keep going in <b>Endless Mode</b>.</div>`}
-const RULES=`<ol class="rules">
- <li>Call <b>Heads</b> or <b>Tails</b>, then every coin in your purse gets tossed.</li>
- <li>Coins that land on your call score. Matches side by side make better tosses: Double, Triple, Four Streak, all the way to a <span class="k-a">Clean Sweep</span>.</li>
- <li>Before cashing in, pick up to <b>2</b> coins and <span class="k-r">Re-flip</span> them. Re-flips are shared across the whole wager.</li>
- <li>Each toss scores <span class="k-c">Points</span> × <span class="k-m">Mult</span>. Reach the wager's target before you run out of Flips.</li>
- <li>The shop sells Charms, one Upgrade and two Packs. Packs hold special coins, Almanacs (toss level ups), Runes (reshape your coins) or Spirits (rare and powerful, often at a price).</li>
- <li>Runes that change coins need targets: tap coins to select them, then use the Rune. Keep up to 2 consumables for later.</li>
- <li>Coins and Charms can carry <b>Wear</b> (bonus Points or Mult, or an extra Charm slot). Coins can also carry one <b>Defect</b> (money, retriggers, Runes or Almanacs). Spirits add them, and Coin Pouches sometimes hold modified coins.</li>
- <li>Very rarely a coin lands on its <span class="k-a">edge</span>. Edge coins always score with <span class="k-x">X2</span> Mult.</li>
- <li>Each toss type gains <b>+1 Mult</b> for every 10 times you score it (mastery). There are 8 stages. Targets climb steeply, and on Gold Stake every Boss has a second rule.</li>
- <li>Encounters bring a choice to make, and are worth about as much as a shop visit. Some Charms are <b>Cursed</b> (Rusted, Bound, Fleeting, Brittle, Heavy, Hungry, Jinxed, Rented). Cursed Charms in the shop cost <b>half</b>.</li>
- <li>The <b>Tightrope</b> Charm and <b>Limbo</b> Spirit unlock the <b>Edge</b> call.</li>
- <li>Every stage is a <b>floor</b> of the House, and the House is always watching. After each wager, choose <b>where next</b>: the shop, or a detour in its place. Encounters, a Rest, a Treasure, a rare Bazaar, the Pawnshop, a face-down Mystery, a deal with <b>the House</b> itself, your <b>Rival</b> or an <b>Elite Wager</b>. The Back Room and the Chapel turn up too.</li>
- <li><b>Tickets</b> come from duels, Elite Wagers and contracts. Spend them at the Prize Counter on Charms you can't buy anywhere else.</li>
- <li>The <b>Rune of Stacking</b> stacks two coins: they always land on the same face, share one purse space, and re-flip together as one.</li>
- <li>Keys: <b>H</b> / <b>T</b> / <b>E</b> to call, <b>R</b> to re-flip, <b>Space</b> to cash in.</li></ol>`;
+
 let RI_TAB='scores';
 function runInfoModal(){
-  const tabs=`<div class="ctabs">${[['scores','Toss scores'],['upgrades',`Upgrades${S?` <small>${S.upgrades.length}</small>`:''}`],['howto','How to Play']].map(([k,n])=>`<button class="btn small ${RI_TAB===k?'orange':''}" style="${RI_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ritab" data-arg="${k}">${n}</button>`).join('')}</div>`;
+  const tabs=`<div class="ctabs">${[['scores','Toss scores'],['upgrades',`Upgrades${S?` <small>${S.upgrades.length}</small>`:''}`]].map(([k,n])=>`<button class="btn small ${RI_TAB===k?'orange':''}" style="${RI_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ritab" data-arg="${k}">${n}</button>`).join('')}</div>`;
   if(RI_TAB==='upgrades'){const U=S?S.upgrades.filter(k=>UPGRADES[k]):[];
     return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${U.length?`<div class="upglist">${U.map(k=>{const u=UPGRADES[k];return `<div class="upgrow"><div class="cic tile" style="--jbg:#5d3d94">${IMG(upgIcon(k))}</div><div><div class="cname">${u.name}${u.req?' <small class="k-a">II</small>':''}</div><div class="ds">${fmt(u.desc)}</div></div></div>`}).join('')}</div>`:'<div class="cdesc" style="text-align:center;padding:20px 0">No Upgrades yet. The shop sells one each stage.</div>'}</div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`}
-  if(RI_TAB==='howto')return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${RULES}</div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
   return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${S?questsHTML():''}${S&&S.seed?`<div class="lbl" style="text-align:center;margin:2px 0 6px">Seed <b style="color:#fff;letter-spacing:.08em">${S.seed}</b> <button class="btn tiny" data-act="copyseed">Copy</button></div>`:''}${S&&ROLLS[S.roll]?`<div class="lbl" style="text-align:center;margin:-6px 0 8px">Playing the <b style="color:#fff">${rollName(S.roll)}</b> on <b style="color:${STAKES[S.stake].col}">${STAKES[S.stake].name}</b>${S.daily?' (Daily Toss)':''}: ${fmt(ROLLS[S.roll].desc)}</div>`:''}<div class="lbl" style="text-align:center;margin:-4px 0 10px">Collection: ${Object.keys(JOKERS).length} Charms · ${ALM_POOL().length} Almanacs · ${Object.keys(RUNES).length} Runes · ${Object.keys(SPIRITS).length} Spirits</div>
     <table class="htable">${HANDS.map(h=>{const pl=S?S.hands[h.key].played:0;const hv=S?handLv(h.key):{chips:h.chips,mult:h.mult,lv:1,mast:0};const lv=hv.lv,c=hv.chips,m=hv.mult;
     return `<tr><td class="lv">lvl.${lv}</td><td><div>${h.name}</div><div class="ds">${h.desc}${hv.mast?` · <span class="k-m">Mastery +${hv.mast} Mult</span>`:''}</div></td><td class="cmv"><span class="c">${c}</span> X <span class="m">${m}</span></td><td class="lv">#${pl}</td></tr>`}).join('')}</table>
@@ -4260,8 +4289,6 @@ function soundTestModal(){
     <div class="stscroll"><div class="sttracks">${TRACKS.map((t,i)=>`<button class="btn small ${SOUNDTEST===i?'green':''}" style="${SOUNDTEST===i?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="sttrack" data-arg="${i}"><span class="stn">${String(i+1).padStart(2,'0')}</span>${t[0]}</button>`).join('')}</div></div>
     <div style="text-align:center;margin-top:12px;display:flex;gap:10px;justify-content:center">${SOUNDTEST!=null?'<button class="btn red" data-act="ststop">Stop</button>':''}<button class="btn orange" data-act="stback">Back</button></div></div></div>`}
 let abandonArm=false,resetArm=false;
-/* tutorial tips are still running: a run with tips on (or the next one) has tips left to show */
-const tipsOn=()=>(S?!!S.tutorial:!PROF.tutorialDone)&&Object.keys(COACH).some(k=>!PROF.tips[k]);
 /* Extras: everything that isn't playing a run */
 let fromExtras=false;
 function extrasModal(){
@@ -4278,7 +4305,7 @@ function optionsModal(){
     <div class="optrow"><span>Music volume</span><input type="range" class="vol" min="0" max="100" value="${Math.round(OPT.mvol*100)}" data-vol="m" aria-label="Music volume"></div>
     <div class="optrow"><span>Effects volume</span><input type="range" class="vol" min="0" max="100" value="${Math.round(OPT.svol*100)}" data-vol="s" aria-label="Sound effects volume"></div>
     <div class="optrow"><span>H / T labels on coins</span><button class="btn ${OPT.badges?'green':''} small" data-act="tbadges">${OPT.badges?'On':'Off'}</button></div>
-    <div class="optrow"><span>Tutorial tips</span>${tipsOn()?'<button class="btn small red" data-act="tipsoff">Disable</button>':'<button class="btn small" data-act="ttips">Replay</button>'}</div>
+    <div class="optrow"><span>Replay tutorial</span><button class="btn small" data-act="replaytut">Start</button></div>
     <div class="optrow"><span>Unlock everything</span><button class="btn ${PROF.unlockAll?'green':''} small" data-act="tunlock">${PROF.unlockAll?'On':'Off'}</button></div>
     <div class="optrow"><span>${resetArm?'Lock everything again?':'Reset unlocks'}</span><button class="btn red small" data-act="resetunlocks">${resetArm?'Yes, reset':'Reset'}</button></div>
     ${resetArm?'<div class="lbl" style="text-align:center;margin:-4px 0 6px">Locks every Charm and Roll and clears the lifetime stats and stakes that unlock them. Run history is kept.</div>':''}
@@ -4998,7 +5025,7 @@ function startBlind(){
   if(S.boss){play('boss');shake(6);if(BOSSES[S.boss].final)showdownIntro();else setTimeout(()=>popup($('#callb'),BOSSES[S.boss].name,'huge'),150)}
   if(S.duel)rivalTurn();
   if(S.boss==='house')setTimeout(()=>houseSay('So. You want to play against me. Sit down.',6000),2600);
-  coach('call');
+  
 }
 async function doCall(call){
   if(S.screen!=='play'||S.phase!=='call')return;S.fastCall=(S.turnTime||0)<=3;
@@ -5014,7 +5041,7 @@ async function doCall(call){
   {const hg=S.jokers.filter(j=>cursed(j,'hungry')).length;if(hg&&S.money>0){S.money=Math.max(0,S.money-hg);syncStats();setTimeout(()=>popup($('#smoney'),'Hungry -$'+hg,'miss'),200)}}
   if(S.roll==='glitched'){S.glitch={};const pool=Object.keys(COINS).filter(k=>!COINS[k].relic);S.purse.forEach(c=>S.glitch[c.id]=pick(pool));glitchCharms();renderJokers()}
   if(S.jokers.some(j=>j.key==='missingno')){if(S.roll!=='glitched')S.glitchJ={};const mp=Object.keys(JOKERS).filter(k=>JOKERS[k].r<=3&&!COPYK[k]&&!JOKERS[k].init&&!JOKERS[k].wager&&!JOKERS[k].glitchOnly&&!JOKERS[k].prize&&!JOKERS[k].artifact&&(JOKERS[k].coin||JOKERS[k].end||JOKERS[k].miss));S.jokers.filter(j=>j.key==='missingno').forEach(j=>S.glitchJ[j.id]=pick(mp));renderJokers()}
-  S.results=S.purse.map(c=>tossOne(c,call));S.rfd=[];
+  S.results=S.tut&&call!=='E'?tutFaces('toss',call,S.purse.length):S.purse.map(c=>tossOne(c,call));S.rfd=[];
   const owls=S.purse.map((c,i)=>i).filter(i=>coinDef(S.purse[i]).owl&&call!=='E'&&!scores(S.results[i],call));owls.forEach(i=>S.results[i]=tossOne(S.purse[i],call,true));S.owlHit=owls.filter(i=>scores(S.results[i],call));
   S.whimI=-1;if(bossIs('whim')&&call!=='E'){const hits=S.purse.map((c,i)=>i).filter(i=>S.results[i]!=='E'&&scores(S.results[i],call)&&!coinDef(S.purse[i]).fixed);if(hits.length){const wi=pick(hits);S.results[wi]=S.results[wi]==='H'?'T':'H';S.whimI=wi}}
   S.catI=bossIs('blackcat')&&S.purse.length?Math.floor(rand()*S.purse.length):-1;
@@ -5033,7 +5060,7 @@ async function doCall(call){
   if(S.catI>=0){const el=$('#c'+S.catI);if(el)popup(el,'Crossed','miss')}
   if(wx('storm')&&S.purse[S.bolt]){const el=$('#c'+S.bolt);if(el){el.classList.add('bolted');popup(el,'Struck!','text')}if(window.wxFlash)wxFlash();play('thunder');shake(5)}
   S.stats.flips+=S.purse.length;
-  S.phase='tossed';refreshTable();updatePreview();coach('tossed');scheduleSave();
+  S.phase='tossed';refreshTable();updatePreview();scheduleSave();
 }
 async function doReflip(){
   const freeF=freeReflip();
@@ -5045,7 +5072,8 @@ async function doReflip(){
   S.phase='tossing';syncStats();S.keepMiss=[...S.purse.keys()].filter(i=>{const e=$('#c'+i);return !!e&&e.classList.contains('miss')});
   if(S.roll==='mirror'&&S.call!=='E'){S.call=S.call==='H'?'T':'H';refreshTable();popup($('#callb'),'Mirrored: '+callName(S.call)+'!','text');play('reroll')}
   const idx=bossIs('gale')?S.purse.map((c,i)=>i):S.selected.slice().sort((a,b)=>a-b);S.selected=[];
-  idx.forEach(i=>{S.results[i]=tossOne(S.purse[i],S.call,true);S.purse[i].flips=(S.purse[i].flips||0)+1;if(!(S.rfd=S.rfd||[]).includes(i))S.rfd.push(i)});
+  if(S.tut&&S.blindIdx===0)S.tut.re0=true;const tre=S.tut?tutFaces('re',S.call,idx.length):null;
+  idx.forEach((i,k)=>{S.results[i]=tre?tre[k]:tossOne(S.purse[i],S.call,true);S.purse[i].flips=(S.purse[i].flips||0)+1;if(!(S.rfd=S.rfd||[]).includes(i))S.rfd.push(i)});
   applyHeavy().forEach(i=>{if(!idx.includes(i))idx.push(i)});applyStacks();S.keepMiss=S.keepMiss.filter(i=>!idx.includes(i));
   if(S.roll==='majority')setMajority();
   S.wedges=(S.wedges||0)+idx.filter(i=>S.results[i]==='E').length;PS().flips+=idx.length;tallyFlips(idx);PS().reflips++;PS().edges+=idx.filter(i=>S.results[i]==='E').length;
@@ -5180,7 +5208,7 @@ async function doCashIn(){
   if(S.duel)rivalTurn();
   if(S.boss==='fatal'){fatalCorrupt();renderJokers()}
   if(R.shattered.length||(R.lost&&R.lost.length)){const p=$('#purse');p.innerHTML=S.purse.map((c,i)=>coinHTML(c,i)).join('');sizeCoins()}
-  renderJokers();refreshTable();coach('score');scheduleSave();
+  renderJokers();refreshTable();scheduleSave();
 }
 async function blindWon(){
   play('win');popup($('#callb'),'Wager Won!','huge');shake(5);
@@ -5255,6 +5283,7 @@ async function animateCashout(){
 }
 function doCashout(){
   if(S.cash.shown<S.cash.lines.length)return;
+  if(S.tut&&curBlind().kind==='boss'){tutFinish(false);return}
   if(S.cash.total>0)PS().moneyEarned=(PS().moneyEarned||0)+S.cash.total;
   if(S.cash.total>0)coinRain(clamp(S.cash.total*2,8,60));
   S.money=Math.max(0,S.money+S.cash.total);S.cash=null;play('rush');
@@ -5265,7 +5294,7 @@ function doCashout(){
   const b=curBlind();if(b.kind==='elite'||b.kind==='rival'){S.round++;endElite(true);return}b.state='defeated';
   advanceBlind(b.kind==='boss');
   S.round++;S.results=[];S.call=null;S.boss=null;S.csel=[];S.purse.forEach(c=>{c.fog=false;if(c.face==='E')c.face='H'});
-  S.ways=genWays();S.screen='choose';render();coach('choose');
+  S.ways=genWays();S.screen='choose';render();
 }
 /* slow-burner upgrades pay out when a new stage begins */
 function stageUpgrades(){
@@ -5278,7 +5307,7 @@ function stageUpgrades(){
   if(msg.length)setTimeout(()=>toast(msg.join('<br>'),5000),1100);
 }
 function advanceBlind(boss){
-  if(boss){S.ante++;if(S.roll==='rivalroll'){const left=RIVALS.filter(n=>!(S.rivalsMet||[]).includes(n)&&n!==S.rival.name);if(left.length)S.rival.name=pick(left)}stageUpgrades();setTimeout(()=>{if(S)questStage()},700);{const w=rollWeather(S.ante);S.weather=w;if(w){PS().wx[w]=1}}S.blinds=makeAnteBlinds(S.ante);S.blindIdx=0;S.stageIntroDue=true;S.bossRR=0;S.bossRRfree=0;PS().bestStage=Math.max(PS().bestStage,S.ante);if(S.ante===2)setTimeout(()=>coach('stage2'),400);if(S.ante===3)setTimeout(()=>coach('stage3'),400)}
+  if(boss){S.ante++;if(S.roll==='rivalroll'){const left=RIVALS.filter(n=>!(S.rivalsMet||[]).includes(n)&&n!==S.rival.name);if(left.length)S.rival.name=pick(left)}stageUpgrades();setTimeout(()=>{if(S)questStage()},700);{const w=rollWeather(S.ante);S.weather=w;if(w){PS().wx[w]=1}}S.blinds=makeAnteBlinds(S.ante);S.blindIdx=0;S.stageIntroDue=true;S.bossRR=0;S.bossRRfree=0;PS().bestStage=Math.max(PS().bestStage,S.ante);}
   else{S.blindIdx++;S.blinds[S.blindIdx].state='select'}
 }
 function gameOver(){hazardsOff();{const e=$('#stageintro');if(e)e.hidden=true}S.screen='over';S.phase='idle';play('lose');shake(8);saveBest();recordRun(false);clearSave();render();houseSay(pick(['The House always wins. Sit down again soon.','Back to the penny slots with you.','You were so close. You always are.']),6000)}
@@ -5358,6 +5387,7 @@ const DEST={
 const destIcon=t=>sprite('dest-'+t,DEST[t].spr);
 /* ================= WHERE NEXT: after each wager, the shop or a detour in its place ================= */
 function genWays(){
+  if(S.tut)return [{t:'shop'}];
   if(!S.wayStage||S.wayStage.ante!==S.ante)S.wayStage={ante:S.ante,used:[]};
   const used=S.wayStage.used,rr=S.roll==='rivalroll';
   const pool=[['encounter',5],['rest',2],['treasure',1.4],['bazaar',.7],['house',.9],['mystery',1]];
@@ -5390,7 +5420,7 @@ const biggest=k=>{const sz=PACKS[k].sizes||['normal','jumbo','mega'];return sz.i
 function chooseWay(i){
   const w=S.ways&&S.ways[i];if(!w)return;S.ways=null;play('click');
   if(!S.wayStage||S.wayStage.ante!==S.ante)S.wayStage={ante:S.ante,used:[]};if(w.t==='rival'||w.t==='elite')S.wayStage.used.push(w.t);
-  if(w.t==='shop'){genShop();S.screen='shop';render();coach('shop');return}
+  if(w.t==='shop'){genShop();S.screen='shop';render();return}
   if(w.t==='bazaar'){S.bazaar=true;genShop();S.screen='shop';render();play('unlock');return}
   if(w.t==='backroom'){S.backroom=true;genShop();S.screen='shop';render();play('unlock');return}
   if(w.t==='bigspender'){S.bigspender=true;genShop();S.screen='shop';render();play('unlock');return}
@@ -5549,6 +5579,7 @@ function genShop(){
   const ups=freeUpgrades();
   if(ups.length&&!S.backroom&&!S.bigspender)S.shop.upgrade={key:pick(ups),bought:false};
   if(S.roll==='glitched')[...S.shop.jokers,...S.shop.packs,S.shop.upgrade].filter(Boolean).forEach(glitchPrice);
+  if(S.tut){S.tut.shop=(S.tut.shop||0)+1;S.shop.upgrade=null;if(S.tut.shop===1){S.shop.jokers=['jester','piggy'].map(k=>({kind:'charm',key:k,cost:JOKERS[k].cost,curse:null}));S.shop.packs=[{kind:'coin',size:'normal',bought:false},{kind:'almanac',size:'normal',bought:false}];S.money=Math.max(S.money,10)}}
 }
 function reroll(){
   const sh=S.shop,cost=rerollCost();if(S.money<cost)return;if(cost===0&&S.freeRR>0&&!countEff('cornucopia'))S.freeRR--;spend(cost);sh.rolls=(sh.rolls||0)+1;
@@ -5591,6 +5622,7 @@ function buyPack(i){
   const pk=S.shop.packs[i],p=packPrice(pk);if(pk.bought||S.money<p)return;
   spend(p);pk.bought=true;if(S.bigspender)S.bigBought=true;
   let {n,picks}=packCounts(pk);n+=countEff('crystalball')+(S.upgrades.includes('grabbag')?1:0);const opts=[];
+  if(S.tut&&pk.kind==='coin'){['silver','jade','platinum'].forEach(t=>opts.push({kind:'coin',type:t}));n=0}
   if(!['coin','almanac','rune','spirit'].includes(pk.kind))opts.push(...genPackOpts(pk,n));
   else for(let k=0;k<n;k++){
     if(pk.kind==='coin'&&S.roll==='pennyroll'&&S.ante<4)opts.push({kind:'coin',type:'penny'});
@@ -5602,7 +5634,7 @@ function buyPack(i){
   }
   S.pack={kind:pk.kind,size:pk.size,opts,picks};S.csel=[];S.selCons=null;S.selJoker=null;
   if(pk.kind==='spiritselect'){const c=S.jokers.filter(j=>j.curse!=='inflation');if(c.length){const j=pick(c);j.curse='inflation';delete j.left;setTimeout(()=>toast(`The seal breaks, and your <b>${JOKERS[j.key].name}</b> catches <b style="color:${CURSES.inflation.col}">Inflation</b>`,4500),300)}}
-  play('rip');render();coach('pack');
+  play('rip');render();
   document.querySelectorAll('.popt .jcard').forEach((el,k)=>setTimeout(()=>{juice(el);play('tick')},k*90));
 }
 async function packPick(i,mode){
@@ -5633,7 +5665,7 @@ function skipBlind(){
 const ACT={
   boot(){bootGo()},
   fullscreen(){toggleFS()},
-  play(){audioInit();showRollPick()},
+  play(){if(!PROF.tutorialDone){startTutorial();return}audioInit();showRollPick()},
   cont(){const sv=savedRun();if(!sv||!sv.S)return;audioInit();modal=null;$('#overlay').hidden=true;S=migrate(sv.S);uid=sv.uid||1000;if(S.phase==='scoring'||S.phase==='tossing')S.phase='tossed';if(S.screen==='shop'&&!S.shop)genShop();render()},
   daily(){audioInit();LB.rows=undefined;showModal(dailyModal);lbLoad(dayKey()).then(()=>{if(modal===dailyModal)showModal(dailyModal)})},
   dailystart(){const k=dayKey();if(PROF.daily[k])return;PROF.daily[k]={started:1};saveProf();openRoll(dailyRoll(k),{seed:hashStr(k),daily:k})},
@@ -5655,14 +5687,12 @@ const ACT={
   prizebuy(a){const k=prizeOffer()[+a],d=JOKERS[k];if(!k||S.event.sold&&S.event.sold[k]||(S.tickets||0)<d.tix||S.jokers.length>=slots())return;S.tickets-=d.tix;addJoker(k,d.cost);(S.event.sold=S.event.sold||{})[k]=1;play('buy');render();juice($('#jk'+(S.jokers.length-1)))},
   prizecash(){if((S.tickets||0)<3)return;S.tickets-=3;S.money+=10;play('money');render()},
   prizeleave(){goNext()},
-  coachok(a){PROF.tips[a]=true;saveProf();$('#coach').hidden=true},
   extras(){audioInit();fromExtras=true;showModal(extrasModal)},
-  tipsoff(){Object.keys(COACH).forEach(k=>PROF.tips[k]=true);PROF.tutorialDone=true;saveProf();const c=$('#coach');if(c)c.hidden=true;toast('Tutorial tips turned off');showModal(optionsModal)},
-  ttips(){PROF.tutorialDone=false;PROF.tips={};saveProf();toast('Tips will show on your next run');showModal(optionsModal)},
+  replaytut(){if(S&&!S.tut)ACT.mainmenu();startTutorial()},
+  tutskip(){tutFinish(true)},
   tunlock(){PROF.unlockAll=!PROF.unlockAll;saveProf();showModal(optionsModal)},
   rollsel(a){const g=document.querySelector('.rollgrid'),st=g?g.scrollTop:0;ROLLSEL=a;showModal(rollModal);const g2=document.querySelector('.rollgrid');if(g2)g2.scrollTop=st},
   rollstart(){if(!isUnlocked('roll',ROLLSEL))return;openRoll(ROLLSEL)},
-  howto(){audioInit();showModal(()=>`<div class="overlay"><div class="panel modal optm"><h2>How to Play</h2><div class="optbody">${RULES}</div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`)},
   call(a){doCall(a)},
   reflip(){doReflip()},
   cashin(){doCashIn()},
@@ -5740,12 +5770,14 @@ const ACT={
   tbadges(){OPT.badges=!OPT.badges;saveOpt();document.body.classList.toggle('badges',OPT.badges);showModal(optionsModal)},
   ffwd(){OPT.speed=OPT.speed===1?2:OPT.speed===2?4:1;saveOpt();play('click');updateFF()},
   abandon(){if(!abandonArm){abandonArm=true;showModal(optionsModal);return}abandonArm=false;modal=null;if(S&&!S.recorded)recordRun(false);S=null;clearSave();hazardsOff();$('#overlay').hidden=true;render()},
-  mainmenu(){if(!S)return;try{if(!['over','win'].includes(S.screen)&&S.phase!=='scoring'&&S.phase!=='tossing')localStorage.setItem('hwr-run',JSON.stringify({S,uid}))}catch(e){}modal=null;hazardsOff();S=null;$('#overlay').hidden=true;render()},
+  mainmenu(){if(!S)return;if(S.tut){tutFinish(true);return}try{if(!['over','win'].includes(S.screen)&&S.phase!=='scoring'&&S.phase!=='tossing')localStorage.setItem('hwr-run',JSON.stringify({S,uid}))}catch(e){}modal=null;hazardsOff();S=null;$('#overlay').hidden=true;render()},
   newrun(){modal=null;S=null;render();showRollPick()},
   retry(){if(!S)return;const k=S.roll,st=S.stake;modal=null;S=null;$('#overlay').hidden=true;$('#overlay').innerHTML='';ROLLSEL=k;STAKESEL=st;SEEDTXT='';openRoll(k)},
-  tomenu(){modal=null;S=null;$('#overlay').hidden=true;$('#overlay').innerHTML='';render()},
+  tomenu(){if(S&&S.tut){tutFinish(true);return}modal=null;S=null;$('#overlay').hidden=true;$('#overlay').innerHTML='';render()},
   endless(){S.endless=true;enterCashout()},
 };
+{const TUT_GATED=new Set(['selectblind','skipblind','call','coin','reflip','cashin','cashout','way','buyjoker','buypack','ppick','skippack','nextround','reroll','sell','sellcons','usecons','cons','joker','buyupg','melt','brbuy','bossrr','prizebuy','prizecash','prizeleave','evpick','evdone']);
+  Object.keys(ACT).forEach(k=>{if(!TUT_GATED.has(k))return;const f=ACT[k];ACT[k]=function(a){if(S&&S.tut){const t=tutState();if(t&&t.allow&&!t.allow(k,a)){tutNudge();return}}return f.apply(this,arguments)}})}
 document.addEventListener('click',e=>{
   const a=e.target.closest('[data-act]');if(!a||a.disabled)return;
   audioInit();
