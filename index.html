@@ -1096,7 +1096,7 @@ body.rewinding #app{animation:rewindfx .9s steps(9) both}@keyframes rewindfx{0%{
 .colfoot{position:sticky;bottom:-14px;margin:10px -14px -14px;padding:10px 14px 14px;border-radius:0 0 14px 14px;text-align:center;background:linear-gradient(transparent,var(--panel) 35%);z-index:3}
 .flav{margin-top:6px;font-size:13px;font-style:italic;opacity:.7}
 .lkline{margin-top:6px;font-size:13px;color:inherit;opacity:.9}
-html.pwa,html.pwa body{background:#171512}
+html,html.pwa,html.pwa body{background-color:var(--paper)}
 /* run the background past the bottom edge so the home-indicator strip never shows bare page */
 html.pwa #bg,html.pwa #crt{bottom:auto;height:calc(var(--vh,100%) + env(safe-area-inset-bottom) + 60px)}
 html.pwa #fsbtn{display:none}
@@ -1121,10 +1121,10 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
 .colm .cgrid,.rollm .rollgrid{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden}
 
 /* ================= THE MINT: banknote paper, engraved ink ================= */
-body::before{content:'';position:fixed;inset:5px;border:3px double var(--line);pointer-events:none;z-index:1;opacity:.75}
+body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));bottom:calc(5px + env(safe-area-inset-bottom));left:calc(5px + env(safe-area-inset-left));right:calc(5px + env(safe-area-inset-right));border:3px double var(--line);pointer-events:none;z-index:1;opacity:.75}
 .mintsub{font-style:italic;font-weight:600;font-size:clamp(17px,2.4vw,24px);color:var(--line);margin-top:-4px}
 .serial{position:fixed;font-family:var(--font-mono);font-weight:600;font-size:13px;letter-spacing:.16em;color:var(--seal);pointer-events:none}
-.serial.s1{top:22px;left:26px}.serial.s2{bottom:22px;right:26px}
+.serial.s1{top:calc(22px + env(safe-area-inset-top));left:calc(26px + env(safe-area-inset-left))}.serial.s2{bottom:calc(22px + env(safe-area-inset-bottom));right:calc(26px + env(safe-area-inset-right))}
 #boot.land .boottxt{color:var(--navy)!important;font-family:var(--font-sc)!important;text-shadow:none!important}
 .credroll .ct{font-family:var(--font-sc)!important}
 
@@ -1143,6 +1143,8 @@ body::before{content:'';position:fixed;inset:5px;border:3px double var(--line);p
 .bootnote{color:var(--ink-dim)!important}
 .panel h2,.ptitle,.modal h2{font-family:var(--font-sc);font-weight:700;color:var(--navy)}
 .s-stat .lbl,.lbl{letter-spacing:.04em}
+.titlebtns{gap:14px 14px!important}
+@media (max-width:700px){.btn{outline-offset:2px}.titlebtns{gap:10px 10px!important}}
 .htable .cmv span{color:#f8f3e6;border-radius:2px!important;font-family:var(--font-mono)}
 #tip .tb,.ctag{color:#f8f3e6}
 .htable td{border-radius:0!important}
@@ -1193,7 +1195,7 @@ body::before{content:'';position:fixed;inset:5px;border:3px double var(--line);p
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.195</div>
+  <div class="gamever" aria-label="Version">v1.2.196</div>
 </div>
 
 <script>
