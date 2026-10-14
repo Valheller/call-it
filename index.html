@@ -1332,6 +1332,146 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
 /* pack colours were picked for a dark table: on paper the title and frame use them darkened into ink */
 .packview{box-shadow:inset 0 0 0 1.5px var(--pk),inset 0 0 0 5px var(--panel),inset 0 0 0 6px var(--pk);border-color:var(--pk)}
 .packview .ptitle{color:var(--pk)!important}
+
+/* ===== The ledger header: the run's figures across the top of the table ===== */
+#side{background:none;border:0;box-shadow:none;padding:0;overflow:visible}
+.lh{display:flex;align-items:center;gap:clamp(12px,1.8vw,26px);flex-wrap:wrap}
+.lh-id{flex:1 1 180px;min-width:0}
+.lh-kick{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#side .lh-name{background:none!important;color:color-mix(in srgb,var(--bc) 60%,var(--navy))!important;padding:0!important;text-align:left;font-size:clamp(24px,2.6vw,34px);line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lh-sub{font-style:italic;font-size:15px;color:var(--ink);min-height:1em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lh-target{text-align:center;padding:4px 18px 6px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.lh-target .lbl{font-family:var(--font-sc);font-size:14px;letter-spacing:.16em;color:var(--line)}
+.lh-tv{display:flex;align-items:center;justify-content:center;gap:8px}
+.lh-tv .bchip{width:30px;height:30px;flex:none;display:grid;place-items:center}.lh-tv .bchip:empty{display:none}.lh-tv .bchip .bsil{width:100%;height:100%}
+#side .s-target{font-family:var(--font-mono);font-weight:600;font-size:clamp(24px,2.6vw,34px);color:var(--navy);letter-spacing:.04em}
+.lh-toss{display:flex;flex-direction:column;align-items:center;min-width:210px}
+.lh-toss .hname{font-style:italic;font-weight:500;font-size:19px;min-height:22px}
+.lh-toss .cm{margin:0;gap:10px;align-items:flex-end}
+.lh-toss .cmc{display:flex;flex-direction:column;align-items:center}
+.lh-toss .cmc i,.fig i,.lh-stamp span{font-style:normal;font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--line)}
+.lh-toss .cmc:last-child i{color:var(--seal)}
+.lh-toss .cm .chips,.lh-toss .cm .mult{background:none!important;font-family:var(--font-mono);font-weight:600;font-size:clamp(22px,2.2vw,30px);padding:0 10px;min-width:64px;text-align:center;border-radius:0}
+.lh-toss .cm .chips{color:var(--chips);border-bottom:2px solid var(--chips)}.lh-toss .cm .mult{color:var(--mult);border-bottom:2px solid var(--mult)}
+.lh-toss .cm b{color:var(--navy);font-size:22px;padding-bottom:4px}
+.lh-figs{display:flex;gap:clamp(10px,1.4vw,20px)}
+.fig{display:flex;flex-direction:column;align-items:flex-end}
+.fig .num{font-family:var(--font-mono);font-weight:600;font-size:clamp(20px,2vw,28px);line-height:1.1}.fig .num:not(.blue):not(.red){color:var(--navy)}
+.lh-stamp{width:86px;height:86px;flex:none;border-radius:50%;border:2px solid var(--seal);outline:1px solid var(--seal);outline-offset:-6px;color:var(--seal);display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-8deg);line-height:1}
+.lh-stamp #smoney{color:var(--seal);font-family:var(--font-sc);font-size:24px}.lh-stamp span{color:var(--seal);font-size:9px}.lh-stamp .tix{font-style:normal;font-size:9px;margin-top:2px;text-align:center}
+.lh-btns{display:flex;flex-direction:column;gap:6px;margin:0}
+.lh-btns .btn{--c:var(--navy);--cd:var(--navy);background:none;color:var(--navy);outline:0;border:1.5px solid var(--navy);font-size:14px;padding:4px 12px}
+.lh-btns .s-run{box-shadow:none;background:none;padding:0;border-bottom:1px dotted var(--rule);border-radius:0}
+.lh-rows{display:flex;flex-direction:column;gap:2px;border-top:1px dotted var(--rule);padding-top:4px;margin-top:2px}
+.lh-rows .s-bdesc{padding:0;font-size:15px}.lh-rows .s-contract{margin:0}
+@media (min-width:761px){
+  #app{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:10px;padding:16px 26px 12px}
+  #side{border-bottom:3px double var(--line);padding-bottom:8px}
+  #main::after{content:'The House promises to pay the bearer on demand';display:block;margin-top:auto;padding-top:6px;border-top:1px solid var(--rule);font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--line);flex:none}
+}
+@media (max-width:760px){
+  #side{display:block;padding:0}
+  .lh{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"id btns" "target target" "toss toss" "figs stamp";gap:6px 10px}
+  .lh-id{grid-area:id}.lh-target{grid-area:target;display:flex;align-items:center;justify-content:space-between;padding:3px 4px}.lh-toss{grid-area:toss;min-width:0;flex-direction:row;justify-content:space-between}
+  .lh-figs{grid-area:figs;justify-content:space-between;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:3px 4px}.lh-stamp{grid-area:stamp}.lh-btns{grid-area:btns;flex-direction:row}
+  .lh-btns .s-run{display:none}.lh-btns .btn{font-size:12px;padding:3px 8px}
+  #side .lh-name{font-size:22px}.lh-sub{font-size:13px}.lh-target .lbl{font-size:12px}#side .s-target{font-size:22px}
+  .lh-toss .hname{font-size:16px}.lh-toss .cm .chips,.lh-toss .cm .mult{font-size:20px;min-width:48px}
+  .lh-stamp{width:62px;height:62px;transform:rotate(-6deg);align-self:center}.lh-stamp #smoney{font-size:18px}.lh-stamp span{font-size:7px}
+  .fig .num{font-size:20px}.fig{align-items:center}
+  .lh-target:not(:has(*)){display:none}
+}
+
+/* away from the table the toss figures only appear while something is shown in them (a level-up, say) */
+#app:not([data-screen=play]):not([data-screen=cashout]) .lh-toss:not(.live){visibility:hidden}
+@media (max-width:760px){
+  #app:not([data-screen=play]):not([data-screen=cashout]) .lh-toss:not(.live){display:none}
+  .lh{grid-template-areas:"id btns" "target target" "toss toss" "figs figs"}
+  .lh-figs{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:0}
+  .lh-figs .fig{align-items:center;padding:3px 0;border-left:1px dotted var(--line)}.lh-figs .fig:first-child{border-left:0}
+  .lh-figs .fig.haswx,.lh-figs .fig:nth-child(4){display:none}
+  .fig i{font-size:9px;white-space:nowrap}
+  .lh-stamp{grid-area:figs;justify-self:end;width:25%;height:auto;border:0;outline:0;border-left:1px dotted var(--line);transform:none;border-radius:0;padding:3px 0;align-self:stretch;flex-direction:column-reverse;justify-content:center}
+  .lh-stamp span{font-size:9px;letter-spacing:.14em}.lh-stamp #smoney{font-family:var(--font-mono);font-size:20px;font-weight:600}.lh-stamp .tix{display:none}
+}
+
+/* ===== The shop as in the Mint mockup: actions on top, then stamps, a certificate and sealed envelopes ===== */
+.lshop.panel{width:min(1120px,100%);display:grid;gap:12px 26px;grid-template-columns:1.3fr minmax(0,1fr) 1.3fr;grid-template-areas:"btn btn btn" "ch up pk";background:none;border:0;box-shadow:none;padding:0}
+.lshop.noup{grid-template-columns:1.4fr 1fr;grid-template-areas:"btn btn" "ch pk"}
+.lshop .shopbtns{grid-area:btn;flex-direction:row;justify-content:flex-end;align-items:center;gap:14px}
+.lshop .btn.reroll{--c:var(--navy);--cd:var(--navy);background:none;color:var(--navy);outline:0;border:2px solid var(--navy);font-size:18px;padding:8px 20px}
+.lshop .btn.reroll .mono{font-family:var(--font-mono);font-size:15px}
+.lshop .sect.ch{grid-area:ch}.lshop .sect.up{grid-area:up}.lshop .sect.pk{grid-area:pk}
+.lshop .slbl{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;color:var(--line);border-bottom:1px solid var(--line);padding:0 0 5px}
+.lshop .shelf,.shelf.lshop{background:none;box-shadow:none;padding:12px 0 0;justify-content:center;gap:18px;align-items:flex-start}
+.lshop .scard{max-width:150px}
+.lshop .scard .jcard{width:clamp(64px,7vw,84px)}
+.sname{font-family:var(--font-sc);font-weight:700;font-size:16px;line-height:1.05;text-align:center;color:var(--navy)}
+.sname i{display:block;font-style:normal;font-family:var(--font-mono);font-weight:400;font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px}
+.sdesc{font-size:14px;line-height:1.15;text-align:center;color:var(--ink);max-width:150px}
+/* the upgrade certificate */
+.scard.cert{max-width:none;width:100%}
+.certbox{width:100%;display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 14px;border:2px solid var(--navy);outline:1px solid var(--navy);outline-offset:-7px;background:var(--stamp);text-align:center;cursor:grab}
+.certbox i{font-style:normal;font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--seal)}
+.certbox b{font-family:var(--font-sc);font-size:24px;line-height:1;color:var(--navy)}
+.certbox .certd{font-size:15px;line-height:1.2;color:var(--ink);border-bottom:1px solid var(--navy);padding-bottom:8px}
+.certic img{width:30px;height:30px}
+/* packs: sealed envelopes with the pack's art as the wax seal */
+.lshop .sect.pk .jcard.tile{width:clamp(110px,10vw,140px);aspect-ratio:1.45;border-radius:0}
+.lshop .sect.pk .jcard.tile .jin{inset:0;border-radius:0;animation:none;background:color-mix(in srgb,var(--pk) 8%,var(--panel-deep));box-shadow:inset 0 0 0 1.5px var(--pk)}
+.lshop .sect.pk .jcard.tile .jin::before{content:'';display:block;position:absolute;inset:0 0 38% 0;top:0;width:auto;height:auto;margin:0;border-radius:0;box-shadow:none;background:linear-gradient(to bottom right,transparent calc(50% - .75px),var(--pk) calc(50% - .75px),var(--pk) calc(50% + .75px),transparent calc(50% + .75px)) left/50% 100% no-repeat,linear-gradient(to bottom left,transparent calc(50% - .75px),var(--pk) calc(50% - .75px),var(--pk) calc(50% + .75px),transparent calc(50% + .75px)) right/50% 100% no-repeat}
+.lshop .sect.pk .jcard.tile .jin img{position:relative;width:46%;max-width:56px;margin-top:10%;border-radius:50%;background:var(--stamp);box-shadow:0 0 0 2px var(--pk);padding:3px}
+.lshop .sect.pk .jcard.tile .jin .lab{display:none}
+@media (max-width:760px){
+  .lshop.panel{grid-template-columns:1fr 1fr;grid-template-areas:"btn btn" "ch ch" "up pk";gap:8px 12px}
+  .lshop.noup{grid-template-areas:"btn btn" "ch ch" "pk pk"}
+  .lshop .shopbtns{justify-content:center}.lshop .btn.reroll{font-size:14px;padding:6px 12px}
+  .sdesc{display:none}.sname{font-size:13px}.certbox{padding:10px 8px}.certbox b{font-size:18px}.certbox .certd{font-size:12px}
+  .lshop .sect.pk .jcard.tile{width:88px}
+}
+
+/* title, as in the mockup: Play / Continue are filled, the rest are outlined; a mono line of records underneath */
+#title .titlebtns .btn.big[data-act=daily],#title .titlebtns .btn.big[data-act=extras],#title .titlebtns .btn.big.gearbtn{--c:var(--navy);--cd:var(--navy);background:none;color:var(--navy);outline:0;border:2px solid var(--navy);font-size:clamp(17px,1.9vw,21px)}
+#title .titlebtns .btn.big[data-act=play]{--c:var(--green);--cd:var(--green-d)}
+#title .titlebtns .btn.big.gearbtn svg{fill:var(--navy)}
+#streakline{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--line)}
+#streakline b{color:inherit}
+
+/* the wager choice: three cheques like the crossroads, the open one raised */
+.bcol.wcheq{background:var(--stamp);text-align:center;gap:8px;padding:16px 16px;--bk:color-mix(in srgb,var(--bc) 55%,#1b2a4a)}
+.bcol.wcheq .chqhead{align-self:stretch}
+.bcol.wcheq .bname{background:none!important;color:var(--bk)!important;font-size:clamp(22px,2.4vw,28px)!important;padding:0!important}
+.bcol.wcheq .btgt{background:none;box-shadow:none;border-top:1px solid var(--bk);border-bottom:1px solid var(--bk);padding:6px 0}
+.bcol.wcheq .btgt .lbl:first-child{font-family:var(--font-sc);letter-spacing:.14em;color:var(--bk)}
+.bcol.wcheq .btgt .tv{font-family:var(--font-mono);font-weight:600;color:var(--navy)}
+.bcol.wcheq .bdesc{font-size:15px;color:var(--ink)}
+.bcol.wcheq .wsel{align-self:stretch;--c:var(--green);--cd:var(--green-d)}
+.bcol.wcheq.upcoming,.bcol.wcheq.defeated,.bcol.wcheq.skipped{opacity:.6}
+@media (max-width:760px){.bcol.wcheq{padding:10px 8px;gap:6px}.bcol.wcheq .chqhead{font-size:8px;letter-spacing:.08em;flex-direction:column;align-items:center;gap:0}.bcol.wcheq .bname{font-size:17px!important}.bcol.wcheq .bdesc{font-size:12px}}
+
+/* Heads and Tails as in the mockup: green and navy */
+.btn[data-act=call][data-arg=H]{--c:var(--green);--cd:var(--green-d)}
+.btn[data-act=call][data-arg=T]{--c:var(--navy);--cd:#111a30}
+.callbanner b.H{background:var(--green)}.callbanner b.T{background:var(--navy)}
+/* cash out: a receipt with dotted leaders and mono figures */
+.panel.cash{background:var(--stamp);border:2px solid var(--money);outline:1px solid var(--money);outline-offset:-8px;box-shadow:none;padding:20px 24px}
+.cash h2{font-family:var(--font-sc);color:var(--money);border-bottom:1px solid var(--money);padding-bottom:6px}
+.cline{background:none;padding:4px 0;border-bottom:1px dotted var(--rule);border-radius:0}
+.cline .v{font-family:var(--font-mono);font-weight:600;font-size:18px}.cline .v small{font-size:15px}
+@media (max-width:760px){
+  #app{padding-top:16px}
+  #title .titlebtns .btn.big{font-size:17px!important}
+}
+
+/* Run Info's toss table as the mockup's Ledger of Tosses: ruled rows, small-caps names, mono figures */
+.htable{border-spacing:0}
+.htable td{background:none;border-bottom:1px dotted var(--rule);border-radius:0!important;padding:4px 8px}
+.htable tr[data-tip]:hover td{background:color-mix(in srgb,var(--line) 8%,transparent)}
+.htable .hgrp td{border-bottom:0;font-family:var(--font);font-style:italic;font-size:16px;letter-spacing:0;text-transform:none;color:var(--seal);padding-top:10px}
+.htable .lv{font-family:var(--font-mono);color:var(--line);font-size:13px}
+.htable td:nth-child(2){font-family:var(--font-sc);font-weight:700;font-size:17px;color:var(--navy)}
+.htable .cmv span{background:none!important;font-family:var(--font-mono);font-weight:600;min-width:34px}
+.htable .cmv .c{color:var(--chips)!important}.htable .cmv .m{color:var(--mult)!important}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1378,7 +1518,7 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.213</div>
+  <div class="gamever" aria-label="Version">v1.2.214</div>
 </div>
 
 <script>
@@ -4322,40 +4462,43 @@ function render(){
 function runChip(){const r=ROLLS[S.roll];if(!r)return '';const st=STAKES[S.stake]||STAKES[1];
   const tag=S.daily?'Daily Toss':r.challenge?'Challenge':st.name,col=S.daily?'var(--purple)':r.challenge?'var(--mult)':st.col;
   return `<div class="s-run" data-tip="runroll" style="--sc:${col}">${rollHTML(S.roll,58,20)}<div class="s-runt"><div class="s-rn">${rollName(S.roll)}</div><div class="s-rs">${tag}</div></div></div>`}
+/* the run's ledger: a header across the top (a stacked block on phones) with the wager, its target, the toss, the figures and the money stamp */
 function renderSide(){
-  const el=$('#side');let head='';
-  if(S.screen==='blind'){
-    head=`<div class="s-blind" style="--bc:var(--panel-hi)"><div class="s-bname">Choose your next Wager</div><div class="s-binfo"><div class="lbl">Floor ${S.ante}: ${floorOf(S.ante).name}</div></div></div>`;
-  }else if(S.screen==='choose'){
-    head=`<div class="s-blind" style="--bc:#a8743a"><div class="s-bname">Where next?</div><div class="s-binfo"><div class="lbl">${S.ways&&S.ways.length===1&&S.ways[0].t==='bigspender'?'The Big Spender is waiting':'The shop, or a detour in its place'}</div></div></div>`;
-  }else if(S.screen==='event'){
-    head=`<div class="s-blind" style="--bc:var(--purple)"><div class="s-bname">${EVENTS[S.event.key]&&EVENTS[S.event.key].omen?'Omen':EVENTS[S.event.key]&&EVENTS[S.event.key].mapOnly?EVENTS[S.event.key].title:'Encounter'}</div><div class="s-binfo"><div class="lbl">${EVENTS[S.event.key]&&EVENTS[S.event.key].omen?'The halls are trying to tell you something':'Something stirs between the tables'}</div></div></div>`;
-  }else if(S.screen==='shop'){
-    head=S.pack?`<div class="s-blind" style="--bc:rgb(${mintInk(hex2rgb(PACKS[S.pack.kind].col)).join(',')})"><div class="s-bname">${packName(S.pack)}</div><div class="s-binfo"><div class="lbl">Choose ${S.pack.picks} of ${S.pack.opts.length}</div></div></div>`
-      :`<div class="s-blind" style="--bc:${S.bigspender?'#ffd34d':S.backroom?'#c8102e':S.bazaar?'#5fd3c8':'var(--green)'}"><div class="s-bname">${S.bigspender?'Big Spender':S.backroom?'The Back Room':S.bazaar?'Bazaar':'Shop'}</div><div class="s-binfo"><div class="lbl">${S.bigspender?'Only the finest. Inflation doesn\'t reach in here':S.backroom?'Cheap goods, none of them clean':S.bazaar?'Rare goods, 20% dearer':'Charms, packs and upgrades'}${inflMult()>1?` · <span style="color:${CURSES.inflation.col}">Inflation ×${inflMult().toFixed(1)}</span>`:''}</div></div></div>`;
-  }else{
-    const b=curBlind();
-    head=`<div class="s-blind" style="--bc:${blindColor(b)}"><div class="s-bname">${blindName(b)}</div>
-      <div class="s-binfo"><div class="bchip">${blindChip(b)}</div><div><div class="lbl">${S.duel&&S.duel.table?"The Table's score":S.duel&&S.duel.general?"The General's score":b.kind==='rival'?`${rivalInfo().short}${rivalInfo().short.endsWith('s')?"'":"'s"} score`:'Score at least'}</div><div class="s-target">${fmtN(S.target)}</div>
-      <div class="lbl">${b.kind==='rival'?`Stake: <span class="k-money">$${rivalStake()}</span>`:`Reward: <span class="k-money">${'$'.repeat(blindReward(b))}</span>`}</div></div></div>
-      ${b.boss?`<div class="s-bdesc">${b.kind==='boss'?'':BOSSES[b.boss].name+': '}${bossDesc(b)}${b.kind==='elite'?'. Lose and you retreat, dropping half your money':''}</div>`:''}${b.kind==='rival'?`<div class="s-bdesc">${isRematch()?'<b style="color:var(--orange)">Rematch:</b> 40% sharper, bigger stake. ':''}Duel: be ahead after your 3rd Flip. ${fmt(rivalInfo().habit)}${S.rival.lvl?` · Rival level ${S.rival.lvl+1}`:''}</div>`:''}${S.contract?`<div class="s-contract"><b>Contract:</b> ${CONTRACTS[S.contract.key].desc} · ${fmt(CONTRACTS[S.contract.key].reward)}</div>`:''}</div>`;
-  }
-  el.innerHTML=`${head}
-   <div class="s-score box"><div class="lbl">Round score</div><div class="val" id="rscore">${fmtN(S.screen==='play'||S.screen==='cashout'?S.roundScore:0)}</div></div>
-   <div class="s-hand box" id="hbox"><div class="hname" id="hname">&nbsp;</div><div class="cm"><div class="chips" id="hchips">0</div><b>X</b><div class="mult" id="hmult">0</div></div></div>
-   <div class="s-stats">
-     <div class="stat"><div class="lbl">Flips</div><div class="num blue" id="sflips">${S.screen==='play'?S.flipsLeft:S.baseFlips}</div></div>
-     <div class="stat"><div class="lbl">Re-flips</div><div class="num red" id="sreflips">${S.screen==='play'?S.reflipsLeft:S.baseReflips}</div></div>
-     <div class="stat wide"><div class="lbl">Money</div><div class="num gold" id="smoney">$${S.money}</div><div class="tix" id="stix">${tixTxt()}</div></div>
-     <div class="stat ${S.weather?'haswx':''}" data-tip="wx"><div class="lbl"><span class="stl">Stage${S.weather?' · ':''}</span>${S.weather?`<span class="wxl" style="color:${WEATHER[S.weather].col}">${WEATHER[S.weather].short}</span>`:''}</div><div class="num orange">${S.ante}<small>/${STAGES}</small></div></div>
-     <div class="stat"><div class="lbl">Round</div><div class="num orange">${S.round}</div></div>
+  const el=$('#side'),F=floorOf(S.ante),play=S.screen==='play'||S.screen==='cashout';
+  let kick=`Stage ${S.ante}${S.ante<=STAGES?` of ${STAGES}`:''} · ${F.name}`,name='',bc='var(--navy)',sub='',target='',rows='';
+  if(S.screen==='blind'){name='Choose a Wager';sub=F.line||''}
+  else if(S.screen==='choose'){name='Where next?';bc='#a8743a';sub=S.ways&&S.ways.length===1&&S.ways[0].t==='bigspender'?'The Big Spender is waiting':'The shop, or a detour in its place'}
+  else if(S.screen==='event'){const E=EVENTS[S.event.key];name=E&&E.omen?'Omen':E&&E.mapOnly?E.title:'Encounter';bc='var(--purple)';sub=E&&E.omen?'The halls are trying to tell you something':'Something stirs between the tables'}
+  else if(S.screen==='shop'){
+    if(S.pack){name=packName(S.pack);bc=`rgb(${mintInk(hex2rgb(PACKS[S.pack.kind].col)).join(',')})`;sub=`Choose ${S.pack.picks} of ${S.pack.opts.length}`}
+    else{name=S.bigspender?'Big Spender':S.backroom?'The Back Room':S.bazaar?'Bazaar':'Shop';bc=S.bigspender?'#8a5a12':S.backroom?'#a23b2a':S.bazaar?'#2c6e8a':'var(--green)';
+      sub=`${S.bigspender?'Only the finest. Inflation doesn\'t reach in here':S.backroom?'Cheap goods, none of them clean':S.bazaar?'Rare goods, 20% dearer':'Charms, packs and upgrades'}${inflMult()>1?` · <span style="color:${CURSES.inflation.col}">Inflation ×${inflMult().toFixed(1)}</span>`:''}`}}
+  else{
+    const b=curBlind();name=blindName(b);bc=blindColor(b);kick=`Stage ${S.ante}${S.ante<=STAGES?` of ${STAGES}`:''} · Round ${S.round}`;
+    sub=b.kind==='rival'?`Stake <span class="k-money">$${rivalStake()}</span>`:`Reward <span class="k-money">${'$'.repeat(blindReward(b))}</span>`;
+    target=`<div class="lh-target"><div class="lbl">${S.duel&&S.duel.table?"The Table's score":S.duel&&S.duel.general?"The General's score":b.kind==='rival'?`${rivalInfo().short}${rivalInfo().short.endsWith('s')?"'":"'s"} score`:'Redeemable at'}</div><div class="lh-tv"><span class="bchip">${blindChip(b)}</span><span class="s-target">${fmtN(S.target)}</span></div></div>`;
+    if(b.boss)rows+=`<div class="s-bdesc">${b.kind==='boss'?`<b>${BOSSES[b.boss].name}</b> · `:BOSSES[b.boss].name+': '}${bossDesc(b)}${b.kind==='elite'?'. Lose and you retreat, dropping half your money':''}</div>`;
+    if(b.kind==='rival')rows+=`<div class="s-bdesc">${isRematch()?'<b style="color:var(--orange)">Rematch:</b> 40% sharper, bigger stake. ':''}Duel: be ahead after your 3rd Flip. ${fmt(rivalInfo().habit)}${S.rival.lvl?` · Rival level ${S.rival.lvl+1}`:''}</div>`;
+    if(S.contract)rows+=`<div class="s-contract"><b>Contract:</b> ${CONTRACTS[S.contract.key].desc} · ${fmt(CONTRACTS[S.contract.key].reward)}</div>`}
+  const W=S.weather&&WEATHER[S.weather];
+  el.innerHTML=`<div class="lh">
+   <div class="lh-id"><div class="lh-kick">${kick}</div><div class="s-bname lh-name" style="--bc:${bc}">${name}</div><div class="lh-sub">${sub}</div></div>
+   ${target}
+   <div class="s-hand lh-toss" id="hbox"><div class="hname" id="hname">&nbsp;</div><div class="cm"><div class="cmc"><i>Points</i><div class="chips" id="hchips">0</div></div><b>×</b><div class="cmc"><i>Mult</i><div class="mult" id="hmult">0</div></div></div></div>
+   <div class="lh-figs">
+     <div class="fig"><i>Scored</i><b class="num" id="rscore">${fmtN(play?S.roundScore:0)}</b></div>
+     <div class="fig"><i>Flips</i><b class="num blue" id="sflips">${S.screen==='play'?S.flipsLeft:S.baseFlips}</b></div>
+     <div class="fig"><i>Re-flips</i><b class="num red" id="sreflips">${S.screen==='play'?S.reflipsLeft:S.baseReflips}</b></div>
+     <div class="fig ${W?'haswx':''}" data-tip="wx"><i>${W?`<span style="color:${W.col}">${W.short}</span>`:'Stage'}</i><b class="num">${S.ante}<small>/${STAGES}</small></b></div>
    </div>
-   <div class="s-btns">${runChip()}<button class="btn red small" data-act="runinfo">Run Info</button><button class="btn orange small" data-act="options">Options</button></div>`;
+   <div class="lh-stamp"><b class="num gold" id="smoney">$${S.money}</b><span>On hand</span><em class="tix" id="stix">${tixTxt()}</em></div>
+   <div class="s-btns lh-btns">${runChip()}<button class="btn small" data-act="runinfo">Run Info</button><button class="btn small" data-act="options">Options</button></div>
+  </div>${rows?`<div class="lh-rows">${rows}</div>`:''}`;
   updatePreview();
 }
 function setHB(name,chips,mult,bumpWhat){
   const n=$('#hname'),c=$('#hchips'),m=$('#hmult');if(!n)return;
-  if(name!==null)n.innerHTML=name;
+  if(name!==null){n.innerHTML=name;const hb=$('#hbox');if(hb)hb.classList.toggle('live',name!=='&nbsp;')}
   if(chips!==null){c.textContent=typeof chips==='number'?fmtN(chips):chips;if(bumpWhat==='c')bump(c)}
   if(mult!==null){m.textContent=typeof mult==='number'?fmtM(mult):mult;if(bumpWhat==='m')bump(m)}
 }
@@ -4469,12 +4612,13 @@ function blindSelectHTML(){
   return `${wxBanner()}<div class="blinds">${S.blinds.map((b,i)=>{
     const cur=S.screen==='blind'&&i===S.blindIdx&&b.state==='select';
     const lab={upcoming:'Upcoming',defeated:'Defeated',skipped:'Skipped',select:'Next up'}[b.state]||'';
-    return `<div class="bcol ${b.state}" style="--bc:${blindColor(b)}">
-      <div class="bstate">${cur?'<button class="btn orange" style="width:100%" data-act="selectblind">Select</button>':`<span>${lab}</span>`}</div>
+    return `<div class="bcol wcheq ${b.state}" style="--bc:${blindColor(b)}">
+      <div class="chqhead"><span>Wager No. ${String(S.ante).padStart(2,'0')}${i+1}</span><span>${lab}</span></div>
       <div class="bname">${blindName(b)}</div>
       <div class="bchip" style="--sz:64px">${blindChip(b)}</div>
       ${b.boss?`<div class="bdesc">${b.kind==='boss'?'':`<b>${BOSSES[b.boss].name}</b>: `}${bossDesc(b)}</div>`:''}
       <div class="btgt"><div class="lbl">${b.boss==='general'||b.boss==='tablerivals'?'Beat':'Score at least'}</div><div class="tv">${b.boss==='general'?'The General':b.boss==='tablerivals'?'The Table':S.roll==='glitched'?`<span class="glitchnum" aria-label="Hidden target">${fmtN(blindTarget(b))}</span>`:fmtN(blindTarget(b))}</div><div class="lbl">Reward: <span class="k-money">${'$'.repeat(blindReward(b))}</span></div></div>
+      ${cur?'<button class="btn orange wsel" data-act="selectblind">Select</button>':''}
       ${b.kind!=='boss'?`<div class="bskip"><div class="tagd">Skip for <b class="tagname" data-tip="tag:${b.tag}">${TAGS[b.tag].name}</b></div>
         <button class="btn red small" data-act="skipblind" ${cur?'':'disabled'}>Skip Wager</button></div>`:''}
       ${b.kind==='boss'&&bossRerollable()?`<div class="bskip">${b.state==='select'?'<button class="btn small" disabled>Too late</button>':bossRRused()?'<button class="btn small" disabled>Boss rerolled</button>':freeBossRR()?'<button class="btn small" style="--c:var(--purple);--cd:var(--purple-d)" data-act="bossrr" data-arg="free">Reroll Boss: Free</button>':`<button class="btn small" style="--c:var(--purple);--cd:var(--purple-d)" data-act="bossrr" ${S.money<bossRerollCost()?'disabled':''}>Reroll Boss $${bossRerollCost()}</button>`}</div>`:''}
@@ -4507,27 +4651,29 @@ function charmCardHTML(o,i){
   const d=JOKERS[o.key];
   return `<div class="scard ${o.bought?'gone':''} ${d.r===5?'fabled':d.r===4?'legend':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">$${p}</div>
     <button class="jcard" data-tip="shopj:${i}" data-drag="shop" data-sk="j:${i}" aria-label="${d.name}"><div class="jin" style="--jbg:${d.bg};--dl:${-i*.9}s;${rarVars(o.key)}">${IMG(icon(o.key))}</div>${o.curse?curseBadge(o.curse):''}</button>
+    <div class="sname"><i style="color:${RAR_RING[d.r]?RAR_RING[d.r][1]:'var(--line)'}">${(RAR[d.r]||RAR[1]).n}</i>${d.name}</div><div class="sdesc">${(()=>{try{return fmt(typeof d.desc==='function'?d.desc(null):d.desc)}catch(e){return ''}})()}</div>
     <button class="btn green small" data-act="buyjoker" data-arg="${i}" ${o.bought||S.money<p||full?'disabled':''}>${full?'No room':'Buy'}</button></div>`;
 }
 function shopHTML(){
   const sh=S.shop;
   const u=sh.upgrade;
-  const uc=upgLocked()?`<div class="soldout" role="img" aria-label="Sold out: one Upgrade per stage"><b>SOLD OUT</b><small>Back next stage</small></div>`:u?`<div class="scard ${u.bought?'gone':''}"><div class="price">$${gp(u,upgCost(u))}</div><button class="jcard tile" data-tip="upg" data-drag="shop" data-sk="u"><div class="jin" style="--jbg:#5d3d94">${IMG(upgIcon(u.key))}<span class="lab">Upgrade</span></div></button>
+  const uc=upgLocked()?`<div class="soldout" role="img" aria-label="Sold out: one Upgrade per stage"><b>SOLD OUT</b><small>Back next stage</small></div>`:u?`<div class="scard cert ${u.bought?'gone':''}"><button class="certbox" data-tip="upg" data-drag="shop" data-sk="u"><i>Certificate of improvement</i><span class="certic">${IMG(upgIcon(u.key))}</span><b>${UPGRADES[u.key].name}</b><span class="certd">${fmt(UPGRADES[u.key].desc)}</span></button><div class="price">$${gp(u,upgCost(u))}</div>
       <button class="btn purple small" data-act="buyupg" ${u.bought||upgLocked()||S.money<gp(u,upgCost(u))?'disabled':''}>${upgLocked()&&!u.bought?'1 per stage':'Redeem'}</button></div>`:'<div class="lbl">Sold out</div>';
   const pc=sh.packs.map((pk,i)=>{const p=packPrice(pk),info=PACKS[pk.kind];
     return `<div class="scard ${pk.bought?'gone':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">${p?'$'+p:'Free'}</div>
-      <button class="jcard tile ${pk.kind==='glitch'?'gpk':''}" data-tip="pack:${i}" data-drag="shop" data-sk="p:${i}" aria-label="${packName(pk)}"><div class="jin" style="--jbg:${info.bg};--dl:${-i*.8}s">${IMG(packIconFor(pk.kind,pk.size))}<span class="lab">${PACKS[pk.kind].word}</span></div></button>
+      <button class="jcard tile ${pk.kind==='glitch'?'gpk':''}" data-tip="pack:${i}" data-drag="shop" data-sk="p:${i}" aria-label="${packName(pk)}"><div class="jin" style="--jbg:${info.bg};--dl:${-i*.8}s;--pk:rgb(${mintInk(hex2rgb(info.col)).join(',')})">${IMG(packIconFor(pk.kind,pk.size))}<span class="lab">${PACKS[pk.kind].word}</span></div></button>
+      <div class="sname">${packName(pk)}</div>
       <button class="btn green small" data-act="buypack" data-arg="${i}" ${pk.bought||S.money<p?'disabled':''}>Open</button></div>`}).join('');
   const brc=S.backroom&&(sh.br||[]).map((o,i)=>{const L=o.k==='loaded',p=L?gp(o,6):0,room=purseUsed()+2<=S.purseMax,dis=o.bought||(L&&(S.money<p||!room));
       return `<div class="scard ${o.bought?'gone':''}"><div class="price">${L?'$'+p:'+$10'}</div><button class="jcard tile" data-tip="brgood:${i}" aria-label="${L?'Loaded coins':'Fence something'}"><div class="jin" style="--jbg:${L?'#3a1414':'#2a2410'};--dl:${-i*.8}s">${L?coinIcon('loaded'):IMG(sprite('fence',SPR_FENCE))}<span class="lab">${L?'Loaded':'Fence'}</span></div></button>
       <button class="btn ${L?'green':'red'} small" data-act="brbuy" data-arg="${i}" ${dis?'disabled':''}>${L&&!room&&!o.bought?'No room':L?'Buy':'Take'}</button><div class="pcap">${L?"A Magician's Coin and a counterfeit":'Easy money'}</div></div>`}).join('');
   const noup=!!(S.backroom||S.bigspender),items=sh.jokers.length+(S.backroom?(sh.br||[]).length:sh.packs.length)+(noup?0:1);
-  return `<div class="panel shop ${S.backroom?'brshop':S.bigspender?'bsshop':''} ${noup?'noup':''} ${items<=6?'onerow':''}"><div class="shophead"><div class="shopbtns">
-      <button class="btn red big" data-act="nextround">${S.backroom||S.bigspender?'Leave':'Next Round'}</button>
-      <button class="btn green" data-act="reroll" ${S.money<rerollCost()?'disabled':''}>Reroll $${rerollCost()}</button></div>
-      <div class="sect ch"><div class="slbl">${S.roll==='ghost'?'Spirits':'Charms'}</div><div class="shelf">${sh.jokers.map(charmCardHTML).join('')}</div></div></div>
-    <div class="shoprow2">${S.backroom?`<div class="sect pk"><div class="slbl">Under the counter</div><div class="shelf">${brc}</div></div>`:S.bigspender?`<div class="sect pk"><div class="slbl">Packs</div><div class="shelf">${pc}</div></div>`:`<div class="sect up"><div class="slbl">Upgrade</div><div class="shelf">${uc}</div></div>
-      <div class="sect pk"><div class="slbl">Packs</div><div class="shelf">${pc}</div></div>`}</div></div>
+  return `<div class="panel shop lshop ${S.backroom?'brshop':S.bigspender?'bsshop':''} ${noup?'noup':''}"><div class="shopbtns">
+      <button class="btn reroll" data-act="reroll" ${S.money<rerollCost()?'disabled':''}>Reroll · <span class="mono">$${rerollCost()}</span></button>
+      <button class="btn red big" data-act="nextround">${S.backroom||S.bigspender?'Leave':'Next Round'}</button></div>
+      <div class="sect ch"><div class="slbl">${S.roll==='ghost'?'Spirits · Stamps':'Charms · Stamps'}</div><div class="shelf">${sh.jokers.map(charmCardHTML).join('')}</div></div>
+      ${S.backroom?`<div class="sect pk"><div class="slbl">Under the counter</div><div class="shelf">${brc}</div></div>`:S.bigspender?`<div class="sect pk"><div class="slbl">Packs · Sealed envelopes</div><div class="shelf">${pc}</div></div>`:`<div class="sect up"><div class="slbl">Upgrade · Certificate</div><div class="shelf">${uc}</div></div>
+      <div class="sect pk"><div class="slbl">Packs · Sealed envelopes</div><div class="shelf">${pc}</div></div>`}</div>
     ${purseHTML()}`;
 }
 function purseHTML(){
@@ -5202,7 +5348,7 @@ function showdownIntro(){
   setTimeout(()=>el.classList.add('out'),2300/SPD());setTimeout(()=>{el.hidden=true},2800/SPD());
 }
 function updateStreakLine(){const e=$('#streakline');if(!e)return;const P=PS();
-  e.innerHTML=`Best win streak <b style="color:var(--money)">${P.bestStreak||0}</b>${P.streak?` (current ${P.streak})`:''}`}
+  e.innerHTML=`${P.bestStage?`Best run · Stage ${P.bestStage}&nbsp;&nbsp;·&nbsp;&nbsp;`:''}Win streak · ${P.streak||0}${(P.bestStreak||0)>(P.streak||0)?` (best ${P.bestStreak})`:''}`}
 /* the title coin can be flipped for fun */
 let titleBusy=false,titleRun={f:null,n:0};
 let titleTok=0,titleAnim=null;
