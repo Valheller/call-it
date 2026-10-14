@@ -1219,7 +1219,8 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
 .scard.legend .price,.shelf .scard.legend .price{background:#4a3a6b;color:var(--stamp);border-color:#4a3a6b;animation:none}
 .scard.fabled .price,.shelf .scard.fabled .price{background:#8a5a12;color:var(--stamp);border-color:#8a5a12}
 /* coins: misses are struck through instead of darkened */
-.coin.miss .face,.coin.miss .slab{filter:saturate(.35);opacity:.5}
+.coin.miss .face,.coin.miss .slab{filter:saturate(.35) contrast(.8) brightness(1.08)}
+.coin.miss .tilt{opacity:.55}
 .coin.miss .lift::after{content:'';position:absolute;left:6%;right:6%;top:50%;height:3px;margin-top:-1.5px;background:var(--seal);transform:translateZ(calc(var(--cs)*.4)) rotate(-45deg);pointer-events:none;opacity:.9}
 .coin.bolted::before{box-shadow:none;border:2px dashed #4a3a6b;animation:none}
 .coin.frozen::after{border:2px dashed #2c6e8a;box-shadow:none}
@@ -1358,7 +1359,7 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.206</div>
+  <div class="gamever" aria-label="Version">v1.2.207</div>
 </div>
 
 <script>
@@ -3425,7 +3426,27 @@ function engraveGrid(grid,o={}){
 function canvasGrid(cv,skip){const g=cv.getContext('2d'),d=g.getImageData(0,0,cv.width,cv.height).data,out=[];
   for(let y=0;y<cv.height;y++){const r=[];for(let x=0;x<cv.width;x++){const q=(y*cv.width+x)*4;r.push(d[q+3]>90&&!(skip&&skip(d[q],d[q+1],d[q+2],d[q+3]))?'#'+[d[q],d[q+1],d[q+2]].map(v=>v.toString(16).padStart(2,'0')).join(''):null)}out.push(r)}return out}
 /* a coin face keeps its shapes but is shaded with concentric guilloche lines in mint ink */
-function engraveCoin(cv,flat){const W=cv.width,H=cv.height,g=cv.getContext('2d'),img=g.getImageData(0,0,W,H),d=img.data,cx=W/2,cy=H/2,P=flat?4:W/30,o=flat?2:Math.max(2,Math.round(W/64));
+/* coin faces (style B): flat metal, crisp ink outlines, and diagonal line shading only on the darker parts of the design.
+   flat=true is the older all-over line screen, still used for the hazard drawings */
+function engraveCoin(cv,flat){if(flat)return engraveLines(cv);
+  const W=cv.width,H=cv.height,g=cv.getContext('2d'),img=g.getImageData(0,0,W,H),d=img.data,P=W/36,o=Math.max(2,Math.round(W/64));
+  const L=new Float32Array(W*H),A=new Uint8Array(W*H),memo=new Map(),NAV=MINT_INK.navy;
+  for(let p=0,q=0;p<W*H;p++,q+=4){A[p]=d[q+3]>=8?1:0;L[p]=(.3*d[q]+.59*d[q+1]+.11*d[q+2])/255}
+  // the coin's own metal is its most common colour; only the design darker than it gets shading
+  let field=.6;{const h=new Map();for(let p=0,q=0;p<W*H;p+=7,q+=28)if(A[p]){const k=d[q]>>4<<8|d[q+1]>>4<<4|d[q+2]>>4;h.set(k,(h.get(k)||0)+1)}let bk=-1,bn=0;h.forEach((n,k)=>{if(n>bn){bn=n;bk=k}});if(bk>=0)field=(.3*((bk>>8)*16+8)+.59*(((bk>>4)&15)*16+8)+.11*((bk&15)*16+8))/255}
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const p=y*W+x;if(!A[p])continue;const q=p*4,r0=d[q],g0=d[q+1],b0=d[q+2],key=r0<<16|g0<<8|b0;
+    let m=memo.get(key);if(!m){const rgb=[r0,g0,b0],rel=field-mintLum(rgb),c0=Math.max(0,Math.min(1,1.75*(1-mintLum(rgb))-.3));m=[mintInk(rgb),c0>.9&&rel>.05?1:rel>.08?Math.min(.9,.55+rel*1.4):0,mix3(MINT_PAPER,rgb,.5)];memo.set(key,m)}
+    const cov=m[1];let col=m[2];
+    if(cov>.5){const u=(x-y)*.7071/P,dist=Math.abs(u-Math.floor(u)-.5)*P,t=cov>.9?1:Math.max(0,Math.min(1,(cov-.2)*P/2-dist+.5));if(t>0)col=mix3(col,m[0],t)}
+    let n=0;const l=L[p];
+    if(x+o<W){n=A[p+o]?Math.max(n,Math.abs(L[p+o]-l)):1}else n=1;
+    if(n<1){if(x-o>=0){n=A[p-o]?Math.max(n,Math.abs(L[p-o]-l)):1}else n=1}
+    if(n<1){if(y+o<H){const p2=p+o*W;n=A[p2]?Math.max(n,Math.abs(L[p2]-l)):1}else n=1}
+    if(n<1){if(y-o>=0){const p2=p-o*W;n=A[p2]?Math.max(n,Math.abs(L[p2]-l)):1}else n=1}
+    if(n>.09)col=mix3(col,NAV,Math.min(1,(n-.09)*6));
+    d[q]=col[0];d[q+1]=col[1];d[q+2]=col[2]}
+  g.putImageData(img,0,0);return cv}
+function engraveLines(cv,flat=true){const W=cv.width,H=cv.height,g=cv.getContext('2d'),img=g.getImageData(0,0,W,H),d=img.data,cx=W/2,cy=H/2,P=flat?4:W/30,o=flat?2:Math.max(2,Math.round(W/64));
   const L=new Float32Array(W*H),A=new Uint8Array(W*H),memo=new Map();
   for(let p=0,q=0;p<W*H;p++,q+=4){A[p]=d[q+3]>=8?1:0;L[p]=(.3*d[q]+.59*d[q+1]+.11*d[q+2])/255}
   const NAV=MINT_INK.navy;
@@ -3455,7 +3476,7 @@ function coinArt(type,side){
   const N=32,C=16,SC=8,cv=document.createElement('canvas');cv.width=cv.height=N*SC;const g=cv.getContext('2d');g.scale(SC,SC);
   const TAU=Math.PI*2,h=side==='H';
   const disc=(r,c,x=C,y=C)=>{g.fillStyle=c;g.beginPath();g.arc(x,y,r,0,TAU);g.fill()};
-  const ring=(r,c,w=1)=>{g.strokeStyle=c;g.lineWidth=w;g.beginPath();g.arc(C,C,r,0,TAU);g.stroke()};
+  const ring=(r,c,w=1)=>{return;g.strokeStyle=c;g.lineWidth=w;g.beginPath();g.arc(C,C,r,0,TAU);g.stroke()};
   const rect=(x,y,w,hh,c)=>{g.fillStyle=c;g.fillRect(x,y,w,hh)};
   const ell=(x,y,rx,ry,c,rot=0)=>{g.fillStyle=c;g.beginPath();g.ellipse(x,y,rx,ry,rot,0,TAU);g.fill()};
   const poly=(pts,c)=>{g.fillStyle=c;g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fill()};
@@ -3463,7 +3484,7 @@ function coinArt(type,side){
   const lumpy=(r,c,amp,pts=16)=>poly(Array.from({length:pts},(_,i)=>{const a=i*TAU/pts,rr=r-amp*((i*7)%3)/2;return[C+rr*Math.cos(a),C+rr*Math.sin(a)]}),c);
   const cut=fn=>{g.globalCompositeOperation='destination-out';fn();g.globalCompositeOperation='source-over'};
   const text=(t,x,y,c,size)=>{g.fillStyle=c;g.font=`bold ${size}px monospace`;g.textAlign='center';g.textBaseline='middle';g.fillText(t,x,y)};
-  const reed=(r,c,step=9)=>{for(let a=0;a<360;a+=step){const t=a*Math.PI/180;rect(Math.round(C-.5+r*Math.cos(t)),Math.round(C-.5+r*Math.sin(t)),1,1,c)}};
+  const reed=(r,c,step=9)=>{return;for(let a=0;a<360;a+=step){const t=a*Math.PI/180;rect(Math.round(C-.5+r*Math.cos(t)),Math.round(C-.5+r*Math.sin(t)),1,1,c)}};
   const dots=(r,c,n)=>{for(let k=0;k<n;k++){const t=k*TAU/n-Math.PI/2;rect(Math.round(C-.5+r*Math.cos(t)),Math.round(C-.5+r*Math.sin(t)),1,1,c)}};
   const profile=(c,hl,beard)=>{ell(17,13,5,6,c);poly([[13,10],[10,15],[12,16],[12,18],[15,20]],c);rect(15,18,5,4,c);
     poly([[10,27],[13,21],[21,21],[25,27]],c);ell(21,12,2.5,4,c);if(beard)poly([[12,17],[16,21],[18,17]],beard)};
@@ -3497,7 +3518,6 @@ function coinArt(type,side){
       if(h){dots(12,'#6f7a83',12);ell(16,16,3,4.5,'#9a7a24');rect(15,10,2,2,'#9a7a24')}
       else{text('2',13,17,'#6b5216',14);rect(19,11,4,2,'#9a7a24');rect(20,15,3,2,'#9a7a24');rect(19,19,4,2,'#9a7a24');dots(12,'#6f7a83',12)}break;
     case 'glass':lumpy(15.8,'#a87c1c',.5,36);disc(13.4,'#e8c14a');
-      g.globalCompositeOperation='source-atop';for(let k=0;k<40;k++){const x=(k*37)%32,y=(k*53+11)%32;rect(x,y,1,1,k%3?'#fff2b0':'#b8892a')}g.globalCompositeOperation='source-over';
       if(h)profile('#c99a2c','#fff2b0');else{ell(16,16,4.5,7.5,'#7a4a1c');rect(16,9,1,15,'#5a3412');rect(13,12,1,8,'#9a6428');rect(19,12,1,8,'#9a6428')}break;
     case 'sanddollar':{lumpy(15.6,'#b8a07a',.6,24);disc(14.4,'#e9dcc0');for(let k=0;k<60;k++){const x=3+(k*31)%27,y=3+(k*47+5)%27;if(Math.hypot(x+.5-C,y+.5-C)<13)rect(x,y,1,1,k%3?'#dccca8':'#f6eedc')}
       for(let k=0;k<5;k++){const a=-Math.PI/2+k*TAU/5;ell(16+Math.cos(a)*6.5,16+Math.sin(a)*6.5,1.6,4.2,'#b8a07a',a+Math.PI/2);ell(16+Math.cos(a)*6.5,16+Math.sin(a)*6.5,.7,3.2,'#d8c8a2',a+Math.PI/2)}
@@ -3533,15 +3553,12 @@ function coinArt(type,side){
     case 'penny':disc(15.5,'#6b3218');disc(14.5,'#c8743a');ring(12.5,'#a85a28');if(h)profile('#9a4a20','#e8a070');else{rect(9,10,14,2,'#7a3a18');[10,13,16,19,22].forEach(x=>rect(x,12,2,9,'#7a3a18'));rect(8,21,16,2,'#7a3a18')}break;
     case 'denarius':lumpy(15.5,'#6f7a83',.9,18);lumpy(14,'#cfd5da',.7,18);if(h){profile('#9aa3ab','#eef2f4');for(let k=0;k<7;k++)disc(1.1,'#5f8a3a',9+k*.6,8+k*1.6)}else text('SPQR',16,16,'#5d666e',8);break;
     case 'ecu':disc(15.5,'#7a5a14');disc(14.5,'#e8c14a');ring(12.5,'#b8901f');dots(12,'#9a7a24',12);if(h)text('ECU',16,16.5,'#6b5216',9);else{ell(16,16,4,5.5,'#b8901f');text('1',16,17,'#fff2b0',9)}break;
-    case 'pressed':ell(16,16,15.5,10.5,'#6b3218');ell(16,16,14.5,9.5,'#d9824a');ell(16,16,12.5,7.8,'#c26a34');ell(13,12,8,2.2,'rgba(255,220,170,.45)',-.15);
+    case 'pressed':ell(16,16,15.5,10.5,'#6b3218');ell(16,16,14.5,9.5,'#d9824a');ell(16,16,12.5,7.8,'#c26a34');
       {const k='#5a2a12';rect(8,15,10,5,k);rect(17,11,5,9,k);rect(16,10,7,1,k);rect(10,11,2,4,k);rect(9,10,4,1,k);poly([[6,20],[8,17],[8,20]],k);rect(18,12,3,3,'#f0b07a');
        disc(1.6,k,10.5,21);disc(1.6,k,14.5,21);disc(2.2,k,19.5,20.5);rect(7,23,18,1,'#7a3a18');for(let x=8;x<25;x+=3)rect(x,24,1,1,'#7a3a18');
-       disc(1.2,'rgba(255,240,220,.55)',11.5,8.6);disc(.9,'rgba(255,240,220,.4)',14,7.6)}break;
+       }break;
     case 'hope':disc(15.5,'#0f1a3a');disc(14.5,'#25407a');ring(12,'#c9d6f0');if(h){poly([[16,8],[22,14],[16,24],[10,14]],'#7fc4ff');poly([[16,8],[19,14],[16,24],[13,14]],'#c9ecff')}else text('HOPE',16,16,'#c9d6f0',8);break;
   }
-  g.globalCompositeOperation='source-atop';
-  const gr=g.createLinearGradient(3,3,29,29);gr.addColorStop(0,'rgba(255,255,255,.3)');gr.addColorStop(.45,'rgba(255,255,255,0)');gr.addColorStop(1,'rgba(0,0,0,.25)');
-  g.fillStyle=gr;g.fillRect(0,0,N,N);g.globalCompositeOperation='source-over';
   g.setTransform(1,0,0,1,0,0);engraveCoin(cv);
   return ART[key]=cv.toDataURL();
 }
