@@ -722,11 +722,12 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
 .bootcoin{width:clamp(84px,18vmin,140px);height:clamp(84px,18vmin,140px);perspective:600px;-webkit-perspective:600px;filter:drop-shadow(0 1px 0 color-mix(in srgb,var(--line) 22.0%,transparent))}
 .bootspin{width:100%;height:100%;animation:bootidle 2.4s ease-in-out infinite;-webkit-transform-style:preserve-3d;transform-style:preserve-3d}
 .bootface{width:100%;height:100%}.bootface img{display:block;width:100%;height:100%;image-rendering:auto;-webkit-user-drag:none}
-@keyframes bootidle{50%{transform:translateY(-8px) rotateY(18deg)}}
+/* idle motion only bobs: scaling or tilting resamples the fine outlines and line shading, which flickers (notably in Firefox) */
+@keyframes bootidle{50%{transform:translateY(-8px)}}
 .boottxt{font-size:clamp(18px,3.4vmin,26px);letter-spacing:.18em;text-transform:uppercase;color:var(--money);opacity:.85}
 .bootnote{font-size:13px;color:#8a8170}
-#bootbtn{min-width:220px;animation:bootpulse 1.6s ease-in-out infinite}
-@keyframes bootpulse{50%{transform:scale(1.05)}}
+#bootbtn{min-width:220px;animation:bootpulse 2.2s ease-in-out infinite}
+@keyframes bootpulse{50%{outline-offset:7px}}
 #boot.go #bootbtn,#boot.go .bootnote{opacity:0;transition:opacity .25s;pointer-events:none}
 #boot.go .boottxt{opacity:0;transition:opacity .3s}
 #boot.go .bootspin{animation:boottoss 1.55s cubic-bezier(.3,.1,.3,1) forwards}
@@ -1359,7 +1360,7 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.209</div>
+  <div class="gamever" aria-label="Version">v1.2.210</div>
 </div>
 
 <script>
