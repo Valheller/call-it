@@ -477,12 +477,31 @@ body.badges .face::before{display:block}
 .rcap.l{transform:rotateY(-90deg) translateZ(calc(var(--w)/2))}
 .rolldetail{display:flex;gap:16px;align-items:center;background:var(--panel-deep);border-radius:12px;padding:10px 14px;margin-bottom:10px;flex-wrap:wrap}
 .rolldetail .cbody{flex:1;min-width:200px;display:flex;flex-direction:column;gap:8px}
-#ripstage{position:fixed;inset:0;z-index:66;display:grid;place-items:center;background:rgba(8,9,9,.62);transition:opacity .45s}
-#ripstage .ripbox{zoom:var(--k,1);display:flex;flex-direction:column;align-items:center}
-#ripstage .ripname{font-size:34px;font-weight:700;margin-top:10px;text-align:center}
-#ripstage .ripsub{color:var(--ink-dim);font-size:16px;max-width:40ch;text-align:center;margin-top:4px}
-.ripcoin{position:fixed;left:0;top:0;width:calc(64px*var(--k,1));height:calc(64px*var(--k,1));margin:calc(-32px*var(--k,1)) 0 0 calc(-32px*var(--k,1));
-  background:var(--art) center/100% 100% no-repeat;pointer-events:none;z-index:67;filter:drop-shadow(0 6px 4px rgba(0,0,0,.45))}
+#ripstage{position:fixed;inset:0;z-index:66;display:grid;place-items:center;padding:16px;cursor:pointer;
+  background-color:color-mix(in srgb,var(--paper) 93%,transparent);background-image:repeating-radial-gradient(circle at 50% 46%,rgba(31,77,58,.06) 0 1px,transparent 1px 7px);
+  animation:ripfade .3s ease-out both;transition:opacity .45s}
+@keyframes ripfade{from{opacity:0}}
+#ripstage .ripcert{zoom:var(--k,1);position:relative;width:min(560px,calc(100vw - 32px));box-sizing:border-box;background:var(--panel);border:2px solid var(--line);outline:1px solid var(--line);outline-offset:-8px;
+  padding:22px 30px 18px;display:flex;flex-direction:column;align-items:center;gap:6px;animation:certin .5s cubic-bezier(.2,.9,.3,1) both;transition:transform .45s ease-in,opacity .45s}
+#ripstage.out .ripcert{transform:translateY(-28px);opacity:0}
+@keyframes certin{from{transform:translateY(34px);opacity:0}}
+.rchead,.rcfoot{align-self:stretch;display:flex;justify-content:space-between;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;color:var(--line);text-transform:uppercase}
+.rchead{border-bottom:1px solid var(--line);padding-bottom:6px}.rcfoot{border-top:1px dotted var(--line);padding-top:6px;margin-top:4px;font-size:10px}
+.rcroll{height:calc(var(--d,120px) + 34px);display:grid;place-items:center}
+.rcslots{opacity:0;transition:opacity .3s}.rcslots.on{opacity:1}
+.rcslots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;min-height:58px;align-items:center}
+.rcslots i{width:50px;height:50px;border-radius:50%;border:1.5px dashed rgba(31,77,58,.5);box-sizing:border-box;transition:border-color .2s,transform .2s}
+.rcslots i.got{border:1.5px solid var(--line);transform:scale(1.08)}
+#ripstage .ripname{font-family:var(--font-sc);font-weight:700;font-size:38px;line-height:1;margin-top:8px;text-align:center;color:var(--navy);animation:inkwipe .7s ease-out .25s both}
+#ripstage .ripsub{font-style:italic;color:var(--ink);font-size:17px;max-width:42ch;text-align:center;line-height:1.25;animation:sifade .4s ease-out .55s both}
+@keyframes inkwipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.rcseal{position:absolute;right:18px;top:44px;padding:5px 12px;border:3px double var(--seal);color:var(--seal);background:color-mix(in srgb,var(--panel) 80%,transparent);font-family:var(--font-sc);font-weight:700;font-size:20px;letter-spacing:.14em;
+  transform:rotate(-11deg);opacity:0;pointer-events:none}
+.rcseal.on{animation:stampin .32s cubic-bezier(.5,0,.6,1.6) both}
+@keyframes stampin{0%{opacity:0;transform:rotate(-24deg) scale(2.6)}70%{opacity:1;transform:rotate(-9deg) scale(.94)}100%{opacity:.92;transform:rotate(-11deg) scale(1)}}
+.riptap{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;color:var(--line);opacity:.6;text-transform:uppercase;margin-top:2px}
+.ripcoin{position:fixed;left:0;top:0;width:calc(50px*var(--k,1));height:calc(50px*var(--k,1));margin:calc(-25px*var(--k,1)) 0 0 calc(-25px*var(--k,1));
+  background:var(--art) center/100% 100% no-repeat;pointer-events:none;z-index:67;filter:drop-shadow(0 3px 2px rgba(31,77,58,.3))}
 /* curses, toasts, coach, events, showdown, records */
 .cbadge{position:absolute;right:-3px;bottom:-3px;min-width:17px;height:17px;padding:0 3px;border-radius:5px;background:var(--cc);color:#fff;font-size:11px;font-weight:700;font-style:normal;display:grid;place-items:center;box-shadow:0 1px 0 rgba(31,77,58,.22),inset 0 0 0 1px rgba(255,255,255,.25);z-index:3;line-height:1}
 .cic.locked img{filter:brightness(0) opacity(.55)}
@@ -1058,17 +1077,30 @@ body.hzpaused .hzghost,body.hzpaused .hzghost *,body.hzpaused .hzscorp,body.hzpa
 .ucell img{width:38px;height:38px;image-rendering:pixelated;filter:grayscale(1) brightness(.25)}.ucell .unm{line-height:1.1;text-align:center;overflow-wrap:anywhere}
 .ucell.got{color:var(--navy);box-shadow:inset 0 0 0 2px rgba(63,191,139,.6)}.ucell.got img{filter:none}.ucell.got .unum{color:var(--green);opacity:1}
 body.rewinding #app{animation:rewindfx .9s steps(9) both}@keyframes rewindfx{0%{filter:none;transform:none}30%{filter:hue-rotate(180deg) saturate(2) contrast(1.4);transform:skewX(6deg)}60%{filter:invert(1);transform:skewX(-6deg) translateX(-8px)}100%{filter:grayscale(1) brightness(1.6);transform:none}}
-#stageintro{position:fixed;inset:0;z-index:66;display:grid;place-items:center;background:rgba(8,6,6,.88);transition:opacity .45s;cursor:pointer;padding:16px}
+#stageintro{position:fixed;inset:0;z-index:66;display:grid;place-items:center;cursor:pointer;padding:16px;
+  background-color:color-mix(in srgb,var(--paper) 93%,transparent);background-image:repeating-radial-gradient(circle at 50% 46%,rgba(31,77,58,.06) 0 1px,transparent 1px 7px);transition:opacity .45s}
 #stageintro[hidden]{display:none}#stageintro.out{opacity:0;pointer-events:none}
-.sibox{text-align:center;zoom:var(--k,1);display:flex;flex-direction:column;align-items:center;gap:6px;max-width:760px}
-.sistage{font-size:15px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-dim);animation:sifade .4s ease-out both}
-.siname{font-size:clamp(40px,6vw,72px);line-height:1;text-shadow:0 1px 0 rgba(31,77,58,.22);animation:dropin .55s cubic-bezier(.3,1.4,.5,1) .1s both}
-.siline{font-style:italic;color:var(--ink-dim);font-size:15px;margin-bottom:8px;animation:sifade .4s ease-out .35s both}
+.sibox{zoom:var(--k,1);width:min(720px,calc(100vw - 32px));position:relative;box-sizing:border-box;background:var(--panel);border:2px solid var(--line);outline:1px solid var(--line);outline-offset:-8px;
+  padding:24px 32px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;animation:certin .5s cubic-bezier(.2,.9,.3,1) both;transition:transform .45s ease-in}
+#stageintro.out .sibox{transform:translateY(-28px)}
+.sistage{align-self:stretch;display:flex;align-items:center;gap:12px;font-family:var(--font-mono);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--line);animation:sifade .35s ease-out .1s both}
+.sistage i{flex:1;height:0;border-top:3px double var(--line);transform-origin:var(--o,right);animation:rulegrow .55s ease-out .15s both}.sistage i+span+i{--o:left}
+@keyframes rulegrow{from{transform:scaleX(0)}}
+.siname{font-family:var(--font-sc);font-weight:700;font-size:clamp(38px,6vw,64px);line-height:1;color:color-mix(in srgb,var(--fc) 72%,#1b2a4a);animation:inkwipe .75s ease-out .3s both}
+.siline{font-style:italic;color:var(--ink);font-size:17px;animation:sifade .4s ease-out .7s both}
+.siledger{align-self:stretch;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:4px 0;animation:sifade .35s ease-out .85s both}
+.siledger>div{padding:6px 4px;border-left:1px dotted var(--line)}.siledger>div:first-child{border-left:0}
+.siledger .silbl{font-size:10px}.siledger b{display:block;font-family:var(--font-mono);font-weight:600;font-size:22px;color:var(--navy);font-variant-numeric:tabular-nums}
+.siledger .boss b{color:var(--seal)}
 .sirow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-.sicard{display:flex;gap:10px;align-items:center;text-align:left;background:var(--panel-deep);border-radius:12px;padding:10px 14px;max-width:360px;box-shadow:0 0 0 1px var(--edge);animation:sifade .4s ease-out .5s both}
-.sicard+.sicard{animation-delay:.65s}.sicard b{font-size:20px}.silbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim)}.sidesc{font-size:13px;color:var(--ink);margin-top:2px}
-.sicon{width:48px;height:48px;border-radius:10px;flex:none;display:grid;place-items:center}.sicon img{width:36px;height:36px;image-rendering:pixelated}.sicon.wxi{color:#1a1a1a;font-size:13px;font-weight:700}
-.sitap{font-size:11px;color:var(--ink-dim);opacity:.6;margin-top:6px}
+.sicard{display:flex;gap:12px;align-items:center;text-align:left;background:#fbf7ec;padding:9px 14px;max-width:320px;border:1px solid var(--edge);border-left:4px solid var(--cc,var(--line));animation:sifade .4s ease-out 1.05s both}
+.sicard+.sicard{animation-delay:1.2s}.sicard b{font-family:var(--font-sc);font-size:21px;line-height:1}.silbl{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--line)}.sidesc{font-size:14px;color:var(--ink);margin-top:2px;line-height:1.2}
+.sicon{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:50%}.sicon img{width:32px;height:32px;image-rendering:pixelated}.sicon.wxi{color:#fff;font-size:12px;font-weight:700}
+.siseal{position:absolute;right:-22px;bottom:-22px;width:78px;height:78px;border-radius:50%;border:3px double var(--seal);color:var(--seal);display:grid;place-items:center;font-family:var(--font-sc);font-weight:700;font-size:30px;line-height:1;
+  background:color-mix(in srgb,var(--panel) 75%,transparent);opacity:0;transform:rotate(-12deg);animation:stampin .32s cubic-bezier(.5,0,.6,1.6) 1.35s both}
+.siseal small{display:block;font-family:var(--font-mono);font-size:8px;letter-spacing:.18em;margin-bottom:2px}
+.sitap{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--line);opacity:.6;margin-top:4px}
+@media (max-width:560px){.siseal{width:58px;height:58px;font-size:22px;right:-6px;bottom:-14px}.rcseal{top:auto;bottom:-14px;right:10px;font-size:16px}.siledger b{font-size:17px}.sibox{padding:20px 16px 14px}#ripstage .ripcert{padding:20px 16px 14px}}
 @keyframes sifade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .tixprice{background:#a8335a!important;color:#fff}.prizenote{text-align:center;font-size:13px;color:var(--ink-dim);padding:4px 8px}.prizenote b{color:#a8335a}
 .mystcash{font-size:26px;color:var(--money);font-weight:700;text-shadow:0 1px 0 rgba(31,77,58,.22)}
@@ -1198,7 +1230,7 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.199</div>
+  <div class="gamever" aria-label="Version">v1.2.200</div>
 </div>
 
 <script>
@@ -2477,6 +2509,7 @@ const sfx={
   upgrade(){[392,523,659,784,1046].forEach((f,i)=>tone({f,type:'square',lp:2600,d:.12,v:.06,t:i*.05}));tone({f:1046,f2:2093,d:.4,v:.05,type:'triangle',t:.25})},
   skip(){noise({ft:'bandpass',ff:800,ff2:3000,q:1,d:.25,v:.2});tone({f:600,f2:1200,d:.2,v:.04,type:'triangle'})},
   deal(){for(let i=0;i<3;i++)noise({ft:'bandpass',ff:2200+i*300,q:1.5,d:.05,v:.2,t:i*.07});tone({f:330,d:.1,v:.06,type:'triangle',t:.2})},
+  stamp(){noise({ft:'lowpass',ff:520,q:1,d:.1,v:.4});tone({f:130,f2:62,d:.14,v:.16,type:'sine'});noise({ff:2600,q:2,d:.03,v:.1,t:.01})},
   door(){tone({f:180,f2:120,d:.35,v:.12,type:'sawtooth',lp:600});noise({ft:'lowpass',ff:400,d:.3,v:.15})},
   bell(){[1568,2093].forEach((f,i)=>{tone({f,type:'sine',d:.6,v:.08,t:i*.12});tone({f:f*2.76,type:'sine',d:.3,v:.02,t:i*.12})})},
   ticket(){for(let i=0;i<3;i++)tone({f:1200,type:'square',lp:3000,d:.03,v:.05,t:i*.06});tone({f:1800,type:'triangle',d:.15,v:.06,t:.2})},
@@ -4711,34 +4744,42 @@ async function openRoll(key,o={}){
   if(o.daily){PS().dailyPlayed=Math.max(PS().dailyPlayed||0,1);saveProf();setTimeout(checkGoals,1500)}
   newRun(key,{stake:o.daily?1:STAKESEL,seed:o.daily?o.seed:hashStr(seedStr),daily:o.daily,seedStr:o.daily?'DAILY '+o.daily:seedStr,custom});render();
   if(reduced){return}
-  const r=ROLLS[key],W=Math.round(Math.min(360,innerWidth*.6)),D=Math.round(W*122/360);
+  const r=ROLLS[key],W=Math.round(Math.min(300,innerWidth*.55)),D=Math.round(W*122/360),n=S.purse.length;
   const st=document.createElement('div');st.id='ripstage';
-  st.innerHTML=`<div class="ripbox">${rollHTML(key,W,D)}<div class="ripname">${rollName(key)}</div><div class="ripsub">${fmt(r.desc)}</div></div>`;
+  st.innerHTML=`<div class="ripcert"><div class="rchead"><span>Certificate of Issue</span><span>No. ${escH(S.seed||'')}</span></div>
+    <div class="rcroll" style="--d:${D}px">${rollHTML(key,W,D)}</div><div class="rcslots">${S.purse.map(()=>'<i></i>').join('')}</div>
+    <div class="ripname">${rollName(key)}</div><div class="ripsub">${fmt(r.desc)}</div>
+    <div class="rcfoot"><span>Stake ${S.stake||1}</span><span>${n} coins</span><span>Payable to the bearer</span></div>
+    <div class="rcseal">Issued</div><div class="riptap">Tap to skip</div></div>`;
   document.body.appendChild(st);
+  let skip=false,coins=[];const tap=new Promise(res=>{st.onclick=()=>{skip=true;res()}}),w=ms=>Promise.race([wait(ms),tap]);
   const roll=st.querySelector('.roll3d');roll.style.animationDuration='1.1s';
-  play('reroll');await wait(750);
-  // freeze and tear the wrapper off
-  const cur=getComputedStyle(roll).transform;roll.style.animation='none';roll.style.transform=cur==='none'?'':cur;
-  play('rip');shake(7);
-  st.querySelectorAll('.rstrip').forEach((el,i)=>{const base=`rotateX(${i*30}deg) translateZ(${D/2}px)`;
-    el.animate([{transform:base,opacity:1},{transform:`rotateX(${i*30+(Math.random()-.5)*70}deg) translateZ(${D*2.8}px) rotateY(${(Math.random()-.5)*140}deg) rotateZ(${(Math.random()-.5)*90}deg)`,opacity:0}],
-      {duration:700,delay:i*12,easing:'cubic-bezier(.2,.7,.4,1)',fill:'forwards'})});
-  st.querySelectorAll('.rcap').forEach((el,i)=>{const sgn=i?-1:1,base=`rotateY(${90*sgn}deg) translateZ(${W/2}px)`;
-    el.animate([{transform:base,opacity:1},{transform:`rotateY(${90*sgn}deg) translateZ(${W/2+220}px) rotateX(240deg)`,opacity:0}],{duration:600,easing:'ease-out',fill:'forwards'})});
-  // the coins burst out and land in a row
-  const rc=roll.getBoundingClientRect(),n=S.purse.length,k=+getComputedStyle(document.documentElement).getPropertyValue('--k')||1;
-  const sub=st.querySelector('.ripsub').getBoundingClientRect();
-  const gap=74*k,cy=rc.top+rc.height/2,row0=innerWidth/2-gap*(n-1)/2,landY=Math.min(innerHeight-50*k,sub.bottom+56*k);
-  const coins=S.purse.map((c,i)=>{const el=document.createElement('div');el.className='ripcoin';el.style.setProperty('--art',`url(${coinArt(c.type,COINS[c.type].fixed||'H')})`);document.body.appendChild(el);
-    const x0=rc.left+rc.width*(i+.5)/n,x1=row0+gap*i,peak=cy-(140+Math.random()*90)*k;
-    el.animate([{transform:`translate(${x0}px,${cy}px) rotateY(84deg) scale(.7)`},{transform:`translate(${(x0+x1)/2}px,${peak}px) rotateY(400deg) scale(1.15)`,offset:.45},{transform:`translate(${x1}px,${landY}px) rotateY(720deg) scale(1)`}],
-      {duration:900,delay:120+i*70,easing:'cubic-bezier(.3,.6,.4,1)',fill:'forwards'});
-    setTimeout(()=>play('land',i),(120+i*70+900)/SPD());
-    return el});
-  setTimeout(()=>play('toss'),140);
-  await wait(1250+n*70);
-  st.style.opacity='0';coins.forEach(el=>{el.style.transition='opacity .4s';el.style.opacity='0'});
-  await wait(450);st.remove();coins.forEach(el=>el.remove());
+  play('page');setTimeout(()=>play('reroll'),200);await w(900);
+  if(!skip){
+    // freeze and tear the wrapper off
+    const cur=getComputedStyle(roll).transform;roll.style.animation='none';roll.style.transform=cur==='none'?'':cur;
+    play('rip');shake(3);st.querySelector('.rcslots').classList.add('on');
+    st.querySelectorAll('.rstrip').forEach((el,i)=>{const base=`rotateX(${i*30}deg) translateZ(${D/2}px)`;
+      el.animate([{transform:base,opacity:1},{transform:`rotateX(${i*30+(Math.random()-.5)*70}deg) translateZ(${D*2.4}px) rotateY(${(Math.random()-.5)*140}deg) rotateZ(${(Math.random()-.5)*90}deg)`,opacity:0}],
+        {duration:650,delay:i*12,easing:'cubic-bezier(.2,.7,.4,1)',fill:'forwards'})});
+    st.querySelectorAll('.rcap').forEach((el,i)=>{const sgn=i?-1:1,base=`rotateY(${90*sgn}deg) translateZ(${W/2}px)`;
+      el.animate([{transform:base,opacity:1},{transform:`rotateY(${90*sgn}deg) translateZ(${W/2+180}px) rotateX(240deg)`,opacity:0}],{duration:550,easing:'ease-out',fill:'forwards'})});
+    st.querySelectorAll('.gbody,.gcap').forEach(el=>el.animate([{opacity:1},{opacity:0}],{duration:400,fill:'forwards'}));
+    // the coins drop out of the roll, one into each slot on the certificate
+    const rc=roll.getBoundingClientRect(),cy=rc.top+rc.height/2,slots=[...st.querySelectorAll('.rcslots i')];
+    coins=S.purse.map((c,i)=>{const el=document.createElement('div');el.className='ripcoin';el.style.setProperty('--art',`url(${coinArt(c.type,COINS[c.type].fixed||'H')})`);document.body.appendChild(el);
+      const sr=slots[i].getBoundingClientRect(),x0=rc.left+rc.width*(i+.5)/n,x1=sr.left+sr.width/2,y1=sr.top+sr.height/2,peak=Math.min(cy,y1)-60-Math.random()*50,dl=80+i*90;
+      el.animate([{transform:`translate(${x0}px,${cy}px) rotateY(84deg) scale(.8)`},{transform:`translate(${(x0+x1)/2}px,${peak}px) rotateY(400deg) scale(1.1)`,offset:.45},{transform:`translate(${x1}px,${y1}px) rotateY(720deg) scale(1)`}],
+        {duration:720,delay:dl,easing:'cubic-bezier(.3,.6,.4,1)',fill:'forwards'});
+      setTimeout(()=>{if(skip)return;play('land',i);slots[i].classList.add('got')},(dl+720)/SPD());
+      return el});
+    setTimeout(()=>play('toss'),100);
+    await w(80+n*90+820);
+  }
+  if(!skip){const se=st.querySelector('.rcseal');se.classList.add('on');setTimeout(()=>{if(!skip){play('stamp');shake(2)}},180);await w(1100)}
+  st.onclick=null;coins.forEach(el=>{el.style.transition='opacity .2s';el.style.opacity='0'});st.querySelector('.rcslots').classList.add('on');
+  await new Promise(res=>setTimeout(res,150));st.classList.add('out');st.style.opacity='0';
+  await new Promise(res=>setTimeout(res,450));st.remove();coins.forEach(el=>el.remove());
 }
 /* ================= ENCOUNTERS ================= */
 /* an encounter's offer is rolled once, the first time it's shown */
@@ -4930,15 +4971,24 @@ function recordsModal(){
   return `<div class="overlay"><div class="panel modal wide"><h2>Records</h2><div class="ctabs">${[['stats','Stats'],['history','History'],['goals','Roll unlocks']].map(([k,n])=>`<button class="btn small ${REC_TAB===k?'orange':''}" style="${REC_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="rectab" data-arg="${k}">${n}</button>`).join('')}</div>
     <div class="recbody">${body}</div><div style="text-align:center;margin-top:10px"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
 }
-/* new stage: a short title card with the floor name, its boss and any weather */
+/* new stage: a ledger page with the floor name, the stage's three targets, its boss and any weather, sealed with the stage number */
+const ROMAN=n=>{let o='';[[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']].forEach(([v,c])=>{while(n>=v){o+=c;n-=v}});return o};
 function stageIntro(){if(!S)return;if($('#ripstage')){setTimeout(stageIntro,250);return}const F=floorOf(S.ante),bb=(S.blinds||[]).find(b=>b.kind==='boss'),W=S.weather&&WEATHER[S.weather];
   let el=$('#stageintro');if(!el){el=document.createElement('div');el.id='stageintro';document.body.appendChild(el)}
-  const boss=bb&&BOSSES[bb.boss]?`<div class="sicard"><div class="sicon" style="background:${BOSSES[bb.boss].col}">${bossSil(bb.boss)?`<img src="${bossSil(bb.boss)}" alt="">`:''}</div><div><div class="silbl">Boss</div><b style="color:${BOSSES[bb.boss].col}">${BOSSES[bb.boss].name}</b><div class="sidesc">${bossDesc(bb)}</div></div></div>`:'';
-  const wx=W?`<div class="sicard"><div class="sicon wxi" style="background:${W.col}">${W.short||''}</div><div><div class="silbl">Weather</div><b style="color:${W.col}">${W.name}</b><div class="sidesc">${fmt(W.desc)}</div></div></div>`:'';
-  el.innerHTML=`<div class="sibox"><div class="sistage">Stage ${S.ante}${S.ante<=STAGES?` of ${STAGES}`:''}</div><div class="siname" style="color:${F.col}">${F.name}</div><div class="siline">${F.line||''}</div><div class="sirow">${boss}${wx}</div><div class="sitap">Tap to continue</div></div>`;
-  el.hidden=false;el.classList.remove('out');play('levelup');
-  const close=()=>{if(el.hidden)return;el.classList.add('out');setTimeout(()=>{el.hidden=true},450);el.onclick=null};
-  el.onclick=close;clearTimeout(stageIntro.t);stageIntro.t=setTimeout(close,3600/SPD())}
+  const boss=bb&&BOSSES[bb.boss]?`<div class="sicard" style="--cc:${BOSSES[bb.boss].col}"><div class="sicon" style="background:${BOSSES[bb.boss].col}">${bossSil(bb.boss)?`<img src="${bossSil(bb.boss)}" alt="">`:''}</div><div><div class="silbl">Boss</div><b>${BOSSES[bb.boss].name}</b><div class="sidesc">${bossDesc(bb)}</div></div></div>`:'';
+  const wx=W?`<div class="sicard" style="--cc:${W.col}"><div class="sicon wxi" style="background:${W.col}">${W.short||''}</div><div><div class="silbl">Weather</div><b>${W.name}</b><div class="sidesc">${fmt(W.desc)}</div></div></div>`:'';
+  const hide=b=>S.roll==='glitched'||b.kind==='rival'||b.boss==='general'||b.boss==='tablerivals';
+  const ledger=(S.blinds||[]).slice(0,3).map(b=>`<div class="${b.kind==='boss'?'boss':''}"><div class="silbl">${b.kind==='boss'?'Boss wager':b.kind==='big'?'Big wager':b.kind==='rival'?'Rival':'Small wager'}</div><b data-n="${hide(b)?'':blindTarget(b)}">${hide(b)?'???':'0'}</b></div>`).join('');
+  el.innerHTML=`<div class="sibox" style="--fc:${F.col}"><div class="sistage"><i></i><span>Stage ${S.ante}${S.ante<=STAGES?` of ${STAGES}`:''}</span><i></i></div><div class="siname">${F.name}</div><div class="siline">${F.line||''}</div>
+    <div class="siledger">${ledger}</div><div class="sirow">${boss}${wx}</div><div class="siseal"><div><small>STAGE</small>${ROMAN(S.ante)}</div></div><div class="sitap">Tap to continue</div></div>`;
+  el.hidden=false;el.classList.remove('out');play('page');
+  // the targets count up once the ledger appears, then the seal is stamped
+  const T=[];T.push(setTimeout(()=>{el.querySelectorAll('.siledger b[data-n]').forEach(e=>{const v=+e.dataset.n;if(!e.dataset.n)return;const t0=performance.now();
+    const step=now=>{const f=Math.min(1,(now-t0)/600);e.textContent=fmtN(Math.round(v*(1-Math.pow(1-f,3))));if(f<1&&!el.hidden)requestAnimationFrame(step)};requestAnimationFrame(step)});play('tick')},850));
+  T.push(setTimeout(()=>{play('stamp');shake(2)},1450));
+  if(reduced)el.querySelectorAll('.siledger b[data-n]').forEach(e=>{if(e.dataset.n)e.textContent=fmtN(+e.dataset.n)});
+  const close=()=>{if(el.hidden)return;T.forEach(clearTimeout);el.querySelectorAll('.siledger b[data-n]').forEach(e=>{if(e.dataset.n)e.textContent=fmtN(+e.dataset.n)});el.classList.add('out');setTimeout(()=>{el.hidden=true},450);el.onclick=null};
+  el.onclick=close;clearTimeout(stageIntro.t);stageIntro.t=setTimeout(close,5200/SPD())}
 function showdownIntro(){
   const B=BOSSES[S.boss],el=$('#showdown');
   el.innerHTML=`<div class="sdbox ${S.boss==='fatal'?'sdfatal':''}"><div class="sdlbl">Showdown</div><div class="sdname" style="color:${B.col}" data-t="${B.name}">${B.name}</div><div class="sddesc">${bossDesc(curBlind())}</div></div>`;
