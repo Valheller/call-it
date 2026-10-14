@@ -1316,6 +1316,18 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
 .cic.charm.cleg::after,.cic.charm.cfab::after{inset:-4px;opacity:.55;animation-duration:9s;-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 4px));mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 4px))}
 .cic.charm.cleg::after{background:repeating-conic-gradient(#4a3a6b 0 2.5deg,transparent 2.5deg 7deg)}
 .cic.charm.cfab::after{background:repeating-conic-gradient(#8a5a12 0 2.5deg,transparent 2.5deg 6deg,#a23b2a 6deg 8.5deg,transparent 8.5deg 12deg)}
+
+.chqmemo{font-size:15px;line-height:1.25;color:var(--ink);flex:1;margin-bottom:4px}
+.chqmemo .chqlbl{display:block;font-style:normal;font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--bk);margin-bottom:2px}
+@media (max-width:560px){
+  .blinds.ways{flex-direction:column;align-items:stretch;gap:10px}
+  .bcol.way{max-width:none;flex:none;display:grid;grid-template-columns:auto 1fr;column-gap:12px;row-gap:4px;padding:12px 14px;transform:none}
+  .bcol.way .chqhead{grid-column:1/-1}.bcol.way .chqpay{display:none}
+  .bcol.way .chqname{display:contents}.bcol.way .chqname .jcard{grid-row:2/4;align-self:start}
+  .bcol.way .bname{font-size:22px!important}
+  .chqmemo{font-size:13px;margin:0}.chqmemo .chqlbl{display:none}
+  .bcol.way>.btn{grid-column:1/-1;padding:7px 12px;font-size:16px}
+  .way.rare::before{right:4px;top:-10px}}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1362,7 +1374,7 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.211</div>
+  <div class="gamever" aria-label="Version">v1.2.212</div>
 </div>
 
 <script>
@@ -5759,6 +5771,7 @@ function waysHTML(){
       <div class="chqhead"><span>Cheque No. ${String(S.ante).padStart(2,'0')}${i+1}</span><span>${w.t==='shop'?'Stage '+S.ante:D.rare?'Rare detour':'Detour'}</span></div>
       <div class="chqpay">Pay to the order of</div>
       <div class="chqname"><button class="jcard tile" data-tip="way:${i}" aria-label="${D.name}"><div class="jin" style="--jbg:${D.bg};--nc:${D.col}">${IMG(destIcon(w.t))}</div></button><div class="bname">${D.name}</div></div>
+      <div class="chqmemo"><i class="chqlbl">Memo</i>${fmt(wayInfo(w))}</div>
       <button class="btn ${w.t==='shop'?'green':'orange'}" style="width:100%" data-act="way" data-arg="${i}">${w.t==='shop'?'Browse':'Go'}</button></div>`}).join('')}</div></div>`;
 }
 const biggest=k=>{const sz=PACKS[k].sizes||['normal','jumbo','mega'];return sz.includes('mega')?'mega':sz.includes('jumbo')?'jumbo':sz[0]};
