@@ -1359,7 +1359,7 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.208</div>
+  <div class="gamever" aria-label="Version">v1.2.209</div>
 </div>
 
 <script>
@@ -3429,7 +3429,7 @@ function canvasGrid(cv,skip){const g=cv.getContext('2d'),d=g.getImageData(0,0,cv
 /* coin faces (style B): flat metal, crisp ink outlines, and diagonal line shading only on the darker parts of the design.
    flat=true is the older all-over line screen, still used for the hazard drawings */
 function engraveCoin(cv,flat){if(flat)return engraveLines(cv);
-  const W=cv.width,H=cv.height,g=cv.getContext('2d'),img=g.getImageData(0,0,W,H),d=img.data,P=W/36,o=Math.max(2,Math.round(W/64));
+  const W=cv.width,H=cv.height,g=cv.getContext('2d'),img=g.getImageData(0,0,W,H),d=img.data,P=W/36,o=Math.max(1,Math.round(W/128));
   const L=new Float32Array(W*H),A=new Uint8Array(W*H),memo=new Map(),NAV=MINT_INK.navy;
   for(let p=0,q=0;p<W*H;p++,q+=4){A[p]=d[q+3]>=8?1:0;L[p]=(.3*d[q]+.59*d[q+1]+.11*d[q+2])/255}
   // the coin's own metal is its most common colour; only the design darker than it gets shading
