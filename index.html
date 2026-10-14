@@ -630,8 +630,14 @@ img,[data-drag],[data-tip],.jcard,.coin,canvas{-webkit-touch-callout:none;-webki
 .overlay.clear{background:transparent}
 .modal{width:min(560px,100%);max-height:calc(100% - 20px);overflow:auto}
 .modal h2{margin:0 0 10px;font-size:28px;text-align:center}
-.htable{width:100%;border-collapse:separate;border-spacing:0 6px;font-size:15px}
-.htable td{background:var(--panel-deep);padding:6px 8px}
+.htable{width:100%;border-collapse:separate;border-spacing:0 4px;font-size:15px}
+.htable td{background:var(--panel-deep);padding:4px 8px}
+.htable tr[data-tip]{cursor:help}
+.htable tr[data-tip]:hover td{background:#3a3226}
+.handex{display:flex;gap:3px;justify-content:center;margin:6px 0 4px}
+.handex img{width:26px;height:26px;image-rendering:pixelated}
+.handex .miss{opacity:.35;filter:grayscale(1)}
+.handex .hit{filter:drop-shadow(0 0 3px #ffd34d)}
 .htable td:first-child{border-radius:8px 0 0 8px} .htable td:last-child{border-radius:0 8px 8px 0}
 .htable .lv{color:var(--ink-dim);white-space:nowrap}
 .htable .cmv{white-space:nowrap}
@@ -1148,7 +1154,7 @@ body:has(#overlay:not([hidden])) #saybox{display:none}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.191</div>
+  <div class="gamever" aria-label="Version">v1.2.192</div>
 </div>
 
 <script>
@@ -2416,6 +2422,19 @@ const sfx={
     for(let i=0;i<n;i++)tone({f:base[i]*k,type:'triangle',d:.22+t*.02,v:.07+t*.004,t:i*.055});if(t>=9)fm({f:1046*k,ratio:3.5,idx:2,d:.8,v:.08,t:n*.055});if(t>=12)noise({ft:'highpass',ff:6000,d:.4,v:.08,t:.05})},
   rush(){for(let i=0;i<9;i++){const k=1+i*.06;tone({f:3150*k,d:.07,v:.045,t:i*.045});noise({ff:5200,q:2,d:.02,v:.08,t:i*.045})}this.money()},
   boss(){tone({f:110,f2:55,d:.9,v:.3,type:'sawtooth',lp:500});noise({ft:'lowpass',ff:300,d:.8,v:.25})},
+  /* one cue per action */
+  pickup(){noise({ff:3000,q:2,d:.02,v:.14});tone({f:660,f2:990,d:.07,v:.07,type:'triangle'})},
+  putdown(){noise({ff:1800,q:2,d:.02,v:.14});tone({f:880,f2:520,d:.07,v:.07,type:'triangle'})},
+  reflip(){noise({ff:2600,q:3,d:.02,v:.26});tone({f:900,f2:2600,d:.13,v:.06,type:'triangle'})},
+  rune(){[0,7,12,19].forEach((n,i)=>fm({f:440*Math.pow(2,n/12),ratio:2.01,idx:1.5,d:.5,v:.05,t:i*.06}));noise({ft:'highpass',ff:7000,d:.3,v:.05})},
+  page(){noise({ft:'bandpass',ff:2500,ff2:5000,q:.8,d:.12,v:.22});noise({ft:'bandpass',ff:3200,ff2:6000,q:.8,d:.1,v:.16,t:.1})},
+  sell(){[1760,1318,1046].forEach((f,i)=>tone({f,type:'square',lp:4000,d:.09,v:.06,t:i*.05}));noise({ft:'highpass',ff:6000,d:.15,v:.08,t:.1})},
+  upgrade(){[392,523,659,784,1046].forEach((f,i)=>tone({f,type:'square',lp:2600,d:.12,v:.06,t:i*.05}));tone({f:1046,f2:2093,d:.4,v:.05,type:'triangle',t:.25})},
+  skip(){noise({ft:'bandpass',ff:800,ff2:3000,q:1,d:.25,v:.2});tone({f:600,f2:1200,d:.2,v:.04,type:'triangle'})},
+  deal(){for(let i=0;i<3;i++)noise({ft:'bandpass',ff:2200+i*300,q:1.5,d:.05,v:.2,t:i*.07});tone({f:330,d:.1,v:.06,type:'triangle',t:.2})},
+  door(){tone({f:180,f2:120,d:.35,v:.12,type:'sawtooth',lp:600});noise({ft:'lowpass',ff:400,d:.3,v:.15})},
+  bell(){[1568,2093].forEach((f,i)=>{tone({f,type:'sine',d:.6,v:.08,t:i*.12});tone({f:f*2.76,type:'sine',d:.3,v:.02,t:i*.12})})},
+  ticket(){for(let i=0;i<3;i++)tone({f:1200,type:'square',lp:3000,d:.03,v:.05,t:i*.06});tone({f:1800,type:'triangle',d:.15,v:.06,t:.2})},
 };
 sfx.glitch=(v=1)=>{const c=AU.ctx;for(let k=0;k<3;k++)tone({t:k*.035,f:300+Math.random()*2400,type:'square',d:.03,v:.06*v});noise({t:.02,d:.05,v:.05*v,hp:3000})};
 function play(name,arg){if(!AU.ctx||!OPT.sfx)return;try{sfx[name](arg);if(name!=='glitch'&&S&&S.roll==='glitched'&&Math.random()<.15)sfx.glitch(.6)}catch(e){}}
@@ -3390,7 +3409,7 @@ const contractIcon=k=>sprite('ct-'+k,{p:{1:'#e9d9a8',2:'#a8743a',3:'#7a5a3a'},s:
 const tixTxt=()=>S&&S.tickets?`${S.tickets} ticket${S.tickets>1?'s':''}`:'';
 /* money sink: the House skims hoarded cash after each wager */
 const HOARD_FREE0=100,hoardFree=()=>S&&S.roll==='inflation'?50:HOARD_FREE0;const HOUSE_CUT=.25,houseCut=m=>m>hoardFree()?Math.ceil((m-hoardFree())*HOUSE_CUT):0;
-function addTickets(n,why){if(!S||!n)return;PS().ticketsTotal=(PS().ticketsTotal||0)+n;PROF.tix=(PROF.tix||0)+n;S.tickets=(S.tickets||0)+n;S.ticketsEarned=(S.ticketsEarned||0)+n;toast(`<b style="color:#ff8fab">+${n} Ticket${n>1?'s':''}</b>${why?' · '+why:''}`);syncStats()}
+function addTickets(n,why){if(!S||!n)return;PS().ticketsTotal=(PS().ticketsTotal||0)+n;PROF.tix=(PROF.tix||0)+n;S.tickets=(S.tickets||0)+n;S.ticketsEarned=(S.ticketsEarned||0)+n;play('ticket');toast(`<b style="color:#ff8fab">+${n} Ticket${n>1?'s':''}</b>${why?' · '+why:''}`);syncStats()}
 function settleContract(){
   if(!S.contract)return;const C=CONTRACTS[S.contract.key];S.contract=null;
   if(C.test()){C.pay();addTickets(2,'contract');toast(`Contract fulfilled: <b>${C.name}</b>. You get ${fmt(C.reward)}`);play('money')}else toast(`Contract failed: <b>${C.name}</b>`);
@@ -3521,10 +3540,10 @@ function consBlock(c,fromSlot){
 }
 async function applyCons(c,fromSlot){
   const sel=S.csel.slice().sort((a,b)=>a-b);S.csel=[];
-  if(c.kind==='almanac'){S.stats.almanacs++;PS().almanacs++;S.lastUsed=c.key?{kind:'almanac',key:c.key}:{kind:'almanac',hand:c.hand};render();if(c.key)await ALMS[c.key].use();else await levelUp(c.hand,2);return}
+  if(c.kind==='almanac'){play('page');S.stats.almanacs++;PS().almanacs++;S.lastUsed=c.key?{kind:'almanac',key:c.key}:{kind:'almanac',hand:c.hand};render();if(c.key)await ALMS[c.key].use();else await levelUp(c.hand,2);return}
   const d=consDef(c);
   if(c.kind==='rune')PS().runes++;else if(c.kind==='spirit')PS().spirits++;
-  if(c.kind==='rune'){S.stats.runes++;if(c.key!=='echo')S.lastUsed={kind:'rune',key:c.key}}
+  if(c.kind==='rune'){play('rune');S.stats.runes++;if(c.key!=='echo')S.lastUsed={kind:'rune',key:c.key}}
   else play('spirit');
   if(charmsOn()){
     if(c.kind==='rune')for(let k=0;k<countEff('moonstone');k++)if(rand()<odds(1/3)){setTimeout(()=>{if(consRoom()){S.cons.push({kind:'rune',key:c.key});toast(`<b>Moonstone</b> returns the <b>${consDef(c).name}</b>`);render()}},700);break}
@@ -4269,14 +4288,18 @@ function winTease(){if(!S)return'';const t=WIN_TEASE[S.roll]||['charm','houseedg
 
 let RI_TAB='scores';
 function runInfoModal(){
-  const tabs=`<div class="ctabs">${[['scores','Toss scores'],['upgrades',`Upgrades${S?` <small>${S.upgrades.length}</small>`:''}`]].map(([k,n])=>`<button class="btn small ${RI_TAB===k?'orange':''}" style="${RI_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ritab" data-arg="${k}">${n}</button>`).join('')}</div>`;
+  const tabs=`<div class="ctabs">${[['scores','Toss scores'],['upgrades',`Upgrades${S?` <small>${S.upgrades.length}</small>`:''}`],['run','This run']].map(([k,n])=>`<button class="btn small ${RI_TAB===k?'orange':''}" style="${RI_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ritab" data-arg="${k}">${n}</button>`).join('')}</div>`;
   if(RI_TAB==='upgrades'){const U=S?S.upgrades.filter(k=>UPGRADES[k]):[];
     return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${U.length?`<div class="upglist">${U.map(k=>{const u=UPGRADES[k];return `<div class="upgrow"><div class="cic tile" style="--jbg:#5d3d94">${IMG(upgIcon(k))}</div><div><div class="cname">${u.name}${u.req?' <small class="k-a">II</small>':''}</div><div class="ds">${fmt(u.desc)}</div></div></div>`}).join('')}</div>`:'<div class="cdesc" style="text-align:center;padding:20px 0">No Upgrades yet. The shop sells one each stage.</div>'}</div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`}
-  return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${S?questsHTML():''}${S&&S.seed?`<div class="lbl" style="text-align:center;margin:2px 0 6px">Seed <b style="color:#fff;letter-spacing:.08em">${S.seed}</b> <button class="btn tiny" data-act="copyseed">Copy</button></div>`:''}${S&&ROLLS[S.roll]?`<div class="lbl" style="text-align:center;margin:-6px 0 8px">Playing the <b style="color:#fff">${rollName(S.roll)}</b> on <b style="color:${STAKES[S.stake].col}">${STAKES[S.stake].name}</b>${S.daily?' (Daily Toss)':''}: ${fmt(ROLLS[S.roll].desc)}</div>`:''}<div class="lbl" style="text-align:center;margin:-4px 0 10px">Collection: ${Object.keys(JOKERS).length} Charms · ${ALM_POOL().length} Almanacs · ${Object.keys(RUNES).length} Runes · ${Object.keys(SPIRITS).length} Spirits</div>
+  if(RI_TAB==='run')return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${S?questsHTML():''}${S&&S.seed?`<div class="lbl" style="text-align:center;margin:2px 0 6px">Seed <b style="color:#fff;letter-spacing:.08em">${S.seed}</b> <button class="btn tiny" data-act="copyseed">Copy</button></div>`:''}${S&&ROLLS[S.roll]?`<div class="lbl" style="text-align:center;margin:-6px 0 8px">Playing the <b style="color:#fff">${rollName(S.roll)}</b> on <b style="color:${STAKES[S.stake].col}">${STAKES[S.stake].name}</b>${S.daily?' (Daily Toss)':''}: ${fmt(ROLLS[S.roll].desc)}</div>`:''}<div class="lbl" style="text-align:center;margin:-4px 0 10px">Collection: ${Object.keys(JOKERS).length} Charms · ${ALM_POOL().length} Almanacs · ${Object.keys(RUNES).length} Runes · ${Object.keys(SPIRITS).length} Spirits</div>
+    </div><div class="optfoot" style="display:flex;gap:10px;justify-content:center"><button class="btn green" data-act="collection">Collection</button><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
+  return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">
     <table class="htable">${HANDS.map(h=>{const pl=S?S.hands[h.key].played:0;const hv=S?handLv(h.key):{chips:h.chips,mult:h.mult,lv:1,mast:0};const lv=hv.lv,c=hv.chips,m=hv.mult;
-    return `<tr><td class="lv">lvl.${lv}</td><td><div>${h.name}</div><div class="ds">${h.desc}${hv.mast?` · <span class="k-m">Mastery +${hv.mast} Mult</span>`:''}</div></td><td class="cmv"><span class="c">${c}</span> X <span class="m">${m}</span></td><td class="lv">#${pl}</td></tr>`}).join('')}</table>
+    return `<tr data-tip="hand:${h.key}"><td class="lv">lvl.${lv}</td><td>${h.name}${hv.mast?` <span class="k-m" style="font-size:12px">+${hv.mast*(S&&S.mastM||1)}</span>`:''}</td><td class="cmv"><span class="c">${c}</span> X <span class="m">${m}</span></td><td class="lv">#${pl}</td></tr>`}).join('')}</table>
     </div><div class="optfoot" style="display:flex;gap:10px;justify-content:center"><button class="btn green" data-act="collection">Collection</button><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
 }
+/* an example of each toss, in Quarters, calling Heads (1 = lands Heads and scores) */
+const HAND_EX={sweep:[1,1,1,1,1],six:[1,1,1,1,1,1,0],five:[1,1,1,1,1,0],split:[1,1,1,0,1,1],four:[1,1,1,1,0],mirror:[1,0,1,1,0,1],zigzag:[1,0,1,0,1],triple:[1,1,1,0,0],twin:[1,1,0,1,1],whiff:[0,0,0,0,0],bookends:[1,0,0,0,1],pair:[1,1,0,0,0],single:[1,0,0,0,0],bust:[0,0,0,0]};
 /* in the order you meet them: menu, the run, its packs, then the endings */
 const TRACKS=[['Title','menu'],['Crossroads','map',{sub:'Choosing where to go'}],['Wager','main'],['Elite Wager','elite',{sub:'Optional hard wagers'}],['Rival Duel','rival',{sub:'Duels with your rival'}],...BOSS_THEMES.map((t,i)=>['Boss: '+t.name,'main',{intense:1,v:i,sub:bossesOfTheme(i)}]),['Shop','shop'],['Coin Pouch','coin'],['Almanac Pack','almanac'],['Rune Pack','rune'],['Spirit Pack','spirit'],...Object.keys(PACK_MUSIC).filter(k=>PACKS[k]&&k!=='glitch').map(k=>[PACKS[k].name,k]),['Glitch Pack','glitch',{sub:'Unlocked by beating House'}],['Prize Counter','prize',{sub:'Spend your Tickets'}],['The Bazaar','bazaar',{sub:'A rare detour'}],['The Back Room','backroom',{sub:'Shady deals'}],['Big Spender','bigspender',{sub:'Only when you\'re rich'}],['The Chapel','chapel',{sub:'A quiet place'}],['Showdown','showdown',{sub:'Final bosses'}],['The General','general',{sub:'Rival Roll final boss'}],['FATAL ERROR','fatal',{sub:'Glitched Roll final boss'}],['Endless','endless',{sub:'Below the House'}],['The House','thehouse',{sub:'Endless final boss'}],['The Table of Rivals','tablerivals',{sub:'Rival Roll Endless final boss'}],['House','drhouse',{sub:'Glitched Roll Endless final boss'}],['Victory','victory',{sub:'Clearing all 8 stages'}],['Credits','credits',{sub:'Roll the credits'}],...(PROF.fish&&PROF.fish.n?[['Drowned Fountain','fish',{sub:'A secret'}]]:[])];
 let SOUNDTEST=null;const ST={glitch:false,stage:1,estage:9};
@@ -4957,6 +4980,8 @@ function tipContent(spec){
     return (W?`<div class="tn">${W.name}</div><div class="td">${fmt(W.desc)}</div><span class="tb" style="background:${W.col};color:#1a1a1a">Stage ${S.ante} weather</span>`:`<div class="tn">Stage ${S.ante} of 8</div><div class="td">Clear skies this stage.</div>`)+boss}
   if(k==='runroll'){const r=ROLLS[S.roll],st=STAKES[S.stake]||STAKES[1];
     return `<div class="tn">${rollName(S.roll)}</div><div class="td">${fmt(r.desc)}</div>${S.daily?`<span class="tb" style="background:var(--purple)">Daily Toss</span>`:r.challenge?`<span class="tb" style="background:var(--mult)">Challenge Roll</span>`:`<span class="tb" style="background:${st.col};color:#1a1a1a">${st.name}</span><div class="td" style="margin-top:4px">${stakeDesc(S.stake)}</div>`}${S.seed?`<div class="tkind">Seed ${S.seed}</div>`:''}`}
+  if(k==='hand'){const h=HAND[a];if(!h)return '';const hv=S?handLv(a):null,ex=HAND_EX[a]||[1];
+    return `<div class="tn">${h.name}</div><div class="handex">${ex.map(x=>`<img src="${coinArt('copper',x?'H':'T')}" class="${x?'hit':'miss'}" alt="">`).join('')}</div><div class="td">${h.desc}</div>${hv&&hv.mast?`<div class="td"><span class="k-m">Mastery ${hv.mast}</span>: +${hv.mast*(S.mastM||1)} Mult</div>`:''}<span class="tb" style="background:var(--chips);color:#fff">Calling Heads</span>`}
   if(k==='tag'){const T=TAGS[a];return T&&`<div class="tn">${T.name}</div><div class="td">${fmt(T.desc)}</div><span class="tb" style="background:#e8c14a;color:#1a1a1a">Skip reward</span>`}
   if(k==='brgood'){const o=S.shop&&S.shop.br&&S.shop.br[i];if(!o)return null;
     if(o.k==='fence')return `<div class="tn">Fence Something</div><div class="td">${fmt('Take {$:$10} for something you never ask about. A random Charm {r:rusts}')}</div>`;
@@ -5003,7 +5028,7 @@ addEventListener('scroll',hideTip,true);
 let REWIND_SNAP=null;
 function startBlind(){
   REWIND_SNAP=S.jokers.some(j=>j.key==='rewind')&&!S.inElite?JSON.stringify({S,uid}):null;
-  hazardsOff();S.wagerTime=0;S.turnTime=0;S.paidTax=0;S.paidShards=0;S.paidParrot=0;S.hollowFree=false;S.catI=-1;S.whimI=-1;S.ghostWarned=false;S.ghost=false;S.scorp=false;
+  play('deal');hazardsOff();S.wagerTime=0;S.turnTime=0;S.paidTax=0;S.paidShards=0;S.paidParrot=0;S.hollowFree=false;S.catI=-1;S.whimI=-1;S.ghostWarned=false;S.ghost=false;S.scorp=false;
   const b=curBlind();S.boss=b.boss||null;S.target=blindTarget(b);S.screen='play';
   if(S.purse[0]&&coinDef(S.purse[0]).firstDime){S.target=Math.ceil(S.target*(1-coinDef(S.purse[0]).firstDime));setTimeout(()=>{const el=$('#c0');if(el)popup(el,'The First Dime: -20% target','text')},500)}
   const watch=countEff('watch');
@@ -5069,7 +5094,7 @@ async function doReflip(){
   if(bossIs('toll')){if(S.money<2)return;S.money-=2;play('money')}
   if(freeF){if(rubyFree()&&!S.selected.every(i=>S.purse[i]&&coinDef(S.purse[i]).freeFlip))S.rubyUsed=true;popup($('#callb'),'Free re-flip!','text')}else{S.reflipsLeft--;S.wagerReflips=(S.wagerReflips||0)+1}S.tossReflips=(S.tossReflips||0)+1;S.stats.reflips++;
   const tip=countEff('tipjar');if(tip){S.money+=tip;play('money');popup($('#smoney'),'+$'+tip,'money')}
-  S.phase='tossing';syncStats();S.keepMiss=[...S.purse.keys()].filter(i=>{const e=$('#c'+i);return !!e&&e.classList.contains('miss')});
+  play('reflip');S.phase='tossing';syncStats();S.keepMiss=[...S.purse.keys()].filter(i=>{const e=$('#c'+i);return !!e&&e.classList.contains('miss')});
   if(S.roll==='mirror'&&S.call!=='E'){S.call=S.call==='H'?'T':'H';refreshTable();popup($('#callb'),'Mirrored: '+callName(S.call)+'!','text');play('reroll')}
   const idx=bossIs('gale')?S.purse.map((c,i)=>i):S.selected.slice().sort((a,b)=>a-b);S.selected=[];
   if(S.tut&&S.blindIdx===0)S.tut.re0=true;const tre=S.tut?tutFaces('re',S.call,idx.length):null;
@@ -5418,7 +5443,7 @@ function waysHTML(){
 }
 const biggest=k=>{const sz=PACKS[k].sizes||['normal','jumbo','mega'];return sz.includes('mega')?'mega':sz.includes('jumbo')?'jumbo':sz[0]};
 function chooseWay(i){
-  const w=S.ways&&S.ways[i];if(!w)return;S.ways=null;play('click');
+  const w=S.ways&&S.ways[i];if(!w)return;S.ways=null;play(w.t==='shop'?'bell':'door');
   if(!S.wayStage||S.wayStage.ante!==S.ante)S.wayStage={ante:S.ante,used:[]};if(w.t==='rival'||w.t==='elite')S.wayStage.used.push(w.t);
   if(w.t==='shop'){genShop();S.screen='shop';render();return}
   if(w.t==='bazaar'){S.bazaar=true;genShop();S.screen='shop';render();play('unlock');return}
@@ -5616,7 +5641,7 @@ async function levelUp(key,times=1){
 }
 function buyUpg(){
   const u=S.shop.upgrade,p=gp(u,upgCost(u));if(!u||u.bought||upgLocked()||S.money<p)return;S.upgAnte=S.ante;
-  spend(p);u.bought=true;S.upgrades.push(u.key);UPGRADES[u.key].apply();play('levelup');render();
+  spend(p);u.bought=true;S.upgrades.push(u.key);UPGRADES[u.key].apply();play('upgrade');render();
 }
 function buyPack(i){
   const pk=S.shop.packs[i],p=packPrice(pk);if(pk.bought||S.money<p)return;
@@ -5648,7 +5673,7 @@ async function packPick(i,mode){
   render();
 }
 function skipBlind(){
-  const b=curBlind();if(b.kind==='boss')return;b.state='skipped';PS().skips++;
+  const b=curBlind();if(b.kind==='boss')return;b.state='skipped';PS().skips++;play('skip');
   const tag=b.tag,times=1+countEff('wishbone');
   for(let t=0;t<times;t++){
     if(tag==='cash')S.money+=3;
@@ -5698,9 +5723,9 @@ const ACT={
   cashin(){doCashIn()},
   coin(a){const i=+a;
     if(S.screen==='event'&&S.event&&S.event.trading){tradeCoin(i);return}
-    if(S.screen==='play'&&S.phase==='tossed'){if((!S.reflipsLeft&&!coinDef(S.purse[i]).freeFlip)||bossIs('gale'))return;const grp=stkGroup(S.purse[i])?S.purse.map((c,j)=>j).filter(j=>S.purse[j].stk===S.purse[i].stk):[i];if(S.selected.includes(i)){S.selected=S.selected.filter(j=>!grp.includes(j));refreshTable();return}
-    const picks=new Set(S.selected.map(j=>stkGroup(S.purse[j])?'s'+S.purse[j].stk:j)).size;const k=-1;if(picks>=(S.reflipCap||2)){popup($('#c'+i),`Max ${S.reflipCap||2} coins`,'miss');play('miss');return}S.selected.push(...grp);refreshTable()}
-    else if((S.screen==='play'&&S.phase==='call')||S.screen==='shop'){const k=S.csel.indexOf(i);k>=0?S.csel.splice(k,1):S.csel.push(i);
+    if(S.screen==='play'&&S.phase==='tossed'){if((!S.reflipsLeft&&!coinDef(S.purse[i]).freeFlip)||bossIs('gale'))return;const grp=stkGroup(S.purse[i])?S.purse.map((c,j)=>j).filter(j=>S.purse[j].stk===S.purse[i].stk):[i];if(S.selected.includes(i)){S.selected=S.selected.filter(j=>!grp.includes(j));play('putdown');refreshTable();return}
+    const picks=new Set(S.selected.map(j=>stkGroup(S.purse[j])?'s'+S.purse[j].stk:j)).size;const k=-1;if(picks>=(S.reflipCap||2)){popup($('#c'+i),`Max ${S.reflipCap||2} coins`,'miss');play('miss');return}S.selected.push(...grp);play('pickup');refreshTable()}
+    else if((S.screen==='play'&&S.phase==='call')||S.screen==='shop'){const k=S.csel.indexOf(i);k>=0?S.csel.splice(k,1):S.csel.push(i);play(k>=0?'putdown':'pickup');
       if(S.screen==='shop')renderStage();else refreshTable();renderJokers()}},
   joker(a){if(!canEdit())return;const i=+a;S.selJoker=S.selJoker===i?null:i;S.selCons=null;if(S.pack)render();else renderJokers()},
   cons(a){if(!canEdit())return;const i=+a;S.selCons=S.selCons===i?null:i;S.selJoker=null;renderJokers()},
@@ -5708,7 +5733,7 @@ const ACT={
     if(S&&S.roll==='glitched'&&consRoom()&&rand()<.2){S.cons.push({...c});render();const el=$('#cs'+(S.cons.length-1));if(el){popup(el,'Glitch! It came back','text');juice(el)}play('glitch');return}
     render()},
   sellcons(a){const i=+a,c=S.cons[i];if(!c||S.roll==='hoarder')return;S.money+=consInfo(c).sell;S.cons.splice(i,1);S.selCons=null;play('money');if(S.screen==='play'){renderJokers();syncStats()}else render()},
-  sell(a){const i=+a,j=S.jokers[i];if(!j||!canEdit()||noSell(j)||S.roll==='hoarder')return;PS().sold++;S.money+=sellVal(j);S.jokers.splice(i,1);S.selJoker=null;play('money');S.lastSold=j.key;if(S.screen==='play'&&bossIs('hollow')&&!S.hollowFree){S.hollowFree=true;setTimeout(()=>toast('<b>The Hollow</b> lets go. Your Charms wake up.'),300);renderJokers()}if(j.key==='confession'){const c=S.jokers.find(purifiable);if(c){const nm=CURSES[c.curse].name;c.curse=null;delete c.left;toast(`You feel <b>forgiven</b>. Your ${JOKERS[c.key].name} is free of <b>${nm}</b>.`)}else toast('You feel <b>forgiven</b>.')}
+  sell(a){const i=+a,j=S.jokers[i];if(!j||!canEdit()||noSell(j)||S.roll==='hoarder')return;PS().sold++;S.money+=sellVal(j);S.jokers.splice(i,1);S.selJoker=null;play('sell');S.lastSold=j.key;if(S.screen==='play'&&bossIs('hollow')&&!S.hollowFree){S.hollowFree=true;setTimeout(()=>toast('<b>The Hollow</b> lets go. Your Charms wake up.'),300);renderJokers()}if(j.key==='confession'){const c=S.jokers.find(purifiable);if(c){const nm=CURSES[c.curse].name;c.curse=null;delete c.left;toast(`You feel <b>forgiven</b>. Your ${JOKERS[c.key].name} is free of <b>${nm}</b>.`)}else toast('You feel <b>forgiven</b>.')}
     if(j.key==='hydra')for(let k=0;k<2&&S.jokers.length<slots();k++){const nk=rollJokerKey(1);addJoker(nk,JOKERS[nk].cost)}
     if(S.screen==='play'){renderJokers();syncStats()}else render()},
   move(a){const[i,d]=a.split(',').map(Number),k=i+d;if(k<0||k>=S.jokers.length||S.jokers[i].curse==='bound'||S.jokers[k].curse==='bound')return;[S.jokers[i],S.jokers[k]]=[S.jokers[k],S.jokers[i]];S.selJoker=k;renderJokers()},
