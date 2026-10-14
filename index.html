@@ -1197,7 +1197,7 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.197</div>
+  <div class="gamever" aria-label="Version">v1.2.198</div>
 </div>
 
 <script>
@@ -1327,8 +1327,8 @@ function coinFav(){if(COIN_FAV)return COIN_FAV;COIN_FAV={};const names=Object.ke
 /* w: how often a coin turns up in packs and other random finds (the strongest coins are rarer). Prices only matter for the Exchange Pack */
 const coinWeight=t=>{if(!S)return COINS[t].w||1;const F=coinFav();let w=COINS[t].w||1;ownKeys().forEach(k=>{if(k&&F[k]&&F[k].includes(t))w+=3});if(t==='peso')w+=2*S.purse.filter(c=>c.type==='peso').length;return w};
 function pickSpecial(pool){pool=pool||SPC();if(!pool.length)return pick(SPECIAL);const W=pool.map(coinWeight);let x=rand()*W.reduce((a,b)=>a+b,0);for(let i=0;i<pool.length;i++){x-=W[i];if(x<0)return pool[i]}return pool[pool.length-1]}
-const SPC=()=>S&&S.roll==='locked'?SPECIAL.filter(t=>!GOAL_OF['coin:'+t]):SPECIAL;
-const SPECIAL=Object.keys(COINS).filter(k=>k!=='copper'&&!COINS[k].relic&&!COINS[k].noShop&&!COINS[k].fishLocked);
+const SPC=()=>S&&S.roll==='locked'?SPECIAL.filter(t=>isBase('coin',t)):SPECIAL;
+const SPECIAL=Object.keys(COINS).filter(k=>k!=='copper'&&!COINS[k].relic&&!COINS[k].noShop);
 const relicsLeft=()=>Object.keys(COINS).filter(k=>COINS[k].relic&&!COINS[k].quest&&!(S&&S.purse.some(c=>c.type===k))&&!(k==='pressed'&&S&&S.jokers.some(j=>j.key==='pressedpenny')));
 const PURSE_MIN=3;
 /* stacked coins: two coins share a stack id. They always land on the same face, can't be re-flipped,
@@ -1811,7 +1811,7 @@ Object.assign(JOKERS,{
  morningpaper:{name:'Morning Paper',r:1,cost:4,bg:'#efe3cc',p:{1:'#f5f0e0',2:'#222222',3:'#c8102e'},s:["..........","1111111111","1333333331","1111111111","1221122221","1111111111","1221122221","1111111111","1222211221","1111111111"],
   desc:()=>`{c:+5} Points for every day of the month so far {d:(Today +${5*new Date().getDate()} Points)}`,end:(c,e)=>e('chips',5*new Date().getDate())},
  curtaincall:{name:'Curtain Call',r:2,cost:6,bg:'#2a0e14',p:{1:'#c8102e',2:'#ffd34d',3:'#7a0a1c'},s:["2222222222","1131..1311","1131..1311","1131..1311",".131..131.",".131..131.","..31..13..","...1..1...","2222222222",".22222222."],
-  desc:()=>{const n=curtainN();return `{m:+1} Mult for every 3 things you've unlocked {d:(Currently +${n} Mult)}`},end:(c,e)=>{const n=curtainN();if(n)e('mult',n)}},
+  desc:()=>{const n=curtainN();return `{m:+1} Mult for every Roll you've unlocked {d:(Currently +${n} Mult)}`},end:(c,e)=>{const n=curtainN();if(n)e('mult',n)}},
  skeeball:{name:'Skee-Ball',r:2,cost:6,bg:'#2a1430',p:{1:'#ff8fab',2:'#ffd34d',3:'#c8102e',4:'#ffffff',5:'#4a86ff'},s:["..111111..",".11222211.","1122332211","1123443211","1123443211","1122332211",".11222211.","..111111..","......55..",".....5555."],
   desc:'{m:+3} Mult. Every wager you win prints {a:2} Tickets',end:(c,e)=>e('mult',3)},
  mimic:{name:'Mimic',r:3,cost:8,bg:'#3a2210',p:{1:'#8a5a2a',2:'#ffd34d',3:'#ffffff',4:'#c8102e'},s:["..111111..",".11111111.","1122222211","1313131311","4444444444","1313131311","1111111111","1121111211","1111111111",".1......1."],
@@ -1822,8 +1822,8 @@ Object.assign(JOKERS,{
   desc:()=>{const n=S?S.jokers.filter(j=>COPYK[j.key]).length:0;return `{x:X2} Mult, plus {x:X1} more for every copy Charm you own (Copycat, Mimic, Understudy) {d:(Currently X${2+n})}`},
   end:(c,e)=>e('xmult',2+S.jokers.filter(j=>COPYK[j.key]).length)},
  skeletonkey:{name:'Skeleton Key',r:3,cost:8,bg:'#1c1a24',p:{1:'#e8e2d0',2:'#9a948a',3:'#222222'},s:["...1111...","..112211..","..12..21..","..12..21..","..112211..","...1111...","....12....","....1211..","....12....","....1211.."],
-  desc:()=>{const n=S?S.jokers.filter(j=>!GOAL_OF['charm:'+j.key]).length:0;return `{m:+5} Mult for every {a:base} Charm you own (one that was never locked) {d:(Currently +${5*n} Mult)}`},
-  end:(c,e)=>{const n=S.jokers.filter(j=>!GOAL_OF['charm:'+j.key]).length;if(n)e('mult',5*n)}},
+  desc:()=>{const n=S?S.jokers.filter(j=>isBase('charm',j.key)).length:0;return `{m:+5} Mult for every {a:base} Charm you own (one that was never locked) {d:(Currently +${5*n} Mult)}`},
+  end:(c,e)=>{const n=S.jokers.filter(j=>isBase('charm',j.key)).length;if(n)e('mult',5*n)}},
  clutch:{name:'Clutch',r:3,cost:8,bg:'#1e2a3a',p:{1:'#bfe6ff',2:'#3a4a5a',3:'#ffd34d'},s:["...1111...","..1....1..",".1..33..1.",".1..33..1.",".1..33..1.",".1......1.",".1..33..1.","..1....1..","...1111...","...2222..."],
   desc:'{x:X0.5} Mult for every Re-flip you have left, on top of {x:X1}',end:(c,e)=>{if(c.reflips>0)e('xmult',1+.5*c.reflips)}},
  pricetag:{name:'Price Tag',r:2,cost:6,bg:'#3a3010',p:{1:'#f5e3c0',2:'#c8102e',3:'#222222'},s:["....111111","...1111111","..11131111",".111111111","1111111111","1111222111","111111111.","11111111..","1111111...","111111...."],
@@ -3676,9 +3676,10 @@ const GOALS=[
 ];
 const GOAL_OF=Object.fromEntries(GOALS.map(g=>[g.kind+':'+g.key,g]));
 /* challenge rolls stay sealed until you have won a run */
-const curtainN=()=>Math.floor(GOALS.filter(g=>(PROF.unlocked||{})[g.kind+":"+g.key]).length/3);
+const curtainN=()=>typeof ROLLS==='undefined'?0:Object.keys(ROLLS).filter(k=>!ROLLS[k].fake&&isUnlocked('roll',k)).length;
 const canMelt=()=>!!S&&S.roll!=='hoarder'&&countEff('smelter')>0;
-const isUnlocked=(kind,key)=>kind!=='roll'&&S&&S.roll==='locked'?!GOAL_OF[kind+':'+key]:PROF.unlockAll||(kind==='roll'&&typeof ROLLS!=='undefined'&&ROLLS[key]&&ROLLS[key].challenge?(PROF.stats.wins||0)>=1:(!GOAL_OF[kind+':'+key]||!!PROF.unlocked[kind+':'+key]));
+let ADVANCED=null;const isBase=(kind,key)=>!ADVANCED||!ADVANCED.has(kind+':'+key);
+const isUnlocked=(kind,key)=>kind!=='roll'?(S&&S.roll==='locked'?isBase(kind,key):true):(PROF.unlockAll||!GOAL_OF['roll:'+key]||!!PROF.unlocked['roll:'+key]||(()=>{try{return !!GOAL_OF['roll:'+key].test()}catch(e){return false}})());
 const goalIcon=g=>{let src='';try{src=g.kind==='charm'?icon(g.key):g.kind==='coin'?coinArt(g.key,'H'):g.kind==='pack'?packIconFor(g.key):coinArt(ROLLS[g.key].cap||'copper','T')}catch(e){}return src?`<img src="${src}" alt="">`:''};
 const goalName=g=>g.kind==='roll'?ROLLS[g.key].name:g.kind==='pack'?PACKS[g.key].name:g.kind==='coin'?COINS[g.key].name:JOKERS[g.key].name;
 function checkGoals(){
@@ -3784,7 +3785,6 @@ const savedRun=()=>{try{return JSON.parse(localStorage.getItem('hwr-run')||'null
 const clearSave=()=>{try{localStorage.removeItem('hwr-run')}catch(e){}};
 function recordRun(won){
   if(!S||S.recorded||S.tut)return;S.recorded=true;const st=PS();
-  if(won&&(st.wins||0)===0)setTimeout(()=>toast('<b>Challenge Rolls unlocked!</b> Find them at the bottom of the roll list',6000),2500);
   if(S.daily){st.dailyPlayed=(st.dailyPlayed||0)+1;if(won)st.dailyWins=(st.dailyWins||0)+1}
   st.runs++;st.streak=won?(st.streak||0)+1:0;st.bestStreak=Math.max(st.bestStreak||0,st.streak);if(won)st.wins++;st.bestStage=Math.max(st.bestStage,S.ante);
   if(won){const prev=PROF.stakes[S.roll]||0;if(S.stake>prev){PROF.stakes[S.roll]=S.stake;if(S.stake<6)S.flags.newStake=S.stake+1}}
@@ -4334,16 +4334,12 @@ function renderOverlay(){
       <div class="row"><span>Coins flipped</span><b>${fmtN(S.stats.flips)}</b></div>
       ${S.seed?`<div class="row"><span>Seed${S.customSeed?' (custom)':''}</span><b class="seedv">${S.seed} <button class="btn tiny" data-act="copyseed">Copy</button></b></div>`:''}
       <button class="btn green" data-act="sumcard">Summary card</button>
-      ${winTease()}<button class="btn orange big" data-act="endless">Endless Mode</button>
+      <button class="btn orange big" data-act="endless">Endless Mode</button>
       <button class="btn blue" data-act="newrun">New Run</button></div></div>`;o.hidden=false;
   }else if(modal){o.innerHTML=modal();o.hidden=false}
   else{o.hidden=true;o.innerHTML=''}
 }
 let modal=null;
-/* every roll hides one more unlock past stage 8 (The House, or the Rival and Glitched Rolls' own Endless bosses): hint at it on the win screen until it is earned */
-const WIN_TEASE={rivalroll:['charm','seattable'],glitched:['pack','glitch']};
-function winTease(){if(!S)return'';const t=WIN_TEASE[S.roll]||['charm','houseedge'];if(isUnlocked(t[0],t[1]))return'';
-  return `<div class="wintease">&#x1F512; There's still more to unlock${WIN_TEASE[S.roll]||S.roll==='boss'?` in the ${rollName(S.roll)}`:''}. Keep going in <b>Endless Mode</b>.</div>`}
 
 let RI_TAB='scores';
 function runInfoModal(){
@@ -4390,9 +4386,9 @@ function optionsModal(){
     <div class="optrow"><span>Effects volume</span><input type="range" class="vol" min="0" max="100" value="${Math.round(OPT.svol*100)}" data-vol="s" aria-label="Sound effects volume"></div>
     <div class="optrow"><span>H / T labels on coins</span><button class="btn ${OPT.badges?'green':''} small" data-act="tbadges">${OPT.badges?'On':'Off'}</button></div>
     <div class="optrow"><span>Replay tutorial</span><button class="btn small" data-act="replaytut">Start</button></div>
-    <div class="optrow"><span>Unlock everything</span><button class="btn ${PROF.unlockAll?'green':''} small" data-act="tunlock">${PROF.unlockAll?'On':'Off'}</button></div>
-    <div class="optrow"><span>${resetArm?'Lock everything again?':'Reset unlocks'}</span><button class="btn red small" data-act="resetunlocks">${resetArm?'Yes, reset':'Reset'}</button></div>
-    ${resetArm?'<div class="lbl" style="text-align:center;margin:-4px 0 6px">Locks every Charm and Roll and clears the lifetime stats and stakes that unlock them. Run history is kept.</div>':''}
+    <div class="optrow"><span>Unlock all Rolls</span><button class="btn ${PROF.unlockAll?'green':''} small" data-act="tunlock">${PROF.unlockAll?'On':'Off'}</button></div>
+    <div class="optrow"><span>${resetArm?'Lock every Roll again?':'Reset progress'}</span><button class="btn red small" data-act="resetunlocks">${resetArm?'Yes, reset':'Reset'}</button></div>
+    ${resetArm?'<div class="lbl" style="text-align:center;margin:-4px 0 6px">Locks every Roll except the Standard Roll and clears your lifetime stats and stakes. Run history is kept.</div>':''}
     ${canFS()?`<div class="optrow"><span>Fullscreen</span><button class="btn ${isFS()?'green':''} small" data-act="fullscreen">${isFS()?'On':'Off'}</button></div>`:''}
     <div class="optrow"><span>Keyboard shortcuts</span><button class="btn small" style="--c:#2c6e8a;--cd:#343c80" data-act="keys">Show</button></div>
     <div class="optrow"><span title="Move your progress between devices">Save code</span><button class="btn small" style="--c:#1f4d3a;--cd:#175a44" data-act="savecode">Open</button></div>
@@ -4484,7 +4480,7 @@ const ROLLS={
  rivalroll:{name:'Rival Roll',challenge:1,paper:'#3a2210',band:'#ff8f1f',cap:'platinum',desc:'{a:Challenge.} Your rival shows up after almost every boss and wager until you duel them, and you face a {a:new rival} every stage. The final boss is {r:The General}: the face on the Quarter himself'},
  boss:{name:'Boss Roll',challenge:1,paper:'#3a0a10',band:'#c8102e',cap:'loaded',desc:'{a:Challenge.} Every wager has a random boss effect, Small and Big included, and boss wagers have two'},
  glitched:{name:'Glitched Roll',challenge:1,paper:'#ff1aa8',band:'#00f0e0',cap:'quicksilver',desc:'{a:Challenge.} Everything is glitched, right up to a final boss you won\'t meet anywhere else. Every toss, each coin acts like a random coin and one Charm acts like a random Charm. Shop prices shift, wager targets ({r:X1.2} to {r:X1.8}) stay hidden until you play, and used items sometimes glitch back into your slots'},
- locked:{name:'Locked Roll',fake:1,paper:'#4a4a4a',band:'#9a9a9a',cap:'copper',desc:'It only {a:looks} locked. Inside, nothing you\'ve unlocked shows up: just the {a:base} Charms, coins and packs, as if it were your very first run'},
+ locked:{name:'Locked Roll',fake:1,paper:'#4a4a4a',band:'#9a9a9a',cap:'copper',desc:'It only {a:looks} locked. Inside, only the {a:starting set} of Charms, coins and packs shows up'},
  chaos:{name:'Chaos Roll',paper:'#3a3a3a',band:'#ff5f6d',cap:'quicksilver',desc:'Start with {a:6} random coins, most carrying random Wear or a Defect',
   apply:()=>{S.purse=Array.from({length:6},()=>({...mkCoin(pick(Object.keys(COINS))),wear:rand()<.5?pickCoinWear():null,defect:rand()<.5?pick(Object.keys(DEFECTS)):null}))}},
 };
@@ -4661,6 +4657,15 @@ function sandFish(i,hit){
  ['bottle','Fish a Message in a Bottle out of the Drowned Fountain',()=>!!PROF.fish.log.bottle],['koipond','Catch 8 different things in the Drowned Fountain',()=>fishKinds()>=8],
  ['goldenkoi','Catch the Golden Koi',()=>!!PROF.fish.log.goldkoi],['hookline','Fill your fishing log',()=>fishKinds()>=Object.keys(FISHES).length]
 ].forEach(([k,desc,test])=>{const g={kind:'charm',key:k,desc,test};GOALS.push(g);GOAL_OF['charm:'+k]=g});
+/* Only Rolls unlock now: every Charm, coin and pack is in from the start. The old goal list survives only as the
+   definition of the "base" set the Locked Roll and Skeleton Key look at. Rolls open in a chain: beat a Roll to open the next;
+   the first Challenge Roll opens once you have beaten 3 different Rolls, and each Challenge opens the next */
+ADVANCED=new Set(GOALS.filter(g=>g.kind!=='roll').map(g=>g.kind+':'+g.key));
+GOALS.length=0;Object.keys(GOAL_OF).forEach(k=>delete GOAL_OF[k]);
+{const beaten=k=>(PROF.stakes[k]||0)>=1,basic=Object.keys(ROLLS).filter(k=>!ROLLS[k].challenge&&!ROLLS[k].fake),chal=Object.keys(ROLLS).filter(k=>ROLLS[k].challenge&&!ROLLS[k].fake);
+  const add=(k,desc,test)=>{const g={kind:'roll',key:k,desc,test};GOALS.push(g);GOAL_OF['roll:'+k]=g};
+  basic.forEach((k,i)=>{if(i){const p=basic[i-1];add(k,`Win a run on the ${ROLLS[p].name}`,()=>beaten(p))}});
+  chal.forEach((k,i)=>{const p=chal[i-1];i?add(k,`Win a run on the ${ROLLS[p].name}`,()=>beaten(p)):add(k,'Win runs on 3 different Rolls',()=>Object.keys(ROLLS).filter(beaten).length>=3)})}
 function shadeHex(h,k){const n=parseInt(h.slice(1),16);const c=[n>>16&255,n>>8&255,n&255].map(v=>Math.round(v*k));return'#'+c.map(v=>v.toString(16).padStart(2,'0')).join('')}
 const rollName=k=>k==='glitched'?'<span class="glitchname" aria-label="Glitched Roll">Glitched Roll</span>':ROLLS[k].name;
 function rollHTML(k,w,d){const r=ROLLS[k],cap=coinArt(r.cap||'copper','T');
@@ -4674,7 +4679,7 @@ function rollModal(){
   const r=ROLLS[ROLLSEL],lock=!isUnlocked('roll',ROLLSEL),ms=maxStake(ROLLSEL);STAKESEL=Math.min(STAKESEL,ms);
   return `<div class="overlay"><div class="panel modal wide rollm"><h2>Choose a Roll</h2>
     <div class="rolldetail ${lock||r.fake?'locked':''}">${rollHTML(ROLLSEL,190,64)}<div class="cbody"><div class="cname" style="font-size:24px;font-weight:600">${r.fake?'Locked':rollName(ROLLSEL)}</div>
-      <div class="cdesc">${r.fake?`<b>Locked.</b> Unlock it: open it. ${fmt(r.desc)}`:lock?`<b>Locked.</b> Unlock it: ${r.challenge?'Win any run to open the Challenge Rolls':GOAL_OF['roll:'+ROLLSEL].desc}`:fmt(r.desc)}</div>
+      <div class="cdesc">${r.fake?`<b>Locked.</b> Unlock it: open it. ${fmt(r.desc)}`:lock?`<b>Locked.</b> Unlock it: ${GOAL_OF['roll:'+ROLLSEL]?GOAL_OF['roll:'+ROLLSEL].desc:'?'}`:fmt(r.desc)}</div>
       ${lock||r.challenge?'':`<div class="stakes"><span class="lbl">Stake</span>${[1,2,3,4,5,6].map(n=>`<button class="btn tiny" style="--c:${n<=ms?STAKES[n].col:'var(--grey)'};--cd:rgba(0,0,0,.45);${n===STAKESEL?'outline:2px solid #fff;outline-offset:1px':''}" data-act="stakesel" data-arg="${n}" ${n>ms?'disabled':''} title="${STAKES[n].name}">${n}</button>`).join('')}</div>
       <div class="stakedesc">${stakeDesc(STAKESEL)}</div>`}
       ${lock?'':`<div class="seedrow"><span class="lbl">Seed</span><input id="seedin" maxlength="12" placeholder="Random" value="${SEEDTXT}" autocomplete="off" spellcheck="false" aria-label="Seed (leave blank for a random run)"></div>`}
@@ -4896,7 +4901,7 @@ function recordsModal(){
       ${sec('Scoring',[['Best toss',fmtN(st.bestToss)],['Wagers won',st.wagers],['Won with double the target',st.doubleWin||0],['Won on the first Flip',st.oneFlipWin||0],['Won on the last Flip',st.lastFlipWin||0],['Won without Re-flips',st.cleanWins||0],['Bosses beaten',st.bossWins||Object.values(st.bossBeat||{}).reduce((a,b)=>a+b,0)]])}
       ${sec('Coins',[['Coins flipped',fmtN(st.flips)],['Edges landed',st.edges],['Re-flips used',st.reflips],['Coins melted',st.melts||0],['Coins transmuted',st.transmutes||0]])}
       ${sec('Money',[['Money earned at cash-out','$'+fmtN(st.moneyEarned||0)],['Most money held','$'+fmtN(st.maxMoney||0)],['Tickets earned',st.ticketsTotal||0],['Prize Booth tickets',PROF.tix||0]])}
-      ${sec('Items',[['Charms sold',st.sold],['Runes used',st.runes],['Spirits used',st.spirits],['Almanacs used',st.almanacs||0],['Wagers skipped',st.skips||0],['Events visited',st.events||0],['Unlocks',`${GOALS.filter(g=>PROF.unlocked[g.kind+":"+g.key]).length}/${GOALS.length}`]])}
+      ${sec('Items',[['Charms sold',st.sold],['Runes used',st.runes],['Spirits used',st.spirits],['Almanacs used',st.almanacs||0],['Wagers skipped',st.skips||0],['Events visited',st.events||0],['Rolls unlocked',`${Object.keys(ROLLS).filter(k=>!ROLLS[k].fake&&isUnlocked('roll',k)).length}/${Object.keys(ROLLS).filter(k=>!ROLLS[k].fake).length}`]])}
       ${sec('Odds and ends',[['Fish caught',(PROF.fish&&PROF.fish.n)||0],['Rivals beaten',Object.keys(st.rivalsBeat||{}).length+'/'+RIVALS.length],['Rematches won',st.rematchWins||0]])}
       ${list('Most flipped coins',fav(st.coinFlips,5),(k,v)=>COINS[k]?`<div class="row"><span class="srow"><img src="${coinArt(k,COINS[k].fixed||'H')}" alt="">${COINS[k].name}</span><b>${fmtN(v)}</b></div>`:'')}
       ${list('Most bought Charms',fav(st.buys,5),chRow)}
@@ -4909,7 +4914,7 @@ function recordsModal(){
       <td><div class="histch">${h.charms.slice(0,6).map(k=>JOKERS[k]?`<img src="${icon(k)}" alt="${JOKERS[k].name}" title="${JOKERS[k].name}">`:'').join('')}</div></td></tr>`).join('')}</table>`:'<div class="cdesc" style="text-align:center">No finished runs yet.</div>';
   else{const done=g=>isUnlocked(g.kind,g.key)&&!PROF.unlockAll||!!PROF.unlocked[g.kind+':'+g.key],n=GOALS.filter(done).length;
     body=`<div class="lbl" style="text-align:center;margin-bottom:8px">${n} of ${GOALS.length} unlocked · hover or tap one to see how</div><div class="ugrid">${GOALS.map((g,i)=>`<button class="ucell ${done(g)?'got':''}" data-tip="goal:${i}" aria-label="#${i+1} ${done(g)?goalName(g):'Locked'}"><span class="unum">${String(i+1).padStart(3,'0')}</span>${goalIcon(g)}<span class="unm">${done(g)?goalName(g):'???'}</span></button>`).join('')}</div>`}
-  return `<div class="overlay"><div class="panel modal wide"><h2>Records</h2><div class="ctabs">${[['stats','Stats'],['history','History'],['goals','Unlocks']].map(([k,n])=>`<button class="btn small ${REC_TAB===k?'orange':''}" style="${REC_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="rectab" data-arg="${k}">${n}</button>`).join('')}</div>
+  return `<div class="overlay"><div class="panel modal wide"><h2>Records</h2><div class="ctabs">${[['stats','Stats'],['history','History'],['goals','Roll unlocks']].map(([k,n])=>`<button class="btn small ${REC_TAB===k?'orange':''}" style="${REC_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="rectab" data-arg="${k}">${n}</button>`).join('')}</div>
     <div class="recbody">${body}</div><div style="text-align:center;margin-top:10px"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
 }
 /* new stage: a short title card with the floor name, its boss and any weather */
@@ -5832,7 +5837,7 @@ const ACT={
   resetunlocks(){if(!resetArm){resetArm=true;showModal(optionsModal);return}resetArm=false;
     PROF.unlocked={};PROF.stakes={};PROF.unlockAll=false;PROF.stats=JSON.parse(JSON.stringify(PROF_DEF.stats));saveProf();
     try{localStorage.removeItem('hwr-best')}catch(e){}const bl=$('#bestline');if(bl)bl.textContent='';updateStreakLine();
-    toast('Unlocks reset. Everything is locked again');play('shatter');showModal(optionsModal)},
+    toast('Progress reset. The Rolls are locked again');play('shatter');showModal(optionsModal)},
   closemodal(){closeModal()},
 
   keys(){showModal(keysModal)},
