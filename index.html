@@ -1748,6 +1748,9 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
 .optm .optrow .btn.small.green{background:var(--green);color:var(--paper);border-color:var(--green)}
 
 .purse{gap:calc(var(--cs)*var(--pg,.2))}
+
+/* the stage card fades in over the run certificate as it leaves, with no bare table in between */
+#stageintro{animation:sicross .35s ease-out both}@keyframes sicross{from{opacity:0}}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1794,7 +1797,7 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.228</div>
+  <div class="gamever" aria-label="Version">v1.2.229</div>
 </div>
 
 <script>
@@ -5630,7 +5633,7 @@ function recordsModal(){
 }
 /* new stage: a ledger page with the floor name, the stage's three targets, its boss and any weather, sealed with the stage number */
 const ROMAN=n=>{let o='';[[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']].forEach(([v,c])=>{while(n>=v){o+=c;n-=v}});return o};
-function stageIntro(){if(!S)return;if($('#ripstage')){setTimeout(stageIntro,250);return}const F=floorOf(S.ante),bb=(S.blinds||[]).find(b=>b.kind==='boss'),W=S.weather&&WEATHER[S.weather];
+function stageIntro(){if(!S)return;if($('#ripstage:not(.out)')){setTimeout(stageIntro,80);return}const F=floorOf(S.ante),bb=(S.blinds||[]).find(b=>b.kind==='boss'),W=S.weather&&WEATHER[S.weather];
   let el=$('#stageintro');if(!el){el=document.createElement('div');el.id='stageintro';document.body.appendChild(el)}
   const boss=bb&&BOSSES[bb.boss]?`<div class="sicard" style="--cc:${BOSSES[bb.boss].col}"><div class="sicon" style="background:${BOSSES[bb.boss].col}">${bossSil(bb.boss)?`<img src="${bossSil(bb.boss)}" alt="">`:''}</div><div><div class="silbl">Boss</div><b>${BOSSES[bb.boss].name}</b><div class="sidesc">${bossDesc(bb)}</div></div></div>`:'';
   const wx=W?`<div class="sicard" style="--cc:${W.col}"><div class="sicon wxi" style="background:${W.col}">${W.short||''}</div><div><div class="silbl">Weather</div><b>${W.name}</b><div class="sidesc">${fmt(W.desc)}</div></div></div>`:'';
