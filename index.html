@@ -1600,6 +1600,27 @@ body{background-color:color-mix(in srgb,var(--paper) 93%,var(--ftint,var(--paper
 #ffbtn.on{background:var(--navy);color:var(--paper);box-shadow:none}
 #ffbtn:active{transform:translateY(1px);box-shadow:none}
 @media (max-width:700px){#ffbtn{right:calc(14px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom));font-size:11px;padding:4px 10px}}
+
+/* ===== desktop: Charms in a column down the left, the Pocket down the right ===== */
+@media (min-width:761px){
+  #main{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:minmax(0,1fr) auto;column-gap:22px;row-gap:0}
+  #jokerbar{display:contents}
+  #jokerbar .tray{grid-row:1;flex-direction:column;align-items:center;gap:6px;min-height:0;padding-top:6px}
+  #jokerbar .tray:not(.cons){grid-column:1}#jokerbar .tray.cons{grid-column:3}
+  #stage{grid-column:2;grid-row:1;min-height:0}
+  #main::after{grid-column:1/-1;grid-row:2}
+  .tvl{writing-mode:horizontal-tb;transform:none;align-self:center;white-space:nowrap;border-bottom:1px solid var(--line);padding-bottom:3px}
+  .tvl b{margin:0 0 0 6px}
+  #jokerbar .cards,#jokerbar .cards.jrow{container-type:normal;display:grid;grid-template-columns:repeat(var(--cols,1),auto);gap:10px;padding:4px 0 0;justify-content:center;align-content:start;flex:none}
+  #jokerbar .cards.jrow .jcard,#jokerbar .cards .jcard{width:var(--jw)}
+  #jokerbar .cards.jrow .jgap,#jokerbar .jgap{width:calc(var(--jw) + 14px);height:calc(var(--jw) + 26px)}
+  #jokerbar .jslot::before{width:calc(var(--jw) + 14px);height:calc(var(--jw) + 26px)}
+  #jokerbar .jacts{top:50%;left:calc(100% + 6px);transform:translateY(-50%);flex-direction:column}
+  #jokerbar .tray.cons .jacts{left:auto;right:calc(100% + 6px)}
+  #jokerbar .jslot.sel{transform:translateX(6px)}#jokerbar .tray.cons .jslot.sel{transform:translateX(-6px)}
+}
+
+@media (min-width:761px){#jokerbar .jacts .mv{flex-direction:column}#jokerbar .jacts .mv .btn{rotate:90deg}}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1646,7 +1667,7 @@ body{background-color:color-mix(in srgb,var(--paper) 93%,var(--ftint,var(--paper
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.218</div>
+  <div class="gamever" aria-label="Version">v1.2.219</div>
 </div>
 
 <script>
@@ -4594,7 +4615,7 @@ function render(){
   if(!S){$('#coach').hidden=true;if(!modal){$('#overlay').hidden=true;$('#overlay').innerHTML=''}updateTitle();musicMood();return}
   $('#app').dataset.screen=S.screen==='shop'&&S.pack?'pack':S.screen==='event'||S.screen==='choose'?'shop':S.screen;
   scheduleSave();
-  renderSide();renderJokers();renderStage();renderOverlay();musicMood();
+  renderSide();renderJokers();renderStage();renderOverlay();musicMood();sizeCharms();
 }
 /* which roll and stake this run is on */
 function runChip(){const r=ROLLS[S.roll];if(!r)return '';const st=STAKES[S.stake]||STAKES[1];
@@ -4661,9 +4682,17 @@ function renderJokers(){
   const el=$('#jokerbar');const n=S.jokers.length;
   const hollow=S.screen==='play'&&bossIs('hollow')&&!S.hollowFree;
   const gap=(k,cls)=>Array.from({length:Math.max(0,k)},()=>`<div class="jgap ${cls||''}" aria-hidden="true"></div>`).join('');
-  el.innerHTML=`<div class="tray ${hollow?'hollow':''}"><div class="tvl">Charms <b>${n}/${slots()}</b></div><div class="cards jrow" style="--n:${Math.max(n,slots(),1)}">${S.jokers.map(jokerSlot).join('')}${gap(slots()-n)}</div></div>
-   <div class="tray cons"><div class="tvl">Pocket <b>${S.cons.length}/${S.consSlots}</b></div><div class="cards">${S.cons.map(consSlot).join('')}${gap(S.consSlots-S.cons.length,'sq')}</div></div>`;
+  el.innerHTML=`<div class="tray ${hollow?'hollow':''}"><div class="tvl">Charms <b>${n}/${slots()}</b></div><div class="cards jrow vcol" style="--n:${Math.max(n,slots(),1)}">${S.jokers.map(jokerSlot).join('')}${gap(slots()-n)}</div></div>
+   <div class="tray cons"><div class="tvl">Pocket <b>${S.cons.length}/${S.consSlots}</b></div><div class="cards vcol">${S.cons.map(consSlot).join('')}${gap(S.consSlots-S.cons.length,'sq')}</div></div>`;
 }
+/* desktop: the Charm and Pocket columns run down the sides of the table; each sizes its stamps to the height it has */
+function sizeCharms(){const desk=innerWidth>760;document.querySelectorAll('#jokerbar .tray').forEach(t=>{const c=t.querySelector('.cards');if(!c)return;
+  if(!desk){t.style.removeProperty('--jw');c.style.removeProperty('--cols');return}
+  const n=c.children.length||1,lab=t.querySelector('.tvl'),avail=t.clientHeight-(lab?lab.offsetHeight:0)-14,gap=10;
+  let best=null;for(const cols of [1,2,3]){const rows=Math.ceil(n/cols),w=Math.floor((avail-(rows-1)*gap)/rows)-26;if(!best||w>best.w+6)best={cols,w};if(w>=64)break}
+  c.style.setProperty('--cols',best.cols);let jw=Math.max(30,Math.min(76,best.w));t.style.setProperty('--jw',jw+'px');
+  /* then check what actually fits and step down until the column clears the footer */
+  for(let k=0;k<12&&jw>30&&c.getBoundingClientRect().bottom>t.getBoundingClientRect().bottom+1;k++){jw-=3;t.style.setProperty('--jw',jw+'px')}})}
 function jokerSlot(j,i){
   const d=JOKERS[j.key],sel=S.selJoker===i&&canEdit(),n=S.jokers.length;
   const gj=(S.roll==='glitched'||j.key==='missingno')&&S.screen==='play'&&S.glitchJ&&S.glitchJ[j.id];
@@ -6499,7 +6528,7 @@ function artToCoin(i){const j=S.jokers[i];if(!j||!JOKERS[j.key].artifact||!artPh
   S.jokers.splice(i,1);S.selJoker=null;S.purse.unshift(mkCoin('pressed'));if(S.results.length)S.results.unshift('H');play('buy');toast('The <b>Pressed Penny</b> is back at the front of your purse, pulling its train');render();return true}
 const inRect=(el,x,y,pad=20)=>{if(!el)return false;const r=el.getBoundingClientRect();return x>=r.left-pad&&x<=r.right+pad&&y>=r.top-pad&&y<=r.bottom+pad};
 function artTarget(d,x,y){
-  if(d.kind==='coin'&&coinDef(S.purse[+d.item.dataset.idx]||{type:'copper'}).charm){const t=$('#jokerbar .tray:not(.cons)');return inRect(t,x,y,6)?t:null}
+  if(d.kind==='coin'&&coinDef(S.purse[+d.item.dataset.idx]||{type:'copper'}).charm){const t=$('#jokerbar .tray:not(.cons)');return inRect(t,x,y,innerWidth>760?30:6)?t:null}
   if(d.kind==='charm'){const j=S.jokers[+d.item.dataset.idx];if(j&&JOKERS[j.key].artifact){const t=$('.purse');return inRect(t,x,y,24)?t:null}}
   return null}
 let drag=null,suppressClick=false;
@@ -6570,7 +6599,7 @@ function beginDrag(){
   $('#fx').appendChild(g);
   drag.ghost=g;drag.ox=drag.x0-r.left;drag.oy=drag.y0-r.top;drag.px=drag.x0;drag.py=drag.y0;
   // slot centres are measured once; reordering only swaps which item sits in which slot
-  drag.centers=drag.kind==='shop'?[]:[...drag.list.children].filter(c=>c.dataset.idx!=null).map(c=>{const q=c.getBoundingClientRect();return q.left+q.width/2});
+  drag.centers=drag.kind==='shop'?[]:[...drag.list.children].filter(c=>c.dataset.idx!=null).map(c=>{const q=c.getBoundingClientRect();return [q.left+q.width/2,q.top+q.height/2]});
   drag.item.classList.add('dragging');play('pick');showZones(drag);
   dragFrame();
 }
@@ -6583,21 +6612,21 @@ function dragFrame(){
   {const t=artTarget(drag,x,y);document.querySelectorAll('.droptarget').forEach(e=>{if(e!==t)e.classList.remove('droptarget')});if(t){t.classList.add('droptarget');return}}
   {const q=zoneAt(drag,x,y);(drag.zones||[]).forEach(o=>o.e.classList.toggle('hot',o===q));if(q||drag.kind==='shop')return}
   const kids=[...drag.list.children].filter(c=>c.dataset.idx!=null),cur=kids.indexOf(drag.item);
-  let j=0,best=1e9;drag.centers.forEach((cx,k)=>{const d=Math.abs(x-cx);if(d<best){best=d;j=k}});
+  let j=0,best=1e9;drag.centers.forEach(([cx,cy],k)=>{const d=Math.hypot(x-cx,(y-cy)*(drag.list.classList.contains('vcol')?1:.15));if(d<best){best=d;j=k}});
   if(drag.kind==='charm'&&S.jokers.some(q=>q.curse==='bound')){
     /* Bound charms keep their slot: everything else shuffles around them */
     const n=kids.length,isB=k=>S.jokers[k]&&S.jokers[k].curse==='bound';if(isB(j))return;
     const free=kids.filter(c=>c!==drag.item&&!isB(+c.dataset.idx)),fs=[...Array(n).keys()].filter(k=>!isB(k));free.splice(fs.indexOf(j),0,drag.item);
     const tgt=Array(n);kids.forEach(c=>{if(isB(+c.dataset.idx))tgt[+c.dataset.idx]=c});let f=0;for(let k=0;k<n;k++)if(!tgt[k])tgt[k]=free[f++];
     if(tgt.every((c,k)=>c===kids[k]))return;
-    const first=new Map(kids.map(c=>[c,c.getBoundingClientRect().left]));tgt.forEach(c=>drag.list.appendChild(c));play('slide');
-    if(!reduced)kids.forEach(c=>{if(c===drag.item)return;const dx=first.get(c)-c.getBoundingClientRect().left;if(dx)c.animate([{transform:`translateX(${dx}px)`},{transform:'translateX(0)'}],{duration:120,easing:'ease-out'})});
+    const first=new Map(kids.map(c=>{const q=c.getBoundingClientRect();return [c,[q.left,q.top]]}));tgt.forEach(c=>drag.list.appendChild(c));play('slide');
+    if(!reduced)kids.forEach(c=>{if(c===drag.item)return;const q=c.getBoundingClientRect(),[l,t]=first.get(c),dx=l-q.left,dy=t-q.top;if(dx||dy)c.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:'translate(0,0)'}],{duration:120,easing:'ease-out'})});
     return}
   if(j!==cur){
     const others=kids.filter(c=>c!==drag.item);
-    const first=new Map(others.map(c=>[c,c.getBoundingClientRect().left]));
+    const first=new Map(others.map(c=>{const q=c.getBoundingClientRect();return [c,[q.left,q.top]]}));
     drag.list.insertBefore(drag.item,others[j]||null);play('slide');
-    if(!reduced)others.forEach(c=>{const dx=first.get(c)-c.getBoundingClientRect().left;if(dx)c.animate([{transform:`translateX(${dx}px)`},{transform:'translateX(0)'}],{duration:120,easing:'ease-out'})});
+    if(!reduced)others.forEach(c=>{const q=c.getBoundingClientRect(),[l,t]=first.get(c),dx=l-q.left,dy=t-q.top;if(dx||dy)c.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:'translate(0,0)'}],{duration:120,easing:'ease-out'})});
   }
 }
 document.addEventListener('pointermove',e=>{
@@ -6679,7 +6708,7 @@ function fitScale(){
   const a=$('#app');const on=Math.abs(k-1)>.01;
   a.style.width=on?W/k+'px':'';a.style.height=on?H/k+'px':'';a.style.scale=on?String(k):'';
 }
-addEventListener('resize',()=>{fitScale();sizeCoins();hideTip()});
+addEventListener('resize',()=>{fitScale();sizeCoins();sizeCharms();hideTip()});
 /* boot: the first tap starts the audio (browsers only allow sound after a tap), then the intro plays */
 let bootStage=0;
 /* a soft music-box jingle for the intro: a rising arpeggio while the coin flies, a warm chord when it lands */
