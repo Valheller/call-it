@@ -825,7 +825,7 @@ body:has(#boot:not(.gone)) #title{visibility:hidden}
   .s-binfo:not(:has(.s-target)){display:none}
   .s-target{font-size:20px}
   .s-btns{grid-area:btns;display:flex;flex-direction:column;gap:4px;margin-top:0}
-  .s-btns .btn{font-size:11px;padding:3px 7px;box-shadow:0 2px 0 var(--cd)}
+  .s-btns .btn{font-size:11px;padding:3px 7px;box-shadow:none}
   .s-run{padding:1px 4px 1px 0;gap:2px;justify-content:center;box-shadow:inset 0 -2px 0 var(--sc)}
   .s-run{overflow:hidden}.s-run .rollscene{width:44px;height:20px;display:grid;place-items:center}
   .s-run .rollscene .rolltilt{transform:scale(.6)}
@@ -1150,7 +1150,7 @@ html,body,button,a,.pond{touch-action:manipulation}
 .overlay>.optm{display:flex;flex-direction:column;overflow:hidden;max-height:calc((100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) / var(--k,1))}
 .optm>h2{flex:none;margin-bottom:8px}.optm>.ctabs{flex:none}.optm .optbody{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:2px}
 .optm .optfoot{flex:none;text-align:center;padding-top:8px}.optm .optver{margin-top:9px}
-.optm .optrow{padding:4px 6px 4px 10px;margin-bottom:4px;min-height:36px}.optm .optrow .btn.small,.optm .optrow a.btn.small{padding:3px 10px;font-size:13px;box-shadow:0 2px 0 var(--cd);line-height:1.2}
+.optm .optrow{padding:4px 6px 4px 10px;margin-bottom:4px;min-height:36px}.optm .optrow .btn.small,.optm .optrow a.btn.small{padding:3px 10px;font-size:13px;box-shadow:none;line-height:1.2}
 .optm .optbody{padding-top:4px}
 .overlay>.endpanel{align-self:center;margin:auto 0}
 body:has(#overlay:not([hidden])) #saybox{display:none}
@@ -1735,6 +1735,17 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
 #jokerbar .tray.cons .jnum{display:none}
 .ghost .jnum{display:none}
 @media (max-width:760px){.jnum{font-size:8px;padding:1px 3px;left:2px;top:1px}}
+
+/* option-row buttons: outlined slips like the ledger's other secondary buttons, no 3D lip */
+.optm .optrow .btn.small,.optm .optrow a.btn.small{background:none;color:var(--c);border:1.5px solid var(--c);outline:0;padding:3px 12px;min-width:74px;text-align:center;justify-content:center}
+.optm .optrow .btn.small:hover{background:color-mix(in srgb,var(--c) 10%,transparent);filter:none}
+/* tabs: room for each button's outer rule, and unselected tabs are outlined rather than grey slabs */
+.ctabs{gap:12px;padding:4px}
+.ctabs .btn{outline-offset:2px}
+.ctabs .btn:not(.orange){background:none;color:var(--navy);border:1.5px solid var(--navy);outline:0}
+.ctabs .btn.orange{--c:var(--navy);--cd:var(--navy);outline-offset:2px}
+
+.optm .optrow .btn.small.green{background:var(--green);color:var(--paper);border-color:var(--green)}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1781,7 +1792,7 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.226</div>
+  <div class="gamever" aria-label="Version">v1.2.227</div>
 </div>
 
 <script>
