@@ -1621,6 +1621,16 @@ body{background-color:color-mix(in srgb,var(--paper) 93%,var(--ftint,var(--paper
 }
 
 @media (min-width:761px){#jokerbar .jacts .mv{flex-direction:column}#jokerbar .jacts .mv .btn{rotate:90deg}}
+
+/* the stamp sits on top of the figures it cancels */
+.rstamp{mix-blend-mode:normal;z-index:6;background:color-mix(in srgb,var(--stamp) 78%,transparent)}
+.lh-target .rstamp{right:-18px;top:62%}
+/* a toss that clears the target: the figures are double-ruled and a small 'Clears' stamp appears, instead of a yellow glow */
+.lh-toss.fire .cm .chips,.lh-toss.fire .cm .mult{animation:none;box-shadow:none;border-bottom-width:5px;border-bottom-style:double}
+.lh-toss .hname{position:relative}
+.lh-toss.fire .hname::after{content:'Clears';position:absolute;left:calc(100% + 10px);top:50%;font-family:var(--font-sc);font-style:normal;font-weight:700;font-size:13px;letter-spacing:.14em;color:var(--green);
+  border:2px solid var(--green);padding:1px 6px;background:color-mix(in srgb,var(--stamp) 78%,transparent);transform:translateY(-50%) rotate(-8deg);animation:rstampin .25s cubic-bezier(.5,0,.6,1.6) both}
+@media (max-width:760px){.lh-toss.fire .hname::after{position:static;display:inline-block;margin-left:8px;transform:rotate(-6deg);font-size:10px;animation:none}}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1667,7 +1677,7 @@ body{background-color:color-mix(in srgb,var(--paper) 93%,var(--ftint,var(--paper
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.219</div>
+  <div class="gamever" aria-label="Version">v1.2.220</div>
 </div>
 
 <script>
