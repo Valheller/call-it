@@ -1864,7 +1864,7 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.237</div>
+  <div class="gamever" aria-label="Version">v1.2.238</div>
 </div>
 
 <script>
@@ -2348,7 +2348,7 @@ Object.assign(JOKERS,{
  pawnticket:{name:'Pawn Ticket',r:2,cost:5,bg:'#e8e0c8',p:{1:'#c9b48a',2:'#5a4a3a',3:'#fe5f55'},s:["..........","1111111111","1.......31","1.2222..31","1.......31","1.222...31","1.......31","1111111111","..........",".........."],
   desc:'Sold Charms give {$:$3} more'},
  guardianangel:{name:'Guardian Angel',r:2,cost:7,bg:'#2a3550',p:{1:'#ffffff',2:'#fff27a',3:'#bfe6ff'},s:["...2222...","..2....2..","....11....","3..1111..3","33.1111.33","333111133.",".3.1111.3.","...1111...","..111111..",".........."],
-  desc:'Curses on your Charms {a:do nothing}'},
+  desc:'Curses on your Charms {a:do nothing}, except {r:Inflation}'},
  devilsbargain:{name:"Devil's Bargain",r:2,cost:6,bg:'#3a0a10',p:{1:'#fe5f55',2:'#a8102e',3:'#ffd34d'},s:["1........1","11......11",".11111111.",".12111121.",".13111131.",".11111111.","..122221..","...1111...","....11....",".........."],
   desc:'{x:X2.5} Mult. Lose {$:$2} at the end of each wager. Some bargains cost more than money',end:(c,e)=>e('xmult',2.5)},
  threeleaf:{name:'Three-Leaf Clover',r:2,cost:6,bg:'#dff3d8',p:{1:'#4bd18f',2:'#2e7d4f'},s:["...11.....","..1111....","..1111.11.","...11.1111","....2.1111",".11.2..11.","1111.2....","1111..2...",".11...2...",".........."],
@@ -2880,7 +2880,7 @@ const TAGS={
 };
 const CURSES={
  rusted:{name:'Rusted',col:'#9a4f2a',letter:'R',desc:'Lose {$:$1} at the end of each wager. Can\'t be destroyed'},
- bound:{name:'Bound',col:'#5d3d94',letter:'B',desc:'Can\'t be sold or moved'},
+ bound:{name:'Bound',col:'#5d3d94',letter:'B',desc:'Stuck in your {r:first} Charm slot, so it triggers first. Can\'t be sold or moved'},
  fleeting:{name:'Fleeting',col:'#3d8fe0',letter:'5',desc:'Disappears after 5 wagers'},
  brittle:{name:'Brittle',col:'#a8b4ba',letter:'X',desc:'{a:1 in 8} chance to break at the end of each wager'},
  heavy:{name:'Heavy',col:'#5a4a3a',letter:'H',desc:'Takes up {r:2} Charm slots'},
@@ -2892,9 +2892,13 @@ const CURSES={
 const CURSE_BAN={cage:['heavy'],
   piggy:['rented'],rebate:['rented'],bottle:['rented'],loyalty:['rented'],changejar:['rented'],taxrefund:['rented'],goose:['rented'],savings:['rented']};
 const curseOK=(k,c)=>{const d=JOKERS[k];if(!d)return true;if(c==='bound'&&d.artifact)return false;return !(CURSE_BAN[k]||[]).includes(c)};
+/* cursed shop Charms are discounted by how much the curse hurts */
+const CURSE_PAY={bound:.75,rusted:.75,hungry:.5,brittle:.5,fleeting:.35,heavy:.35};
+/* Bound Charms always sit at the front of the row, so they trigger first */
+function bindFront(){if(!S||!S.jokers||S.phase==='scoring')return;const b=S.jokers.filter(j=>cursed(j,'bound'));if(!b.length)return;const o=[...b,...S.jokers.filter(j=>!cursed(j,'bound'))];if(o.some((j,k)=>j!==S.jokers[k])){S.jokers=o;S.selJoker=null}}
 const pickCurse=(k,pool)=>{const ok=(pool||Object.keys(CURSES)).filter(c=>c!=='inflation'&&curseOK(k,c));return ok.length?pick(ok):null};
 /* Inflation sticks: it can't be lifted, and its Charm can't be sold */
-const purifiable=j=>!!j.curse&&j.curse!=='inflation',noSell=j=>j.curse==='bound'||j.curse==='inflation'||j.key==='cursedidol';
+const purifiable=j=>!!j.curse&&j.curse!=='inflation',noSell=j=>cursed(j,'bound')||j.curse==='inflation'||j.key==='cursedidol';
 const inflN=()=>S?S.jokers.filter(j=>j.curse==='inflation').length:0;
 const inflMult=()=>S&&!S.bigspender&&inflN()?1+inflN()*Math.max(0,S.money)/50:1;
 const curseBadge=(c,left)=>`<i class="cbadge" style="--cc:${CURSES[c].col}">${c==='fleeting'?(left??5):CURSES[c].letter}</i>`;
@@ -4822,7 +4826,7 @@ setInterval(()=>{
 /* fast forward: shown during wagers, cycles Off / X2 / X4 */
 function updateFF(){const b=$('#ffbtn');if(!b)return;b.hidden=!(S&&S.screen==='play');const v=OPT.speed||1;b.classList.toggle('on',v>1);
   b.innerHTML=`<span class="ffi">${v>=4?'&#9654;&#9654;&#9654;':'&#9654;&#9654;'}</span><b>${v>1?'X'+v:'Off'}</b>`;b.title=`Fast forward: ${v>1?'X'+v:'off'} (tap to change)`}
-function render(){
+function render(){bindFront();
   if(S&&S.stageIntroDue&&S.screen==='blind'&&!S.pack){S.stageIntroDue=false;setTimeout(stageIntro,200)}
   hideTip();setTimeout(updateFF,0);if(!S||S.screen!=='play')hazardsOff();
   if(S&&S.blinds)S.blinds.forEach(b=>{if(b.boss&&BOSSES[b.boss])markSeen('boss',b.boss);if(b.boss2&&BOSSES[b.boss2])markSeen('boss',b.boss2)});
@@ -4921,7 +4925,7 @@ function jokerSlot(j,i){
   return `<div class="jslot ${sel?'sel':''} ${gj?'jglitch':''} ${!jOn(j)?'stolen':''} ${d.r===5?'fabled':d.r===4?'legend':''}" data-idx="${i}"><i class="jnum" aria-hidden="true">${i+1}</i><button class="jcard" id="jk${i}" data-act="joker" data-arg="${i}" data-drag="charm" data-tip="joker:${i}" aria-label="${d.name}">
    <div class="jin ${j.wear==='weightless'?'weightless':''}" style="--jbg:${d.bg};--dl:${-(i*.7)}s;${rarVars(j.key)}">${IMG(icon(j.key))}${j.wear&&j.wear!=='weightless'?`<i class="wfx w-${j.wear}"></i>`:''}</div>${j.curse?curseBadge(j.curse,j.left):''}</button>
    ${sel&&!touchUI()?`<div class="jacts">${noSell(j)?`<span class="why">${CURSES[j.curse].name}</span>`:`${S.roll==='hoarder'?'':`<button class="btn green tiny" data-act="sell" data-arg="${i}">Sell $${sellVal(j)}</button>`}`}
-   <div class="mv"><button class="btn tiny" data-act="move" data-arg="${i},-1" ${i===0||j.curse==='bound'?'disabled':''} aria-label="Move left">&lt;</button><button class="btn tiny" data-act="move" data-arg="${i},1" ${i===n-1||j.curse==='bound'?'disabled':''} aria-label="Move right">&gt;</button></div></div>`:''}</div>`;
+   <div class="mv"><button class="btn tiny" data-act="move" data-arg="${i},-1" ${i===0||cursed(j,'bound')?'disabled':''} aria-label="Move left">&lt;</button><button class="btn tiny" data-act="move" data-arg="${i},1" ${i===n-1||cursed(j,'bound')?'disabled':''} aria-label="Move right">&gt;</button></div></div>`:''}</div>`;
 }
 function consSlot(c,i){
   const ci=consInfo(c),sel=S.selCons===i&&canEdit();
@@ -5033,7 +5037,7 @@ const packName=p=>sizeName(p.size)+PACKS[p.kind].name;
 const packCost=s=>s==='normal'?4:s==='jumbo'?6:8;
 const packCounts=p=>PACKS[p.kind].n&&PACKS[p.kind].n[p.size]?{n:PACKS[p.kind].n[p.size][0],picks:PACKS[p.kind].n[p.size][1]}:({n:p.size==='normal'?(p.kind==='spirit'?2:3):(p.kind==='spirit'?4:5),picks:p.size==='mega'?2:1});
 const gp=(o,v)=>{if(S&&S.bazaar)v=Math.max(1,Math.round(v*1.2));{const im=inflMult();if(im>1&&v>0)v=Math.ceil(v*im)}return Math.max(1,v+((o&&o.gd)||0))};
-const slotPrice=o=>S.shop&&o===S.shop.jokers[0]&&countEff('goldenticket')?0:gp(o,o.bs?price(o.bs):o.br?3:o.kind==='charm'?(o.curse==='rented'?1:Math.max(1,price(o.curse?Math.ceil(o.cost/2):o.cost)-countEff('coupon'))):price(o.cost));
+const slotPrice=o=>S.shop&&o===S.shop.jokers[0]&&countEff('goldenticket')?0:gp(o,o.bs?price(o.bs):o.br?3:o.kind==='charm'?(o.curse==='rented'?1:Math.max(1,price(o.curse?Math.ceil(o.cost*(CURSE_PAY[o.curse]??.5)):o.cost)-countEff('coupon'))):price(o.cost));
 /* each reroll in the same shop costs 50% more than the last: $5, $8, $11, $17, $25, $38... */
 const rerollCost=()=>countEff('cornucopia')||(S.freeRR||0)>0||(S.upgrades.includes('surplus2')&&!(S.shop.rolls||0))?0:Math.max(0,Math.ceil((Math.round(S.shop.reroll*1.25**(S.shop.rolls||0))-countEff('thrifty')+infl())*inflMult()));
 function charmCardHTML(o,i){
@@ -6680,7 +6684,7 @@ const ACT={
   sell(a){const i=+a,j=S.jokers[i];if(!j||!canEdit()||noSell(j)||S.roll==='hoarder')return;PS().sold++;S.money+=sellVal(j);S.jokers.splice(i,1);S.selJoker=null;play('sell');S.lastSold=j.key;if(S.screen==='play'&&bossIs('hollow')&&!S.hollowFree){S.hollowFree=true;setTimeout(()=>toast('<b>The Hollow</b> lets go. Your Charms wake up.'),300);renderJokers()}if(j.key==='confession'){const c=S.jokers.find(purifiable);if(c){const nm=CURSES[c.curse].name;c.curse=null;delete c.left;toast(`You feel <b>forgiven</b>. Your ${JOKERS[c.key].name} is free of <b>${nm}</b>.`)}else toast('You feel <b>forgiven</b>.')}
     if(j.key==='hydra')for(let k=0;k<2&&S.jokers.length<slots();k++){const nk=rollJokerKey(1);addJoker(nk,JOKERS[nk].cost)}
     if(S.screen==='play'){renderJokers();syncStats()}else render()},
-  move(a){const[i,d]=a.split(',').map(Number),k=i+d;if(k<0||k>=S.jokers.length||S.jokers[i].curse==='bound'||S.jokers[k].curse==='bound')return;[S.jokers[i],S.jokers[k]]=[S.jokers[k],S.jokers[i]];S.selJoker=k;renderJokers()},
+  move(a){const[i,d]=a.split(',').map(Number),k=i+d;if(k<0||k>=S.jokers.length||cursed(S.jokers[i],'bound')||cursed(S.jokers[k],'bound'))return;[S.jokers[i],S.jokers[k]]=[S.jokers[k],S.jokers[i]];S.selJoker=k;renderJokers()},
   selectblind(){startBlind()},
   skipblind(){skipBlind()},
   cashout(){doCashout()},
@@ -6856,7 +6860,7 @@ function canDrag(kind){
 document.addEventListener('pointerdown',e=>{
   if(e.button>0)return;const el=e.target.closest('[data-drag]');if(!el)return;
   const kind=el.dataset.drag;if(!canDrag(kind))return;
-  if(kind==='charm'){const jj=S.jokers[+el.closest('.jslot').dataset.idx];if(jj&&jj.curse==='bound')return}
+  if(kind==='charm'){const jj=S.jokers[+el.closest('.jslot').dataset.idx];if(jj&&cursed(jj,'bound'))return}
   const item=kind==='coin'||kind==='shop'?el:el.closest('.jslot');
   drag={el,item,kind,list:item.parentElement,x0:e.clientX,y0:e.clientY,id:e.pointerId,active:false,tilt:0,lx:e.clientX};
 });
@@ -6890,9 +6894,9 @@ function dragFrame(){
   {const q=zoneAt(drag,x,y);(drag.zones||[]).forEach(o=>o.e.classList.toggle('hot',o===q));if(q||drag.kind==='shop')return}
   const kids=[...drag.list.children].filter(c=>c.dataset.idx!=null),cur=kids.indexOf(drag.item);
   let j=0,best=1e9;drag.centers.forEach(([cx,cy],k)=>{const d=Math.hypot(x-cx,(y-cy)*(drag.list.classList.contains('vcol')?1:.15));if(d<best){best=d;j=k}});
-  if(drag.kind==='charm'&&S.jokers.some(q=>q.curse==='bound')){
+  if(drag.kind==='charm'&&S.jokers.some(q=>cursed(q,'bound'))){
     /* Bound charms keep their slot: everything else shuffles around them */
-    const n=kids.length,isB=k=>S.jokers[k]&&S.jokers[k].curse==='bound';if(isB(j))return;
+    const n=kids.length,isB=k=>S.jokers[k]&&cursed(S.jokers[k],'bound');if(isB(j))return;
     const free=kids.filter(c=>c!==drag.item&&!isB(+c.dataset.idx)),fs=[...Array(n).keys()].filter(k=>!isB(k));free.splice(fs.indexOf(j),0,drag.item);
     const tgt=Array(n);kids.forEach(c=>{if(isB(+c.dataset.idx))tgt[+c.dataset.idx]=c});let f=0;for(let k=0;k<n;k++)if(!tgt[k])tgt[k]=free[f++];
     if(tgt.every((c,k)=>c===kids[k]))return;
