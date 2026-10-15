@@ -1587,6 +1587,11 @@ body{background-color:color-mix(in srgb,var(--paper) 93%,var(--ftint,var(--paper
 .sdfatal .sdname{color:var(--navy)!important;text-shadow:-3px 0 rgba(44,110,138,.75),3px 1px rgba(162,59,42,.75)!important}
 .sdfatal .sdlbl{color:var(--cyan)!important}
 .jglitch .jcard{box-shadow:-3px 0 0 rgba(44,110,138,.6),3px 1px 0 rgba(162,59,42,.6)!important}
+
+/* a lone cheque (the Big Spender) gets the room to lay out its memo instead of growing tall */
+.blinds.ways .bcol.way:only-child{flex-basis:440px;max-width:440px}
+/* the table can still scroll when something is genuinely too tall, but never shows a scroll bar */
+#main{scrollbar-width:none}#main::-webkit-scrollbar{display:none}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1633,7 +1638,7 @@ body{background-color:color-mix(in srgb,var(--paper) 93%,var(--ftint,var(--paper
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.216</div>
+  <div class="gamever" aria-label="Version">v1.2.217</div>
 </div>
 
 <script>
