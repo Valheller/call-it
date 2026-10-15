@@ -1912,6 +1912,19 @@ body.uv #uvfx{opacity:1}
 /* the event badge sits half above the panel and floats; leave room so the scrolling table doesn't clip it */
 .evpanel{margin-top:30px!important}
 @media (max-width:760px){.evpanel{margin-top:24px!important}}
+
+/* ===== face-down coins: one plain sealed token for every coin, so neither its shape, edge nor finish gives it away ===== */
+.coin.fog .spin{--shape:radial-gradient(circle closest-side,#000 98%,transparent 100%)!important}
+.coin.fog .slab{background:#9a8b66!important;filter:none!important}
+.coin.fog .face,.fogghost{border-radius:50%!important;-webkit-mask:none!important;mask:none!important;filter:none!important;
+  background:radial-gradient(circle closest-side,transparent 70%,#1b2a4a 70.5% 72.5%,transparent 73% 79%,#1b2a4a 79.5% 80.5%,transparent 81%),
+    repeating-conic-gradient(from 7deg,rgba(27,42,74,.09) 0 4deg,transparent 4deg 8deg),
+    radial-gradient(circle at 35% 30%,#f7f0de,#e3d6b4 62%,#cdbb8e)!important;
+  box-shadow:inset 0 0 0 2px #1b2a4a,inset 0 0 0 4px #f7f0de,inset 0 0 0 5px rgba(27,42,74,.5)!important}
+.coin.fog .face::before,body.badges .coin.fog .face::before,.fogghost::before{content:'?'!important;position:absolute;inset:0;display:grid!important;place-items:center;
+  font-family:'Cormorant SC',serif;font-weight:700;font-size:calc(var(--cs,60px)*.5)!important;line-height:1;color:#1b2a4a!important;background:none!important;box-shadow:none!important;text-shadow:0 1px 0 rgba(255,255,255,.6)}
+.fogghost::before{font-size:calc(1em*2.2)!important}
+.coin.fog .wfx,.coin.fog .face>*{display:none!important}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1958,7 +1971,7 @@ body.uv #uvfx{opacity:1}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.245</div>
+  <div class="gamever" aria-label="Version">v1.2.246</div>
 </div>
 
 <script>
@@ -5182,7 +5195,7 @@ function refreshTable(){
     el.classList.toggle('sel',S.phase==='call'?S.csel.includes(i):S.selected.includes(i));
     /* coins that missed stay greyed through scoring, and through a re-flip unless they're the ones being re-flipped */
     el.classList.toggle('miss',tossed?!!(E&&!c.fog&&!E.matched[i]):S.phase==='tossing'&&!!S.keepMiss&&S.keepMiss.includes(i));
-    el.classList.toggle('fog',!!c.fog);
+    el.classList.toggle('fog',!!c.fog);el.setAttribute('aria-label',c.fog?'Face-down coin':COINS[c.type].name);
     el.classList.toggle('edge',c.face==='E');
   });
   const cb=$('#callb');
@@ -6055,7 +6068,7 @@ function tipContent(spec){
   const cn=(t,o)=>{const d=COINS[t];return `<div class="tn">${d.name}</div><div class="td">${fmt(d.desc)}</div>${modsHTML(o)}${o&&stkGroup(o)?'<div class="tkind">Stacked: lands with its partner, shares one purse space, and re-flips together with it</div>':''}${o&&(o.bonus||o.bm)?`<div class="tkind" style="color:var(--green)">Permanent bonus: ${[o.bonus?'+'+o.bonus+' Points':'',o.bm?'+'+o.bm+' Mult':''].filter(Boolean).join(', ')}</div>`:''}${o&&o.flips?`<div class="tkind">Flipped ${o.flips} time${o.flips>1?'s':''}</div>`:''}`};
   if(k==='joker'){const j=S.jokers[i];const g=j&&(S.roll==='glitched'||j.key==='missingno')&&S.screen==='play'&&S.glitchJ&&S.glitchJ[j.id];return j&&(jt(j.key,j)+(g?`<div class="tkind">Glitched: scoring as ${JOKERS[g].name} this toss (${fmt(typeof JOKERS[g].desc==='function'?JOKERS[g].desc():JOKERS[g].desc)})</div>`:''))}
   if(k==='shopj'){const o=S.shop.jokers[i];return o&&(o.kind==='almanac'||o.kind==='spirit'?ct(o):jt(o.key,null,o))}
-  if(k==='coin'){const c=S.purse[i];return c&&(coinHolder(c)+cn(c.type,c)+(S.roll==='glitched'&&S.glitch&&S.glitch[c.id]&&S.screen==='play'?`<div class="tkind">Glitched: acting as a ${COINS[S.glitch[c.id]].name} this toss</div>`:''))}
+  if(k==='coin'){const c=S.purse[i];if(c&&c.fog&&S.screen==='play')return `<div class="tn">Face down</div><div class="td">This coin landed face down. You'll see what it is when it scores.</div>`;return c&&(coinHolder(c)+cn(c.type,c)+(S.roll==='glitched'&&S.glitch&&S.glitch[c.id]&&S.screen==='play'?`<div class="tkind">Glitched: acting as a ${COINS[S.glitch[c.id]].name} this toss</div>`:''))}
   if(k==='cons'){const c=S.cons[i];return c&&ct(c)}
   if(k==='popt'){const o0=S.pack&&S.pack.opts[i];if(o0&&o0.kind==='myst'&&(o0.taken||S.pack.done)){const it=o0.inner;return it.kind==='coin'?cn(it.type,it):it.kind==='charm'?jt(it.key):it.kind==='cash'?`<div class="tn">$${it.v}</div><div class="td">Cash from a mystery</div>`:it.kind==='junk'?`<div class="tn">Pocket lint</div><div class="td">Worth {$:$1}</div>`:ct(it)}}
   if(k==='popt'){const o=S.pack&&S.pack.opts[i];return o&&(o.kind==='coin'?cn(o.type,o):o.kind==='charm'?jt(o.key,null,o):PX[o.kind]?PX[o.kind].tip(o):ct(o))}
@@ -7095,7 +7108,7 @@ function beginDrag(){
     // a flat stand-in is far cheaper to move than the full 3D coin
     const c=S.purse[+drag.item.dataset.idx],side=COINS[c.type].fixed||(c.face==='T'?'T':'H');
     g=document.createElement('div');g.className='ghost coinghost';g.style.width=g.style.height=r.width+'px';
-    g.style.setProperty('--art',`url(${coinFace(c.type,side,c)})`);g.innerHTML=coinMods(c);
+    if(c.fog)g.classList.add('fogghost');else{g.style.setProperty('--art',`url(${coinFace(c.type,side,c)})`);g.innerHTML=coinMods(c)}
   }else{
     g=drag.el.cloneNode(true);['id','data-act','data-tip','data-drag'].forEach(a=>g.removeAttribute(a));
     g.classList.add('ghost');g.classList.remove('sel','enter','juice','hov');g.style.width=r.width+'px';
