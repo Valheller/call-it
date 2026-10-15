@@ -1864,7 +1864,7 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.234</div>
+  <div class="gamever" aria-label="Version">v1.2.235</div>
 </div>
 
 <script>
@@ -2668,15 +2668,16 @@ const COIN_WEARS=['polished','patina','proof','brushed','holo','antique'];
 /* Weightless is rare on coins (1 in 25 wears): each one is a free extra coin */
 const pickCoinWear=()=>rand()<.04?'weightless':pick(COIN_WEARS);
 const DEFECTS={
- misprint:{name:'Misprint',col:'#ffd34d',desc:'Earn {$:$3} each time this coin scores'},
- doublestrike:{name:'Double Strike',col:'#fe5f55',desc:'Retrigger this coin'},
- offcenter:{name:'Off-Center',col:'#3d8fe0',desc:'At the end of each wager, create an Almanac for your last toss type (if you have room)'},
- clipped:{name:'Clipped Edge',col:'#e8eef2',desc:'Lands on its {a:edge} 1 in 10 times'},
- filled:{name:'Filled Die',col:'#ff8fab',desc:'{a:1 in 6} chance to create a minor {a:Spirit} when this coin scores (if you have room)'},
- brockage:{name:'Brockage',col:'#c48a12',desc:'Earn {$:$2} whenever this coin misses'},
- mule:{name:'Mule',col:'#4bd18f',desc:'Struck with two mismatched dies: it {a:always scores}, whatever face it lands on'},
- diecrack:{name:'Die Crack',col:'#9a6fdc',desc:'Create a Rune each time this coin is re-flipped (if you have room)'},
+ misprint:{name:'Misprint',col:'#ffd34d',w:10,desc:'Earn {$:$2} each time this coin scores'},
+ doublestrike:{name:'Double Strike',col:'#fe5f55',w:5,desc:'Retrigger this coin'},
+ offcenter:{name:'Off-Center',col:'#3d8fe0',w:10,desc:'After each {a:Boss} wager, create an Almanac for your last toss type (if you have room)'},
+ clipped:{name:'Clipped Edge',col:'#e8eef2',w:10,desc:'Lands on its {a:edge} 1 in 10 times'},
+ filled:{name:'Filled Die',col:'#ff8fab',w:10,desc:'{a:1 in 6} chance to create a minor {a:Spirit} when this coin scores (if you have room)'},
+ brockage:{name:'Brockage',col:'#c48a12',w:10,desc:'Earn {$:$4} whenever this coin misses, and the next coin gets {m:+1} Mult'},
+ mule:{name:'Mule',col:'#4bd18f',w:4,desc:'Struck with two mismatched dies: it {a:always scores}, whatever face it lands on, but adds no Points of its own'},
+ diecrack:{name:'Die Crack',col:'#9a6fdc',w:8,desc:'Create a Rune the first time this coin is re-flipped each wager (if you have room)'},
 };
+const pickDefect=()=>{const ks=Object.keys(DEFECTS),tot=ks.reduce((a,k)=>a+(DEFECTS[k].w||10),0);let x=rand()*tot;for(const k of ks){x-=DEFECTS[k].w||10;if(x<0)return k}return ks[0]};
 function applyWear(w,e){if(w==='polished')e('chips',50);else if(w==='patina')e('mult',10);else if(w==='proof')e('xmult',1.5);else if(w==='brushed'){e('chips',25);e('mult',4)}else if(w==='holo'){if(rand()<odds(.5))e('xmult',2)}else if(w==='antique')e('mult',2*S.ante)}
 const coinMods=c=>`${c.wear&&c.wear!=='weightless'&&!WEARS[c.wear].charmOnly?`<i class="wfx w-${c.wear}"></i>`:''}${c.defect?`<i class="dfx d-${c.defect}"></i>`:''}`;
 const modsHTML=o=>(o&&o.curse?`<div class="tmod" style="--mc:${CURSES[o.curse].col}"><b>${CURSES[o.curse].name}</b> · ${fmt(CURSES[o.curse].desc)}${o.curse==='fleeting'?` (${o.left??5} left)`:''}</div>`:'')+(o&&o.wear?`<div class="tmod" style="--mc:${WEARS[o.wear].col}"><b>${WEARS[o.wear].name}</b> · ${fmt(WEARS[o.wear].desc)}</div>`:'')+(o&&o.defect?`<div class="tmod" style="--mc:${DEFECTS[o.defect].col}"><b>${DEFECTS[o.defect].name}</b> · ${fmt(DEFECTS[o.defect].desc)}</div>`:'');
@@ -4303,17 +4304,17 @@ function genPackOpts(pk,n){
     if(k==='charm')uniq(()=>{if(pk.size==='mega'&&rand()<rareOdds(1/40)){const fb=Object.keys(JOKERS).filter(x=>JOKERS[x].r===5&&!S.jokers.some(j=>j.key===x));if(fb.length)return{kind:'charm',key:pick(fb)}}return{kind:'charm',key:rollJokerKey()}},'key');
     else if(k==='forecast')uniq(()=>({kind:'wx',key:i===0&&S.weather?'clear':pick(Object.keys(WEATHER))}),'key');
     else if(k==='contract')uniq(()=>({kind:'contract',key:pick(Object.keys(CONTRACTS))}),'key');
-    else if(k==='mint')uniq(()=>rand()<.55?{kind:'mod',mod:'wear',key:pickCoinWear()}:{kind:'mod',mod:'defect',key:pick(Object.keys(DEFECTS))},'key');
+    else if(k==='mint')uniq(()=>rand()<.55?{kind:'mod',mod:'wear',key:pickCoinWear()}:{kind:'mod',mod:'defect',key:pickDefect()},'key');
     else if(k==='workshop')uniq(()=>({kind:'cwear',key:pick(Object.keys(WEARS))}),'key');
     else if(k==='exchange')uniq(()=>({kind:'swap',type:rand()<.12&&relicsLeft().length?pick(relicsLeft()):pickSpecial(SPC().filter(t=>COINS[t].cost>=4))}),'type');
     else if(k==='mystery')opts.push({kind:'myst',inner:mysteryInner()});
-    else if(k==='spiritselect')uniq(()=>({kind:'coin',type:pickSpecial(COLLECTOR_COINS),wear:pickCoinWear(),defect:pick(Object.keys(DEFECTS))}),'type');
+    else if(k==='spiritselect')uniq(()=>({kind:'coin',type:pickSpecial(COLLECTOR_COINS),wear:pickCoinWear(),defect:pickDefect()}),'type');
     else if(k==='cursed')uniq(()=>{const legs=Object.keys(JOKERS).filter(x=>JOKERS[x].r===4&&isUnlocked('charm',x));const key=legs.length&&rand()<.12?pick(legs):rollJokerKey(rand()<.4?3:2);return{kind:'charm',key,curse:pickCurse(key)}},'key');
     else if(k==='relic')uniq(()=>{const rl=relicsLeft().filter(t=>!opts.some(o=>o.type===t));return{kind:'coin',type:rl.length?pick(rl):pickSpecial(SPC())}},'type');
     else if(k==='chest'){[{kind:'coin',type:pickSpecial(SPC()),wear:rand()<.3?pickCoinWear():null},{kind:'charm',key:rollJokerKey()},{kind:'rune',key:pick(runeKeys())},randAlmanac()].forEach(o=>opts.push(o));break}
     else if(k==='glitch')uniq(()=>{const x=rand();
       if(x<.25){const gl=Object.keys(JOKERS).filter(q=>JOKERS[q].glitchOnly&&!S.jokers.some(j=>j.key===q));if(gl.length)return{kind:'charm',key:pick(gl)}}
-      if(x<.45)return{kind:'coin',type:pickSpecial(SPC()),wear:pickCoinWear(),defect:pick(Object.keys(DEFECTS))};
+      if(x<.45)return{kind:'coin',type:pickSpecial(SPC()),wear:pickCoinWear(),defect:pickDefect()};
       if(x<.65)return{kind:'charm',key:rollJokerKey(rand()<.5?3:2),wear:pickCoinWear()};
       const y=rand(),it=y<.3?{kind:'rune',key:pick(runeKeys())}:y<.5?{kind:'spirit',key:pick(Object.keys(SPIRITS).filter(q=>q!=='soul'))}:y<.75?{kind:'spirit',key:pick(MINOR_SPIRITS)}:randAlmanac();
       return{kind:'gdup',item:it,key:'d'+(it.key||it.hand)}},'key');
@@ -4676,7 +4677,7 @@ function computeHand(){
   if(E.type==='single'&&countEff('zerohero'))E.type='triple';
   const base=baseOf(E.type);
   if(bossIs('eye')&&S.usedTypes.includes(E.type))return{ev:[],type:E.type,base,chips:0,mult:0,total:0,shattered:[],blocked:true};
-  const st={chips:base.chips,mult:base.mult},ev=[];
+  const st={chips:base.chips,mult:base.mult},ev=[];let brockNext=-1;
   const emitter=(src,idx)=>(kind,v)=>{
     if(kind==='money'&&v>0&&bossIs('miser')){ev.push({src,idx,kind:'text',v:'Miser!',chips:st.chips,mult:st.mult});return}
     if(kind==='chips')st.chips+=v;else if(kind==='mult')st.mult+=v;else if(kind==='xmult')st.mult*=v;
@@ -4693,14 +4694,15 @@ function computeHand(){
   const echoN=countEff('echo'),encN=countEff('encore'),selN=countEff('selene'),janN=countEff('janus'),infN=E.type==='sweep'?countEff('infinity'):0;
   for(let i=0;i<res.length;i++){
     const d=coinDef(S.purse[i]);
-    if(!E.matched[i]){ev.push({src:'coin',idx:i,kind:'miss',chips:st.chips,mult:st.mult});if(d.missMult)emitter('coin',i)('mult',d.missMult);if(d.missX)emitter('coin',i)('xmult',d.missX);if(d.missMoney)emitter('coin',i)('money',d.missMoney);if(S.purse[i].defect==='brockage')emitter('coin',i)('money',2);
+    if(!E.matched[i]){ev.push({src:'coin',idx:i,kind:'miss',chips:st.chips,mult:st.mult});if(d.missMult)emitter('coin',i)('mult',d.missMult);if(d.missX)emitter('coin',i)('xmult',d.missX);if(d.missMoney)emitter('coin',i)('money',d.missMoney);if(S.purse[i].defect==='brockage'){emitter('coin',i)('money',4);brockNext=i+1}
       jk.forEach((j,ji)=>{const t=resolveJ(ji);if(t<0||!jOn(j)||!jOn(jk[t]))return;const def=jdef(jk[t]);if(def.miss)def.miss(ctx,i,emitter('joker',ji),jk[t],t!==ji)});continue}
     const reps=1+(S.purse[i].defect==='doublestrike'?1:0)+(S.edgeFace&&res[i]===S.edgeFace?countEff('houseedge'):0)+(i===first?echoN+kewN:0)+(i===lastM&&lastM!==first?kewN:0)+(i===lastM?2*encN:0)+(res[i]==='T'?selN:0)+janN+infN+(i===krk?4*countEff('kraken'):0)+(i===dcI?countEff('diecast'):0)+(ctx.first?countEff('hookline'):0)+(res[i]==='E'?countEff('standing'):0);
     if(i===krk)emitter('coin',i)('text','Kraken!');
     for(let r=0;r<reps;r++){
       const e=emitter('coin',i);
       if(r>0)e('text','Again!');
-      e('chips',d.chips+(S.purse[i].bonus||0));if(d.grow&&r===0){S.purse[i].bonus=(S.purse[i].bonus||0)+d.grow}
+      if(r===0&&i===brockNext){e('text','Brockage');e('mult',1)}
+      e('chips',S.purse[i].defect==='mule'?0:d.chips+(S.purse[i].bonus||0));if(d.grow&&r===0){S.purse[i].bonus=(S.purse[i].bonus||0)+d.grow}
       if(d.fakeBonus)e('chips',d.fakeBonus+10*stgN());
       if(S.purse[i].sdx&&r===0){e('text','Catch bonus!');e('xmult',S.purse[i].sdx)}
       if(d.train){const cars=E.matched.filter((m,k)=>m&&k>i).length;if(cars){e('text','All aboard!');e('mult',d.train*cars)}}
@@ -4710,7 +4712,7 @@ function computeHand(){
       if(d.mult)e('mult',d.mult);if(S.purse[i].bm)e('mult',S.purse[i].bm);
       if(d.xmult)e('xmult',d.euro&&[S.purse[i-1],S.purse[i+1]].some(nb=>nb&&FOREIGN.has(ctype(nb)))?2:d.xmult);
       if(d.money)e('money',ctx.boss&&d.bossMoney?d.bossMoney:d.money);
-      if(S.purse[i].defect==='misprint')e('money',3);
+      if(S.purse[i].defect==='misprint')e('money',2);
       applyWear(S.purse[i].wear,e);
       if(d.lucky){const mid=i===Math.floor(res.length/2)?2:1;if(rand()<odds(1/3)*mid)e('mult',15);if(rand()<odds(1/8)*mid)e('money',8)}
       if(d.luckmoney&&rand()<odds(1/2))e('money',4);
@@ -5275,7 +5277,7 @@ const ROLLS={
  glitched:{name:'Glitched Roll',challenge:1,paper:'#4a3a6b',band:'#2c6e8a',cap:'quicksilver',desc:'{a:Challenge.} Everything is glitched, right up to a final boss you won\'t meet anywhere else. Every toss, each coin acts like a random coin and one Charm acts like a random Charm. Shop prices shift, wager targets ({r:X1.2} to {r:X1.8}) stay hidden until you play, and used items sometimes glitch back into your slots'},
  locked:{name:'Reduced Roll',paper:'#4a4a4a',band:'#9a9a9a',cap:'copper',desc:'Every run draws a small pool: {a:45} Charms, {a:6} special coins, {a:7} Runes, {a:8} Spirits and {a:9} Almanacs. Nothing else turns up. See the pool in Run Info',apply:()=>{S.pool=drawPool()}},
  chaos:{name:'Chaos Roll',paper:'#3a3a3a',band:'#ff5f6d',cap:'quicksilver',desc:'Start with {a:6} random coins, most carrying random Wear or a Defect',
-  apply:()=>{S.purse=Array.from({length:6},()=>({...mkCoin(pick(Object.keys(COINS))),wear:rand()<.5?pickCoinWear():null,defect:rand()<.5?pick(Object.keys(DEFECTS)):null}))}},
+  apply:()=>{S.purse=Array.from({length:6},()=>({...mkCoin(pick(Object.keys(COINS))),wear:rand()<.5?pickCoinWear():null,defect:rand()<.5?pickDefect():null}))}},
 };
 /* winning a roll for the first time unlocks its own Charm (challenge rolls unlock Fabled ones) */
 const RA_POOL=()=>Object.keys(JOKERS).filter(k=>{const d=JOKERS[k];return d.end&&d.end.length<=2&&!d.init&&!d.prize&&!d.artifact&&!d.glitchOnly&&k!=='randomaccess'});
@@ -5547,8 +5549,8 @@ const declineC=t=>({label:'Decline',run:()=>t});
 function hustle(c){const amt=Math.min(S.money,30),r=rand()<.5?'H':'T';if(r===c){S.money+=amt;play('win');return `It lands ${callName(r)}! You win {$:$${amt}}.`}S.money-=amt;play('lose');return `It lands ${callName(r)}. You lose {$:$${amt}}.`}
 const EVENTS={
  stranger:{title:'The Faceless Dealer',text:'At an empty table, a dealer with no face slides a coin toward you. It is warm, as if someone only just let go of it.',
-  choices:[{label:'Trade him a Quarter',ok:()=>S.purse.some(c=>c.type==='copper'),why:'You have no Quarters',run:()=>{const c=pick(S.purse.filter(x=>x.type==='copper')),i=S.purse.indexOf(c),t=pickSpecial(SPC());S.purse[i]={...mkCoin(t),wear:pickCoinWear(),defect:rand()<.4?pick(Object.keys(DEFECTS)):null};return `Your Quarter slides across the felt and comes back a {a:${COINS[t].name}}, gleaming like it remembers better days.`}},
-   {label:'Buy the warm coin ($5)',ok:()=>S.money>=5&&purseUsed()<S.purseMax,why:'Needs $5 and room in your purse',run:()=>{S.money-=5;const t=pickSpecial(SPC());S.purse.push({...mkCoin(t),wear:pickCoinWear(),defect:pick(Object.keys(DEFECTS))});play('buy');return `The coin is a {a:${COINS[t].name}}, worn smooth and struck oddly. It has a Wear and a Defect.`}},declineC('You leave the table. The dealer does not look up. It has no eyes to look up with.')]},
+  choices:[{label:'Trade him a Quarter',ok:()=>S.purse.some(c=>c.type==='copper'),why:'You have no Quarters',run:()=>{const c=pick(S.purse.filter(x=>x.type==='copper')),i=S.purse.indexOf(c),t=pickSpecial(SPC());S.purse[i]={...mkCoin(t),wear:pickCoinWear(),defect:rand()<.4?pickDefect():null};return `Your Quarter slides across the felt and comes back a {a:${COINS[t].name}}, gleaming like it remembers better days.`}},
+   {label:'Buy the warm coin ($5)',ok:()=>S.money>=5&&purseUsed()<S.purseMax,why:'Needs $5 and room in your purse',run:()=>{S.money-=5;const t=pickSpecial(SPC());S.purse.push({...mkCoin(t),wear:pickCoinWear(),defect:pickDefect()});play('buy');return `The coin is a {a:${COINS[t].name}}, worn smooth and struck oddly. It has a Wear and a Defect.`}},declineC('You leave the table. The dealer does not look up. It has no eyes to look up with.')]},
  fortune:{title:'The Cartomancer',text:'A woman deals cards onto a table that is not there. "The one waiting for you at the end of this floor," she says, "need not be the one you meet."',
   choices:[{label:'Reshuffle the boss',ok:()=>S.blinds[2].state!=='defeated',why:'No boss ahead',run:()=>{const b=S.blinds[2],old=BOSSES[b.boss].name;let nb=b.boss;for(let k=0;k<8&&nb===b.boss;k++)nb=pickBoss(S.ante);b.boss=nb;b.boss2=b.boss2&&b.boss2!==nb?b.boss2:(S.stake>=3?pick(SECOND_BOSS.filter(k=>k!==nb)):null);return `${old} dissolves back into the deck. {a:${BOSSES[nb].name}} rises in its place.`}},
    {label:'Ask what the cards hold',ok:()=>consRoom(),why:'No room for consumables',run:()=>{for(let k=0;k<2&&consRoom();k++)S.cons.push({kind:'spirit',key:pick(MINOR_SPIRITS)});play('spirit');return 'She turns two cards face up and presses them into your hand: two little {a:Spirits}, for when you need them.'}}]},
@@ -5636,7 +5638,7 @@ const EVENTS={
    {label:()=>`A ${COINS[evOffer().c].name} with ${WEARS[evOffer().w].name}`,ok:()=>purseUsed()<S.purseMax,why:'Your purse is full',run:()=>{const o=evOffer();S.purse.push({...mkCoin(o.c),wear:o.w});play('buy');return `You take a {a:${WEARS[o.w].name} ${COINS[o.c].name}}.`}},
    {label:'Two Almanacs',ok:()=>consRoom(),why:'No room for consumables',run:()=>{for(let k=0;k<2&&consRoom();k++)S.cons.push(randAlmanac());play('buy');return 'You take two {a:Almanacs}.'}}]},
  tinkerer:{title:'The Machinist',text:'Behind the slot machines, someone has been repairing the same broken die for centuries. "I can strike something new into one of your coins."',
-  choices:[{label:'Add a Defect to a coin (free)',ok:()=>S.purse.some(c=>!c.defect),why:'All your coins already have a Defect',run:()=>{const c=pick(S.purse.filter(x=>!x.defect));c.defect=pick(Object.keys(DEFECTS));play('levelup');return `Your ${COINS[c.type].name} now has {a:${DEFECTS[c.defect].name}}: ${DEFECTS[c.defect].desc}.`}},
+  choices:[{label:'Add a Defect to a coin (free)',ok:()=>S.purse.some(c=>!c.defect),why:'All your coins already have a Defect',run:()=>{const c=pick(S.purse.filter(x=>!x.defect));c.defect=pickDefect();play('levelup');return `Your ${COINS[c.type].name} now has {a:${DEFECTS[c.defect].name}}: ${DEFECTS[c.defect].desc}.`}},
    {label:'Polish a Charm ($6)',ok:()=>S.money>=6&&S.jokers.some(j=>!j.wear),why:'Needs $6 and a Charm without Wear',run:()=>{S.money-=6;const j=pick(S.jokers.filter(x=>!x.wear));j.wear=pick(['polished','patina','proof']);play('levelup');return `Your ${JOKERS[j.key].name} is now {a:${WEARS[j.wear].name}}.`}},
    {label:'Stitch a deeper pocket ($10)',ok:()=>S.money>=10,why:'Not enough money',run:()=>{S.money-=10;S.consSlots++;play('levelup');return 'You get {a:+1 Consumable slot}.'}}]},
  library:{title:'The Archive of Odds',text:'Shelves of almanacs stretch up into the dark, recording every toss ever made here. You only have time for one aisle.',
@@ -5920,7 +5922,7 @@ function startBlind(){
   if(S.boss==='drhouse')setTimeout(()=>drSay('Did you try the medicine drug?'),700);
   S.mimicT={};
   S.jokers.forEach((j,i)=>{const t=resolveJ(i);if(t<0)return;const jt=S.jokers[t],d=JOKERS[jt.key];if(d.wager)d.wager(jt)});
-  S.roundScore=0;S.wagerReflips=0;S.rubyUsed=false;S.houseOwned=[];S.chronoUsed=false;S.matchLit=0;S.aceUsed=0;S.rfd=[];S.wcalls=[];S.wedges=0;if(S.contract)setTimeout(()=>toast(`Contract: <b>${CONTRACTS[S.contract.key].name}</b>. ${CONTRACTS[S.contract.key].desc}`),400);S.phase='idle';S.results=[];S.selected=[];S.csel=[];S.call=null;S.selJoker=null;S.selCons=null;S.tossNo=0;S.usedTypes=[];
+  S.roundScore=0;S.wagerReflips=0;S.dcUsed=[];S.rubyUsed=false;S.houseOwned=[];S.chronoUsed=false;S.matchLit=0;S.aceUsed=0;S.rfd=[];S.wcalls=[];S.wedges=0;if(S.contract)setTimeout(()=>toast(`Contract: <b>${CONTRACTS[S.contract.key].name}</b>. ${CONTRACTS[S.contract.key].desc}`),400);S.phase='idle';S.results=[];S.selected=[];S.csel=[];S.call=null;S.selJoker=null;S.selCons=null;S.tossNo=0;S.usedTypes=[];
   S.purse.forEach(c=>{c.fog=false;if(c.face==='E')c.face='H'});
   render();
   if(S.boss){play('boss');shake(6);if(BOSSES[S.boss].final)showdownIntro();else setTimeout(()=>popup($('#callb'),BOSSES[S.boss].name,'huge'),150)}
@@ -5978,8 +5980,7 @@ async function doReflip(){
   applyHeavy().forEach(i=>{if(!idx.includes(i))idx.push(i)});applyStacks();S.keepMiss=S.keepMiss.filter(i=>!idx.includes(i));
   if(S.roll==='majority')setMajority();
   S.wedges=(S.wedges||0)+idx.filter(i=>S.results[i]==='E').length;PS().flips+=idx.length;tallyFlips(idx);PS().reflips++;PS().edges+=idx.filter(i=>S.results[i]==='E').length;
-  idx.forEach(i=>{if(S.purse[i].defect==='diecrack'&&consRoom()){S.cons.push({kind:'rune',key:pick(runeKeys())});popup($('#c'+i),'+Rune','text')}});
-  if(idx.some(i=>S.purse[i].defect==='diecrack'))renderJokers();
+  {const dc=S.dcUsed||(S.dcUsed=[]);let got=false;idx.forEach(i=>{const c=S.purse[i];if(c.defect==='diecrack'&&!dc.includes(c.id)&&consRoom()){dc.push(c.id);S.cons.push({kind:'rune',key:pick(runeKeys())});popup($('#c'+i),'+Rune','text');got=true}});if(got)renderJokers()}
   refreshTable();
   await Promise.all(idx.map((i,k)=>animateToss(i,k*70)));
   S.stats.flips+=idx.length;S.phase='tossed';S.keepMiss=null;refreshTable();updatePreview();scheduleSave();
@@ -6169,7 +6170,7 @@ async function winCinematic(){
 }
 function enterCashout(){
   S.boss=null;S.boss2=null;S.stolen=null;
-  S.purse.forEach(c=>{if(c.defect==='offcenter'&&S.lastType&&consRoom())S.cons.push({kind:'almanac',hand:S.lastType})});
+  if(curBlind()&&curBlind().kind==='boss')S.purse.forEach(c=>{if(c.defect==='offcenter'&&S.lastType&&consRoom())S.cons.push({kind:'almanac',hand:S.lastType})});
   const b=curBlind(),bk=S.roll==='bankrupt',lines=bk?[]:[{l:`${blindName(b)} won`,v:blindReward(b)}];
   const fpay=bk||S.stake>=6?0:S.upgrades.includes('overtime')?2:1;if(S.flipsLeft>0&&fpay)lines.push({l:`Remaining Flips (${S.flipsLeft}), $${fpay} each`,v:S.flipsLeft*fpay});
   const pig=countEff('piggy')*2;if(pig)lines.push({l:'Piggy Bank',v:pig});
@@ -6583,7 +6584,7 @@ function buyPack(i){
   else for(let k=0;k<n;k++){
     if(pk.kind==='coin'&&S.roll==='pennyroll'&&S.ante<4)opts.push({kind:'coin',type:'penny'});
     else if(pk.kind==='coin'){const rl=relicsLeft().filter(t=>!opts.some(o=>o.type===t));const mods=!(S.tutorial&&S.ante<3);
-      const qf=ownKeys().filter(k=>k&&(coinFav()[k]||[]).includes('copper')).length;if(!opts.some(o=>o.qroll)&&rand()<.1+.2*qf)opts.push({kind:'coin',type:'copper',qroll:3});else if(rl.length&&rand()<(S.upgrades.includes('mintcond')?.18:.06))opts.push({kind:'coin',type:pick(rl)});else if(mods&&rand()<.12)opts.push({kind:'coin',type:pickSpecial(SPC()),pair:true});else opts.push({kind:'coin',type:pickSpecial(SPC()),wear:mods&&rand()<.2?pickCoinWear():null,defect:mods&&!S.upgrades.includes('mintcond')&&rand()<.15?pick(Object.keys(DEFECTS)):null})}
+      const qf=ownKeys().filter(k=>k&&(coinFav()[k]||[]).includes('copper')).length;if(!opts.some(o=>o.qroll)&&rand()<.1+.2*qf)opts.push({kind:'coin',type:'copper',qroll:3});else if(rl.length&&rand()<(S.upgrades.includes('mintcond')?.18:.06))opts.push({kind:'coin',type:pick(rl)});else if(mods&&rand()<.12)opts.push({kind:'coin',type:pickSpecial(SPC()),pair:true});else opts.push({kind:'coin',type:pickSpecial(SPC()),wear:mods&&rand()<.2?pickCoinWear():null,defect:mods&&!S.upgrades.includes('mintcond')&&rand()<.15?pickDefect():null})}
     else if(pk.kind==='almanac'){let a;let t=0;do a=randAlmanac();while(opts.some(o=>(o.hand||o.key)===(a.hand||a.key))&&++t<40);opts.push(a)}
     else if(pk.kind==='rune'){let r,t=0;do r=pick(runeKeys());while(opts.some(o=>o.key===r)&&++t<40);opts.push({kind:'rune',key:r})}
     else{let s,t=0;do s=rand()<.05&&!(S.pool)?'soul':pick(spiritKeys());while(opts.some(o=>o.key===s)&&++t<40);opts.push({kind:'spirit',key:s})}
