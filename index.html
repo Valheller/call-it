@@ -1746,6 +1746,8 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
 .ctabs .btn.orange{--c:var(--navy);--cd:var(--navy);outline-offset:2px}
 
 .optm .optrow .btn.small.green{background:var(--green);color:var(--paper);border-color:var(--green)}
+
+.purse{gap:calc(var(--cs)*var(--pg,.2))}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1792,7 +1794,7 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.227</div>
+  <div class="gamever" aria-label="Version">v1.2.228</div>
 </div>
 
 <script>
@@ -4852,7 +4854,9 @@ function coinHTML(c,i,opts={}){
 function sizeCoins(){
   const st=$('#stage');const p=$('.purse');if(!st||!p||!S)return;syncPurseCnt();
   const n=Math.max(5,S.purse.length),w=st.clientWidth-8;
-  const cs=Math.max(30,Math.min(S.screen==='shop'||S.screen==='event'?(innerWidth<=760?46:62):96,Math.floor(w/(n+(n-1)*.2))));
+  /* the fuller the purse, the tighter the coins sit: a fifth of a coin apart at 5 coins, almost touching from 13 */
+  const g=Math.max(.03,.2-(n-5)*.022);p.style.setProperty('--pg',g);
+  const cs=Math.max(30,Math.min(S.screen==='shop'||S.screen==='event'?(innerWidth<=760?46:62):96,Math.floor(w/(n+(n-1)*g))));
   p.style.setProperty('--cs',cs+'px');
   /* desktop: if the table still runs past the footer, shrink the coins (and the gap above them) until it fits */
   const m=$('#main'),sh=$('#stage .lshop');if(m&&innerWidth>760){let c=cs,k=0;p.classList.remove('tight');if(sh)sh.classList.remove('compact','compact2');
