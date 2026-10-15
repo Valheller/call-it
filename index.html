@@ -1910,8 +1910,8 @@ body.uv #uvfx{opacity:1}
 }
 
 /* the event badge sits half above the panel and floats; leave room so the scrolling table doesn't clip it */
-.evpanel{margin-top:30px!important}
-@media (max-width:760px){.evpanel{margin-top:24px!important}}
+.evpanel{margin-top:48px!important}
+@media (max-width:760px){.evpanel{margin-top:40px!important}}
 
 /* ===== face-down coins: one plain sealed token for every coin, so neither its shape, edge nor finish gives it away ===== */
 .coin.fog .spin{--shape:radial-gradient(circle closest-side,#000 98%,transparent 100%)!important}
@@ -1925,6 +1925,22 @@ body.uv #uvfx{opacity:1}
   font-family:'Cormorant SC',serif;font-weight:700;font-size:calc(var(--cs,60px)*.5)!important;line-height:1;color:#1b2a4a!important;background:none!important;box-shadow:none!important;text-shadow:0 1px 0 rgba(255,255,255,.6)}
 .fogghost::before{font-size:calc(1em*2.2)!important}
 .coin.fog .wfx,.coin.fog .face>*{display:none!important}
+
+/* ===== the Pawnshop ===== */
+.lshop.pawnshop .sect.ch .shelf{flex-wrap:wrap;gap:14px 16px}
+.lshop.pawnshop .scard.pawnc{max-width:118px}
+.lshop.pawnshop .scard.pawnc .sname i{display:block;font:600 9px/1.2 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--seal);font-style:normal}
+.lshop.pawnshop .jcard.pwcoin{background:none;border:0;box-shadow:none;width:clamp(56px,5.6vw,72px);aspect-ratio:1;padding:0}
+.lshop.pawnshop .jcard.pwcoin .cimgw,.lshop.pawnshop .jcard.pwcoin img{width:100%;height:100%;display:block}
+.lshop.pawnshop .jcard.pwcert{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:clamp(64px,7vw,84px);aspect-ratio:1;background:#fbf7ec;border:1px solid var(--purple);outline:1px solid var(--purple);outline-offset:-4px;border-radius:2px}
+.lshop.pawnshop .jcard.pwcert i{font:600 7px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--purple)}
+.lshop.pawnshop .jcard.pwcert img{width:42px;height:42px}
+.pwnote{font-size:15px;line-height:1.45;color:var(--ink-dim);padding:12px 4px;max-width:420px}
+.lshop.pawnshop .sect.ch{background:repeating-linear-gradient(90deg,transparent 0 46px,rgba(138,90,18,.16) 46px 49px);padding-bottom:8px}
+@media (max-width:760px){.lshop.pawnshop .scard.pawnc{max-width:96px}.pwnote{font-size:13px;padding:8px 2px}}
+
+/* the coin name beside the Melt / Pawn button: an inked label, not dark-on-dark */
+.purse.shopp+.meltbar>span{background:rgba(251,248,239,.94)!important;color:var(--ink)!important;border:1px solid var(--rule);text-shadow:none!important}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1971,7 +1987,7 @@ body.uv #uvfx{opacity:1}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.246</div>
+  <div class="gamever" aria-label="Version">v1.2.247</div>
 </div>
 
 <script>
@@ -5032,8 +5048,8 @@ function renderSide(){
   else if(S.screen==='event'){const E=EVENTS[S.event.key];name=E&&E.omen?'Omen':E&&E.mapOnly?E.title:'Encounter';bc='var(--purple)';sub=E&&E.omen?'The halls are trying to tell you something':'Something stirs between the tables'}
   else if(S.screen==='shop'){
     if(S.pack){name=packName(S.pack);bc=`rgb(${mintInk(hex2rgb(PACKS[S.pack.kind].col)).join(',')})`;sub=`Choose ${S.pack.picks} of ${S.pack.opts.length}`}
-    else{name=S.bigspender?'Big Spender':S.backroom?'The Back Room':S.bazaar?'Bazaar':'Shop';bc=S.bigspender?'#8a5a12':S.backroom?'#a23b2a':S.bazaar?'#2c6e8a':'var(--green)';
-      sub=`${S.bigspender?'Only the finest. Inflation doesn\'t reach in here':S.backroom?'Cheap goods, none of them clean':S.bazaar?'Rare goods, 20% dearer':'Charms, packs and upgrades'}${inflMult()>1?` · <span style="color:${CURSES.inflation.col}">Inflation ×${inflMult().toFixed(1)}</span>`:''}`}}
+    else{name=S.pawnshop?'The Pawnshop':S.bigspender?'Big Spender':S.backroom?'The Back Room':S.bazaar?'Bazaar':'Shop';bc=S.pawnshop?'#8a5a12':S.bigspender?'#8a5a12':S.backroom?'#a23b2a':S.bazaar?'#2c6e8a':'var(--green)';
+      sub=`${S.pawnshop?'Sell high. Buy back what you lost':S.bigspender?'Only the finest. Inflation doesn\'t reach in here':S.backroom?'Cheap goods, none of them clean':S.bazaar?'Rare goods, 20% dearer':'Charms, packs and upgrades'}${inflMult()>1?` · <span style="color:${CURSES.inflation.col}">Inflation ×${inflMult().toFixed(1)}</span>`:''}`}}
   else{
     const b=curBlind();name=blindName(b);bc=blindColor(b);kick=`Series ${seriesOf(S.ante)} · Stage ${S.ante}${S.ante<=STAGES?` of ${STAGES}`:''} · Round ${S.round}`;
     sub=b.kind==='rival'?`Stake <span class="k-money">$${rivalStake()}</span>`:`Reward <span class="k-money">${'$'.repeat(blindReward(b))}</span>`;
@@ -5107,7 +5123,7 @@ function jokerSlot(j,i){
   const gj=(S.roll==='glitched'||j.key==='missingno')&&S.screen==='play'&&S.glitchJ&&S.glitchJ[j.id];
   return `<div class="jslot ${sel?'sel':''} ${gj?'jglitch':''} ${!jOn(j)?'stolen':''} ${d.r===5?'fabled':d.r===4?'legend':''}" data-idx="${i}"><i class="jnum" aria-hidden="true">${i+1}</i><button class="jcard" id="jk${i}" data-act="joker" data-arg="${i}" data-drag="charm" data-tip="joker:${i}" aria-label="${d.name}">
    <div class="jin ${j.wear==='weightless'?'weightless':''}" style="--jbg:${d.bg};--dl:${-(i*.7)}s;${rarVars(j.key)}">${IMG(icon(j.key))}${j.wear&&j.wear!=='weightless'?`<i class="wfx w-${j.wear}"></i>`:''}</div>${j.curse?curseBadge(j.curse,j.left):''}</button>
-   ${sel&&!touchUI()?`<div class="jacts">${noSell(j)?`<span class="why">${CURSES[j.curse].name}</span>`:`${S.roll==='hoarder'?'':`<button class="btn green tiny" data-act="sell" data-arg="${i}">Sell $${sellVal(j)}</button>`}`}
+   ${sel&&!touchUI()?`<div class="jacts">${noSell(j)?`<span class="why">${CURSES[j.curse].name}</span>`:`${S.roll==='hoarder'?'':`<button class="btn green tiny" data-act="sell" data-arg="${i}">${S.pawnshop?'Pawn':'Sell'} $${charmSell(j)}</button>`}`}
    <div class="mv"><button class="btn tiny" data-act="move" data-arg="${i},-1" ${i===0||cursed(j,'bound')?'disabled':''} aria-label="Move earlier" title="Move earlier">&lsaquo;</button><button class="btn tiny" data-act="move" data-arg="${i},1" ${i===n-1||cursed(j,'bound')?'disabled':''} aria-label="Move later" title="Move later">&rsaquo;</button></div></div>`:''}</div>`;
 }
 function consSlot(c,i){
@@ -5272,7 +5288,33 @@ function charmCardHTML(o,i){
     <div class="sname"><i style="color:${RAR_RING[d.r]?RAR_RING[d.r][1]:'var(--line)'}">${(RAR[d.r]||RAR[1]).n}</i>${d.name}</div><div class="sdesc">${(()=>{try{return fmt(typeof d.desc==='function'?d.desc(null):d.desc)}catch(e){return ''}})()}</div>
     <button class="btn green small" data-act="buyjoker" data-arg="${i}" ${o.bought||S.money<p||full?'disabled':''}>${full?'No room':'Buy'}</button></div>`;
 }
+/* ===== the Pawnshop: a shop whose stock is your own past. Charms, coins and Consumables you sold or lost,
+   and Upgrades you passed up, wait behind the bars; selling here pays better, and coins can be sold too ===== */
+function pawnLog(kind,o){if(!S)return;if(kind==='charm'&&JOKERS[o.key]&&JOKERS[o.key].artifact)return;if(kind==='coin'&&COINS[o.type]&&COINS[o.type].quest)return;
+  const L=S.pawnInv=S.pawnInv||[];if(kind==='upg'&&L.some(x=>x.kind==='upg'&&x.key===o.key))return;L.unshift({kind,...o,pid:uid++});if(L.length>16)L.length=16}
+const charmSell=j=>S&&S.pawnshop?Math.max(sellVal(j)+2,(j.cost||0)+3*countEff('pawnticket')):sellVal(j);
+const consSell=c=>S&&S.pawnshop?consInfo(c).sell*2+1:consInfo(c).sell;
+const coinPawn=c=>Math.max(1,COINS[c.type].cost||1)+(c.wear?2:0)+(c.defect?2:0);
+const pawnable=c=>!!c&&!COINS[c.type].quest&&!stkGroup(c);
+/* buying back always costs at least $1 more than the broker paid, so nothing can be cycled for profit */
+function pawnPrice(o){const base=o.kind==='charm'?JOKERS[o.key].cost:o.kind==='coin'?Math.max(2,(COINS[o.type].cost||1)+2+(o.wear?2:0)+(o.defect?2:0)):o.kind==='cons'?(consInfo(o.c).cost||4):upgCost({key:o.key});
+  return gp(null,Math.max(base,(o.paid||0)+1))}
+function pawnRoom(o){return o.kind==='charm'?(S.jokers.length<slots()?'':'No room'):o.kind==='coin'?(purseUsed()<S.purseMax?'':'Purse full'):o.kind==='cons'?(consRoom()?'':'No room'):(S.upgrades.includes(o.key)?'Owned':UPGRADES[o.key].req&&!S.upgrades.includes(UPGRADES[o.key].req)?'Needs '+UPGRADES[UPGRADES[o.key].req].name:'')}
+function pawnCardHTML(o,i){const p=pawnPrice(o),why=pawnRoom(o);let face,name;
+  if(o.kind==='charm'){const d=JOKERS[o.key];name=d.name;face=`<button class="jcard" data-tip="pawn:${i}" aria-label="${d.name}"><div class="jin" style="--jbg:${d.bg};${rarVars(o.key)}">${IMG(icon(o.key))}${o.wear&&o.wear!=='weightless'?`<i class="wfx w-${o.wear}"></i>`:''}</div></button>`}
+  else if(o.kind==='coin'){name=COINS[o.type].name;face=`<button class="jcard pwcoin" data-tip="pawn:${i}" aria-label="${name}">${coinIcon(o.type,o)}</button>`}
+  else if(o.kind==='cons'){const ci=consInfo(o.c);name=ci.name;face=`<button class="jcard tile ck-${o.c.kind}" data-tip="pawn:${i}" aria-label="${ci.name}"><div class="jin" style="--jbg:${ci.bg}">${IMG(ci.icon)}<span class="lab">${ci.short}</span></div></button>`}
+  else{const u=UPGRADES[o.key];name=u.name;face=`<button class="jcard pwcert" data-tip="pawn:${i}" aria-label="${u.name}"><i>Certificate</i><span class="certic">${IMG(upgIcon(o.key))}</span></button>`}
+  const how={sold:'Sold',lost:'Lost',passed:'Passed up',pawned:'Pawned'}[o.how]||'';
+  return `<div class="scard pawnc"><div class="price">$${p}</div>${face}<div class="sname"><i>${how}</i>${name}</div><button class="btn green small" data-act="pawnbuy" data-arg="${o.pid}" ${S.money<p||why?'disabled':''}>${why||'Buy back'}</button></div>`}
+function pawnHTML(){const L=S.pawnInv||[];
+  return `<div class="panel shop lshop pawnshop noup"><div class="shopbtns"><button class="btn red big" data-act="nextround">Leave</button></div>
+    <div class="sect ch"><div class="slbl">Behind the bars · Buy back</div><div class="shelf">${L.length?L.slice(0,8).map(pawnCardHTML).join(''):'<div class="pwnote">Nothing behind the bars yet. Whatever you sell or lose, and any Upgrade you pass up in a shop, ends up here.</div>'}</div></div>
+    <div class="sect pk"><div class="slbl">The broker pays</div><div class="pwnote">${S.roll==='hoarder'?'The Hoarder Roll won\'t let you part with anything.':'Select a Charm, Consumable or coin to pawn it. Charms fetch their full price, Consumables double, and coins their value, plus $2 each for a Wear or a Defect.'}</div></div></div>
+    ${purseHTML()}`}
+function openPawnshop(){S.pawnshop=true;S.shop={jokers:[],packs:[],upgrade:null,reroll:5,rolls:0};S.csel=[];S.screen='shop';render();play('unlock')}
 function shopHTML(){
+  if(S.pawnshop)return pawnHTML();
   const sh=S.shop;
   const u=sh.upgrade;
   const uc=upgLocked()?`<div class="soldout" role="img" aria-label="Sold out: one Upgrade per stage"><b>SOLD OUT</b><small>Back next stage</small></div>`:u?`<div class="scard cert ${u.bought?'gone':''}"><button class="certbox" data-tip="upg" data-drag="shop" data-sk="u"><i>Certificate of improvement</i><span class="certic">${IMG(upgIcon(u.key))}</span><b>${UPGRADES[u.key].name}</b><span class="certd">${fmt(UPGRADES[u.key].desc)}</span></button><div class="price">$${gp(u,upgCost(u))}</div>
@@ -5297,6 +5339,7 @@ function shopHTML(){
 function purseHTML(){
   let bar;const n=S.csel.length;
   if(S.pack)bar=`<span>${n?`${n} coin${n>1?'s':''} selected. `:''}Some Runes and Spirits act on coins you select here.</span>`;
+  else if(n===1&&S.pawnshop){const c=S.purse[S.csel[0]];bar=S.roll==='hoarder'?`<span>The Hoarder Roll won't let you part with it</span>`:!pawnable(c)?`<span>The broker won't take that one</span>`:S.purse.length<=PURSE_MIN?`<span>Your purse needs at least ${PURSE_MIN} coins</span>`:`<span>${COINS[c.type].name}</span><button class="btn green small" data-act="pawncoin">Pawn for $${coinPawn(c)}</button>`}
   else if(n===1&&!canMelt())bar=`<span>${COINS[S.purse[S.csel[0]].type].name}</span>`;
   else if(n===1)bar=(S.purse.length>PURSE_MIN?`<span>${COINS[S.purse[S.csel[0]].type].name}</span><button class="btn red small" data-act="melt">Melt for $${(coinDef(S.purse[S.csel[0]]).meltVal||1)+3*countEff('recycler')}</button>`:`<span>Your purse needs at least ${PURSE_MIN} coins</span>`)+(coinDef(S.purse[S.csel[0]]).charm?`<span class="k-d">Drag it up to your Charms to hang it there</span>`:'');
   else if(n>1)bar=`<span>${n} coins selected for a Rune or Spirit</span>`;
@@ -6068,6 +6111,7 @@ function tipContent(spec){
   const cn=(t,o)=>{const d=COINS[t];return `<div class="tn">${d.name}</div><div class="td">${fmt(d.desc)}</div>${modsHTML(o)}${o&&stkGroup(o)?'<div class="tkind">Stacked: lands with its partner, shares one purse space, and re-flips together with it</div>':''}${o&&(o.bonus||o.bm)?`<div class="tkind" style="color:var(--green)">Permanent bonus: ${[o.bonus?'+'+o.bonus+' Points':'',o.bm?'+'+o.bm+' Mult':''].filter(Boolean).join(', ')}</div>`:''}${o&&o.flips?`<div class="tkind">Flipped ${o.flips} time${o.flips>1?'s':''}</div>`:''}`};
   if(k==='joker'){const j=S.jokers[i];const g=j&&(S.roll==='glitched'||j.key==='missingno')&&S.screen==='play'&&S.glitchJ&&S.glitchJ[j.id];return j&&(jt(j.key,j)+(g?`<div class="tkind">Glitched: scoring as ${JOKERS[g].name} this toss (${fmt(typeof JOKERS[g].desc==='function'?JOKERS[g].desc():JOKERS[g].desc)})</div>`:''))}
   if(k==='shopj'){const o=S.shop.jokers[i];return o&&(o.kind==='almanac'||o.kind==='spirit'?ct(o):jt(o.key,null,o))}
+  if(k==='pawn'){const o=(S.pawnInv||[])[i];if(!o)return '';if(o.kind==='charm')return jt(o.key,null,{wear:o.wear});if(o.kind==='coin')return cn(o.type,o);if(o.kind==='cons')return ct(o.c);const u=UPGRADES[o.key];return `<div class="tn">${u.name}</div><div class="td">${fmt(u.desc)}</div><span class="tb" style="background:var(--purple)">Upgrade</span>`}
   if(k==='coin'){const c=S.purse[i];if(c&&c.fog&&S.screen==='play')return `<div class="tn">Face down</div><div class="td">This coin landed face down. You'll see what it is when it scores.</div>`;return c&&(coinHolder(c)+cn(c.type,c)+(S.roll==='glitched'&&S.glitch&&S.glitch[c.id]&&S.screen==='play'?`<div class="tkind">Glitched: acting as a ${COINS[S.glitch[c.id]].name} this toss</div>`:''))}
   if(k==='cons'){const c=S.cons[i];return c&&ct(c)}
   if(k==='popt'){const o0=S.pack&&S.pack.opts[i];if(o0&&o0.kind==='myst'&&(o0.taken||S.pack.done)){const it=o0.inner;return it.kind==='coin'?cn(it.type,it):it.kind==='charm'?jt(it.key):it.kind==='cash'?`<div class="tn">$${it.v}</div><div class="td">Cash from a mystery</div>`:it.kind==='junk'?`<div class="tn">Pocket lint</div><div class="td">Worth {$:$1}</div>`:ct(it)}}
@@ -6315,7 +6359,7 @@ async function doCashIn(){
     if(charmsOn())S.jokers.forEach((j,ji)=>{if(j.key==='glasscannon'){j.st.x+=.5*R.shattered.length;popup($('#jk'+ji),'Upgrade!','text')}});
   }
   if(R.lost&&R.lost.length){for(const i of R.lost){const el=$('#c'+i);if(el){el.classList.add('shatter');popup(el,'Lost!','miss')}}play('miss');await wait(520);
-    R.lost.forEach(i=>toast(`<b>${COINS[S.purse[i].type].name}</b> rolled away and was lost`))}
+    R.lost.forEach(i=>{const c=S.purse[i];pawnLog('coin',{type:c.type,wear:c.wear||null,defect:c.defect||null,how:'lost'});toast(`<b>${COINS[c.type].name}</b> rolled away and was lost`)})}
   /* take eaten and lost coins out together, highest index first, so the positions stay right */
   [...new Set([...eaten,...(R.lost||[])])].sort((a,b)=>b-a).forEach(i=>{S.purse.splice(i,1);S.results.splice(i,1)});
   setHB('&nbsp;',0,0);
@@ -6428,8 +6472,8 @@ function doCashout(){
   S.money=Math.max(0,S.money+S.cash.total);S.cash=null;play('rush');
   S.jokers.forEach(j=>{if(j.key==='cursedidol')j.st.x=Math.round((j.st.x+.3)*100)/100;if(cursed(j,'fleeting'))j.left=(j.left??5)-1});
   for(let k=0;k<nK('chimneysweep');k++){const cj=S.jokers.filter(j=>purifiable(j)&&j.curse!=='rented');if(cj.length&&rand()<odds(1/3)){const j=pick(cj);toast(`<b>Chimney Sweep</b> sweeps the ${CURSES[j.curse].name} curse off your ${JOKERS[j.key].name}`);j.curse=null;delete j.left}}
-  S.jokers.filter(j=>cursed(j,'brittle')&&rand()<1/8).forEach(j=>{j.curse='broken';toast(`<b>${JOKERS[j.key].name}</b> was Brittle, and it broke`)});S.jokers=S.jokers.filter(j=>j.curse!=='broken');
-  S.jokers.filter(j=>cursed(j,'fleeting')&&j.left<=0).forEach(j=>toast(`<b>${JOKERS[j.key].name}</b> faded away`));S.jokers=S.jokers.filter(j=>!(cursed(j,'fleeting')&&j.left<=0));
+  S.jokers.filter(j=>cursed(j,'brittle')&&rand()<1/8).forEach(j=>{j.curse='broken';pawnLog('charm',{key:j.key,wear:j.wear||null,how:'lost'});toast(`<b>${JOKERS[j.key].name}</b> was Brittle, and it broke`)});S.jokers=S.jokers.filter(j=>j.curse!=='broken');
+  S.jokers.filter(j=>cursed(j,'fleeting')&&j.left<=0).forEach(j=>pawnLog('charm',{key:j.key,wear:j.wear||null,how:'lost'})||toast(`<b>${JOKERS[j.key].name}</b> faded away`));S.jokers=S.jokers.filter(j=>!(cursed(j,'fleeting')&&j.left<=0));
   const b=curBlind();if(b.kind==='elite'||b.kind==='rival'){S.round++;endElite(true);return}b.state='defeated';
   advanceBlind(b.kind==='boss');
   S.round++;S.results=[];S.call=null;S.boss=null;S.csel=[];S.purse.forEach(c=>{c.fog=false;if(c.face==='E')c.face='H'});
@@ -6508,7 +6552,7 @@ const DEST={
   spr:{p:{1:'#a8743a',2:'#ffd34d',3:'#5a3a1a'},s:["..........",".22222222.","2111111112","2111111112","2222332222","2111331112","2111111112","2222222222","..........",".........."]}},
  house:{bg:'#14141c',name:'The House',col:'#d9b552',rare:1,desc:'A door with no handle. The House offers a deal: give up something you keep forever, for something you want now',
   spr:{p:{1:'#d9b552',2:'#1a1a22',3:'#ffffff'},s:["..111111..",".12222221.","1222222221","1223333221","1233223321","1223333221","1222222221","1222222221","1222222221","1111111111"]}},
- pawn:{bg:'#3a2a10',name:'Pawnshop',col:'#e0b030',desc:'Sell Charms for their full price, pawn a coin or a Consumable, or buy back the last Charm you sold',
+ pawn:{bg:'#3a2a10',name:'Pawnshop',col:'#e0b030',desc:'Pawn Charms, coins and Consumables for more than a shop pays, and buy back what you sold, lost or passed up',
   spr:{p:{1:'#ffd34d',2:'#a8743a'},s:["2222222222","..2....2..",".111..111.","1111111111",".111..111.","....22....","...1111...","..111111..","...1111...",".........."]}},
  backroom:{bg:'#2a0a0a',name:'The Back Room',col:'#c8102e',desc:'A door behind the bar. Cheap goods, none of them clean: cursed Charms, loaded coins, easy money',
   spr:{p:{1:'#5a3a2a',2:'#ff3b3b',3:'#1a1010'},s:["....22....","...2222...","..111111..","..133331..","..133331..","..133331..","..133311..","..133331..","..133331..","..111111.."]}},
@@ -6530,7 +6574,7 @@ function genWays(){
   if(!S.wayStage||S.wayStage.ante!==S.ante)S.wayStage={ante:S.ante,used:[]};
   const used=S.wayStage.used,rr=S.roll==='rivalroll';
   const pool=[['encounter',5],['rest',2],['treasure',1.4],['bazaar',.7],['house',.9],['mystery',1]];
-  if(S.jokers.length||specialCount()||S.lastSold)pool.push(['pawn',1.2]);
+  if(S.jokers.length||specialCount()||S.cons.length||(S.pawnInv||[]).length)pool.push(['pawn',1.2]);
   pool.push(['backroom',.9],['chapel',.7]);
   /* Compass: rare detours twice as likely */
   if(S.upgrades.includes('signpost2'))pool.forEach(x=>{if(['treasure','bazaar','house','mystery'].includes(x[0]))x[1]*=3.2});
@@ -6564,6 +6608,7 @@ function chooseWay(i){
   if(w.t==='shop'){genShop();S.screen='shop';render();return}
   if(w.t==='bazaar'){S.bazaar=true;genShop();S.screen='shop';render();play('unlock');return}
   if(w.t==='backroom'){S.backroom=true;genShop();S.screen='shop';render();play('unlock');return}
+  if(w.t==='pawn'){openPawnshop();return}
   if(w.t==='bigspender'){S.bigspender=true;genShop();S.screen='shop';render();play('unlock');return}
   if(w.t==='treasure'){S.treasure=true;genShop();const k=rollPack().kind;S.shop.packs=[{kind:k,size:biggest(k),bought:false,free:true}];S.screen='shop';render();buyPack(0);return}
   if(w.t==='mystery'){const opts=['encounter','rest','treasure','bazaar','house','pawn',...(S.ante>=2&&S.roll!=='rivalroll'&&!S.wayStage.used.includes('elite')?['elite']:[]),...(!S.wayStage.used.includes('rival')?['rival']:[]),...((S.tickets||0)>=3?['prize']:[])];
@@ -6576,7 +6621,8 @@ function chooseWay(i){
   if(w.t==='elite'){S.inElite=true;S.eliteBlind={kind:'elite',boss:w.boss,boss2:w.boss2,state:'select'};setTimeout(()=>{play('boss');shake(6)},50);startBlind();return}
 }
 /* every detour (and the shop) ends here: on to the next wager */
-function goNext(){S.bazaar=false;S.backroom=false;S.bigspender=false;S.treasure=false;S.pack=null;S.event=null;S.ways=null;S.selJoker=null;S.selCons=null;S.csel=[];S.screen='blind';render()}
+function goNext(){if(S.screen==='shop'&&!S.pawnshop&&!S.backroom&&!S.bigspender&&!S.treasure&&S.shop&&S.shop.upgrade&&!S.shop.upgrade.bought&&!upgLocked()&&!S.upgrades.includes(S.shop.upgrade.key))pawnLog('upg',{key:S.shop.upgrade.key,how:'passed'});
+  S.pawnshop=false;S.bazaar=false;S.backroom=false;S.bigspender=false;S.treasure=false;S.pack=null;S.event=null;S.ways=null;S.selJoker=null;S.selCons=null;S.csel=[];S.screen='blind';render()}
 function endElite(won){
   const kind=S.eliteBlind&&S.eliteBlind.kind;S.inElite=false;S.eliteBlind=null;S.boss=null;S.boss2=null;S.phase='idle';S.results=[];S.call=null;S.csel=[];
   S.purse.forEach(c=>{c.fog=false;if(c.face==='E')c.face='H'});
@@ -6899,8 +6945,8 @@ const ACT={
   async usecons(a){const i=+a,c=S.cons[i];if(!c||consBlock(c,true))return;S.cons.splice(i,1);S.selCons=null;renderJokers();await applyCons(c,true);
     if(S&&S.roll==='glitched'&&consRoom()&&rand()<.2){S.cons.push({...c});render();const el=$('#cs'+(S.cons.length-1));if(el){popup(el,'Glitch! It came back','text');juice(el)}play('glitch');return}
     render()},
-  sellcons(a){const i=+a,c=S.cons[i];if(!c||S.roll==='hoarder')return;S.money+=consInfo(c).sell;S.cons.splice(i,1);S.selCons=null;play('money');if(S.screen==='play'){renderJokers();syncStats()}else render()},
-  sell(a){const i=+a,j=S.jokers[i];if(!j||!canEdit()||noSell(j)||S.roll==='hoarder')return;PS().sold++;S.money+=sellVal(j);S.jokers.splice(i,1);S.selJoker=null;play('sell');S.lastSold=j.key;if(S.screen==='play'&&bossIs('hollow')&&!S.hollowFree){S.hollowFree=true;setTimeout(()=>toast('<b>The Hollow</b> lets go. Your Charms wake up.'),300);renderJokers()}if(j.key==='confession'){const c=S.jokers.find(purifiable);if(c){const nm=CURSES[c.curse].name;c.curse=null;delete c.left;toast(`You feel <b>forgiven</b>. Your ${JOKERS[c.key].name} is free of <b>${nm}</b>.`)}else toast('You feel <b>forgiven</b>.')}
+  sellcons(a){const i=+a,c=S.cons[i];if(!c||S.roll==='hoarder')return;const got=consSell(c);S.money+=got;pawnLog('cons',{c,paid:got,how:S.pawnshop?'pawned':'sold'});S.cons.splice(i,1);S.selCons=null;play('money');if(S.screen==='play'){renderJokers();syncStats()}else render()},
+  sell(a){const i=+a,j=S.jokers[i];if(!j||!canEdit()||noSell(j)||S.roll==='hoarder')return;PS().sold++;const got=charmSell(j);S.money+=got;S.jokers.splice(i,1);pawnLog('charm',{key:j.key,wear:j.wear||null,paid:got,how:S.pawnshop?'pawned':'sold'});S.selJoker=null;play('sell');S.lastSold=j.key;if(S.screen==='play'&&bossIs('hollow')&&!S.hollowFree){S.hollowFree=true;setTimeout(()=>toast('<b>The Hollow</b> lets go. Your Charms wake up.'),300);renderJokers()}if(j.key==='confession'){const c=S.jokers.find(purifiable);if(c){const nm=CURSES[c.curse].name;c.curse=null;delete c.left;toast(`You feel <b>forgiven</b>. Your ${JOKERS[c.key].name} is free of <b>${nm}</b>.`)}else toast('You feel <b>forgiven</b>.')}
     if(j.key==='hydra')for(let k=0;k<2&&S.jokers.length<slots();k++){const nk=rollJokerKey(1);addJoker(nk,JOKERS[nk].cost)}
     if(S.screen==='play'){renderJokers();syncStats()}else render()},
   move(a){const[i,d]=a.split(',').map(Number),k=i+d;if(k<0||k>=S.jokers.length||cursed(S.jokers[i],'bound')||cursed(S.jokers[k],'bound'))return;[S.jokers[i],S.jokers[k]]=[S.jokers[k],S.jokers[i]];S.selJoker=k;renderJokers()},
@@ -6919,9 +6965,14 @@ const ACT={
   ppick(a){const[i,m]=a.split(',');packPick(+i,m)},
   skippack(){S.pack=null;S.csel=[];if(S.treasure){goNext();return}render()},
   melt(){if(S.csel.length!==1||S.purse.length<=PURSE_MIN||!canMelt())return;PS().melts++;const i=S.csel[0];const el=$('#c'+i);if(el)el.classList.add('shatter');play('shatter');
-    setTimeout(()=>{const mv=coinDef(S.purse[i]).meltVal||1;S.purse.splice(i,1);S.money+=mv+3*countEff('recycler');S.csel=[];render()},380)},
+    setTimeout(()=>{const mv=coinDef(S.purse[i]).meltVal||1;{const c=S.purse[i];pawnLog('coin',{type:c.type,wear:c.wear||null,defect:c.defect||null,paid:mv,how:'sold'})}S.purse.splice(i,1);S.money+=mv+3*countEff('recycler');S.csel=[];render()},380)},
   way(a){chooseWay(+a)},
   nextround(){goNext()},
+  pawncoin(){if(!S.pawnshop||S.roll==='hoarder'||S.csel.length!==1||S.purse.length<=PURSE_MIN)return;const i=S.csel[0],c=S.purse[i];if(!pawnable(c))return;const got=coinPawn(c);
+    const el=$('#c'+i);if(el)el.classList.add('shatter');play('money');setTimeout(()=>{if(S.purse[i]!==c)return;S.purse.splice(i,1);S.money+=got;pawnLog('coin',{type:c.type,wear:c.wear||null,defect:c.defect||null,paid:got,how:'pawned'});S.csel=[];render()},300)},
+  pawnbuy(a){const L=S.pawnInv||[],k=L.findIndex(o=>o.pid===+a),o=L[k];if(!o||!S.pawnshop)return;const p=pawnPrice(o);if(S.money<p||pawnRoom(o))return;spend(p);L.splice(k,1);
+    if(o.kind==='charm'){addJoker(o.key,JOKERS[o.key].cost);if(o.wear)S.jokers[S.jokers.length-1].wear=o.wear}else if(o.kind==='coin')S.purse.push({...mkCoin(o.type),wear:o.wear||null,defect:o.defect||null});
+    else if(o.kind==='cons')S.cons.push(o.c);else{S.upgrades.push(o.key);UPGRADES[o.key].apply();play('upgrade')}play('buy');render()},
   runinfo(){RI_TAB='scores';showModal(runInfoModal)},
   ritab(a){RI_TAB=a;showModal(runInfoModal)},
   collection(){audioInit();COL.sel=null;showModal(collectionModal)},
@@ -7060,8 +7111,8 @@ function dropZones(d){
       if(o.kind==='almanac'){if(consRoom())Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':''});Z.push({act:'buyuse',pos:'side',label:'Buy and Use',sub:`$${p}`,col:'var(--orange)',why:money<p?'Not enough money':''})}
       else if(o.kind==='spirit')Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':!consRoom()?'No room':''});
       else Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':S.jokers.length>=slots()?'No free Charm slot':''})}}
-  else if(d.kind==='charm'){const j=S.jokers[+d.item.dataset.idx];if(j&&canEdit()&&S.roll!=='hoarder'&&!noSell(j)&&!JOKERS[j.key].artifact)Z.push({act:'sell',pos:'side',label:'Sell',sub:`$${sellVal(j)}`,col:'var(--money-d)'})}
-  else if(d.kind==='cons'){const c=S.cons[+d.item.dataset.idx];if(c&&canEdit()){const why=consBlock(c,true);Z.push({act:'use',pos:'side',label:'Use',col:'var(--chips-d)',why:why||''});if(S.roll!=='hoarder')Z.push({act:'sell',pos:'side',label:'Sell',sub:`$${consInfo(c).sell}`,col:'var(--money-d)'})}}
+  else if(d.kind==='charm'){const j=S.jokers[+d.item.dataset.idx];if(j&&canEdit()&&S.roll!=='hoarder'&&!noSell(j)&&!JOKERS[j.key].artifact)Z.push({act:'sell',pos:'side',label:S.pawnshop?'Pawn':'Sell',sub:`$${charmSell(j)}`,col:'var(--money-d)'})}
+  else if(d.kind==='cons'){const c=S.cons[+d.item.dataset.idx];if(c&&canEdit()){const why=consBlock(c,true);Z.push({act:'use',pos:'side',label:'Use',col:'var(--chips-d)',why:why||''});if(S.roll!=='hoarder')Z.push({act:'sell',pos:'side',label:S.pawnshop?'Pawn':'Sell',sub:`$${consSell(c)}`,col:'var(--money-d)'})}}
   else if(d.kind==='coin'&&S.screen==='shop'){const c=S.purse[+d.item.dataset.idx];if(c&&canMelt())Z.push({act:'melt',pos:'side',label:'Melt',sub:`$${(coinDef(c).meltVal||1)+3*countEff('recycler')}`,col:'var(--mult-d)',why:S.purse.length<=PURSE_MIN?`Purse needs ${PURSE_MIN} coins`:''})}
   return Z}
 function showZones(d){
