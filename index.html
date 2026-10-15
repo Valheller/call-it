@@ -428,8 +428,9 @@ body.badges .face::before{display:block}
 .wfx{position:absolute;inset:0;pointer-events:none;-webkit-mask:var(--art) center/100% 100% no-repeat;mask:var(--art) center/100% 100% no-repeat}
 .jin .wfx,.cic .wfx{-webkit-mask:none;mask:none;border-radius:inherit}
 .cimgw .wfx,.jin .cimgw .wfx,.cic .cimgw .wfx{-webkit-mask:var(--art) center/100% 100% no-repeat;mask:var(--art) center/100% 100% no-repeat;border-radius:0}
-.w-polished{background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.85) 46%,transparent 60%) 0 0/260% 100%;animation:sheen 2.4s linear infinite;mix-blend-mode:screen}
-@keyframes sheen{from{background-position:130% 0}to{background-position:-130% 0}}
+/* one band per sweep: it starts fully off the left edge and ends fully off the right, so no shine is cut short */
+.w-polished{background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.85) 46%,transparent 60%) 100% 0/300% 100% no-repeat;animation:sheen 2.4s linear infinite;mix-blend-mode:screen}
+@keyframes sheen{from{background-position:100% 0}to{background-position:-10% 0}}
 .w-patina{background:radial-gradient(circle at 28% 72%,rgba(63,190,150,.85),transparent 50%),radial-gradient(circle at 74% 24%,rgba(90,210,170,.7),transparent 42%),rgba(40,150,115,.4);mix-blend-mode:hard-light;opacity:.7}
 .w-proof{background:conic-gradient(from 0deg,#ff5f6d,#ffd34d,#4bd18f,#0b9bff,#c9a4ff,#ff5f6d);mix-blend-mode:color;opacity:.8;animation:huecycle 4s linear infinite}
 @keyframes huecycle{to{filter:hue-rotate(360deg)}}
@@ -1864,7 +1865,7 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.238</div>
+  <div class="gamever" aria-label="Version">v1.2.239</div>
 </div>
 
 <script>
