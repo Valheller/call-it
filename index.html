@@ -1756,6 +1756,68 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
 @media (min-width:761px){.lh-rows{min-height:26px;max-height:46px;overflow:hidden}.lh-rows.empty{border-top-color:transparent}}
 @media (max-width:760px){.lh-rows.empty{display:none}}
 #jokerbar .tray{overflow:visible}
+
+/* ink impressions under landing coins */
+.inkprint{position:absolute;left:4%;right:4%;bottom:-14px;height:34%;pointer-events:none;z-index:-1;border-radius:50%}
+.inkprint.hit{background:var(--art) center/100% 260% no-repeat;filter:grayscale(1) contrast(2.2) brightness(.6) sepia(.3) hue-rotate(160deg);mix-blend-mode:multiply;opacity:0;animation:inkpress 1.4s ease-out forwards}
+.inkprint.smudge{background:radial-gradient(closest-side,color-mix(in srgb,var(--navy) 40%,transparent),transparent);filter:blur(2px);opacity:0;animation:inksmudge 1.4s ease-out forwards}
+@keyframes inkpress{0%{opacity:.55;transform:scale(.9)}30%{opacity:.4}100%{opacity:0;transform:scale(1.15)}}
+@keyframes inksmudge{0%{opacity:.6;transform:scaleX(.7)}100%{opacity:0;transform:scaleX(1.4) translateX(8px)}}
+
+/* the House's telegram strip */
+#saybox .toast.saytoast{background-color:#f3e9c9!important;border:0!important;border-radius:0!important;box-shadow:0 3px 10px color-mix(in srgb,var(--navy) 18%,transparent)!important;padding:6px 16px 8px 20px!important;text-align:left;
+  background-image:linear-gradient(90deg,var(--seal) 0 6px,transparent 6px),repeating-linear-gradient(transparent 0 23px,color-mix(in srgb,var(--navy) 10%,transparent) 23px 24px)!important;display:flex;flex-direction:column;gap:2px;max-width:min(620px,70vw)}
+#saybox .tghead{font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--seal)}
+#saybox .tgbody{font-family:var(--font-mono);font-size:14px;letter-spacing:.06em;color:var(--navy);min-height:1.2em;line-height:1.4}
+
+/* boss notices: an oval engraved portrait and a 'Whereas' clause */
+.bportrait{width:84px;height:104px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--seal);outline:1px solid var(--seal);outline-offset:3px;
+  background:color-mix(in srgb,var(--pc) 10%,var(--stamp));background-image:repeating-radial-gradient(ellipse at 50% 40%,transparent 0 3px,color-mix(in srgb,var(--seal) 18%,transparent) 3px 4px)}
+.bportrait img{width:62%;height:auto}
+.whereas{font-family:var(--font-sc);font-style:italic;font-weight:700;color:var(--seal);font-size:1.1em}
+@media (max-width:760px){.bportrait{width:54px;height:66px}}
+
+/* consumables each have their own paper: Runes are wax seals, Spirits translucent tissue, Almanacs small bound booklets */
+.jcard.tile.ck-rune,.jcard.tile.ck-rune .jin{border-radius:50%}
+.jcard.tile.ck-rune .jin{background:radial-gradient(circle at 40% 35%,color-mix(in srgb,var(--seal) 70%,#fff) 0,var(--seal) 60%,color-mix(in srgb,var(--seal) 70%,#000) 100%)!important;
+  box-shadow:inset 0 0 0 4px color-mix(in srgb,var(--seal) 75%,#000),inset 0 0 0 7px color-mix(in srgb,var(--seal) 85%,#fff)!important;
+  clip-path:polygon(50% 0,61% 4%,72% 2%,80% 10%,91% 13%,94% 25%,100% 35%,97% 47%,100% 58%,94% 68%,93% 80%,82% 86%,75% 96%,63% 95%,52% 100%,41% 96%,29% 98%,21% 89%,9% 86%,7% 74%,0 64%,4% 52%,1% 40%,7% 30%,9% 18%,20% 13%,27% 4%,39% 5%)}
+.jcard.tile.ck-rune .jin img{background:var(--stamp);border-radius:50%;padding:4px;width:56%;box-shadow:0 0 0 2px color-mix(in srgb,var(--seal) 60%,#000)}
+.jcard.tile.ck-spirit .jin{background:color-mix(in srgb,var(--cyan) 8%,rgba(255,255,255,.55))!important;backdrop-filter:blur(1px);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--cyan) 50%,transparent),0 3px 8px color-mix(in srgb,var(--navy) 12%,transparent)!important;transform:rotate(-3deg);opacity:.92}
+.jcard.tile.ck-spirit .jin::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(80deg,transparent 0 6px,rgba(255,255,255,.35) 6px 7px);pointer-events:none}
+.jcard.tile.ck-almanac .jin{background:color-mix(in srgb,var(--cyan) 12%,var(--stamp))!important;border-radius:1px 4px 4px 1px;
+  box-shadow:inset 7px 0 0 color-mix(in srgb,var(--cyan) 60%,var(--navy)),inset 8px 0 0 var(--stamp),inset 0 0 0 1.5px color-mix(in srgb,var(--cyan) 60%,var(--navy)),3px 3px 0 -1px var(--stamp),3px 3px 0 0 color-mix(in srgb,var(--cyan) 50%,transparent)!important}
+.jcard.tile.ck-almanac .jin img{margin-left:8%}
+
+/* the cheque line written at Cash In */
+#stage{position:relative}
+.chqline{position:absolute;left:50%;top:8%;transform:translateX(-50%);z-index:8;display:flex;align-items:baseline;gap:12px;width:min(760px,92%);padding:10px 16px;background:var(--stamp);
+  border:1px solid var(--rule);box-shadow:0 6px 18px color-mix(in srgb,var(--navy) 14%,transparent);animation:cqin .35s ease-out both;pointer-events:none}
+.chqline.out{opacity:0;transition:opacity .45s}
+.cqp{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--line)}
+.cqw{flex:1;font-style:italic;font-size:20px;color:var(--navy);border-bottom:1px solid var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;clip-path:inset(0 100% 0 0);animation:inkwipe .9s ease-out .1s forwards}
+.cqa{font-family:var(--font-mono);font-weight:600;font-size:22px;color:var(--seal);border:2px solid var(--seal);padding:1px 10px;transform:rotate(-3deg);opacity:0;animation:rstampin2 .3s cubic-bezier(.5,0,.6,1.6) .9s forwards}
+@keyframes rstampin2{0%{opacity:0;transform:rotate(-12deg) scale(2)}100%{opacity:1;transform:rotate(-3deg) scale(1)}}
+@keyframes cqin{from{opacity:0;transform:translate(-50%,-10px)}}
+@media (max-width:760px){.cqw{font-size:14px}.cqa{font-size:15px}.chqline{gap:6px;padding:6px 8px}}
+
+/* ageing paper */
+#agefx{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}#agefx[hidden]{display:none}
+#agefx i{position:absolute;display:none}
+#agefx .fox{width:var(--s);height:var(--s);border-radius:50%;background:radial-gradient(closest-side,rgba(140,90,30,.16),rgba(140,90,30,.06) 60%,transparent)}
+#agefx .fox:nth-child(n+8){opacity:.7}
+#agefx.age3 .fox:nth-child(-n+4),#agefx.age4 .fox:nth-child(-n+7),#agefx.age5 .fox:nth-child(-n+10),#agefx.age6 .fox,#agefx.age7 .fox,#agefx.age8 .fox{display:block}
+#agefx .ring{width:150px;height:150px;border-radius:50%;border:5px solid rgba(120,70,25,.09);box-shadow:inset 0 0 0 2px rgba(120,70,25,.06),0 0 0 1px rgba(120,70,25,.05);transform:rotate(18deg) scaleX(1.04);clip-path:polygon(0 0,100% 0,100% 72%,62% 100%,0 100%)}
+#agefx.age5 .ring,#agefx.age6 .ring,#agefx.age7 .ring,#agefx.age8 .ring{display:block}
+#agefx .crease.v{left:50%;top:0;bottom:0;width:2px;background:linear-gradient(90deg,rgba(255,255,255,.35),rgba(80,60,30,.08))}
+#agefx .crease.h{top:50%;left:0;right:0;height:2px;background:linear-gradient(rgba(255,255,255,.35),rgba(80,60,30,.08))}
+#agefx.age7 .crease.v,#agefx.age8 .crease{display:block}
+.certrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+.lshop.compact2{gap:6px 22px}.lshop.compact2 .shopbtns .btn.big{padding:7px 20px;font-size:20px}.lshop.compact2 .slbl{padding-bottom:3px}
+.purse.tight + .meltbar{margin-top:0}
+@media (min-width:761px){.lh-rows{min-height:22px}}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1802,7 +1864,7 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.231</div>
+  <div class="gamever" aria-label="Version">v1.2.232</div>
 </div>
 
 <script>
@@ -1859,7 +1921,16 @@ function applyFilter(){const f=FILTERS[COS().filter]||FILTERS.none,st=document.d
   const m=document.querySelector('meta[name=theme-color]');if(m)m.content=f.v.paper||'#efe8d6';applyBack()}
 /* the background pattern from the Prize Booth */
 /* every stage is its own banknote series: the paper takes a tint of the floor's colour and its numeral sits behind the table as a watermark */
-function applySeries(){const b=document.body,on=!!(S&&S.ante);let w=$('#wmark');
+/* the paper ages as a run goes on: foxing spots from stage 3, a coffee ring from 5, fold creases from 7 */
+function applyAge(){const b=document.body;let a=$('#agefx');const st=S&&S.ante?Math.min(8,S.ante):0;
+  if(!st||st<3){if(a)a.hidden=true;return}
+  if(!a){a=document.createElement('div');a.id='agefx';a.setAttribute('aria-hidden','true');document.body.insertBefore(a,document.body.firstChild)}
+  a.hidden=false;a.className='age'+st;
+  if(a.dataset.seed!==String(S.seed||'')){a.dataset.seed=String(S.seed||'');let h=0;for(const ch of String(S.seed||'x'))h=(h*31+ch.charCodeAt(0))>>>0;
+    const r=()=>((h=(h*1103515245+12345)>>>0)/4294967296);
+    a.innerHTML=Array.from({length:14},(_,k)=>`<i class="fox" style="left:${(r()*96).toFixed(1)}%;top:${(r()*94).toFixed(1)}%;--s:${(6+r()*22).toFixed(0)}px;--n:${k}"></i>`).join('')+
+      `<i class="ring" style="left:${(10+r()*70).toFixed(1)}%;top:${(15+r()*60).toFixed(1)}%"></i><i class="crease v"></i><i class="crease h"></i>`}}
+function applySeries(){applyAge();const b=document.body,on=!!(S&&S.ante);let w=$('#wmark');
   if(!on){b.style.removeProperty('--ftint');if(w)w.hidden=true;return}
   const F=floorOf(S.ante);b.style.setProperty('--ftint',F.col);
   if(!w){w=document.createElement('div');w.id='wmark';w.setAttribute('aria-hidden','true');document.body.insertBefore(w,document.body.firstChild)}
@@ -2861,7 +2932,13 @@ const FLOORS=[
 const seriesOf=a=>a<=STAGES?'ABCDEFGH'[a-1]:'Z';
 const floorOf=a=>a<=STAGES?FLOORS[a-1]:{name:`Sub-basement ${a-STAGES}`,col:'#3a1a1a',line:'Below the House, there is only more House.'};
 const introUp=()=>!!$('#ripstage')||!!(($('#stageintro')||{}).hidden===false);
-function houseSay(t,ms=5000){if(S&&S.tut)return;if(introUp()){setTimeout(()=>houseSay(t,ms),300);return}{const n=Math.min(9,Math.ceil(String(t).replace(/<[^>]+>/g,'').length/9));for(let k=0;k<n;k++)setTimeout(()=>play('type'),k*55+Math.random()*25)}toast(`<b class="housesay">The House</b> · ${t}`,ms,false,'say')}
+/* the House speaks by telegram: its line is typed onto a paper strip, sentences ending in STOP */
+function houseSay(t,ms=5000){if(S&&S.tut)return;if(introUp()){setTimeout(()=>houseSay(t,ms),300);return}
+  const plain=String(t).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim(),
+    msg=plain.toUpperCase().replace(/[.!?]+(\s|$)/g,' STOP ').replace(/\s+/g,' ').trim().replace(/(STOP)?$/,m=>m||' STOP').trim();
+  toast(`<span class="tghead">Telegram · The House</span><span class="tgbody" aria-label="${escH(plain)}"></span>`,ms+msg.length*22,true,'say');
+  const box=[...document.querySelectorAll('#saybox .tgbody')].pop();if(!box)return;
+  if(reduced){box.textContent=msg;return}let k=0;const step=()=>{if(!box.isConnected)return;k=Math.min(msg.length,k+2);box.textContent=msg.slice(0,k);if(k%6<2&&msg[k-1]!==' ')play('type');if(k<msg.length)setTimeout(step,22)};step()}
 const HOUSE_MD=['Did you try the medicine drug?','you are stupid','don\'t care','more mouse bites!','I am very smart.'];
 function drSay(t,ms=4200){if(introUp()){setTimeout(()=>drSay(t,ms),300);return}toast(`<b style="color:var(--cyan)">House</b> · ${t||pick(HOUSE_MD)}`,ms,false,'say')}
 const ANTE_BASE=[300,1000,3200,9000,25000,65000,150000,320000];
@@ -3006,6 +3083,12 @@ function hatBuf(sr,ft,ff,q,a,d){const key=[sr,ft,Math.round(ff/100),Math.round(q
         const t=i/sr,e=t<a?t/a:t<a+d?Math.exp(Math.log(1e-4)*(t-a)/d):0;out[i]=y*e}
       L.push(buf)}HATS.set(key,L)}
   return L[Math.floor(Math.random()*L.length)]}
+/* the soundtrack in Mint timbres: short notes become plucked music-box tines with a bell overtone,
+   long notes a soft reed organ, bass a felted piano-like thump. Timing and pitch are untouched */
+function mintVoice(o,dest){const f=o.f,d=o.d??.2,v=o.v??.2,base={...o,bus:dest,wob:false};delete base.lp;delete base.q;
+  if(f<140){tone({...base,type:'triangle',lp:900,a:Math.min(o.a??.004,.01),d,v:v*.85});return}
+  if(d<=.45&&(o.a??.004)<.06){tone({...base,type:'sine',a:.002,d:Math.max(.4,d*1.6),v:v*1.15});tone({...base,f:f*3,f2:o.f2?o.f2*3:undefined,type:'sine',a:.001,d:.18,v:v*.32});tone({...base,f:f*5.4,type:'sine',a:.001,d:.07,v:v*.12});return}
+  tone({...base,type:'triangle',lp:1500,v:v*1.15});tone({...base,f:f*2,type:'sine',v:v*.28})}
 function tone(o){
   if(AU.rec){AU.rec.push(['tone',o]);return}
   const c=AU.ctx;if(!c)return;const LG=AU.lfoG,VG=AU.vibG;
@@ -3638,7 +3721,7 @@ const Music={step:0,next:0,timer:null,bpm:90,intense:false,mode:'main',prevLead:
     const sv={ctx:AU.ctx,lfoG:AU.lfoG,vibG:AU.vibG};
     AU.ctx=oc;AU.vibG=oc.createGain();AU.vibG.gain.value=28;const v=oc.createOscillator();v.frequency.value=5.5;v.connect(AU.vibG);v.start();
     AU.lfoG=oc.createGain();AU.lfoG.gain.value=10;const l=oc.createOscillator();l.frequency.value=.5;l.connect(AU.lfoG);l.start(0);
-    try{for(const[k,o]of notes)({tone,noise,fm})[k](o.bus===B?{...o,bus:oc.destination}:o)}finally{Object.assign(AU,sv)}
+    try{for(const[k,o]of notes){if(k==='tone'&&o.bus===B){mintVoice(o,oc.destination);continue}({tone,noise,fm})[k](o.bus===B?{...o,bus:oc.destination}:o)}}finally{Object.assign(AU,sv)}
     this.busy=true;const r0=performance.now();
     oc.startRendering().then(buf=>{const took=(performance.now()-r0)/1000;this.rt=[...this.rt.slice(-5),took];this.ahead=Math.min(8,Math.max(2.5,1+3*Math.max(...this.rt)));
       if(gen!==this.gen)return;this.busy=false;const c=AU.ctx,src=c.createBufferSource(),g=c.createGain();src.buffer=buf;src.connect(g);g.connect(AU.mus);
@@ -4848,7 +4931,7 @@ function consSlot(c,i){
   let acts='';
   if(sel){const why=consBlock(c,true);
     acts=`<div class="jacts"><button class="btn green tiny" data-act="usecons" data-arg="${i}" ${why?'disabled':''}>Use</button>${S.roll==='hoarder'?'':`<button class="btn tiny" data-act="sellcons" data-arg="${i}">Sell $${ci.sell}</button>`}</div>`}
-  return `<div class="jslot ${sel?'sel':''}" data-idx="${i}"><button class="jcard tile" id="cs${i}" data-act="cons" data-arg="${i}" data-drag="cons" data-tip="cons:${i}" aria-label="${ci.name}">
+  return `<div class="jslot ${sel?'sel':''}" data-idx="${i}"><button class="jcard tile ck-${c.kind}" id="cs${i}" data-act="cons" data-arg="${i}" data-drag="cons" data-tip="cons:${i}" aria-label="${ci.name}">
     <div class="jin" style="--jbg:${ci.bg};--dl:${-(i*.9)}s">${IMG(ci.icon)}</div></button>${acts}</div>`;
 }
 /* coin thickness: thin layers cut to the coin's outline, darker toward the back, reeded in the middle */
@@ -4933,8 +5016,8 @@ function blindSelectHTML(){
     return `<div class="bcol wcheq ${b.state} ${b.kind==='boss'?'protest':''}" style="--bc:${blindColor(b)}">
       <div class="chqhead"><span>${b.kind==='boss'?'Notice of Protest':`Wager No. ${String(S.ante).padStart(2,'0')}${i+1}`}</span><span>${lab}</span></div>${b.state==='defeated'?'<i class="rstamp paid">Paid</i>':b.state==='skipped'?'<i class="rstamp cancel">Cancelled</i>':''}
       <div class="bname">${blindName(b)}</div>
-      <div class="bchip" style="--sz:64px">${blindChip(b)}</div>
-      ${b.boss?`<div class="bdesc">${b.kind==='boss'?'':`<b>${BOSSES[b.boss].name}</b>: `}${bossDesc(b)}</div>`:''}
+      ${b.kind==='boss'&&bossSil(b.boss)?`<div class="bportrait" style="--pc:${BOSSES[b.boss].col}"><img src="${bossSil(b.boss)}" alt=""></div>`:`<div class="bchip" style="--sz:64px">${blindChip(b)}</div>`}
+      ${b.boss?`<div class="bdesc">${b.kind==='boss'?'<i class="whereas">Whereas</i> ':`<b>${BOSSES[b.boss].name}</b>: `}${bossDesc(b)}</div>`:''}
       <div class="btgt"><div class="lbl">${b.boss==='general'||b.boss==='tablerivals'?'Beat':'Score at least'}</div><div class="tv">${b.boss==='general'?'The General':b.boss==='tablerivals'?'The Table':S.roll==='glitched'?`<span class="glitchnum" aria-label="Hidden target">${fmtN(blindTarget(b))}</span>`:fmtN(blindTarget(b))}</div><div class="lbl">Reward: <span class="k-money">${'$'.repeat(blindReward(b))}</span></div></div>
       ${cur?'<button class="btn orange wsel" data-act="selectblind">Select</button>':''}
       ${b.kind!=='boss'?`<div class="bskip"><div class="tagd">Skip for <b class="tagname" data-tip="tag:${b.tag}">${TAGS[b.tag].name}</b></div>
@@ -4960,11 +5043,11 @@ function charmCardHTML(o,i){
   const p=slotPrice(o),full=S.jokers.length>=slots();
   if(o.kind==='spirit'){const ci=consInfo(o),room=consRoom();
     return `<div class="scard ${o.bought?'gone':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">$${p}</div>
-      <button class="jcard tile" data-tip="shopj:${i}" data-drag="shop" data-sk="j:${i}" aria-label="${ci.name}"><div class="jin" style="--jbg:${ci.bg};--dl:${-i*.9}s">${IMG(ci.icon)}<span class="lab">${ci.short}</span></div></button>
+      <button class="jcard tile ck-${o.kind}" data-tip="shopj:${i}" data-drag="shop" data-sk="j:${i}" aria-label="${ci.name}"><div class="jin" style="--jbg:${ci.bg};--dl:${-i*.9}s">${IMG(ci.icon)}<span class="lab">${ci.short}</span></div></button>
       <button class="btn green small" data-act="buyjoker" data-arg="${i}" ${o.bought||S.money<p||!room?'disabled':''}>${room?'Buy':'No room'}</button></div>`}
   if(o.kind==='almanac'){const ci=consInfo(o),dis=o.bought||S.money<p?'disabled':'';
     return `<div class="scard ${o.bought?'gone':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">$${p}</div>
-      <button class="jcard tile" data-tip="shopj:${i}" data-drag="shop" data-sk="j:${i}" aria-label="${ci.name}"><div class="jin" style="--jbg:${ci.bg};--dl:${-i*.9}s">${IMG(ci.icon)}<span class="lab">${ci.short}</span></div></button>
+      <button class="jcard tile ck-${o.kind}" data-tip="shopj:${i}" data-drag="shop" data-sk="j:${i}" aria-label="${ci.name}"><div class="jin" style="--jbg:${ci.bg};--dl:${-i*.9}s">${IMG(ci.icon)}<span class="lab">${ci.short}</span></div></button>
       <div class="sbuys">${consRoom()?`<button class="btn green small" data-act="buyjoker" data-arg="${i}" ${dis}>Buy</button>`:''}<button class="btn small" style="--c:var(--purple);--cd:var(--purple-d)" data-act="buyuse" data-arg="${i}" ${dis}>Buy &amp; Use</button></div></div>`}
   const d=JOKERS[o.key];
   return `<div class="scard ${o.bought?'gone':''} ${d.r===5?'fabled':d.r===4?'legend':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">$${p}</div>
@@ -5019,7 +5102,7 @@ function packHTML(){
       btns=`<button class="btn green small" data-act="ppick" data-arg="${i},use" ${why?'disabled':''}>Use</button>`+
         (o.kind!=='almanac'?`<button class="btn small" data-act="ppick" data-arg="${i},keep" ${consRoom()?'':'disabled'}>Keep</button>`:'')}
     if(P.kind==='glitch'&&!o.taken)name=`<span class="glitchname" aria-label="${name.replace(/<[^>]+>/g,' ').replace(/"/g,'')}">${name.replace(/<[^>]+>/g,' ')}</span>`;
-    return `<div class="scard popt ${o.kind==='charm'&&JOKERS[o.key]?(JOKERS[o.key].r===5?'fabled':JOKERS[o.key].r===4?'legend':''):''} ${o.taken&&o.kind!=='myst'?'gone':''} ${o.kind==='myst'&&(o.taken||P.done)?'mystup'+(o.taken?'':' missed'):''} ${P.kind==='glitch'?'gpopt':''}"><button class="jcard ${o.kind==='charm'?'':'tile'}" data-tip="popt:${i}" aria-label="${name.replace(/<[^>]+>/g,' ').replace(/"/g,'')}">${face}</button>
+    return `<div class="scard popt ${o.kind==='charm'&&JOKERS[o.key]?(JOKERS[o.key].r===5?'fabled':JOKERS[o.key].r===4?'legend':''):''} ${o.taken&&o.kind!=='myst'?'gone':''} ${o.kind==='myst'&&(o.taken||P.done)?'mystup'+(o.taken?'':' missed'):''} ${P.kind==='glitch'?'gpopt':''}"><button class="jcard ${o.kind==='charm'?'':'tile ck-'+o.kind}" data-tip="popt:${i}" aria-label="${name.replace(/<[^>]+>/g,' ').replace(/"/g,'')}">${face}</button>
       <div class="pname">${name}</div><div class="pbtns">${btns}</div></div>`}).join('');
   return `<div class="panel packview" style="--pc:${info.col};--pk:rgb(${mintInk(hex2rgb(info.col)).join(',')})"><div class="packhead"><div><div class="ptitle" style="color:${info.col}">${packName(P)}</div>
     ${P.done?'<div class="lbl" style="max-width:62ch;line-height:1.35">Here\'s what was inside.</div>':''}</div>
@@ -5049,7 +5132,7 @@ function renderOverlay(){
       <div class="row"><span>Best toss</span><b>${fmtN(S.stats.best)}</b></div>
       <div class="row"><span>Coins flipped</span><b>${fmtN(S.stats.flips)}</b></div>
       ${S.seed?`<div class="row"><span>Seed${S.customSeed?' (custom)':''}</span><b class="seedv">${S.seed} <button class="btn tiny" data-act="copyseed">Copy</button></b></div>`:''}
-      <button class="btn green" data-act="sumcard">Summary card</button>
+      <div class="certrow"><button class="btn" style="--c:var(--money);--cd:var(--money-d)" data-act="sharecert">Share certificate</button><button class="btn green" data-act="sumcard">Summary card</button></div>
       <button class="btn orange big" data-act="endless">Endless Mode</button>
       <button class="btn blue" data-act="newrun">New Run</button></div></div>`;o.hidden=false;
   }else if(modal){o.innerHTML=modal();o.hidden=false}
@@ -5907,6 +5990,10 @@ async function doReflip(){
   await Promise.all(idx.map((i,k)=>animateToss(i,k*70)));
   S.stats.flips+=idx.length;S.phase='tossed';S.keepMiss=null;refreshTable();updatePreview();scheduleSave();
 }
+/* a coin that lands presses a brief ink impression of its face into the paper; a miss leaves a smudge instead */
+function inkPrint(el,c,r){if(reduced||!el)return;const hit=S&&S.call&&scores(r,S.call);const d=COINS[c.type],side=d.fixed||(r==='T'?'T':'H');
+  const m=document.createElement('i');m.className='inkprint '+(hit?'hit':'smudge');if(hit)m.style.setProperty('--art',`url(${coinArt(c.type,side)})`);
+  el.appendChild(m);setTimeout(()=>m.remove(),1500)}
 function animateToss(i,delay){
   const el=$('#c'+i);const c=S.purse[i],r=S.results[i];
   if(!el){c.face=r;return Promise.resolve()}
@@ -5926,11 +6013,22 @@ function animateToss(i,delay){
     {transform:`translateY(0) rotateX(${fin}deg)`}],{duration:dur,delay:delay/SPD(),fill:'backwards'});
   el.querySelector('.shadow').animate([{transform:'scale(1)',opacity:1},{transform:'scale(.45)',opacity:.4,offset:.5},{transform:'scale(1)',opacity:1}],{duration:dur,delay:delay/SPD()});
   return a.finished.then(()=>{
-    c.face=r;play('land',i);
+    c.face=r;play('land',i);inkPrint(el,c,r);
     lift.animate([{transform:'translateY(0) scale(1.08,.9)'},{transform:'translateY(-6px) scale(.97,1.04)'},{transform:'translateY(0)'}],{duration:220/SPD()});
     if(r==='E'){el.classList.add('edge');play('edge');popup(el,'Edge!','text');shake(4)}
   }).catch(()=>{c.face=r});
 }
+/* the toss written out in words on a cheque line, with the amount stamped in figures */
+const NW1=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'],
+  NW10=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'],NWB=[[1e12,'trillion'],[1e9,'billion'],[1e6,'million'],[1e3,'thousand']];
+function numWords(n){n=Math.floor(n);if(!isFinite(n)||n>=1e15)return null;if(n<20)return NW1[n];if(n<100)return NW10[Math.floor(n/10)]+(n%10?'-'+NW1[n%10]:'');
+  if(n<1000)return NW1[Math.floor(n/100)]+' hundred'+(n%100?' and '+numWords(n%100):'');
+  for(const[v,w]of NWB)if(n>=v)return numWords(Math.floor(n/v))+' '+w+(n%v?(n%v<100?' and ':' ')+numWords(n%v):'');return ''}
+const cap1=t=>t.charAt(0).toUpperCase()+t.slice(1);
+function chequeLine(chips,mult,total){if(!(total>0))return;const st=$('#stage');if(!st)return;
+  const cw=numWords(chips),mw=Number.isInteger(mult)?numWords(mult):null,words=cw&&mw?`${cap1(cw)} times ${mw}`:cw?`${cap1(cw)} times ${fmtM(mult)}`:`${fmtN(chips)} times ${fmtM(mult)}`;
+  const el=document.createElement('div');el.className='chqline';el.innerHTML=`<span class="cqp">Pay</span><span class="cqw">${escH(words)}</span><span class="cqa">${fmtN(total)}</span>`;
+  st.appendChild(el);setTimeout(()=>el.classList.add('out'),2200/SPD());setTimeout(()=>el.remove(),2700/SPD())}
 async function doCashIn(){
   if(S.phase!=='tossed')return;
   S.phase='scoring';S.selJoker=null;S.selCons=null;S.selected=[];renderJokers();refreshTable();
@@ -5974,7 +6072,7 @@ async function doCashIn(){
   if(bossIs('clock')&&S.tossNo>0&&total>0){const cut=total-Math.floor(total*Math.pow(.8,S.tossNo));total-=cut;popup($('#hbox'),'Late -'+fmtN(cut),'miss');play('miss')}
   for(const [bk,cap,key] of [['shards',6,'paidShards'],['parrot',5,'paidParrot']])if(bossIs(bk)&&R.matched){const m=Math.min(R.matched.filter(x=>!x).length,cap-(S[key]||0),Math.max(0,S.money));if(m>0){S.money-=m;S[key]=(S[key]||0)+m;syncStats();popup($('#callb'),'-$'+m,'miss')}}
   if(bossIs('treasury')&&total>0){const tax=Math.floor(total*.2);total-=tax;popup($('#hbox'),'Taxed -'+fmtN(tax),'miss');play('miss')}
-  setHB(`<span style="font-size:1.25em">${fmtN(total)}</span>`,null,null);juice($('#hname'));play('total');
+  setHB(`<span style="font-size:1.25em">${fmtN(total)}</span>`,null,null);juice($('#hname'));play('total');chequeLine(R.chips,R.mult,total);
   shake(clamp(Math.log10(Math.max(10,total))*2,2,14));
   await wait(550);
   const before=S.roundScore;let lastTick=0;
@@ -6352,6 +6450,37 @@ const questsHTML=()=>S&&S.quests&&S.quests.length?`<div class="qlist"><div class
 /* ================= SUMMARY CARD ================= */
 let SUMCARD=null;
 const loadImg=src=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src});
+/* the winner's share certificate: guilloche field, the run's Charms engraved as vignettes around the border, signed and sealed */
+async function makeShareCert(){
+  const W=900,H=600,cv=document.createElement('canvas');cv.width=W*2;cv.height=H*2;const g=cv.getContext('2d');g.scale(2,2);
+  const font=getComputedStyle(document.body).fontFamily,sc=getComputedStyle(document.documentElement).getPropertyValue('--font-sc')||font,mono=getComputedStyle(document.documentElement).getPropertyValue('--font-mono')||'monospace';
+  const T=(t,x,y,size,c,al='center',f=font)=>{g.fillStyle=c;g.font=`${size}px ${f}`;g.textAlign=al;g.textBaseline='alphabetic';g.fillText(t,x,y)};
+  g.fillStyle='#f4ead0';g.fillRect(0,0,W,H);
+  g.strokeStyle='rgba(138,90,18,.12)';g.lineWidth=1;for(let k=0;k<70;k++){g.beginPath();for(let a=0;a<=Math.PI*2+.01;a+=.02){const r=40+k*5+6*Math.sin(a*12+k*.3);const x=W/2+r*Math.cos(a)*1.5,y=H/2+r*Math.sin(a)*.9;a?g.lineTo(x,y):g.moveTo(x,y)}g.stroke()}
+  /* border: thick money-gold frame with a guilloche band */
+  g.strokeStyle='#8a5a12';g.lineWidth=4;g.strokeRect(10,10,W-20,H-20);g.lineWidth=1;g.strokeRect(20,20,W-40,H-40);
+  g.strokeStyle='rgba(138,90,18,.55)';for(let x=24;x<W-24;x+=6){g.beginPath();g.moveTo(x,24);g.quadraticCurveTo(x+3,34,x+6,24);g.stroke();g.beginPath();g.moveTo(x,H-24);g.quadraticCurveTo(x+3,H-34,x+6,H-24);g.stroke()}
+  g.strokeRect(78,78,W-156,H-156);
+  /* vignettes: each Charm engraved in an oval around the border */
+  const js=S.jokers.slice(0,12),spots=[];for(let i=0;i<6;i++){spots.push([120+i*(W-240)/5,52]);spots.push([120+i*(W-240)/5,H-52])}
+  for(let i=0;i<js.length;i++){const[x,y]=spots[i],d=JOKERS[js[i].key];g.save();g.beginPath();g.ellipse(x,y,22,22,0,0,7);g.fillStyle=RAR_TINT[d.r]||'#fff';g.fill();g.strokeStyle='#8a5a12';g.lineWidth=1.5;g.stroke();g.clip();
+    const im=await loadImg(icon(js[i].key));if(im)g.drawImage(im,x-17,y-17,34,34);g.restore()}
+  T('SHARE CERTIFICATE',W/2,128,13,'#a23b2a','center',mono);
+  T('Call it.',W/2,190,64,'#1b2a4a','center',sc);
+  T('This certifies that the bearer is the owner of',W/2,236,20,'#1b2a4a');
+  T('One Fully Paid Share in the House',W/2,280,34,'#8a5a12','center',sc);
+  const r=ROLLS[S.roll],st=STAKES[S.stake]||STAKES[1];
+  T(`won on the ${r.name} at ${S.daily?'the Daily Toss':st.name} · all ${STAGES} stages cleared`,W/2,318,18,'#1b2a4a');
+  T(`Best toss ${fmtN(S.stats.best)}   ·   Coins flipped ${fmtN(S.stats.flips)}   ·   Rounds ${S.round}`,W/2,352,15,'#1f4d3a','center',mono);
+  /* signatures */
+  [[230,'Treasurer of the House'],[W-230,'The Bearer']].forEach(([x,lab],k)=>{g.strokeStyle='#1b2a4a';g.lineWidth=1;g.beginPath();g.moveTo(x-110,H-130);g.lineTo(x+110,H-130);g.stroke();T(lab,x,H-112,12,'#5a5f6e');
+    g.lineWidth=1.6;g.beginPath();for(let q=0;q<=50;q++){const t=q/50,xx=x-90+t*180,yy=H-138-Math.sin(t*(k?17:12))*6*(1-t)-Math.sin(t*5+k)*4;q?g.lineTo(xx,yy):g.moveTo(xx,yy)}g.stroke()});
+  /* gold seal */
+  g.save();g.translate(W/2,H-138);for(let k=0;k<24;k++){g.rotate(Math.PI/12);g.fillStyle='#b8901f';g.beginPath();g.moveTo(0,-46);g.lineTo(8,-36);g.lineTo(-8,-36);g.fill()}
+  g.beginPath();g.arc(0,0,38,0,7);g.fillStyle='#d9b44a';g.fill();g.strokeStyle='#8a5a12';g.lineWidth=2;g.stroke();g.beginPath();g.arc(0,0,30,0,7);g.stroke();
+  g.fillStyle='#5e3d0b';g.font=`bold 22px ${sc}`;g.textAlign='center';g.textBaseline='middle';g.fillText('PAID',0,1);g.restore();
+  T(`No. ${S.seed||'—'}  ·  Series ${seriesOf(STAGES)}  ·  ${new Date().toLocaleDateString()}`,W/2,H-88,12,'#a23b2a','center',mono);
+  return cv}
 async function makeSummaryCard(){
   const W=640,H=360,cv=document.createElement('canvas');cv.width=W*2;cv.height=H*2;const g=cv.getContext('2d');g.scale(2,2);g.imageSmoothingEnabled=false;
   const won=S.screen==='win',font=getComputedStyle(document.body).fontFamily,r=ROLLS[S.roll],st=STAKES[S.stake]||STAKES[1];
@@ -6581,10 +6710,11 @@ const ACT={
   colrar(a){COL.rar=+a;COL.sel=null;showModal(collectionModal)},
   colsel(a){const g=document.querySelector('.cgrid'),st=g?g.scrollTop:0;COL.sel=a;showModal(collectionModal);const g2=document.querySelector('.cgrid');if(g2)g2.scrollTop=st},
   options(){resetArm=false;showModal(optionsModal)},
+  async sharecert(){const cv=await makeShareCert();SUMCARD={url:cv.toDataURL('image/png'),cv,name:'share-certificate'};showModal(summaryModal)},
   async sumcard(){const cv=await makeSummaryCard();SUMCARD={url:cv.toDataURL('image/png'),cv};showModal(summaryModal)},
   async savecard(){if(!SUMCARD)return;let dl=null;try{dl=typeof claude!=='undefined'&&claude.use?await claude.use('downloads'):null}catch(e){}
-    if(!dl){try{SUMCARD.cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='call-it-run.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)},'image/png')}catch(e){toast('Saving isn\'t available here. Right-click or long-press the image to save it')}return}
-    SUMCARD.cv.toBlob(b=>{dl.save({filename:'call-it-run.png',data:b}).then(()=>toast('Saved')).catch(e=>{if(e&&e.code!=='declined')toast('Couldn\'t save the image here. Right-click or long-press it instead')})},'image/png')},
+    if(!dl){try{SUMCARD.cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=(SUMCARD.name||'call-it-run')+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)},'image/png')}catch(e){toast('Saving isn\'t available here. Right-click or long-press the image to save it')}return}
+    SUMCARD.cv.toBlob(b=>{dl.save({filename:(SUMCARD.name||'call-it-run')+'.png',data:b}).then(()=>toast('Saved')).catch(e=>{if(e&&e.code!=='declined')toast('Couldn\'t save the image here. Right-click or long-press it instead')})},'image/png')},
   titlecoin(){titleToss()},
   resetunlocks(){if(!resetArm){resetArm=true;showModal(optionsModal);return}resetArm=false;
     PROF.unlocked={};PROF.stakes={};PROF.unlockAll=false;PROF.stats=JSON.parse(JSON.stringify(PROF_DEF.stats));saveProf();
