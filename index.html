@@ -1726,6 +1726,15 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
 .lshop.compact .certbox .certd{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .lshop.compact2 .sdesc{display:none}.lshop.compact2 .scard .jcard{width:58px}.lshop.compact2 .shelf{padding-top:6px}
 .lshop.compact2:not(.brshop) .sect.pk .jcard.tile{width:96px}.lshop.compact2 .certbox{padding:8px 10px}
+
+/* the Pressed Penny is drawn flat, but still turns photo-negative when Weightless */
+.coin.t-pressed.wl .face{filter:invert(1) contrast(1.1) drop-shadow(0 0 5px rgba(100,24,0,.85));box-shadow:none!important}
+
+/* Charms trigger in order: each stamp carries its number, and in two columns the order runs across then down */
+.jnum{position:absolute;left:4px;top:3px;z-index:3;font-style:normal;font-family:var(--font-mono);font-weight:600;font-size:10px;line-height:1;color:var(--paper);background:var(--navy);padding:2px 4px;pointer-events:none}
+#jokerbar .tray.cons .jnum{display:none}
+.ghost .jnum{display:none}
+@media (max-width:760px){.jnum{font-size:8px;padding:1px 3px;left:2px;top:1px}}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1772,7 +1781,7 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.225</div>
+  <div class="gamever" aria-label="Version">v1.2.226</div>
 </div>
 
 <script>
@@ -4803,7 +4812,7 @@ function sizeCharms(){const desk=innerWidth>760;document.querySelectorAll('#joke
 function jokerSlot(j,i){
   const d=JOKERS[j.key],sel=S.selJoker===i&&canEdit(),n=S.jokers.length;
   const gj=(S.roll==='glitched'||j.key==='missingno')&&S.screen==='play'&&S.glitchJ&&S.glitchJ[j.id];
-  return `<div class="jslot ${sel?'sel':''} ${gj?'jglitch':''} ${!jOn(j)?'stolen':''} ${d.r===5?'fabled':d.r===4?'legend':''}" data-idx="${i}"><button class="jcard" id="jk${i}" data-act="joker" data-arg="${i}" data-drag="charm" data-tip="joker:${i}" aria-label="${d.name}">
+  return `<div class="jslot ${sel?'sel':''} ${gj?'jglitch':''} ${!jOn(j)?'stolen':''} ${d.r===5?'fabled':d.r===4?'legend':''}" data-idx="${i}"><i class="jnum" aria-hidden="true">${i+1}</i><button class="jcard" id="jk${i}" data-act="joker" data-arg="${i}" data-drag="charm" data-tip="joker:${i}" aria-label="${d.name}">
    <div class="jin ${j.wear==='weightless'?'weightless':''}" style="--jbg:${d.bg};--dl:${-(i*.7)}s;${rarVars(j.key)}">${IMG(icon(j.key))}${j.wear&&j.wear!=='weightless'?`<i class="wfx w-${j.wear}"></i>`:''}</div>${j.curse?curseBadge(j.curse,j.left):''}</button>
    ${sel&&!touchUI()?`<div class="jacts">${noSell(j)?`<span class="why">${CURSES[j.curse].name}</span>`:`${S.roll==='hoarder'?'':`<button class="btn green tiny" data-act="sell" data-arg="${i}">Sell $${sellVal(j)}</button>`}`}
    <div class="mv"><button class="btn tiny" data-act="move" data-arg="${i},-1" ${i===0||j.curse==='bound'?'disabled':''} aria-label="Move left">&lt;</button><button class="btn tiny" data-act="move" data-arg="${i},1" ${i===n-1||j.curse==='bound'?'disabled':''} aria-label="Move right">&gt;</button></div></div>`:''}</div>`;
@@ -6636,10 +6645,10 @@ document.addEventListener('pointerleave',()=>document.querySelectorAll('.coin.ho
 const artPhaseOk=()=>S&&canEdit()&&!(S.screen==='play'&&S.phase!=='call'&&S.phase!=='idle');
 function artToCharm(i){const c=S.purse[i];if(!c||!coinDef(c).charm||!artPhaseOk())return false;
   if(S.jokers.length>=slots()){toast('No free Charm slot');return false}if(S.purse.length<=PURSE_MIN){toast(`Your purse needs at least ${PURSE_MIN} coins`);return false}
-  S.purse.splice(i,1);if(S.results.length>S.purse.length)S.results.splice(i,1);S.csel=[];S.selected=[];const ck=coinDef(c).charm;S.jokers.push({id:uid++,key:ck,st:{},cost:0});play('buy');toast(`The <b>${JOKERS[ck].name}</b> hangs with your Charms`);render();return true}
+  S.purse.splice(i,1);if(S.results.length>S.purse.length)S.results.splice(i,1);S.csel=[];S.selected=[];const ck=coinDef(c).charm;S.jokers.push({id:uid++,key:ck,st:{},cost:0,wear:c.wear||undefined,cdefect:c.defect||undefined});play('buy');toast(`The <b>${JOKERS[ck].name}</b> hangs with your Charms`);render();return true}
 function artToCoin(i){const j=S.jokers[i];if(!j||!JOKERS[j.key].artifact||!artPhaseOk())return false;
   if(purseUsed()>=S.purseMax){toast('Your purse is full');return false}
-  S.jokers.splice(i,1);S.selJoker=null;S.purse.unshift(mkCoin('pressed'));if(S.results.length)S.results.unshift('H');play('buy');toast('The <b>Pressed Penny</b> is back at the front of your purse, pulling its train');render();return true}
+  S.jokers.splice(i,1);S.selJoker=null;S.purse.unshift({...mkCoin('pressed'),wear:j.wear||null,defect:j.cdefect||null});if(S.results.length)S.results.unshift('H');play('buy');toast('The <b>Pressed Penny</b> is back at the front of your purse, pulling its train');render();return true}
 const inRect=(el,x,y,pad=20)=>{if(!el)return false;const r=el.getBoundingClientRect();return x>=r.left-pad&&x<=r.right+pad&&y>=r.top-pad&&y<=r.bottom+pad};
 function artTarget(d,x,y){
   if(d.kind==='coin'&&coinDef(S.purse[+d.item.dataset.idx]||{type:'copper'}).charm){const t=$('#jokerbar .tray:not(.cons)');return inRect(t,x,y,innerWidth>760?30:6)?t:null}
