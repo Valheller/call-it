@@ -1895,6 +1895,19 @@ body.uv #uvfx{opacity:1}
 .wxshort{--wi:color-mix(in srgb,var(--wc) 40%,#1b2a4a);color:var(--wi)!important;display:inline-flex;align-items:center;gap:3px}
 .wxshort .wxic{width:12px;height:12px;stroke-width:2.6}
 @media (max-width:760px){.wxbanner{padding:6px 10px 6px 7px!important;gap:8px}.wxring{width:30px;height:30px}.wxring img{width:21px;height:21px}.wxk{font-size:8px}.wxd{font-size:12.5px}.wxd b{font-size:14px}}
+
+/* desktop side columns: a selected Charm's or Consumable's buttons sit inside its own slot (arrows on the side edges, Sell or Use along the bottom),
+   so they never cover a neighbour; the arrows step it earlier or later in the trigger order */
+@media (min-width:761px){
+  #jokerbar .jacts,#jokerbar .tray.cons .jacts{inset:0!important;top:0!important;left:0!important;right:0!important;transform:none!important;display:block!important;pointer-events:none;z-index:6}
+  #jokerbar .jacts>.btn,#jokerbar .jacts>.why{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);pointer-events:auto;white-space:nowrap;padding:3px 8px!important;font-size:12px!important;box-shadow:0 2px 5px rgba(27,42,74,.25)}
+  #jokerbar .tray.cons .jacts>.btn:first-child:not(:only-child){bottom:auto;top:5px}
+  #jokerbar .jacts .mv{display:contents}
+  #jokerbar .jacts .mv .btn{rotate:none!important;position:absolute;top:50%;transform:translateY(-50%);pointer-events:auto;width:18px;min-width:0;padding:5px 0!important;font-size:14px!important;box-shadow:0 2px 5px rgba(27,42,74,.25)}
+  #jokerbar .jacts .mv .btn:first-child{left:2px}#jokerbar .jacts .mv .btn:last-child{right:2px}
+  #jokerbar .jacts .mv .btn:disabled{opacity:.35}
+  #jokerbar .jslot.sel{transform:none!important}
+}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1941,7 +1954,7 @@ body.uv #uvfx{opacity:1}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.243</div>
+  <div class="gamever" aria-label="Version">v1.2.244</div>
 </div>
 
 <script>
@@ -5078,7 +5091,7 @@ function jokerSlot(j,i){
   return `<div class="jslot ${sel?'sel':''} ${gj?'jglitch':''} ${!jOn(j)?'stolen':''} ${d.r===5?'fabled':d.r===4?'legend':''}" data-idx="${i}"><i class="jnum" aria-hidden="true">${i+1}</i><button class="jcard" id="jk${i}" data-act="joker" data-arg="${i}" data-drag="charm" data-tip="joker:${i}" aria-label="${d.name}">
    <div class="jin ${j.wear==='weightless'?'weightless':''}" style="--jbg:${d.bg};--dl:${-(i*.7)}s;${rarVars(j.key)}">${IMG(icon(j.key))}${j.wear&&j.wear!=='weightless'?`<i class="wfx w-${j.wear}"></i>`:''}</div>${j.curse?curseBadge(j.curse,j.left):''}</button>
    ${sel&&!touchUI()?`<div class="jacts">${noSell(j)?`<span class="why">${CURSES[j.curse].name}</span>`:`${S.roll==='hoarder'?'':`<button class="btn green tiny" data-act="sell" data-arg="${i}">Sell $${sellVal(j)}</button>`}`}
-   <div class="mv"><button class="btn tiny" data-act="move" data-arg="${i},-1" ${i===0||cursed(j,'bound')?'disabled':''} aria-label="Move left">&lt;</button><button class="btn tiny" data-act="move" data-arg="${i},1" ${i===n-1||cursed(j,'bound')?'disabled':''} aria-label="Move right">&gt;</button></div></div>`:''}</div>`;
+   <div class="mv"><button class="btn tiny" data-act="move" data-arg="${i},-1" ${i===0||cursed(j,'bound')?'disabled':''} aria-label="Move earlier" title="Move earlier">&lsaquo;</button><button class="btn tiny" data-act="move" data-arg="${i},1" ${i===n-1||cursed(j,'bound')?'disabled':''} aria-label="Move later" title="Move later">&rsaquo;</button></div></div>`:''}</div>`;
 }
 function consSlot(c,i){
   const ci=consInfo(c),sel=S.selCons===i&&canEdit();
