@@ -17,7 +17,7 @@
 <meta name="apple-mobile-web-app-title" content="Call it.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=IBM+Plex+Mono:wght@500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=IBM+Plex+Mono:wght@500;600&family=Caveat:wght@500;600&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
 <style>
 /* numbers in a typewriter face, like a banknote's serial */
 @font-face{font-family:'Mint Num';font-style:normal;font-weight:600;font-display:swap;
@@ -1941,6 +1941,148 @@ body.uv #uvfx{opacity:1}
 
 /* the coin name beside the Melt / Pawn button: an inked label, not dark-on-dark */
 .purse.shopp+.meltbar>span{background:rgba(251,248,239,.94)!important;color:var(--ink)!important;border:1px solid var(--rule);text-shadow:none!important}
+
+/* ===== notifications print as till receipts and tear off ===== */
+.toast.rcpt{background:#fffdf6!important;border:0!important;border-radius:0!important;padding:8px 16px 14px!important;font-size:15px;
+  box-shadow:0 1px 0 rgba(27,42,74,.08),0 8px 16px -6px rgba(27,42,74,.28)!important;
+  -webkit-mask:linear-gradient(#000,#000) top/100% calc(100% - 6px) no-repeat,conic-gradient(from -45deg at 50% 100%,#000 90deg,transparent 0) bottom/10px 6px repeat-x;
+  mask:linear-gradient(#000,#000) top/100% calc(100% - 6px) no-repeat,conic-gradient(from -45deg at 50% 100%,#000 90deg,transparent 0) bottom/10px 6px repeat-x;
+  background-image:linear-gradient(90deg,rgba(27,42,74,.035),transparent 12%,transparent 88%,rgba(27,42,74,.035))!important;
+  animation:rcptin .42s cubic-bezier(.2,.8,.3,1)!important;transform-origin:top center}
+.toast.rcpt .rhead{display:block;font:600 9px/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-dim);border-bottom:1px dashed rgba(27,42,74,.35);padding-bottom:5px;margin-bottom:6px;font-style:normal}
+@keyframes rcptin{from{clip-path:inset(0 0 100% 0);transform:translateY(-6px)}to{clip-path:inset(0 0 0 0);transform:none}}
+.toast.rcpt.out{opacity:0;transform:translateY(-14px) rotate(-3deg)}
+@media (max-width:760px){.toast.rcpt{padding:6px 12px 12px!important;font-size:13px}@keyframes rcptin{from{clip-path:inset(100% 0 0 0);transform:translateY(6px)}to{clip-path:inset(0);transform:none}}}
+
+/* ===== interest coupons ===== */
+.cpline .v{display:flex;align-items:center;gap:6px;justify-content:flex-end}
+.coupons{display:inline-flex;flex-wrap:wrap;gap:0;justify-content:flex-end;max-width:260px}
+.coupon{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:26px;height:28px;overflow:hidden;background:#f5ecd2;border:1px dashed rgba(138,90,18,.7);font-style:normal;line-height:1}
+.cline .coupon b{font:700 10px/1 var(--font-mono)!important;color:#8a5a12!important}.cline .coupon small{font:600 6px/1 var(--font-mono)!important;color:var(--ink-dim)!important;margin-top:2px!important}
+.cpline.fresh .coupon{animation:snip .5s ease-in calc(var(--k)*90ms + 150ms) backwards}
+@keyframes snip{0%{transform:translateY(-6px) rotate(-8deg);opacity:0;border-style:solid}60%{transform:translateY(2px) rotate(3deg);opacity:1}100%{transform:none}}
+.cpline.fresh .coupons{position:relative}
+.cpline.fresh .coupons::after{content:'✂';position:absolute;top:-14px;left:0;font-size:14px;color:var(--ink);animation:scissors 1.4s linear forwards;opacity:0}
+@keyframes scissors{0%{left:0;opacity:1}90%{opacity:1}100%{left:100%;opacity:0}}
+/* ===== banknote counter ===== */
+.billbox{position:fixed;z-index:80;pointer-events:none;width:120px;height:56px;transform:translate(-50%,-50%)}
+.bill{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-style:normal;border-radius:2px;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 1px,transparent 1px 3px),radial-gradient(ellipse at 50% 50%,rgba(255,255,255,.55),transparent 60%),var(--bc,#cfe3c9);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.6),inset 0 0 0 3px var(--bi,#1f4d3a),0 2px 4px rgba(27,42,74,.25);color:var(--bi,#1f4d3a);
+  animation:billin .32s cubic-bezier(.2,.9,.3,1) calc(var(--k)*70ms) backwards;transform:translate(calc(var(--k)*1.2px),calc(var(--k)*-1.4px)) rotate(calc((var(--k) - 4)*1.2deg))}
+.bill b{font:700 18px/1 'Cormorant SC',serif}.bill span{font:600 6.5px/1.1 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;text-align:center;max-width:58px}
+.bill.d1{--bc:#d9e6cf;--bi:#1f4d3a}.bill.d5{--bc:#d6dff0;--bi:#1b2a4a}.bill.d10{--bc:#f0dcc9;--bi:#a23b2a}.bill.d20{--bc:#e6dbef;--bi:#4a3a6b}.bill.d50{--bc:#f3e6bf;--bi:#8a5a12}
+@keyframes billin{from{transform:translate(-160px,40px) rotate(-30deg);opacity:0}}
+.billband{position:absolute;left:44%;top:-4px;bottom:-4px;width:30px;background:#c84a3a;color:#fbf7ec;writing-mode:vertical-rl;font:700 7px/30px var(--font-mono);letter-spacing:.08em;text-align:center;font-style:normal;box-shadow:0 1px 3px rgba(0,0,0,.3);animation:billin .3s ease-out .9s backwards;transform:none}
+
+/* ===== Run Info: rate board ===== */
+.htable{border-spacing:0 3px!important}
+.htable td{background:#1e2a3a!important;color:#e9e1c8!important;padding:5px 9px!important}
+.htable tr[data-tip]:hover td{background:#26364a!important}
+.htable .hgrp td{background:none!important;color:var(--seal)!important;font-family:var(--font-mono)}
+.htable .lv{color:#9fb0c4!important;font-family:var(--font-mono);font-size:12px}
+.htable .cmv{text-align:right}
+.htable .cmv .x{color:#9fb0c4;margin:0 6px;font-weight:400}
+.flap{display:inline-flex;gap:2px}
+.flap i{display:inline-block;width:15px;height:22px;line-height:22px;text-align:center;font:700 15px/22px var(--font-mono);font-style:normal;color:#fbf7ec;border-radius:2px;
+  background:linear-gradient(#2c3e57 0 49%,#0e1724 49% 51%,#24344a 51%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.4)}
+.flap.c i{color:#9fe0c0}.flap.m i{color:#ffb0a0}
+.cmv.flip .flap i{animation:flapflip .5s steps(4) calc(var(--i)*80ms + 200ms) backwards}
+@keyframes flapflip{0%{transform:scaleY(1);filter:brightness(1.6)}50%{transform:scaleY(.1)}100%{transform:scaleY(1)}}
+/* ===== Run Info: passbook ===== */
+.passbook{background:#f4f0e2;border:1px solid #6d7f6a;box-shadow:inset 0 0 0 4px #f4f0e2,inset 0 0 0 5px rgba(31,77,58,.35);padding:12px 12px 10px;max-height:min(60vh,520px);overflow:auto;
+  background-image:repeating-linear-gradient(transparent 0 25px,rgba(31,77,58,.12) 25px 26px)}
+.pbhead{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #1f4d3a;padding-bottom:5px;margin-bottom:4px;gap:8px;flex-wrap:wrap}
+.pbhead b{font-family:var(--font-sc);font-size:20px;color:#1f4d3a}.pbhead span{font:600 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim)}
+.pbt{width:100%;border-collapse:collapse;font:500 12.5px/1.3 var(--font-mono);color:#1b2a4a}
+.pbt th{font:600 9px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:#1f4d3a;text-align:left;padding:6px 4px;border-bottom:1px solid rgba(31,77,58,.4)}
+.pbt td{padding:4px;height:26px;vertical-align:middle;border-bottom:1px solid transparent}
+.pbt .pbp{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;position:relative}.pbt .pbp small{display:block;font:500 10px/1 var(--font-mono);color:var(--ink-dim)}
+.pbt .pbw{color:#a23b2a;text-align:right}.pbt .pbdp{color:#1f4d3a;text-align:right}.pbt .pbb{text-align:right;font-weight:700}
+.pbt tr.pbboss .pbp{color:#a23b2a}
+.pbcan{position:absolute;left:40%;top:50%;translate:0 -50%;rotate:-8deg;font:700 10px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:#a23b2a;border:1.5px solid #a23b2a;padding:2px 5px;opacity:.75;font-style:normal}
+@media (max-width:760px){.pbt{font-size:11px}.pbt .pbp{font-size:13px}.pbt th{font-size:8px}.flap i{width:12px;height:18px;font-size:12px;line-height:18px}}
+
+/* ===== the Daily Toss newspaper ===== */
+.panel.modal.news{background:#f3efe4!important;width:min(720px,100%);font-family:'Cormorant Garamond',serif;
+  background-image:radial-gradient(rgba(0,0,0,.035) 1px,transparent 1.2px)!important;background-size:5px 5px!important}
+.nmast{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:3px double #1b1b1b;padding-bottom:4px}
+.nmast h2{font-family:'UnifrakturMaguntia','Cormorant SC',serif!important;font-size:clamp(30px,6vw,52px)!important;margin:0!important;color:#141414!important;letter-spacing:0!important;text-transform:none}
+.nside{font:600 9px/1.2 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:#333;border:1px solid #333;padding:4px 6px;max-width:70px;text-align:center}
+.ndate{display:flex;justify-content:space-between;font:600 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:#333;border-bottom:1px solid #1b1b1b;padding:5px 0;margin-bottom:8px}
+.nhead{font-family:'Cormorant SC',serif;font-weight:700;font-size:clamp(20px,3.6vw,30px);line-height:1.05;text-align:center;color:#141414;margin:6px 0 8px}
+.nbody{display:grid;grid-template-columns:1fr 170px;gap:14px;border-bottom:1px solid #1b1b1b;padding-bottom:10px}
+.ncol{border-left:1px solid #1b1b1b;padding-left:12px;font-size:14px;line-height:1.35;color:#222;text-align:justify;hyphens:auto}
+.ncol b{display:block;font:700 10px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.news .cdesc{color:#222!important}
+.nexch .lbbox{background:none!important;border:0!important;padding:8px 0 0!important}
+.nexch .lbl{font:700 10px/1 var(--font-mono)!important;letter-spacing:.16em;text-transform:uppercase;color:#141414!important;border-bottom:1px solid #1b1b1b;padding-bottom:5px}
+.nexch .lbt{width:100%;border-collapse:collapse;font:500 12.5px/1.3 var(--font-mono);color:#141414}
+.nexch .lbt th{font:700 9px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;text-align:left;padding:5px 4px;border-bottom:1px dotted #333}
+.nexch .lbt td{padding:4px;border-bottom:1px dotted rgba(0,0,0,.25);background:none!important}
+.nexch .lbt .chg{color:#a23b2a}.nexch .lbt .chg.up{color:#1f6b3a}
+.nexch .lbt .bt{text-align:right;font-weight:700}.nexch .lbt th:last-child{text-align:right}
+@media (max-width:760px){.nbody{grid-template-columns:1fr}.ncol{border-left:0;border-top:1px solid #1b1b1b;padding:8px 0 0}.nside{display:none}}
+
+/* ===== Endless overprints ===== */
+.lh,.sibox{position:relative}
+.ovp{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3}
+.ovp i{position:absolute;left:-10%;right:-10%;top:calc(17% + var(--k)*7%);height:20px;rotate:calc(-4deg + var(--k)*2.5deg);background:rgba(200,40,40,.78);color:#fff6ea;
+  font:700 12px/22px var(--font-mono);letter-spacing:.3em;text-transform:uppercase;text-align:center;font-style:normal;mix-blend-mode:multiply;box-shadow:0 0 0 1px rgba(160,20,20,.35);
+  animation:ovpin .5s cubic-bezier(.2,.9,.3,1) calc(var(--k)*.15s + .2s) backwards;white-space:nowrap}
+@keyframes ovpin{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.ovp i{font-size:11px;line-height:20px}
+.lh .ovp{left:0;right:auto;width:min(560px,40%)}.lh .ovp i{opacity:.42;height:15px;font-size:9px;line-height:15px;top:calc(8% + var(--k)*20%);rotate:calc(-3deg + var(--k)*2deg)}
+body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
+
+/* ===== game over: a Notice of Foreclosure ===== */
+.endpanel.foreclose{background:#f6f1e3!important;border:1px solid #7a1f1f!important;outline:1px solid #7a1f1f;outline-offset:-6px}
+.foreclose .fckick{font:600 10px/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase;color:#7a1f1f;text-align:center;margin-top:4px}
+.foreclose h1{font-family:var(--font-sc)!important;color:#1b1b1b!important;font-size:clamp(26px,4.6vw,40px)!important;border-bottom:3px double #7a1f1f;padding-bottom:6px;margin:6px 0 8px!important}
+.fcdebt{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:2px 12px;padding:8px 10px;border:1px dashed #7a1f1f;background:rgba(162,59,42,.05);margin-bottom:8px}
+.fcdebt span{font:600 11px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:#7a1f1f}.fcdebt b{font:700 26px/1 var(--font-mono);color:#a23b2a;text-align:right}
+.fcdebt small{grid-column:1/-1;color:var(--ink-dim);font-size:13px}
+.fcseize{margin-bottom:8px}.fclbl{font:600 10px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:#7a1f1f;margin-bottom:6px}
+.fcitems{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.fcitems i{width:34px;height:34px;display:grid;place-items:center;font-style:normal;filter:grayscale(.6) sepia(.25);position:relative}
+.fcitems i::after{content:'';position:absolute;inset:-2px;background:linear-gradient(135deg,transparent 46%,#a23b2a 46% 54%,transparent 54%);opacity:.75}
+.fcj{border-radius:50%;background:var(--rbg,#eee);box-shadow:inset 0 0 0 1.5px var(--rcd,#555)}.fcj img{width:70%;height:70%}
+.fcc img{width:100%;height:100%}
+
+.fcseize{position:relative}
+.fcseize .rstamp.big{top:auto;bottom:-6px;right:-18px;font-size:20px;opacity:.85;z-index:2}
+@media (max-width:760px){.fcseize .rstamp.big{font-size:15px;right:-10px;bottom:-14px}}
+
+/* ===== coin counting tray ===== */
+#purse{position:relative;counter-reset:slot}
+#purse::before{content:'';position:absolute;left:50%;bottom:2px;transform:translateX(-50%);z-index:0;pointer-events:none;
+  width:min(calc(var(--n)*var(--cs) + (var(--n) - 1)*var(--cs)*var(--pg,.2) + var(--cs)*.5),calc(100% + 4px));height:calc(var(--cs)*.5 + 26px);border-radius:calc(var(--cs)*.25 + 8px);
+  background:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.3px) 0 0/4px 4px,linear-gradient(#2c4a3c,#22392e);
+  box-shadow:inset 0 3px 8px rgba(0,0,0,.45),inset 0 -1px 0 rgba(255,255,255,.08),0 0 0 3px #b8955a,0 0 0 4px #7a5c2c,0 3px 8px rgba(27,42,74,.25)}
+#purse .coin{counter-increment:slot;z-index:1}
+#purse .coin .shadow{background:radial-gradient(ellipse at 50% 40%,rgba(0,0,0,.55),rgba(0,0,0,.25) 60%,transparent 72%)!important;height:12px;bottom:-14px}
+#purse[data-count]::after{color:#e2c98f!important;z-index:2;position:relative}
+.trayrail{position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);display:flex;gap:4px;padding:2px 6px;background:linear-gradient(#d6b778,#a8813f);border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,.3);z-index:1;pointer-events:none}
+.trayrail i{width:6px;height:6px;border-radius:50%;background:#5a3f16;box-shadow:inset 0 1px 1px rgba(0,0,0,.5)}
+.trayrail i.on{background:radial-gradient(circle at 35% 30%,#fff6d8,#e2c27a 60%,#9b7430)}
+
+/* ===== vault door on Play ===== */
+.vault{position:fixed;z-index:70;pointer-events:none;perspective:900px}
+.vdoor{position:absolute;inset:0;border-radius:50%;transform-origin:0% 50%;
+  background:repeating-radial-gradient(circle at 50% 50%,rgba(255,255,255,.06) 0 2px,transparent 2px 7px),radial-gradient(circle at 38% 32%,#e8ecf0,#a9b3bd 45%,#6d7884 80%,#4b5560);
+  box-shadow:inset 0 0 0 6px #4b5560,inset 0 0 0 9px #c9d0d6,inset 0 0 0 11px #4b5560,0 8px 22px rgba(27,42,74,.35);
+  animation:vswing .38s cubic-bezier(.5,0,.8,.6) .6s forwards}
+.vring{position:absolute;inset:22%;border-radius:50%;box-shadow:inset 0 0 0 3px #4b5560,inset 0 0 0 5px #dfe4e8}
+.vdial{position:absolute;inset:38%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#f4f6f8,#8e98a3);box-shadow:0 0 0 2px #3b4450;animation:vdial .5s cubic-bezier(.3,.6,.4,1) both}
+.vdial b{position:absolute;left:50%;top:6%;width:3px;height:30%;margin-left:-1.5px;background:#a23b2a;border-radius:2px}
+.vwheel{position:absolute;inset:14%;animation:vdial .55s cubic-bezier(.3,.6,.4,1) .05s both reverse}
+.vwheel i{position:absolute;left:50%;top:0;bottom:0;width:6%;margin-left:-3%;background:linear-gradient(90deg,#5a6470,#c9d0d6,#5a6470);border-radius:4px}
+.vwheel i:nth-child(2){rotate:60deg}.vwheel i:nth-child(3){rotate:120deg}
+.vb{position:absolute;width:16%;height:7%;background:linear-gradient(#d9dee3,#7d8792);border-radius:2px;box-shadow:0 0 0 1px #3b4450;animation:vbolt .2s ease-in .42s forwards}
+.vb.b1{left:-6%;top:46.5%;--dx:40%}.vb.b2{right:-6%;top:46.5%;--dx:-40%}.vb.b3{left:42%;top:-2%;width:7%;height:16%;--dy:40%}.vb.b4{left:42%;bottom:-2%;width:7%;height:16%;--dy:-40%}
+@keyframes vdial{from{transform:rotate(-300deg)}to{transform:rotate(0)}}
+@keyframes vbolt{to{transform:translate(var(--dx,0),var(--dy,0));opacity:.4}}
+@keyframes vswing{to{transform:rotateY(-105deg);opacity:.2}}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1987,7 +2129,7 @@ body.uv #uvfx{opacity:1}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.248</div>
+  <div class="gamever" aria-label="Version">v1.2.249</div>
 </div>
 
 <script>
@@ -2053,7 +2195,10 @@ function applyAge(){const b=document.body;let a=$('#agefx');const st=S&&S.ante?M
     const r=()=>((h=(h*1103515245+12345)>>>0)/4294967296);
     a.innerHTML=Array.from({length:14},(_,k)=>`<i class="fox" style="left:${(r()*96).toFixed(1)}%;top:${(r()*94).toFixed(1)}%;--s:${(6+r()*22).toFixed(0)}px;--n:${k}"></i>`).join('')+
       `<i class="ring" style="left:${(10+r()*70).toFixed(1)}%;top:${(15+r()*60).toFixed(1)}%"></i><i class="crease v"></i><i class="crease h"></i>`}}
-function applySeries(){applyAge();const b=document.body,on=!!(S&&S.ante);let w=$('#wmark');
+/* Endless stages are reissues: every stage past the last gets another red overprint bar, the way stamps and notes were surcharged */
+const ovpN=()=>S&&S.ante>STAGES?Math.min(4,S.ante-STAGES):0;
+const ovpHTML=()=>{const n=ovpN();if(!n)return '';const sur=Math.pow(2.5,S.ante-STAGES);return `<div class="ovp" aria-hidden="true">${Array.from({length:n},(_,k)=>`<i style="--k:${k}">${k?`Surcharge ×${sur>=100?fmtN(Math.round(sur)):Math.round(sur*10)/10}`:'Endless issue'} · Stage ${STAGES+k+1}</i>`).join('')}</div>`};
+function applySeries(){applyAge();const b=document.body,on=!!(S&&S.ante);let w=$('#wmark');b.classList.toggle('endless',!!ovpN());
   if(!on){b.style.removeProperty('--ftint');if(w)w.hidden=true;return}
   const F=floorOf(S.ante);b.style.setProperty('--ftint',F.col);
   if(!w){w=document.createElement('div');w.id='wmark';w.setAttribute('aria-hidden','true');document.body.insertBefore(w,document.body.firstChild)}
@@ -3313,6 +3458,8 @@ const sfx={
   tear(){noise({ft:'bandpass',ff:3200,ff2:900,q:.9,d:.22,v:.26});for(let i=0;i<5;i++)noise({ft:'highpass',ff:4000,q:1,d:.02,v:.12,t:.03+i*.035})},
   note(){noise({ft:'bandpass',ff:2600,q:1.2,d:.07,v:.22});noise({ft:'bandpass',ff:1800,q:1.5,d:.05,v:.14,t:.05})},
   type(){noise({ft:'bandpass',ff:3800+Math.random()*900,q:4,d:.018,v:.18});tone({f:180,d:.02,v:.04,type:'square'})},
+  flick(){noise({ft:'highpass',ff:2400,q:1,d:.035,v:.09});noise({ft:'bandpass',ff:900,q:2,d:.02,v:.05,t:.012})},
+  print(){for(let k=0;k<5;k++)noise({ft:'bandpass',ff:3200+k*140,q:4,d:.018,v:.05,t:k*.028})},
   press(){noise({ft:'lowpass',ff:380,q:1,d:.12,v:.45});tone({f:96,f2:46,d:.18,v:.2,type:'sine'});tone({f:2380,f2:2320,d:.4,v:.03,type:'sine',t:.02});tone({f:3650,d:.28,v:.018,type:'sine',t:.02})},
   stamp(){noise({ft:'lowpass',ff:520,q:1,d:.1,v:.4});tone({f:130,f2:62,d:.14,v:.16,type:'sine'});noise({ff:2600,q:2,d:.03,v:.1,t:.01})},
   door(){tone({f:180,f2:120,d:.35,v:.12,type:'sawtooth',lp:600});noise({ft:'lowpass',ff:400,d:.3,v:.15})},
@@ -4673,7 +4820,7 @@ async function nextFanfare(){
 function sayPos(){const b=$('#saybox');if(!b)return;const side=$('#side'),app=$('#app');let cx=innerWidth/2;
   if(S&&app&&!app.hidden&&side){const r=side.getBoundingClientRect();if(r.width&&r.width<innerWidth*.5&&r.height>innerHeight*.5)cx=(r.right+innerWidth)/2}const k=parseFloat(getComputedStyle(b).zoom)||1;b.style.left=(cx/k)+'px'}
 addEventListener('resize',sayPos);
-function toast(html,ms=3800,raw,box){const say=box==='say'&&innerWidth>700;if(say){sayPos();document.querySelectorAll('#saybox .toast').forEach(o=>{o.classList.add('out');setTimeout(()=>o.remove(),300)})}const t=document.createElement('div');t.className='toast'+(say?' saytoast':'');t.innerHTML=raw?html:String(html);$(say?'#saybox':'#toasts').appendChild(t);setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),400)},ms)}
+function toast(html,ms=3800,raw,box){const say=box==='say'&&innerWidth>700;if(say){sayPos();document.querySelectorAll('#saybox .toast').forEach(o=>{o.classList.add('out');setTimeout(()=>o.remove(),300)})}const t=document.createElement('div');t.className='toast'+(say?' saytoast':' rcpt');t.innerHTML=(say?'':`<i class="rhead">${S&&S.ante?`Series ${seriesOf(S.ante)} · Stg ${S.ante}${S.screen==='play'?` · Toss ${(S.tossNo||0)+1}`:''}`:'The House'} · No. ${String((toast.n=(toast.n||0)+1)).padStart(4,'0')}</i>`)+(raw?html:String(html));$(say?'#saybox':'#toasts').appendChild(t);if(!say)play('print');setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),400)},ms)}
 /* tutorial coach */
 /* ================= TUTORIAL: a scripted first run that ends after the first boss =================
    every toss is planned (1 = lands on your call), every step names what to press, and anything else is held back */
@@ -5066,11 +5213,11 @@ function renderSide(){
      <div class="fig"><i>Scored</i><b class="num" id="rscore">${fmtN(play?S.roundScore:0)}</b></div>
      <div class="fig"><i>Flips</i><b class="num blue" id="sflips">${S.screen==='play'?S.flipsLeft:S.baseFlips}</b></div>
      <div class="fig"><i>Re-flips</i><b class="num red" id="sreflips">${S.screen==='play'?S.reflipsLeft:S.baseReflips}</b></div>
-     <div class="fig ${W?'haswx':''}" data-tip="wx"><i>${W?`<span class="wxshort" style="--wc:${W.col}">${wxGlyph(S.weather)}${W.short}</span>`:'Stage'}</i><b class="num">${S.ante}<small>/${STAGES}</small></b></div>
+     <div class="fig ${W?'haswx':''}" data-tip="wx"><i>${W?`<span class="wxshort" style="--wc:${W.col}">${wxGlyph(S.weather)}${W.short}</span>`:'Stage'}</i><b class="num">${S.ante}${S.ante<=STAGES?`<small>/${STAGES}</small>`:''}</b></div>
    </div>
    <div class="lh-stamp"><b class="num gold" id="smoney">$${S.money}</b><span>On hand</span><em class="tix" id="stix">${tixTxt()}</em></div>
    <div class="s-btns lh-btns">${runChip()}<button class="btn small" data-act="runinfo">Run Info</button><button class="btn small" data-act="options">Options</button></div>
-  </div><div class="lh-rows ${rows?'':'empty'}">${rows}</div>`;
+  ${ovpHTML()}</div><div class="lh-rows ${rows?'':'empty'}">${rows}</div>`;
   updatePreview();
 }
 function setHB(name,chips,mult,bumpWhat){
@@ -5177,6 +5324,10 @@ function coinHTML(c,i,opts={}){
 }
 function sizeCoins(){
   const st=$('#stage');const p=$('.purse');if(!st||!p||!S)return;syncPurseCnt();
+  /* the counting tray: one numbered groove per coin, and a brass rail with a pip for every purse space (filled when used) */
+  p.style.setProperty('--n',Math.max(1,S.purse.length));
+  if(p.id==='purse'){let r=p.querySelector('.trayrail');if(!r){r=document.createElement('div');r.className='trayrail';r.setAttribute('aria-hidden','true');p.appendChild(r)}
+    const used=purseUsed(),max=Math.max(S.purseMax,used);if(r.dataset.k!==used+'/'+max){r.dataset.k=used+'/'+max;r.innerHTML=Array.from({length:max},(_,k)=>`<i class="${k<used?'on':''}"></i>`).join('')}}
   const n=Math.max(5,S.purse.length),w=st.clientWidth-8;
   /* the fuller the purse, the tighter the coins sit: a fifth of a coin apart at 5 coins, almost touching from 13 */
   const g=Math.max(.03,.2-(n-5)*.022);p.style.setProperty('--pg',g);
@@ -5258,10 +5409,20 @@ const PUNCH_FONT={P:['1110','1001','1001','1110','1000','1000','1000'],A:['0110'
 function punchHTML(C){let x=0,holes='';for(const ch of 'PAID'){const g=PUNCH_FONT[ch];g.forEach((row,y)=>[...row].forEach((v,k)=>{if(v==='1')holes+=`<i class="hole ${x+k<C.pn?'on':''}" data-c="${x+k}" style="--x:${x+k};--y:${y}"></i>`}));x+=g[0].length+1}
   const b=BOSSES[C.boss];return `<div class="pnotice" style="--pc:${b.col}"><div class="pnhead">Notice of Protest</div><div class="pnbody">${bossSil(C.boss)?`<img src="${bossSil(C.boss)}" alt="">`:''}<b>${b.name}</b></div><div class="pnholes" style="--cols:${x-1}">${holes}</div></div>`}
 function punchNotice(){const C=S.cash,cols=18;const step=()=>{if(!S||S.cash!==C||C.pn>=cols)return;C.pn++;document.querySelectorAll(`.pnotice .hole[data-c="${C.pn-1}"]`).forEach(h=>h.classList.add('on'));if(C.pn%3===1)play('tick');setTimeout(step,reduced?0:55)};setTimeout(step,500)}
+/* interest is clipped from a bond: one dated coupon per $1, snipped off as the line appears */
+function couponLine(l,fresh){const n=Math.min(l.v,12);return `<div class="cline cpline ${fresh?'fresh':''}"><span class="l">${l.l}</span><span class="v"><span class="coupons">${Array.from({length:n},(_,k)=>`<i class="coupon" style="--k:${k}"><b>$1</b><small>${seriesOf(S.ante)}${S.ante}·${k+1}</small></i>`).join('')}${l.v>n?`<em>+${l.v-n}</em>`:''}</span> <small>$${l.v}</small></span></div>`}
+/* cashing out: the payout is counted out in engraved banknotes that flick into a banded stack and slide into your purse money */
+function billCount(total,from){if(reduced||total<=0)return;const dst=$('#smoney');const fr=(from||dst||document.body).getBoundingClientRect();
+  const bills=[];let left=total;for(const d of [50,20,10,5,1])while(left>=d&&bills.length<14){bills.push(d);left-=d}
+  const box=document.createElement('div');box.className='billbox';box.setAttribute('aria-hidden','true');box.style.left=(fr.left+fr.width/2)+'px';box.style.top=(fr.top+fr.height/2)+'px';document.body.appendChild(box);
+  bills.forEach((d,k)=>{const b=document.createElement('i');b.className='bill d'+d;b.innerHTML=`<b>${d}</b><span>The House · Series ${S?seriesOf(S.ante):'A'}</span><b>${d}</b>`;b.style.setProperty('--k',k);box.appendChild(b);setTimeout(()=>play('flick'),k*70)});
+  if(total>=20){const band=document.createElement('i');band.className='billband';band.textContent=`$${total} · House Mint`;box.appendChild(band)}
+  setTimeout(()=>{const d=$('#smoney');if(!d){box.remove();return}const r=d.getBoundingClientRect(),x0=fr.left+fr.width/2,y0=fr.top+fr.height/2;
+    box.animate([{transform:'translate(-50%,-50%)',opacity:1},{transform:`translate(calc(-50% + ${r.left+r.width/2-x0}px),calc(-50% + ${r.top+r.height/2-y0}px)) scale(.25)`,opacity:.2}],{duration:520,easing:'cubic-bezier(.5,0,.7,.4)',fill:'forwards'}).onfinish=()=>{box.remove();play('money')}},bills.length*70+520)}
 function cashoutHTML(){
   const C=S.cash;const done=C.shown>=C.lines.length;
   return `<div class="panel cash">${C.boss?punchHTML(C):''}<h2>Wager Won</h2>
-    ${C.lines.slice(0,C.shown).map(l=>`<div class="cline"><span class="l">${l.l}</span><span class="v" ${l.v<0?'style="color:var(--mult)"':''}>${l.v<0?'-$'+(-l.v):'$'.repeat(Math.min(l.v,10))+(l.v>10?'+':'')+' <small>$'+l.v+'</small>'}</span></div>`).join('')}
+    ${C.lines.slice(0,C.shown).map((l,li)=>l.cp?couponLine(l,li===C.shown-1):`<div class="cline"><span class="l">${l.l}</span><span class="v" ${l.v<0?'style="color:var(--mult)"':''}>${l.v<0?'-$'+(-l.v):'$'.repeat(Math.min(l.v,10))+(l.v>10?'+':'')+' <small>$'+l.v+'</small>'}</span></div>`).join('')}
     <button class="btn ${C.total<0?'red':'orange'} big" data-act="cashout" ${done?'':'disabled'}>${C.total<0?`Cash Lost: -$${-C.total}`:`Cash Out: $${C.total}`}</button></div>`;
 }
 const sizeName=s=>s==='normal'?'':s==='jumbo'?'Jumbo ':'Mega ';
@@ -5373,8 +5534,11 @@ function renderOverlay(){
   if(S&&modal&&(S.screen==='over'||S.screen==='win')){o.innerHTML=modal();o.hidden=false;return}
   if(S&&S.screen==='over'){
     const most=HANDS.reduce((a,h)=>S.hands[h.key].played>S.hands[a].played?h.key:a,'single');
-    o.innerHTML=`<div class="overlay"><div class="panel endpanel voided"><i class="rstamp void big">Void<small>Non-negotiable</small></i><h1 style="color:var(--mult)">Game Over</h1>
-      <div class="lbl">Lost to ${blindName(curBlind())}: ${fmtN(S.roundScore)} of ${fmtN(S.target)}</div>
+    const debt=Math.max(0,S.target-S.roundScore),seizeJ=S.jokers.slice(0,10),seizeC=S.purse.slice(0,12);
+    o.innerHTML=`<div class="overlay"><div class="panel endpanel voided foreclose">${seizeJ.length||seizeC.length?'':'<i class="rstamp void big">Repossessed<small>By order of the House</small></i>'}
+      <div class="fckick">In the matter of The House v. the Bearer</div><h1>Notice of Foreclosure</h1>
+      <div class="fcdebt"><span>Outstanding debt</span><b>${fmtN(debt)}</b><small>${blindName(curBlind())}: ${fmtN(S.roundScore)} of ${fmtN(S.target)} paid</small></div>
+      ${seizeJ.length||seizeC.length?`<div class="fcseize"><i class="rstamp void big">Repossessed<small>By order of the House</small></i><div class="fclbl">The following assets are seized</div><div class="fcitems">${seizeJ.map(j=>`<i class="fcj" title="${JOKERS[j.key].name}" style="${rarVars(j.key)}">${IMG(icon(j.key))}</i>`).join('')}${seizeC.map(c=>`<i class="fcc" title="${COINS[c.type].name}"><img src="${coinFace(c.type,COINS[c.type].fixed||'H',c)}" alt=""></i>`).join('')}</div></div>`:''}
       <div class="row"><span>Best toss</span><b>${fmtN(S.stats.best)}${S.stats.bestType?` <small>(${HAND[S.stats.bestType].name})</small>`:''}</b></div>
       <div class="row"><span>Most played</span><b>${HAND[most].name}</b></div>
       <div class="row"><span>Stage / Round</span><b>${S.ante} / ${S.round}</b></div>
@@ -5401,18 +5565,27 @@ function renderOverlay(){
 let modal=null;
 
 let RI_TAB='scores';
+function passbookHTML(){const L=(S&&S.book)||[],m=v=>v?'$'+Math.abs(v):'';
+  const rows=L.slice(-40).map(e=>`<tr class="${e.boss?'pbboss':''} ${e.skip?'pbskip':''}"><td class="pbd">${e.ser}·${String(e.st).padStart(2,'0')}</td><td class="pbp">${e.p}${e.sc!=null?`<small>${fmtN(e.sc)} / ${fmtN(e.tg)}</small>`:''}${e.skip?'<i class="pbcan">Cancelled</i>':''}</td><td class="pbw">${e.amt<0?m(e.amt):''}</td><td class="pbdp">${e.amt>0?m(e.amt):''}</td><td class="pbb">$${e.bal}</td></tr>`).join('');
+  return `<div class="passbook"><div class="pbhead"><b>Savings Passbook</b><span>The House · Account ${S&&S.seed?S.seed:'No. 0001'}</span></div>
+    ${L.length?`<table class="pbt"><thead><tr><th>Date</th><th>Particulars</th><th>Withdrawn</th><th>Deposited</th><th>Balance</th></tr></thead><tbody>${rows}</tbody></table>`:'<div class="pwnote" style="text-align:center;margin:auto">No entries yet. Every wager you are paid for is entered here.</div>'}</div>`}
+/* the toss-type list as a bureau de change rate board: values that changed since you last looked flip over */
+const RATE_SEEN={};
 function runInfoModal(){
-  const tabs=`<div class="ctabs">${[['scores','Toss scores'],['upgrades',`Upgrades${S?` <small>${S.upgrades.length}</small>`:''}`],['run','This run']].map(([k,n])=>`<button class="btn small ${RI_TAB===k?'orange':''}" style="${RI_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ritab" data-arg="${k}">${n}</button>`).join('')}</div>`;
+  const tabs=`<div class="ctabs">${[['scores','Rate board'],['book','Passbook'],['upgrades',`Upgrades${S?` <small>${S.upgrades.length}</small>`:''}`],['run','This run']].map(([k,n])=>`<button class="btn small ${RI_TAB===k?'orange':''}" style="${RI_TAB===k?'':'--c:var(--grey);--cd:var(--grey-d)'}" data-act="ritab" data-arg="${k}">${n}</button>`).join('')}</div>`;
   if(RI_TAB==='upgrades'){const U=S?S.upgrades.filter(k=>UPGRADES[k]):[];
     return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${U.length?`<div class="upglist">${U.map(k=>{const u=UPGRADES[k];return `<div class="upgrow"><div class="cic tile" style="--jbg:#5d3d94">${IMG(upgIcon(k))}</div><div><div class="cname">${u.name}${u.req?' <small class="k-a">II</small>':''}</div><div class="ds">${fmt(u.desc)}</div></div></div>`}).join('')}</div>`:'<div class="cdesc" style="text-align:center;padding:20px 0">No Upgrades yet. The shop sells one each stage.</div>'}</div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`}
+  if(RI_TAB==='book')return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${passbookHTML()}</div><div class="optfoot" style="display:flex;gap:10px;justify-content:center"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
   if(RI_TAB==='run')return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${S?questsHTML():''}${S&&S.seed?`<div class="lbl" style="text-align:center;margin:2px 0 6px">Seed <b style="color:var(--navy);letter-spacing:.08em">${S.seed}</b> <button class="btn tiny" data-act="copyseed">Copy</button></div>`:''}${S&&S.pool?`<div class="lbl" style="text-align:center;margin:0 0 4px">This run's pool: <b>${S.pool.charm.length}</b> Charms · <b>${S.pool.coin.length}</b> coins · <b>${S.pool.rune.length}</b> Runes · <b>${S.pool.spirit.length}</b> Spirits · <b>${S.pool.alm.length}</b> Almanacs</div><div class="poolgrid">${S.pool.charm.map(k=>`<span class="cic charm" style="--jbg:${JOKERS[k].bg};${rarVars(k)}" title="${JOKERS[k].name}">${IMG(icon(k))}</span>`).join('')}</div><div class="poolgrid">${S.pool.coin.map(t=>`<span class="cic coinc" title="${COINS[t].name}">${coinIcon(t)}</span>`).join('')}${S.pool.rune.map(k=>`<span class="cic" title="${RUNES[k].name}">${IMG(consInfo({kind:'rune',key:k}).icon)}</span>`).join('')}${S.pool.spirit.map(k=>`<span class="cic" title="${SPIRITS[k].name}">${IMG(consInfo({kind:'spirit',key:k}).icon)}</span>`).join('')}</div>`:''}${S&&ROLLS[S.roll]?`<div class="lbl" style="text-align:center;margin:-6px 0 8px">Playing the <b style="color:var(--navy)">${rollName(S.roll)}</b> on <b style="color:${STAKES[S.stake].col}">${STAKES[S.stake].name}</b>${S.daily?' (Daily Toss)':''}: ${fmt(ROLLS[S.roll].desc)}</div>`:''}<div class="lbl" style="text-align:center;margin:-4px 0 10px">Collection: ${Object.keys(JOKERS).length} Charms · ${ALM_ALL().length} Almanacs · ${Object.keys(RUNES).length} Runes · ${Object.keys(SPIRITS).length} Spirits</div>
     </div><div class="optfoot" style="display:flex;gap:10px;justify-content:center"><button class="btn green" data-act="collection">Collection</button><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
   return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">
     <table class="htable">${HAND_GROUPS.map(([g,ks])=>`<tr class="hgrp"><td colspan="4">${g}</td></tr>`+ks.map(k=>HAND[k]).map(h=>{const pl=S?S.hands[h.key].played:0;const hv=S?handLv(h.key):{chips:h.chips,mult:h.mult,lv:1,mast:0};const lv=hv.lv,c=hv.chips,m=hv.mult;
-    return `<tr data-tip="hand:${h.key}"><td class="lv">lvl.${lv}</td><td>${h.name}${hv.mast?` <span class="k-m" style="font-size:12px">+${hv.mast*(S&&S.mastM||1)}</span>`:''}</td><td class="cmv"><span class="c">${c}</span> X <span class="m">${m}</span></td><td class="lv">#${pl}</td></tr>`}).join('')).join('')}</table>
+    const was=RATE_SEEN[h.key],fl=was&&was!==c+'x'+m;RATE_SEEN[h.key]=c+'x'+m;
+    return `<tr data-tip="hand:${h.key}"><td class="lv">lvl.${lv}</td><td>${h.name}${hv.mast?` <span class="k-m" style="font-size:12px">+${hv.mast*(S&&S.mastM||1)}</span>`:''}</td><td class="cmv ${fl?'flip':''}">${flapDigits(c,'c')}<b class="x">×</b>${flapDigits(m,'m')}</td><td class="lv">#${pl}</td></tr>`}).join('')).join('')}</table>
     </div><div class="optfoot" style="display:flex;gap:10px;justify-content:center"><button class="btn green" data-act="collection">Collection</button><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
 }
 /* Run Info lists tosses by kind, simplest first */
+const flapDigits=(v,k)=>`<span class="flap ${k}">${String(v).split('').map((d,i)=>`<i style="--i:${i}">${d}</i>`).join('')}</span>`;
 const HAND_GROUPS=[['In a row',['single','pair','triple','four','five','six']],['Two runs',['twin','split']],['Patterns',['bookends','zigzag','mirror','sweep']],['No hits',['whiff','bust']]];
 /* an example of each toss, in Quarters, calling Heads (1 = lands Heads and scores) */
 const HAND_EX={sweep:[1,1,1,1,1],six:[1,1,1,1,1,1,0],five:[1,1,1,1,1,0],split:[1,1,1,0,1,1],four:[1,1,1,1,0],mirror:[1,0,1,1,0,1],zigzag:[1,0,1,0,1],triple:[1,1,1,0,0],twin:[1,1,0,1,1],whiff:[0,0,0,0,0],bookends:[1,0,0,0,1],pair:[1,1,0,0,0],single:[1,0,0,0,0],bust:[0,0,0,0]};
@@ -5950,8 +6123,16 @@ function dailyModal(){
   else if(r)body=`<div class="cdesc" style="text-align:center">You already started today's Daily Toss. Come back tomorrow.</div>`;
   else body=`<div style="display:flex;justify-content:center">${rollHTML(roll,170,58)}</div><div class="cdesc" style="text-align:center">Today everyone plays the <b>${ROLLS[roll].name}</b> with the same coin flips and shops. ${fmt(ROLLS[roll].desc)}.<br><br><b>One attempt.</b> Quitting counts.</div>
     <div style="text-align:center"><button class="btn blue big" data-act="dailystart">Start Daily Toss</button></div>`;
-  return `<div class="overlay"><div class="panel modal"><h2>Daily Toss · ${k}</h2>${body}${lbHTML()}<div style="text-align:center;margin-top:10px"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
+  const d=new Date(k+'T12:00:00'),dl=isNaN(d)?k:d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}),vol=Math.max(1,Math.floor((d-new Date('2026-01-01'))/864e5)+1);
+  const col=DAILY_COLS[hashStr('col'+k)%DAILY_COLS.length];
+  return `<div class="overlay"><div class="panel modal news"><div class="nmast"><span class="nside">Late edition</span><h2>The Daily Toss</h2><span class="nside">One coin</span></div>
+    <div class="ndate"><span>No. ${vol}</span><span>${dl}</span><span>House Edition</span></div>
+    <div class="nhead">${ROLLS[roll].name.toUpperCase()} AT THE TABLES TODAY</div>
+    <div class="nbody"><div class="nmain">${body}</div><div class="ncol"><b>From the House</b>${col}</div></div>
+    <div class="nexch">${lbHTML()}</div>
+    <div style="text-align:center;margin-top:10px"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
 }
+const DAILY_COLS=['The House reminds patrons that every coin is fair, and every table is the House\'s.','Weather over the Penny Slots: clear, with a chance of losing streaks by evening.','Lost and found: one lucky Quarter, answers to Heads. Reward offered.','The Mint reports record output. Economists are advised not to ask where the metal comes from.','Overheard at the Velvet Lounge: "Just one more toss." Nobody has left since.','Today\'s rate: one call, one coin, no refunds. The House regrets nothing.'];
 /* ================= RECORDS ================= */
 let REC_TAB='stats';
 function recordsModal(){
@@ -5992,7 +6173,7 @@ function stageIntro(){if(!S)return;if($('#ripstage:not(.out)')){setTimeout(stage
   const wx=W?`<div class="sicard" style="--cc:color-mix(in srgb,${W.col} 50%,#1b2a4a);--wc:${W.col}"><div class="sicon wxi wxring"><img src="${wxIcon(S.weather)}" alt=""></div><div><div class="silbl">Weather</div><b>${W.name}</b><div class="sidesc">${fmt(W.desc)}</div></div></div>`:'';
   const hide=b=>S.roll==='glitched'||b.kind==='rival'||b.boss==='general'||b.boss==='tablerivals';
   const ledger=(S.blinds||[]).slice(0,3).map(b=>`<div class="${b.kind==='boss'?'boss':''}"><div class="silbl">${b.kind==='boss'?'Boss wager':b.kind==='big'?'Big wager':b.kind==='rival'?'Rival':'Small wager'}</div><b data-n="${hide(b)?'':blindTarget(b)}">${hide(b)?'???':'0'}</b></div>`).join('');
-  el.innerHTML=`<div class="sibox" style="--fc:${F.col}"><div class="sistage"><i></i><span>Series ${seriesOf(S.ante)} · Stage ${S.ante}${S.ante<=STAGES?` of ${STAGES}`:''}</span><i></i></div><div class="siname">${F.name}</div><div class="siline">${F.line||''}</div>
+  el.innerHTML=`<div class="sibox" style="--fc:${F.col}">${ovpHTML()}<div class="sistage"><i></i><span>Series ${seriesOf(S.ante)} · Stage ${S.ante}${S.ante<=STAGES?` of ${STAGES}`:''}</span><i></i></div><div class="siname">${F.name}</div><div class="siline">${F.line||''}</div>
     <div class="siledger">${ledger}</div><div class="sirow">${boss}${wx}</div><div class="siseal"><div><small>STAGE</small>${ROMAN(S.ante)}</div></div><div class="sitap">Tap to continue</div></div>`;
   el.hidden=false;el.classList.remove('out');play('page');
   // the targets count up once the ledger appears, then the seal is stamped
@@ -6010,6 +6191,12 @@ function showdownIntro(){
 }
 function updateStreakLine(){const e=$('#streakline');if(!e)return;const P=PS();
   e.innerHTML=`${P.bestStage?`Best run · Stage ${P.bestStage}&nbsp;&nbsp;·&nbsp;&nbsp;`:''}Win streak · ${P.streak||0}${(P.bestStreak||0)>(P.streak||0)?` (best ${P.bestStreak})`:''}`}
+/* Play: the title coin becomes the House vault door. The dial spins, the bolts slide back and it swings open */
+function vaultOpen(cb){const bc=$('.bigcoin');if(reduced||!bc||vaultOpen.busy){cb();return}vaultOpen.busy=true;const r=bc.getBoundingClientRect(),sz=Math.max(r.width,r.height)*1.15;
+  const v=document.createElement('div');v.className='vault';v.setAttribute('aria-hidden','true');v.style.cssText=`left:${r.left+r.width/2-sz/2}px;top:${r.top+r.height/2-sz/2}px;width:${sz}px;height:${sz}px`;
+  v.innerHTML='<div class="vdoor"><i class="vb b1"></i><i class="vb b2"></i><i class="vb b3"></i><i class="vb b4"></i><div class="vring"></div><div class="vdial"><b></b></div><div class="vwheel"><i></i><i></i><i></i></div></div>';
+  document.body.appendChild(v);play('tick');setTimeout(()=>play('tick'),180);setTimeout(()=>play('stamp'),420);setTimeout(()=>play('slide'),560);
+  setTimeout(()=>{v.remove();vaultOpen.busy=false;cb()},980)}
 /* the title coin can be flipped for fun */
 let titleBusy=false,titleRun={f:null,n:0};
 let titleTok=0,titleAnim=null;
@@ -6457,7 +6644,7 @@ function enterCashout(){
   for(const j of S.jokers)if(j.key==='savings'){j.st.v=(j.st.v||0)+2}
   for(let k=0;k<countEff('clawmachine');k++)if(purseUsed()<S.purseMax&&rand()<odds(1/3)){const t=pickSpecial(SPC());S.purse.push(mkCoin(t));toast(`<b>Claw Machine</b> grabs a <b>${COINS[t].name}</b>`)}
   {const H=S.jokers.filter(j=>j.key==='dragonhoard');if(H.length&&S.money+lines.reduce((a,l)=>a+l.v,0)>=15)H.forEach(j=>{j.st.x=Math.round((j.st.x+.25)*100)/100;toast("<b>Dragon's Hoard</b> grows")})}
-  {const cap=countEff('whale')?Infinity:(S.interestCap||5),intr=Math.min(Math.floor(Math.max(0,S.money)/5),cap);if(intr)lines.push({l:`Interest, $1 per $5 (${cap===Infinity?'no cap, The Whale':'max $'+cap})`,v:intr})}
+  {const cap=countEff('whale')?Infinity:(S.interestCap||5),intr=Math.min(Math.floor(Math.max(0,S.money)/5),cap);if(intr)lines.push({l:`Interest, $1 per $5 (${cap===Infinity?'no cap, The Whale':'max $'+cap})`,v:intr,cp:1})}
   {const cut=houseCut(S.money);if(cut){lines.push({l:`The House's cut (${Math.round(HOUSE_CUT*100)}% of money over $${hoardFree()})`,v:-cut});if(!PS().houseCutSeen){PS().houseCutSeen=1;setTimeout(()=>houseSay('Carrying that much? I\'ll take a little off the top. Spend it, or lose it.',6500),700)}}}
   S.cash={lines,total:lines.reduce((a,l)=>a+l.v,0),shown:0,boss:curBlind()&&curBlind().kind==='boss'&&BOSSES[curBlind().boss]&&!BOSSES[curBlind().boss].final?curBlind().boss:null,pn:0};S.screen='cashout';S.phase='idle';render();animateCashout();setTimeout(()=>play('stamp'),260);if(S.cash.boss)punchNotice();
 }
@@ -6468,8 +6655,8 @@ function doCashout(){
   if(S.cash.shown<S.cash.lines.length)return;
   if(S.tut&&curBlind().kind==='boss'){tutFinish(false);return}
   if(S.cash.total>0)PS().moneyEarned=(PS().moneyEarned||0)+S.cash.total;
-  if(S.cash.total>0)coinRain(clamp(S.cash.total*2,8,60));
-  S.money=Math.max(0,S.money+S.cash.total);S.cash=null;play('rush');
+  if(S.cash.total>0)billCount(S.cash.total,$('[data-act=cashout]'));
+  {const b=curBlind(),tot=S.cash.total;bookFlush('At the table');S.money=Math.max(0,S.money+tot);bookLine({p:blindName(b),boss:b.kind==='boss',amt:tot,sc:S.roundScore,tg:S.target})}S.cash=null;play('rush');
   S.jokers.forEach(j=>{if(j.key==='cursedidol')j.st.x=Math.round((j.st.x+.3)*100)/100;if(cursed(j,'fleeting'))j.left=(j.left??5)-1});
   for(let k=0;k<nK('chimneysweep');k++){const cj=S.jokers.filter(j=>purifiable(j)&&j.curse!=='rented');if(cj.length&&rand()<odds(1/3)){const j=pick(cj);toast(`<b>Chimney Sweep</b> sweeps the ${CURSES[j.curse].name} curse off your ${JOKERS[j.key].name}`);j.curse=null;delete j.left}}
   S.jokers.filter(j=>cursed(j,'brittle')&&rand()<1/8).forEach(j=>{j.curse='broken';pawnLog('charm',{key:j.key,wear:j.wear||null,how:'lost'});toast(`<b>${JOKERS[j.key].name}</b> was Brittle, and it broke`)});S.jokers=S.jokers.filter(j=>j.curse!=='broken');
@@ -6628,7 +6815,8 @@ function resumeFix(){if(S.phase==='scoring'||S.phase==='tossing')S.phase='tossed
 /* closed after the winning toss scored but before the payout: finish the win */
 function resumeWin(){if(S.screen!=='play'||!S.target)return;const won=S.duel?(S.duel.shown>=S.duel.n&&S.roundScore>S.target):S.roundScore>=S.target;
   if(won)setTimeout(()=>{if(S&&S.screen==='play')blindWon()},450)}
-function goNext(){if(S.screen==='shop'&&!S.pawnshop&&!S.backroom&&!S.bigspender&&!S.treasure&&S.shop&&S.shop.upgrade&&!S.shop.upgrade.bought&&!upgLocked()&&!S.upgrades.includes(S.shop.upgrade.key))pawnLog('upg',{key:S.shop.upgrade.key,how:'passed'});
+function goNext(){bookFlush(S.screen==='shop'?(S.pawnshop?'The Pawnshop':S.backroom?'The Back Room':S.bigspender?'Big Spender':S.bazaar?'Bazaar':'Shop'):S.screen==='event'&&S.event&&EVENTS[S.event.key]?EVENTS[S.event.key].title:'Stop');
+  if(S.screen==='shop'&&!S.pawnshop&&!S.backroom&&!S.bigspender&&!S.treasure&&S.shop&&S.shop.upgrade&&!S.shop.upgrade.bought&&!upgLocked()&&!S.upgrades.includes(S.shop.upgrade.key))pawnLog('upg',{key:S.shop.upgrade.key,how:'passed'});
   S.pawnshop=false;S.bazaar=false;S.backroom=false;S.bigspender=false;S.treasure=false;S.pack=null;S.event=null;S.ways=null;S.selJoker=null;S.selCons=null;S.csel=[];S.screen='blind';render()}
 function endElite(won){
   const kind=S.eliteBlind&&S.eliteBlind.kind;S.inElite=false;S.eliteBlind=null;S.boss=null;S.boss2=null;S.phase='idle';S.results=[];S.call=null;S.csel=[];
@@ -6797,8 +6985,8 @@ function lbHTML(){
   if(!LB.ready&&LB.rows!==undefined)return `<div class="lbbox"><div class="lbl" style="text-align:center">The shared leaderboard isn't available in this view. Open the game on claude.ai while signed in to see everyone's scores.</div></div>`;
   if(LB.rows===undefined)return `<div class="lbbox"><div class="lbl" style="text-align:center">Loading today's leaderboard...</div></div>`;
   if(!LB.rows||!LB.rows.length)return `<div class="lbbox"><div class="lbl" style="text-align:center">No scores yet today. Be the first.</div></div>`;
-  return `<div class="lbbox"><div class="lbl" style="text-align:center">Today's leaderboard</div><table class="lbt">${LB.rows.map((r,i)=>{const me=r.id===LB.uid,nm=(LB.names[r.id]&&LB.names[r.id].name)||'Someone';
-    return `<tr class="${me?'me':''}"><td class="rk">${i+1}</td><td>${escH(nm)}${me?' <small>(you)</small>':''}</td><td>${r.won?'<b style="color:var(--money)">Won</b>':'Stage '+r.stage}</td><td class="bt">${fmtN(r.best)}</td></tr>`}).join('')}</table></div>`;
+  return `<div class="lbbox"><div class="lbl" style="text-align:center">The Exchange · Today's closing prices</div><table class="lbt"><thead><tr><th>#</th><th>Holder</th><th>Change</th><th>Close</th></tr></thead>${LB.rows.map((r,i)=>{const me=r.id===LB.uid,nm=(LB.names[r.id]&&LB.names[r.id].name)||'Someone';
+    return `<tr class="${me?'me':''}"><td class="rk">${i+1}</td><td>${escH(nm)}${me?' <small>(you)</small>':''}</td><td class="chg ${r.won?'up':''}">${r.won?'▲ Won':'▼ Stage '+r.stage}</td><td class="bt">${fmtN(r.best)}</td></tr>`}).join('')}</table></div>`;
 }
 const glitchPrice=o=>{if(o)o.gd=Math.floor(rand()*6)-2};
 /* only one Upgrade can be bought per stage, across every shop and Bazaar on the way */
@@ -6892,8 +7080,11 @@ async function packPick(i,mode){
   if(!S.pack&&S.treasure){goNext();return}
   render();
 }
+/* the passbook: one line per wager paid, wager skipped, and every shop or stop where money changed hands */
+function bookLine(o){if(!S)return;const L=S.book=S.book||[];const prev=S.bookBal??null;L.push({st:S.ante,ser:seriesOf(S.ante),...o,bal:S.money});S.bookBal=S.money;if(L.length>80)L.splice(0,L.length-80)}
+function bookFlush(label){if(!S)return;if(S.bookBal==null){bookLine({p:'Opening balance',amt:S.money});return}const d=S.money-S.bookBal;if(d)bookLine({p:label,amt:d})}
 function skipBlind(){
-  const b=curBlind();if(b.kind==='boss')return;b.state='skipped';PS().skips++;play('skip');play('tear');
+  const b=curBlind();if(b.kind==='boss')return;b.state='skipped';bookFlush('Sundries');bookLine({p:blindName(b),skip:1,amt:0});PS().skips++;play('skip');play('tear');
   const tag=b.tag,times=1+countEff('wishbone');
   for(let t=0;t<times;t++){
     if(tag==='cash')S.money+=3;
@@ -6910,7 +7101,7 @@ function skipBlind(){
 const ACT={
   boot(){bootGo()},
   fullscreen(){toggleFS()},
-  play(){if(!PROF.tutorialDone){startTutorial();return}audioInit();showRollPick()},
+  play(){if(!PROF.tutorialDone){startTutorial();return}audioInit();vaultOpen(showRollPick)},
   cont(){const sv=savedRun();if(!sv||!sv.S)return;audioInit();modal=null;$('#overlay').hidden=true;S=migrate(sv.S);uid=sv.uid||1000;resumeFix();render();resumeWin()},
   daily(){audioInit();LB.rows=undefined;showModal(dailyModal);lbLoad(dayKey()).then(()=>{if(modal===dailyModal)showModal(dailyModal)})},
   dailystart(){const k=dayKey();if(PROF.daily[k])return;PROF.daily[k]={started:1};saveProf();openRoll(dailyRoll(k),{seed:hashStr(k),daily:k})},
