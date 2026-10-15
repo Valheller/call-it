@@ -1631,6 +1631,37 @@ body{background-color:color-mix(in srgb,var(--paper) 93%,var(--ftint,var(--paper
 .lh-toss.fire .hname::after{content:'Clears';position:absolute;left:calc(100% + 10px);top:50%;font-family:var(--font-sc);font-style:normal;font-weight:700;font-size:13px;letter-spacing:.14em;color:var(--green);
   border:2px solid var(--green);padding:1px 6px;background:color-mix(in srgb,var(--stamp) 78%,transparent);transform:translateY(-50%) rotate(-8deg);animation:rstampin .25s cubic-bezier(.5,0,.6,1.6) both}
 @media (max-width:760px){.lh-toss.fire .hname::after{position:static;display:inline-block;margin-left:8px;transform:rotate(-6deg);font-size:10px;animation:none}}
+
+/* ===== Sand Dollar mini-game as an engraved fishing licence ===== */
+#minifish{background:color-mix(in srgb,var(--paper) 72%,transparent)}
+#minifish .mfp{background:var(--stamp);border:2px solid var(--cyan);outline:1px solid var(--cyan);outline-offset:-7px;box-shadow:0 10px 30px color-mix(in srgb,var(--navy) 18%,transparent);padding:16px 18px 14px;
+  background-image:var(--micro),var(--micro);background-repeat:repeat-x;background-position:0 1px,0 calc(100% - 1px);background-size:240px 6px}
+.mfk{font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);border-bottom:1px solid var(--cyan);padding-bottom:4px}
+#minifish .mft{font-family:var(--font-sc);font-weight:700;font-size:22px;color:var(--navy);margin-top:4px}
+#minifish .mfs{font-style:italic;font-size:13px;color:var(--ink)}
+/* the pond: an engraved lake in an oval vignette, horizontal water lines */
+#minifish .mfpond{border-radius:50%/42%;background:color-mix(in srgb,var(--cyan) 10%,var(--stamp));
+  background-image:repeating-linear-gradient(transparent 0 5px,color-mix(in srgb,var(--cyan) 40%,transparent) 5px 6px),radial-gradient(ellipse at 50% 45%,transparent 30%,color-mix(in srgb,var(--cyan) 22%,transparent) 100%);
+  box-shadow:inset 0 0 0 1.5px var(--cyan),0 0 0 4px var(--stamp),0 0 0 5px var(--cyan)}
+#minifish .mfbang{color:var(--seal);text-shadow:none;font-family:var(--font-sc)}
+#minifish .mfcatch{background:color-mix(in srgb,var(--stamp) 88%,transparent);color:var(--navy)}
+#minifish .mfcatch b{font-family:var(--font-sc)}
+/* the meter: a ruled gauge with tick marks, the green zone hatched */
+#minifish .fmeter{background:var(--stamp);border:1.5px solid var(--navy);box-shadow:none;height:24px;
+  background-image:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),color-mix(in srgb,var(--navy) 35%,transparent) calc(10% - 1px) 10%)}
+#minifish .fzone{border-radius:0;box-shadow:none;background:repeating-linear-gradient(-45deg,color-mix(in srgb,var(--green) 55%,transparent) 0 2px,color-mix(in srgb,var(--green) 18%,var(--stamp)) 2px 5px);border-left:2px solid var(--green);border-right:2px solid var(--green)}
+#minifish .fneedle{width:3px;margin-left:-1.5px;background:var(--seal);box-shadow:none}
+#minifish .fneedle::before{content:'';position:absolute;left:50%;top:-6px;border:5px solid transparent;border-top-color:var(--seal);transform:translateX(-50%)}
+#minifish .mfmsg{font-family:var(--font-sc);font-weight:700;color:var(--navy)}
+#minifish .mfhint{font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--line)}
+
+/* the float, engraved: flat seal-red top with hatching, a navy band, paper bottom, ink outline */
+#minifish .fball{background:linear-gradient(transparent 0 46%,var(--navy) 46% 54%,transparent 54%),
+  repeating-linear-gradient(-45deg,transparent 0 2px,color-mix(in srgb,var(--navy) 35%,transparent) 2px 3px) top/100% 46% no-repeat,
+  linear-gradient(var(--seal) 0 46%,var(--stamp) 46%);box-shadow:inset 0 0 0 1.5px var(--navy)!important}
+#minifish .fbin::before{background:var(--seal);box-shadow:inset 0 0 0 1px var(--navy),0 -3px 0 -1px var(--money);border-radius:0}
+#minifish .fshadow{border-color:color-mix(in srgb,var(--navy) 40%,transparent)}
+#minifish .ffront{border-color:color-mix(in srgb,var(--navy) 60%,transparent);background:none}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1677,7 +1708,7 @@ body{background-color:color-mix(in srgb,var(--paper) 93%,var(--ftint,var(--paper
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.220</div>
+  <div class="gamever" aria-label="Version">v1.2.221</div>
 </div>
 
 <script>
@@ -5207,7 +5238,7 @@ const SD_MULT={boot:1.25,quarter:1.25,mud:1.5,minnow:1.5,carp:1.75,bottle:2,die:
 function sandFish(i,hit){
   return new Promise(done=>{
     const ov=document.createElement('div');ov.id='minifish';
-    ov.innerHTML=`<div class="mfp"><div class="mft">Sand Dollar: gone fishing!</div><div class="mfs">${hit?'It scored. Land a catch for bonus Mult':'It missed. Land a catch to flip it onto your call'}</div>
+    ov.innerHTML=`<div class="mfp"><div class="mfk">Licence to fish · Sand Dollar</div><div class="mft">Gone fishing</div><div class="mfs">${hit?'It scored. Land a catch for bonus Mult':'It missed. Land a catch to flip it onto your call'}</div>
       <div class="mfpond"><div class="fbob afloat"><div class="fshadow"></div><div class="fbsub"><div class="fbin"><div class="fball"></div></div></div><div class="ffront"></div></div><div class="mfbang">!</div><div class="mfcatch"></div></div>
       <div class="fmeter" hidden><div class="fzone"></div><div class="fneedle"></div></div><div class="mfmsg">Wait for a bite...</div><div class="mfhint">Tap or press Space</div></div>`;
     document.body.appendChild(ov);const q=s=>ov.querySelector(s),pond=q('.mfpond'),bob=q('.fbob'),msg=q('.mfmsg'),meter=q('.fmeter');
