@@ -1864,7 +1864,7 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.235</div>
+  <div class="gamever" aria-label="Version">v1.2.236</div>
 </div>
 
 <script>
@@ -2659,14 +2659,15 @@ const WEARS={
  polished:{name:'Polished',col:'#e8eef2',desc:'{c:+50} Points'},
  patina:{name:'Patina',col:'#3fae8a',desc:'{m:+10} Mult'},
  proof:{name:'Proof Finish',col:'#c9a4ff',desc:'{x:X1.5} Mult'},
- brushed:{name:'Brushed',col:'#c9ced6',desc:'{c:+25} Points and {m:+4} Mult'},
- holo:{name:'Holographic',col:'#ff9de2',desc:'{a:1 in 2} chance for {x:X2} Mult'},
+ brushed:{name:'Brushed',col:'#c9ced6',desc:'{c:+40} Points and {m:+6} Mult'},
+ holo:{name:'Holographic',col:'#ff9de2',desc:'{a:1 in 3} chance for {x:X3} Mult'},
  antique:{name:'Antique',col:'#c9a06a',desc:'{m:+2} Mult for every stage you have reached'},
  weightless:{name:'Weightless',col:'#9be7ff',desc:'On a Charm: {a:+1} Charm slot. On a coin: takes up {a:no space} in your purse'},
 };
 const COIN_WEARS=['polished','patina','proof','brushed','holo','antique'];
-/* Weightless is rare on coins (1 in 25 wears): each one is a free extra coin */
-const pickCoinWear=()=>rand()<.04?'weightless':pick(COIN_WEARS);
+/* Flat wears are common, multiplying ones rarer. Weightless is rare on coins (1 in 25 wears): each one is a free extra coin */
+const COIN_WEAR_W={polished:22,brushed:22,antique:18,patina:16,holo:12,proof:10};
+const pickCoinWear=()=>{if(rand()<.04)return 'weightless';let x=rand()*100;for(const k of COIN_WEARS){x-=COIN_WEAR_W[k];if(x<0)return k}return 'polished'};
 const DEFECTS={
  misprint:{name:'Misprint',col:'#ffd34d',w:10,desc:'Earn {$:$2} each time this coin scores'},
  doublestrike:{name:'Double Strike',col:'#fe5f55',w:5,desc:'Retrigger this coin'},
@@ -2678,7 +2679,7 @@ const DEFECTS={
  diecrack:{name:'Die Crack',col:'#9a6fdc',w:8,desc:'Create a Rune the first time this coin is re-flipped each wager (if you have room)'},
 };
 const pickDefect=()=>{const ks=Object.keys(DEFECTS),tot=ks.reduce((a,k)=>a+(DEFECTS[k].w||10),0);let x=rand()*tot;for(const k of ks){x-=DEFECTS[k].w||10;if(x<0)return k}return ks[0]};
-function applyWear(w,e){if(w==='polished')e('chips',50);else if(w==='patina')e('mult',10);else if(w==='proof')e('xmult',1.5);else if(w==='brushed'){e('chips',25);e('mult',4)}else if(w==='holo'){if(rand()<odds(.5))e('xmult',2)}else if(w==='antique')e('mult',2*S.ante)}
+function applyWear(w,e){if(w==='polished')e('chips',50);else if(w==='patina')e('mult',10);else if(w==='proof')e('xmult',1.5);else if(w==='brushed'){e('chips',40);e('mult',6)}else if(w==='holo'){if(rand()<odds(1/3))e('xmult',3)}else if(w==='antique')e('mult',2*S.ante)}
 const coinMods=c=>`${c.wear&&c.wear!=='weightless'&&!WEARS[c.wear].charmOnly?`<i class="wfx w-${c.wear}"></i>`:''}${c.defect?`<i class="dfx d-${c.defect}"></i>`:''}`;
 const modsHTML=o=>(o&&o.curse?`<div class="tmod" style="--mc:${CURSES[o.curse].col}"><b>${CURSES[o.curse].name}</b> · ${fmt(CURSES[o.curse].desc)}${o.curse==='fleeting'?` (${o.left??5} left)`:''}</div>`:'')+(o&&o.wear?`<div class="tmod" style="--mc:${WEARS[o.wear].col}"><b>${WEARS[o.wear].name}</b> · ${fmt(WEARS[o.wear].desc)}</div>`:'')+(o&&o.defect?`<div class="tmod" style="--mc:${DEFECTS[o.defect].col}"><b>${DEFECTS[o.defect].name}</b> · ${fmt(DEFECTS[o.defect].desc)}</div>`:'');
 const modName=o=>[o.wear&&WEARS[o.wear].name,o.defect&&DEFECTS[o.defect].name].filter(Boolean).join(' · ');
