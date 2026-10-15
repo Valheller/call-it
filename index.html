@@ -17,7 +17,7 @@
 <meta name="apple-mobile-web-app-title" content="Call it.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=IBM+Plex+Mono:wght@500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
 <style>
 /* numbers in a typewriter face, like a banknote's serial */
 @font-face{font-family:'Mint Num';font-style:normal;font-weight:600;font-display:swap;
@@ -432,7 +432,7 @@ body.badges .face::before{display:block}
 .w-polished{background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.85) 46%,transparent 60%) 100% 0/300% 100% no-repeat;animation:sheen 2.4s linear infinite;mix-blend-mode:screen}
 @keyframes sheen{from{background-position:100% 0}to{background-position:-10% 0}}
 .w-patina{background:radial-gradient(circle at 28% 72%,rgba(63,190,150,.85),transparent 50%),radial-gradient(circle at 74% 24%,rgba(90,210,170,.7),transparent 42%),rgba(40,150,115,.4);mix-blend-mode:hard-light;opacity:.7}
-.w-proof{background:conic-gradient(from 0deg,#ff5f6d,#ffd34d,#4bd18f,#0b9bff,#c9a4ff,#ff5f6d);mix-blend-mode:color;opacity:.8;animation:huecycle 4s linear infinite}
+.w-proof{background:linear-gradient(135deg,rgba(255,255,255,.6),rgba(200,210,228,.1) 38%,rgba(30,42,74,.28) 55%,rgba(255,255,255,.45) 80%);mix-blend-mode:overlay} /* Charms: a mirror-and-frost wash (coins get proof struck into their art) */
 @keyframes huecycle{to{filter:hue-rotate(360deg)}}
 .w-brushed{background:repeating-linear-gradient(90deg,rgba(255,255,255,.28) 0 1px,transparent 1px 3px);mix-blend-mode:overlay;opacity:.9}
 .w-holo{background:linear-gradient(135deg,rgba(255,95,109,.55),rgba(255,211,77,.45),rgba(75,209,143,.45),rgba(11,155,255,.5),rgba(201,164,255,.55)) 0 0/300% 300%;mix-blend-mode:screen;opacity:.75;animation:holoshift 3s ease-in-out infinite alternate}
@@ -1819,6 +1819,65 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
 .lshop.compact2{gap:6px 22px}.lshop.compact2 .shopbtns .btn.big{padding:7px 20px;font-size:20px}.lshop.compact2 .slbl{padding-bottom:3px}
 .purse.tight + .meltbar{margin-top:0}
 @media (min-width:761px){.lh-rows{min-height:22px}}
+
+/* ===== the coin press: new coins arrive as blank planchets and are struck ===== */
+.coin.struck .face{animation:pblank .9s ease-out}
+.coin.struck .lift{animation:pjolt .9s ease-out}
+@keyframes pblank{0%,44%{filter:grayscale(.6) contrast(.08) brightness(1.25) blur(.4px)}47%{filter:brightness(1.7)}70%,100%{filter:none}}
+@keyframes pjolt{0%{transform:translateY(-14%) scale(.92)}30%,44%{transform:scale(.92)}48%{transform:scale(1.07,.95)}60%{transform:scale(.98)}100%{transform:none}}
+.pdie{position:absolute;left:18%;width:64%;height:120%;bottom:52%;z-index:6;pointer-events:none;border-radius:6px 6px 10px 10px;
+  background:linear-gradient(90deg,#1e2a44,#56627c 30%,#9aa4b8 46%,#56627c 62%,#1e2a44);box-shadow:inset 0 -6px 0 #121a2c,0 4px 10px rgba(0,0,0,.35);animation:pdie .9s cubic-bezier(.6,0,.3,1) forwards}
+.pdie::after{content:'';position:absolute;left:10%;right:10%;bottom:-4px;height:8px;border-radius:50%;background:#121a2c}
+@keyframes pdie{0%{transform:translateY(-140%);opacity:0}12%{opacity:1}44%{transform:translateY(-6%)}48%{transform:translateY(0)}62%{transform:translateY(-10%)}100%{transform:translateY(-160%);opacity:0}}
+.pshock{position:absolute;inset:6%;border-radius:50%;z-index:5;pointer-events:none;border:2px solid var(--gold,#c9a227);opacity:0;animation:pshock .9s ease-out forwards}
+@keyframes pshock{0%,46%{opacity:0;transform:scale(.8)}50%{opacity:.9;transform:scale(.95)}100%{opacity:0;transform:scale(1.6)}}
+
+/* ===== coin tooltips: a 2x2 cardboard coin holder ===== */
+#tip.holder{background-color:#d8c79e!important;background-image:radial-gradient(rgba(120,90,40,.18) 1px,transparent 1.2px),radial-gradient(rgba(255,255,255,.25) 1px,transparent 1.2px)!important;background-size:7px 7px,11px 11px!important;background-position:0 0,3px 5px!important;
+  padding:16px 14px 16px!important;border:1px solid #9c8656!important;box-shadow:inset 0 0 0 5px rgba(255,255,255,.12),inset 0 0 0 6px rgba(110,85,40,.25),0 6px 18px rgba(27,42,74,.22)!important;max-width:300px}
+#tip.holder::before,#tip.holder::after{content:'';position:absolute;top:7px;left:10px;right:10px;height:3px;background:linear-gradient(90deg,#9aa0a8 0 14px,transparent 14px calc(100% - 14px),#9aa0a8 calc(100% - 14px));border-radius:1px;box-shadow:0 1px 0 rgba(0,0,0,.25)}
+#tip.holder::after{top:auto;bottom:7px}
+.cholder{display:flex;gap:12px;align-items:center;margin:2px 0 8px}
+.chwin{width:74px;height:74px;flex:none;border-radius:50%;padding:5px;background:radial-gradient(circle,rgba(255,255,255,.55),rgba(220,230,240,.25));box-shadow:inset 0 0 0 1.5px #8c7648,inset 0 2px 5px rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.4)}
+.chwin img{width:100%;height:100%;display:block}
+.chnote{font-family:'Caveat','Cormorant Garamond',cursive;color:#3a4250;font-size:19px;line-height:1.05;display:flex;flex-direction:column;gap:2px;rotate:-1.5deg}
+.chnote b{font-weight:600;font-size:22px;color:#1b2a4a}.chnote .cherr{color:#a23b2a}
+#tip.holder .tn{border-bottom-color:rgba(110,85,40,.45)!important}
+#tip.holder .td{line-height:1.35!important}
+
+/* ===== paper coin wrapper for each toss cashed in ===== */
+.cwrap{position:fixed;z-index:60;pointer-events:none;border-radius:999px;transform-origin:center;
+  background:linear-gradient(180deg,rgba(255,255,255,.55),transparent 35%,rgba(0,0,0,.12)),linear-gradient(90deg,#e9d7b0 0 12px,#c84a3a 12px 16px,#e9d7b0 16px calc(100% - 16px),#c84a3a calc(100% - 16px) calc(100% - 12px),#e9d7b0 calc(100% - 12px));
+  box-shadow:0 0 0 1px #8c6d3e,0 4px 10px rgba(27,42,74,.25);display:flex;align-items:center;justify-content:center}
+.cwrap span{overflow:hidden;font:600 9px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#7a2e22;white-space:nowrap;opacity:.85}
+.cwrap::before,.cwrap::after{content:'';position:absolute;top:8%;bottom:8%;width:10px;border-radius:50%;background:#d2bd92;box-shadow:inset 0 0 0 1px #8c6d3e;transition:transform .18s}
+.cwrap::before{left:-3px}.cwrap::after{right:-3px}
+.cwrap.shut::before{transform:scaleX(.4) translateX(6px)}.cwrap.shut::after{transform:scaleX(.4) translateX(-6px)}
+.cwcoin{position:fixed;z-index:61;pointer-events:none}
+
+/* ===== punched-cancel notice for a beaten Boss ===== */
+.pnotice{position:relative;margin:0 auto 12px;width:min(260px,90%);padding:8px 12px 12px;background:#f6efdc;border:1px solid var(--seal);outline:1px solid var(--seal);outline-offset:-5px;rotate:-2deg;text-align:center;box-shadow:0 3px 8px rgba(27,42,74,.15)}
+.pnhead{font:600 10px/1 'IBM Plex Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--seal);margin:4px 0 6px}
+.pnbody{display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--font-sc);font-size:18px;color:var(--ink)}
+.pnbody img{width:34px;height:34px;opacity:.75}
+.pnholes{position:relative;height:calc(7*9px);width:calc((var(--cols) + 1)*9px);margin:8px auto 0}
+.pnotice .hole{position:absolute;left:calc(var(--x)*9px);top:calc(var(--y)*9px);width:6px;height:6px;border-radius:50%;background:transparent;transition:background .08s}
+.pnotice .hole.on{background:var(--bg,#e9dfc7);box-shadow:inset 0 1.5px 1px rgba(0,0,0,.45),0 .5px 0 rgba(255,255,255,.7)}
+
+/* ===== edge lettering, shown when a coin lands on its edge ===== */
+.edgering{position:absolute;inset:-14%;width:128%;height:128%;z-index:7;pointer-events:none;overflow:visible;animation:edgering 2.6s ease-out forwards}
+.edgering text{font:600 7.4px 'IBM Plex Mono',monospace;letter-spacing:.06em;fill:var(--gold,#8a5a12);paint-order:stroke;stroke:#fbf7ec;stroke-width:1.6px}
+@keyframes edgering{0%{opacity:0;transform:rotate(-40deg) scale(.85)}15%{opacity:1;transform:rotate(-10deg) scale(1)}75%{opacity:1}100%{opacity:0;transform:rotate(40deg) scale(1.03)}}
+
+/* ===== ultraviolet lamp ===== */
+#uvfx{position:fixed;inset:0;z-index:95;pointer-events:none;opacity:0;transition:opacity .2s}
+body.uv #uvfx{opacity:1}
+#uvfx .uvdark{position:absolute;inset:0;background:#2b1352;mix-blend-mode:multiply;opacity:.86}
+#uvfx canvas{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:screen}
+#uvfx .uvser{position:absolute;font:600 20px/1 'IBM Plex Mono',monospace;letter-spacing:.24em;color:#7dffcf;text-shadow:0 0 6px #3dffb0,0 0 16px #3dffb0}
+#uvfx .uvser.a{left:3%;top:1.2%}
+.lh-kick{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}#uvfx .uvser.b{right:3%;bottom:3%;color:#ff7ab8;text-shadow:0 0 6px #ff3d8f,0 0 16px #ff3d8f}
+#uvfx .uvnote{position:absolute;left:50%;top:46%;translate:-50% -50%;width:min(80vw,700px);text-align:center;font:italic 600 clamp(22px,4vw,40px)/1.2 'Cormorant Garamond',serif;color:#ffe066;text-shadow:0 0 10px #ffb800,0 0 26px #ff9d00}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1865,7 +1924,7 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.240</div>
+  <div class="gamever" aria-label="Version">v1.2.241</div>
 </div>
 
 <script>
@@ -1889,7 +1948,7 @@ const saveProf=()=>{try{localStorage.setItem('hwr-profile',JSON.stringify(PROF))
 const PS=()=>PROF.stats;
 /* lifetime flips per coin type, for the Records screen */
 const tallyFlips=ix=>{const t=PS().coinFlips||(PS().coinFlips={});ix.forEach(i=>{const c=S.purse[i];if(c&&COINS[c.type])t[c.type]=(t[c.type]||0)+1})};
-const ART={};
+const ART={},ARTCV={},ARTX={};
 /* Prize Booth cosmetics, bought with banked Tickets */
 const SKINS={
  classic:{name:'Classic Quarter',cost:0,c:['#6f7a83','#c3c9ce','#9aa3ab','#88929a','#8b959e','#e6eaed'],rim:'#7d8790',hi:'#e3e7ea'},
@@ -2032,8 +2091,16 @@ function applyStacks(){const seen={};S.purse.forEach((c,i)=>{const g=stkGroup(c)
 
 /* ring colours on Charm cards: light, dark */
 const RAR_RING=[null,['#c9dce4','#2c6e8a'],['#c6d6cc','#1f4d3a'],['#e6c9c2','#a23b2a'],['#d3cde0','#4a3a6b'],['#e6d6b4','#8a5a12']];
-const rarVars=k=>{const r=RAR_RING[JOKERS[k].r]||RAR_RING[1];return `--rc:${r[0]};--rcd:${r[1]};--rbg:${RAR_TINT[JOKERS[k].r]||RAR_TINT[1]}`};
-const RAR_TINT=[null,'#d9e9f2','#d6ead9','#f4d9d1','#e3dbf1','#f3e4bd'];
+const RAR_MILL='repeating-linear-gradient(115deg,rgba(255,255,255,.22) 0 1px,transparent 1px 3px),';
+const rarVars=k=>{const r=RAR_RING[JOKERS[k].r]||RAR_RING[1];return `--rc:${r[0]};--rcd:${r[1]};--rbg:${RAR_MILL+(RAR_TINT[JOKERS[k].r]||RAR_TINT[1])}`};
+/* rarity as metal: bronze, silver, gold, platinum, and a two-metal Fabled piece. Light enough that the engraved icon reads */
+const RAR_SOLID=[null,'#e2c4a0','#e1e6eb','#efd585','#e6ebf2','#f0dda0'];
+const RAR_TINT=[null,
+ 'radial-gradient(circle at 35% 30%,#f6e6d2,#e2c4a0 60%,#cfa77c)',
+ 'radial-gradient(circle at 35% 30%,#fbfcfd,#e1e6eb 60%,#c7cfd8)',
+ 'radial-gradient(circle at 35% 30%,#fbf0c8,#efd585 60%,#d9b55a)',
+ 'radial-gradient(circle at 35% 30%,#ffffff,#e6ebf2 50%,#c9d2de 80%,#b4bfcd)',
+ 'radial-gradient(circle at 50% 50%,#f7e3a2 0 46%,#8a6a2a 46% 48%,#e4e9ee 48%,#c4ccd6)'];
 /* stages past the first, for charms that grow as the run goes on */
 const stgN=()=>typeof S!=='undefined'&&S&&S.ante?Math.max(0,S.ante-1):0;
 const RAR=[null,{n:'Common',c:'#2c6e8a'},{n:'Uncommon',c:'var(--green)'},{n:'Rare',c:'#a23b2a'},{n:'Legendary',c:'#4a3a6b'},{n:'Fabled',c:'#8a5a12'}];
@@ -2681,10 +2748,11 @@ const DEFECTS={
 };
 const pickDefect=()=>{const ks=Object.keys(DEFECTS),tot=ks.reduce((a,k)=>a+(DEFECTS[k].w||10),0);let x=rand()*tot;for(const k of ks){x-=DEFECTS[k].w||10;if(x<0)return k}return ks[0]};
 function applyWear(w,e){if(w==='polished')e('chips',50);else if(w==='patina')e('mult',10);else if(w==='proof')e('xmult',1.5);else if(w==='brushed'){e('chips',40);e('mult',6)}else if(w==='holo'){if(rand()<odds(1/3))e('xmult',3)}else if(w==='antique')e('mult',2*S.ante)}
-const coinMods=c=>`${c.wear&&c.wear!=='weightless'&&!WEARS[c.wear].charmOnly?`<i class="wfx w-${c.wear}"></i>`:''}${c.defect?`<i class="dfx d-${c.defect}"></i>`:''}`;
+/* Defects and most Wears are struck into the coin art (coinFace); only Polished keeps a moving shine on top */
+const coinMods=c=>c.wear==='polished'?`<i class="wfx w-polished"></i>`:'';
 const modsHTML=o=>(o&&o.curse?`<div class="tmod" style="--mc:${CURSES[o.curse].col}"><b>${CURSES[o.curse].name}</b> · ${fmt(CURSES[o.curse].desc)}${o.curse==='fleeting'?` (${o.left??5} left)`:''}</div>`:'')+(o&&o.wear?`<div class="tmod" style="--mc:${WEARS[o.wear].col}"><b>${WEARS[o.wear].name}</b> · ${fmt(WEARS[o.wear].desc)}</div>`:'')+(o&&o.defect?`<div class="tmod" style="--mc:${DEFECTS[o.defect].col}"><b>${DEFECTS[o.defect].name}</b> · ${fmt(DEFECTS[o.defect].desc)}</div>`:'');
 const modName=o=>[o.wear&&WEARS[o.wear].name,o.defect&&DEFECTS[o.defect].name].filter(Boolean).join(' · ');
-function coinIcon(type,o={}){const art=coinArt(type,COINS[type].fixed||'H');
+function coinIcon(type,o={}){const art=coinFace(type,COINS[type].fixed||'H',o);
   return `<span class="cimgw ${o.wear==='weightless'?'wl':''}" style="--art:url(${art})"><img class="coinimg" src="${art}" alt="" draggable="false">${coinMods(o)}</span>`}
 async function setCoinMod(i,kind,v){const c=S.purse[i];if(!c)return;c[kind]=v;render();juiceCoin(i,(kind==='wear'?WEARS:DEFECTS)[v].name+'!');play('levelup')}
 
@@ -3182,6 +3250,7 @@ const sfx={
   tear(){noise({ft:'bandpass',ff:3200,ff2:900,q:.9,d:.22,v:.26});for(let i=0;i<5;i++)noise({ft:'highpass',ff:4000,q:1,d:.02,v:.12,t:.03+i*.035})},
   note(){noise({ft:'bandpass',ff:2600,q:1.2,d:.07,v:.22});noise({ft:'bandpass',ff:1800,q:1.5,d:.05,v:.14,t:.05})},
   type(){noise({ft:'bandpass',ff:3800+Math.random()*900,q:4,d:.018,v:.18});tone({f:180,d:.02,v:.04,type:'square'})},
+  press(){noise({ft:'lowpass',ff:380,q:1,d:.12,v:.45});tone({f:96,f2:46,d:.18,v:.2,type:'sine'});tone({f:2380,f2:2320,d:.4,v:.03,type:'sine',t:.02});tone({f:3650,d:.28,v:.018,type:'sine',t:.02})},
   stamp(){noise({ft:'lowpass',ff:520,q:1,d:.1,v:.4});tone({f:130,f2:62,d:.14,v:.16,type:'sine'});noise({ff:2600,q:2,d:.03,v:.1,t:.01})},
   door(){tone({f:180,f2:120,d:.35,v:.12,type:'sawtooth',lp:600});noise({ft:'lowpass',ff:400,d:.3,v:.15})},
   bell(){[1568,2093].forEach((f,i)=>{tone({f,type:'sine',d:.6,v:.08,t:i*.12});tone({f:f*2.76,type:'sine',d:.3,v:.02,t:i*.12})})},
@@ -4096,9 +4165,63 @@ function coinArt(type,side){
        }break;
     case 'hope':disc(15.5,'#0f1a3a');disc(14.5,'#25407a');ring(12,'#c9d6f0');if(h){poly([[16,8],[22,14],[16,24],[10,14]],'#7fc4ff');poly([[16,8],[19,14],[16,24],[13,14]],'#c9ecff')}else text('HOPE',16,16,'#c9d6f0',8);break;
   }
-  g.setTransform(1,0,0,1,0,0);engraveCoin(cv);
+  g.setTransform(1,0,0,1,0,0);engraveCoin(cv);ARTCV[key]=cv;
   return ART[key]=cv.toDataURL();
 }
+/* ===== error coins and finishes: Defects and Wears are struck into the coin's own art ===== */
+/* the plain struck face as a canvas (coinArt keeps one for each face it draws) */
+const artCanvas=(type,side)=>{coinArt(type,side);return ARTCV[type+side+(type==='copper'?COS().skin:'')]};
+function artField(cv){const W=cv.width,d=cv.getContext('2d').getImageData(0,0,W,W).data,h=new Map();
+  for(let q=0;q<d.length;q+=28)if(d[q+3]>200){const k=d[q]>>4<<8|d[q+1]>>4<<4|d[q+2]>>4;h.set(k,(h.get(k)||0)+1)}
+  let bk=0,bn=0;h.forEach((n,k)=>{if(n>bn){bn=n;bk=k}});return[(bk>>8)*16+8,((bk>>4)&15)*16+8,(bk&15)*16+8]}
+const newCv=W=>{const c=document.createElement('canvas');c.width=c.height=W;return c};
+/* redraw the navy outline around whatever silhouette the canvas now has */
+function reOutline(cv){const W=cv.width,g=cv.getContext('2d'),im=g.getImageData(0,0,W,W),d=im.data,o=Math.max(1,Math.round(W/128)),N=MINT_INK.navy,a=p=>p>=0&&p<W*W&&d[p*4+3]>=8;
+  const edge=[];for(let y=0;y<W;y++)for(let x=0;x<W;x++){const p=y*W+x;if(!a(p))continue;if(x<o||x>=W-o||!a(p-o)||!a(p+o)||!a(p-o*W)||!a(p+o*W))edge.push(p)}
+  edge.forEach(p=>{d[p*4]=N[0];d[p*4+1]=N[1];d[p*4+2]=N[2];d[p*4+3]=255});g.putImageData(im,0,0)}
+/* every pixel close to the coin's field colour: the flat metal, as opposed to the raised design */
+function fieldMask(cv,F){const W=cv.width,d=cv.getContext('2d').getImageData(0,0,W,W).data,m=new Uint8Array(W*W);
+  for(let p=0,q=0;p<W*W;p++,q+=4)if(d[q+3]>200&&Math.abs(d[q]-F[0])+Math.abs(d[q+1]-F[1])+Math.abs(d[q+2]-F[2])<70)m[p]=1;return m}
+function applyDefect(cv,def,type,side){const W=cv.width,g=cv.getContext('2d'),F=artField(cv),src=newCv(W);src.getContext('2d').drawImage(cv,0,0);
+  const atop=(fn)=>{g.save();g.globalCompositeOperation='source-atop';fn();g.restore()};
+  if(def==='offcenter'){ /* the design landed off the blank: a crescent of bare planchet shows */
+    g.save();g.globalCompositeOperation='source-in';g.fillStyle=`rgb(${F})`;g.fillRect(0,0,W,W);g.restore();
+    atop(()=>g.drawImage(src,W*.15,-W*.11));reOutline(cv)}
+  else if(def==='doublestrike')atop(()=>{g.globalAlpha=.42;g.globalCompositeOperation='multiply';g.drawImage(src,W*.035,W*.028)});
+  else if(def==='clipped'){g.save();g.globalCompositeOperation='destination-out';g.beginPath();g.arc(W*1.02,W*.2,W*.2,0,7);g.fill();g.beginPath();g.arc(W*.9,W*.02,W*.11,0,7);g.fill();g.restore();reOutline(cv)}
+  else if(def==='brockage')atop(()=>{g.globalAlpha=.3;g.globalCompositeOperation='multiply';g.translate(W,0);g.scale(-1,1);g.drawImage(src,0,0)});
+  else if(def==='diecrack')atop(()=>{const pts=[[.08,.42],[.22,.47],[.31,.41],[.45,.5],[.55,.46],[.66,.58],[.8,.55],[.93,.66]].map(([x,y])=>[x*W,y*W]);
+    const path=()=>{g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y))};g.lineJoin='round';
+    g.strokeStyle=`rgb(${MINT_INK.navy})`;g.lineWidth=W/70;path();g.stroke();g.translate(0,-W/160);g.strokeStyle='rgba(255,255,255,.7)';g.lineWidth=W/220;path();g.stroke()});
+  else if(def==='filled')atop(()=>{const r=g.createRadialGradient(W*.38,W*.44,0,W*.38,W*.44,W*.2);r.addColorStop(0,`rgba(${F},.95)`);r.addColorStop(.65,`rgba(${F},.8)`);r.addColorStop(1,`rgba(${F},0)`);g.fillStyle=r;g.fillRect(0,0,W,W)});
+  else if(def==='mule'){ /* struck with the wrong die: the right half shows the other face */
+    const other=COINS[type].fixed?null:artCanvas(type,side==='H'?'T':'H');
+    atop(()=>{g.beginPath();g.rect(W*.5,0,W*.5,W);g.clip();if(other)g.drawImage(other,0,0);else{g.translate(W,0);g.scale(-1,1);g.drawImage(src,0,0)}});
+    atop(()=>{g.fillStyle=`rgb(${MINT_INK.navy})`;g.fillRect(W*.5-W/256,W*.06,W/128,W*.88)})}
+  else if(def==='misprint'){ /* the colour plate slipped: every tinted area prints in the wrong ink */
+    const im=g.getImageData(0,0,W,W),d=im.data;for(let q=0;q<d.length;q+=4){if(d[q+3]<8)continue;const r=d[q],gg=d[q+1],b=d[q+2];if(Math.max(r,gg,b)-Math.min(r,gg,b)<18){if(r+gg+b>330){d[q]=r*.62+214*.38;d[q+1]=gg*.62+92*.38;d[q+2]=b*.62+138*.38}continue}d[q]=b;d[q+1]=r;d[q+2]=gg}g.putImageData(im,0,0)}
+  return cv}
+function applyFinish(cv,wear){const W=cv.width,g=cv.getContext('2d'),F=artField(cv),im=g.getImageData(0,0,W,W),d=im.data,fm=fieldMask(cv,F),c=W/2;
+  for(let y=0;y<W;y++)for(let x=0;x<W;x++){const p=y*W+x,q=p*4;if(d[q+3]<8)continue;const r=Math.hypot(x-c,y-c)/c;let R=d[q],G=d[q+1],B=d[q+2];
+    if(wear==='proof'){ /* mirror field, frosted design: the cameo look */
+      if(fm[p]){const t=.5+.5*Math.sin((x*.9-y*1.1)/W*5.2);const k=.45+.55*t;R=R*k*.8+30*(1-k);G=G*k*.82+38*(1-k);B=B*k*.85+60*(1-k)}
+      else if(Math.abs(R-MINT_INK.navy[0])+Math.abs(G-MINT_INK.navy[1])+Math.abs(B-MINT_INK.navy[2])>60){R=R*.45+255*.55;G=G*.45+255*.55;B=B*.45+252*.55}}
+    else if(wear==='patina'){ /* green toning creeping in from the rim */
+      const n=.5+.5*Math.sin(x*.11+Math.sin(y*.07)*2)*Math.cos(y*.09-x*.03),t=Math.max(0,Math.min(.75,(r-.45)*1.6+n*.35-.15));R=R*(1-t)+70*t;G=G*(1-t)+150*t;B=B*(1-t)+118*t}
+    else if(wear==='antique'){ /* dark in the recesses, worn bright on the high points */
+      if(fm[p]){const t=Math.max(0,r-.35)*.55;R*=1-t;G*=1-t*1.1;B*=1-t*1.35}else{R=R*.78+60*.22;G=G*.74+40*.26;B=B*.66+18*.34}
+      if(r<.42){const t=(.42-r)*.6;R+=(255-R)*t;G+=(240-G)*t;B+=(210-B)*t}}
+    else if(wear==='brushed'){if(fm[p]){const t=((y*7+((x*13)%5))%6)<2?.82:1.04;R*=t;G*=t;B*=t}}
+    else if(wear==='holo'){if(fm[p]){const h=((x+y)/W*360+r*120)%360,k=.26,[hr,hg,hb]=hslRgb(h);R=R*(1-k)+hr*k;G=G*(1-k)+hg*k;B=B*(1-k)+hb*k}}
+    d[q]=Math.max(0,Math.min(255,R));d[q+1]=Math.max(0,Math.min(255,G));d[q+2]=Math.max(0,Math.min(255,B))}
+  g.putImageData(im,0,0);return cv}
+const hslRgb=h=>{const f=n=>{const k=(n+h/30)%12;return 255*(.6-.4*Math.max(-1,Math.min(k-3,9-k,1)))};return[f(0),f(8),f(4)]};
+const ART_FINISH=new Set(['proof','patina','antique','brushed','holo']);
+/* a coin's face with its Defect and Wear struck in */
+function coinFace(type,side,o){const def=o&&o.defect&&DEFECTS[o.defect]?o.defect:'',wr=o&&ART_FINISH.has(o.wear)?o.wear:'';const base=coinArt(type,side);if(!def&&!wr)return base;
+  const key=type+side+(type==='copper'?COS().skin:'')+'|'+def+'|'+wr;if(ARTX[key])return ARTX[key];
+  const src=artCanvas(type,side),cv=newCv(src.width);cv.getContext('2d').drawImage(src,0,0);
+  if(def)applyDefect(cv,def,type,side);if(wr)applyFinish(cv,wr);return ARTX[key]=cv.toDataURL()}
 const packIcon=k=>sprite('pack-'+k,{p:{1:PACKS[k].col,2:'#e9d9a8',3:'#ffffff'},s:SPR_PACK});
 const IMG=src=>`<img src="${src}" alt="" draggable="false">`;
 /* ================= MORE PACKS ================= */
@@ -4835,7 +4958,7 @@ function render(){bindFront();
   if(!S){$('#coach').hidden=true;if(!modal){$('#overlay').hidden=true;$('#overlay').innerHTML=''}updateTitle();musicMood();return}
   $('#app').dataset.screen=S.screen==='shop'&&S.pack?'pack':S.screen==='event'||S.screen==='choose'?'shop':S.screen;
   scheduleSave();
-  renderSide();renderJokers();renderStage();renderOverlay();musicMood();sizeCharms();sizeCoins();
+  renderSide();renderJokers();renderStage();renderOverlay();musicMood();sizeCharms();sizeCoins();pressNew();
 }
 /* which roll and stake this run is on */
 function runChip(){const r=ROLLS[S.roll];if(!r)return '';const st=STAKES[S.stake]||STAKES[1];
@@ -4938,6 +5061,34 @@ function consSlot(c,i){
 }
 /* coin thickness: thin layers cut to the coin's outline, darker toward the back, reeded in the middle */
 const SLABS=[-.44,-.3,-.15,0,.15,.3,.44].map((z,k)=>`<i class="slab${k%2?' reed':''}" style="--z:${z};--b:${(.62+k*.06).toFixed(2)}"></i>`).join('');
+/* a coin that is new to the purse (or newly changed: a Rune, a Mint, a Defect) is struck on the press */
+const coinKey=c=>c.id+'|'+c.type+'|'+(c.defect||'')+'|'+(c.wear||'');
+function pressNew(){if(!S||!S.purse)return;if(pressNew.S!==S){pressNew.S=S;pressNew.seen=new Set(S.purse.map(coinKey));S.purse.forEach(c=>{if(!c.mm)c.mm=seriesOf(S.ante)+S.ante});return}
+  const seen=pressNew.seen;let k=0;S.purse.forEach((c,i)=>{if(!c.mm)c.mm=seriesOf(S.ante)+S.ante;const key=coinKey(c);if(seen.has(key))return;seen.add(key);const el=$('#c'+i);if(!el||reduced)return;
+    const t=k++*140;setTimeout(()=>{if(!el.isConnected)return;el.classList.remove('struck');void el.offsetWidth;el.classList.add('struck');el.insertAdjacentHTML('beforeend','<i class="pdie"></i><i class="pshock"></i>');
+      setTimeout(()=>play('press'),260);setTimeout(()=>{el.classList.remove('struck');el.querySelectorAll('.pdie,.pshock').forEach(x=>x.remove())},900)},t)})}
+/* coin tooltips sit in a collector's 2x2 cardboard holder: the coin in the window, a grade and mint mark pencilled on */
+function coinGrade(c){const w=c.wear,f=Math.min(10,Math.floor((c.flips||0)/6));
+  return w==='proof'?'PF-70 Cameo':w==='antique'?'AU-55':w==='patina'?'VF-30 Toned':w==='brushed'?'XF-45':w==='holo'?'MS-67 Rainbow':w==='polished'?'MS-65 PL':w==='weightless'?'MS-?? Light':'MS-'+(68-f-(c.id%3))}
+function coinHolder(c){const d=COINS[c.type],side=d.fixed||(c.face==='T'?'T':'H');
+  return `<div class="cholder"><div class="chwin"><img src="${coinFace(c.type,side,c)}" alt=""></div><div class="chnote"><b>${coinGrade(c)}</b>${c.defect?`<span class="cherr">Error: ${DEFECTS[c.defect].name}</span>`:''}<span>Mint mark ${(c.mm||'A1')[0]} · Stage ${(c.mm||'A1').slice(1)}</span></div></div>`}
+/* cashing a toss in: the coins that scored drop into a paper coin wrapper, which crimps shut and is carried to the Scored tally */
+function coinWrap(matched){if(reduced||!matched)return;const idx=matched.map((m,i)=>m?i:-1).filter(i=>i>=0&&$('#c'+i));if(!idx.length)return;
+  const p=$('#purse'),pr=p&&p.getBoundingClientRect(),dst=$('#rscore');if(!pr||!dst)return;
+  const n=idx.length,cs=Math.min(46,pr.height*.5),W=Math.max(140,n*cs*.28+cs*.9),cx=pr.left+pr.width/2,cy=pr.bottom-cs*.2;
+  const w=document.createElement('div');w.className='cwrap';w.style.cssText=`left:${cx-W/2}px;top:${cy-cs*.42}px;width:${W}px;height:${cs*.84}px`;w.innerHTML=`<span>${n} coin${n>1?'s':''} · House Mint</span>`;document.body.appendChild(w);
+  idx.forEach((i,k)=>{const el=$('#c'+i),r=el.getBoundingClientRect(),c=S.purse[i],im=document.createElement('img');im.className='cwcoin';im.src=coinFace(c.type,COINS[c.type].fixed||(c.face==='T'?'T':'H'),c);
+    im.style.cssText=`left:${r.left+r.width*.1}px;top:${r.top+r.height*.1}px;width:${r.width*.8}px;height:${r.height*.8}px`;document.body.appendChild(im);
+    const tx=cx-W/2+cs*.45+k*cs*.28-(r.left+r.width/2),ty=cy-(r.top+r.height/2);
+    im.animate([{transform:'none',opacity:1},{transform:`translate(${tx}px,${ty-30}px) scale(.7)`,opacity:1,offset:.6},{transform:`translate(${tx}px,${ty}px) scale(.55,.6) rotateY(80deg)`,opacity:0}],{duration:520,delay:k*50,easing:'cubic-bezier(.4,0,.6,1)',fill:'forwards'}).onfinish=()=>im.remove()});
+  const dr=dst.getBoundingClientRect(),t0=520+n*50;
+  setTimeout(()=>{w.classList.add('shut');play('tear')},t0);
+  w.animate([{opacity:0,transform:'scaleX(.6)'},{opacity:1,transform:'none',offset:.12},{opacity:1,transform:'none',offset:.62},{opacity:1,transform:`translate(${dr.left+dr.width/2-cx}px,${dr.top+dr.height/2-cy}px) scale(.35) rotate(-8deg)`,offset:.92},{opacity:0,transform:`translate(${dr.left+dr.width/2-cx}px,${dr.top+dr.height/2-cy}px) scale(.2)`}],{duration:t0+620,easing:'ease-in-out',fill:'forwards'}).onfinish=()=>w.remove()}
+/* a coin on its edge shows off the lettering milled into its rim */
+const EDGE_MOTTOS=['IN FLIP WE TRUST','E PLURIBUS HEADS','THE HOUSE PAYS THE BEARER','CALL IT','NOT LEGAL TENDER','STRUCK AT THE HOUSE MINT'];
+function edgeLetters(el){if(!el||reduced)return;el.querySelectorAll('.edgering').forEach(x=>x.remove());const id='er'+Math.random().toString(36).slice(2,7),m=EDGE_MOTTOS[Math.floor(Math.random()*EDGE_MOTTOS.length)];
+  el.insertAdjacentHTML('beforeend',`<svg class="edgering" viewBox="0 0 100 100" aria-hidden="true"><defs><path id="${id}" d="M50,50 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/></defs><text><textPath href="#${id}" textLength="272" lengthAdjust="spacing">${m} ✦ ${m} ✦</textPath></text></svg>`);
+  setTimeout(()=>el.querySelectorAll('.edgering').forEach(x=>x.remove()),2600)}
 function coinHTML(c,i,opts={}){
   const d=COINS[c.type];
   const hl=d.fixed==='T'?'T':'H',tl=d.fixed==='H'?'H':'T';
@@ -4946,7 +5097,7 @@ function coinHTML(c,i,opts={}){
   const frozen=S&&S.screen==='play'&&(bossIs('blackcat')&&S.phase!=='call'&&S.catI===i||bossIs('frost')&&S.purse.length>2&&(i===0||i===S.purse.length-1)||bossIs('house')&&(S.houseOwned||[]).includes(c.id)||bossIs('drhouse')&&S.benched===c.id);
   const sg=stkGroup(c);
   return `<button class="coin t-${c.type} ${c.wear==='weightless'?'wl':''} ${sg?'stk':''} ${frozen?'frozen':''} ${bolted?'bolted':''} ${S&&S.roll==='glitched'?'glitchy':''} ${c.face==='E'?'edge':''} ${c.fog?'fog':''} ${opts.enter?'enter':''} ${opts.sel?'sel':''}" id="c${i}" data-act="coin" data-arg="${i}" data-drag="coin" data-idx="${i}" data-tip="coin:${i}" style="--d:${i*60}ms" aria-label="${d.name}">
-    <div class="lift"><div class="tilt" style="--sw:${-((c.id*1.37)%4.6).toFixed(2)}s"><div class="spin" style="transform:rotateX(${ang}deg);--shape:url(${coinArt(c.type,hl)})">${SLABS}<div class="face heads" data-l="${hl}" style="--art:url(${coinArt(c.type,hl)})">${coinMods(c)}</div><div class="face tails" data-l="${tl}" style="--art:url(${coinArt(c.type,tl)})">${coinMods(c)}</div></div></div></div>
+    <div class="lift"><div class="tilt" style="--sw:${-((c.id*1.37)%4.6).toFixed(2)}s"><div class="spin" style="transform:rotateX(${ang}deg);--shape:url(${coinFace(c.type,hl,c)})">${SLABS}<div class="face heads" data-l="${hl}" style="--art:url(${coinFace(c.type,hl,c)})">${coinMods(c)}</div><div class="face tails" data-l="${tl}" style="--art:url(${coinFace(c.type,tl,c)})">${coinMods(c)}</div></div></div></div>
     ${sg?`<i class="stkb" style="--sc:hsl(${(sg*67)%360} 70% 62%)"></i>`:''}<div class="shadow"></div></button>`;
 }
 function sizeCoins(){
@@ -5027,9 +5178,14 @@ function blindSelectHTML(){
       ${b.kind==='boss'&&bossRerollable()?`<div class="bskip">${b.state==='select'?'<button class="btn small" disabled>Too late</button>':bossRRused()?'<button class="btn small" disabled>Boss rerolled</button>':freeBossRR()?'<button class="btn small" style="--c:var(--purple);--cd:var(--purple-d)" data-act="bossrr" data-arg="free">Reroll Boss: Free</button>':`<button class="btn small" style="--c:var(--purple);--cd:var(--purple-d)" data-act="bossrr" ${S.money<bossRerollCost()?'disabled':''}>Reroll Boss $${bossRerollCost()}</button>`}</div>`:''}
     </div>`}).join('')}</div>`;
 }
+/* a beaten Boss's notice is cancelled the way banks cancel paper: PAID punched clean through it */
+const PUNCH_FONT={P:['1110','1001','1001','1110','1000','1000','1000'],A:['0110','1001','1001','1111','1001','1001','1001'],I:['111','010','010','010','010','010','111'],D:['1110','1001','1001','1001','1001','1001','1110']};
+function punchHTML(C){let x=0,holes='';for(const ch of 'PAID'){const g=PUNCH_FONT[ch];g.forEach((row,y)=>[...row].forEach((v,k)=>{if(v==='1')holes+=`<i class="hole ${x+k<C.pn?'on':''}" data-c="${x+k}" style="--x:${x+k};--y:${y}"></i>`}));x+=g[0].length+1}
+  const b=BOSSES[C.boss];return `<div class="pnotice" style="--pc:${b.col}"><div class="pnhead">Notice of Protest</div><div class="pnbody">${bossSil(C.boss)?`<img src="${bossSil(C.boss)}" alt="">`:''}<b>${b.name}</b></div><div class="pnholes" style="--cols:${x-1}">${holes}</div></div>`}
+function punchNotice(){const C=S.cash,cols=18;const step=()=>{if(!S||S.cash!==C||C.pn>=cols)return;C.pn++;document.querySelectorAll(`.pnotice .hole[data-c="${C.pn-1}"]`).forEach(h=>h.classList.add('on'));if(C.pn%3===1)play('tick');setTimeout(step,reduced?0:55)};setTimeout(step,500)}
 function cashoutHTML(){
   const C=S.cash;const done=C.shown>=C.lines.length;
-  return `<div class="panel cash"><h2>Wager Won</h2>
+  return `<div class="panel cash">${C.boss?punchHTML(C):''}<h2>Wager Won</h2>
     ${C.lines.slice(0,C.shown).map(l=>`<div class="cline"><span class="l">${l.l}</span><span class="v" ${l.v<0?'style="color:var(--mult)"':''}>${l.v<0?'-$'+(-l.v):'$'.repeat(Math.min(l.v,10))+(l.v>10?'+':'')+' <small>$'+l.v+'</small>'}</span></div>`).join('')}
     <button class="btn ${C.total<0?'red':'orange'} big" data-act="cashout" ${done?'':'disabled'}>${C.total<0?`Cash Lost: -$${-C.total}`:`Cash Out: $${C.total}`}</button></div>`;
 }
@@ -5522,7 +5678,7 @@ async function openRoll(key,o={}){
     st.querySelectorAll('.gbody,.gcap').forEach(el=>el.animate([{opacity:1},{opacity:0}],{duration:400,fill:'forwards'}));
     // the coins drop out of the roll, one into each slot on the certificate
     const rc=roll.getBoundingClientRect(),cy=rc.top+rc.height/2,slots=[...st.querySelectorAll('.rcslots i')];
-    coins=S.purse.map((c,i)=>{const el=document.createElement('div');el.className='ripcoin';el.style.setProperty('--art',`url(${coinArt(c.type,COINS[c.type].fixed||'H')})`);document.body.appendChild(el);
+    coins=S.purse.map((c,i)=>{const el=document.createElement('div');el.className='ripcoin';el.style.setProperty('--art',`url(${coinFace(c.type,COINS[c.type].fixed||'H',c)})`);document.body.appendChild(el);
       const sr=slots[i].getBoundingClientRect(),x0=rc.left+rc.width*(i+.5)/n,x1=sr.left+sr.width/2,y1=sr.top+sr.height/2,peak=Math.min(cy,y1)-60-Math.random()*50,dl=80+i*90;
       el.animate([{transform:`translate(${x0}px,${cy}px) rotateY(84deg) scale(.8)`},{transform:`translate(${(x0+x1)/2}px,${peak}px) rotateY(400deg) scale(1.1)`,offset:.45},{transform:`translate(${x1}px,${y1}px) rotateY(720deg) scale(1)`}],
         {duration:720,delay:dl,easing:'cubic-bezier(.3,.6,.4,1)',fill:'forwards'});
@@ -5766,7 +5922,7 @@ async function titleToss(){
   await a.finished.catch(()=>{});
   play('land',2);
   titleRun.n=titleRun.f===face?titleRun.n+1:1;titleRun.f=face;
-  if(face==='E'){play('edge');shake(4)}
+  if(face==='E'){play('edge');shake(4);edgeLetters(el)}
   if(face==='E'&&!PS().titleEdge){PS().titleEdge=1;saveProf();setTimeout(checkGoals,1200)}
   if(face!=='E'&&titleRun.n>=3&&!PS().titleCall3){PS().titleCall3=1;saveProf();setTimeout(checkGoals,700)}
   popup(el,face==='E'?'Edge?!':`${face==='H'?'Heads':'Tails'}!${titleRun.n>=3?` x${titleRun.n}`:''}`,face==='E'?'huge':'text');
@@ -5853,7 +6009,7 @@ function tipContent(spec){
   const cn=(t,o)=>{const d=COINS[t];return `<div class="tn">${d.name}</div><div class="td">${fmt(d.desc)}</div>${modsHTML(o)}${o&&stkGroup(o)?'<div class="tkind">Stacked: lands with its partner, shares one purse space, and re-flips together with it</div>':''}${o&&(o.bonus||o.bm)?`<div class="tkind" style="color:var(--green)">Permanent bonus: ${[o.bonus?'+'+o.bonus+' Points':'',o.bm?'+'+o.bm+' Mult':''].filter(Boolean).join(', ')}</div>`:''}${o&&o.flips?`<div class="tkind">Flipped ${o.flips} time${o.flips>1?'s':''}</div>`:''}`};
   if(k==='joker'){const j=S.jokers[i];const g=j&&(S.roll==='glitched'||j.key==='missingno')&&S.screen==='play'&&S.glitchJ&&S.glitchJ[j.id];return j&&(jt(j.key,j)+(g?`<div class="tkind">Glitched: scoring as ${JOKERS[g].name} this toss (${fmt(typeof JOKERS[g].desc==='function'?JOKERS[g].desc():JOKERS[g].desc)})</div>`:''))}
   if(k==='shopj'){const o=S.shop.jokers[i];return o&&(o.kind==='almanac'||o.kind==='spirit'?ct(o):jt(o.key,null,o))}
-  if(k==='coin'){const c=S.purse[i];return c&&(cn(c.type,c)+(S.roll==='glitched'&&S.glitch&&S.glitch[c.id]&&S.screen==='play'?`<div class="tkind">Glitched: acting as a ${COINS[S.glitch[c.id]].name} this toss</div>`:''))}
+  if(k==='coin'){const c=S.purse[i];return c&&(coinHolder(c)+cn(c.type,c)+(S.roll==='glitched'&&S.glitch&&S.glitch[c.id]&&S.screen==='play'?`<div class="tkind">Glitched: acting as a ${COINS[S.glitch[c.id]].name} this toss</div>`:''))}
   if(k==='cons'){const c=S.cons[i];return c&&ct(c)}
   if(k==='popt'){const o0=S.pack&&S.pack.opts[i];if(o0&&o0.kind==='myst'&&(o0.taken||S.pack.done)){const it=o0.inner;return it.kind==='coin'?cn(it.type,it):it.kind==='charm'?jt(it.key):it.kind==='cash'?`<div class="tn">$${it.v}</div><div class="td">Cash from a mystery</div>`:it.kind==='junk'?`<div class="tn">Pocket lint</div><div class="td">Worth {$:$1}</div>`:ct(it)}}
   if(k==='popt'){const o=S.pack&&S.pack.opts[i];return o&&(o.kind==='coin'?cn(o.type,o):o.kind==='charm'?jt(o.key,null,o):PX[o.kind]?PX[o.kind].tip(o):ct(o))}
@@ -5880,7 +6036,7 @@ function tipContent(spec){
 function showTip(el){
   if(!S&&!el.dataset.tip.startsWith('goal:')){hideTip();return}
   const html=tipContent(el.dataset.tip);if(!html){hideTip();return}
-  const t=$('#tip');t.innerHTML=html;t.hidden=false;
+  const t=$('#tip');t.innerHTML=html;t.hidden=false;t.classList.toggle('holder',html.startsWith('<div class="cholder">'));
   const k=+getComputedStyle(document.documentElement).getPropertyValue('--k')||1;const r=el.getBoundingClientRect(),tw=t.offsetWidth*k,th=t.offsetHeight*k;
   let x=clamp(r.left+r.width/2-tw/2,8,innerWidth-tw-8);let y=r.top-th-10;
   if(y<8)y=Math.min(innerHeight-th-8,r.bottom+10);
@@ -5993,7 +6149,7 @@ async function doReflip(){
 }
 /* a coin that lands presses a brief ink impression of its face into the paper; a miss leaves a smudge instead */
 function inkPrint(el,c,r){if(reduced||!el)return;const hit=S&&S.call&&scores(r,S.call);const d=COINS[c.type],side=d.fixed||(r==='T'?'T':'H');
-  const m=document.createElement('i');m.className='inkprint '+(hit?'hit':'smudge');if(hit)m.style.setProperty('--art',`url(${coinArt(c.type,side)})`);
+  const m=document.createElement('i');m.className='inkprint '+(hit?'hit':'smudge');if(hit)m.style.setProperty('--art',`url(${coinFace(c.type,side,c)})`);
   el.appendChild(m);setTimeout(()=>m.remove(),1500)}
 function animateToss(i,delay){
   const el=$('#c'+i);const c=S.purse[i],r=S.results[i];
@@ -6016,7 +6172,7 @@ function animateToss(i,delay){
   return a.finished.then(()=>{
     c.face=r;play('land',i);inkPrint(el,c,r);
     lift.animate([{transform:'translateY(0) scale(1.08,.9)'},{transform:'translateY(-6px) scale(.97,1.04)'},{transform:'translateY(0)'}],{duration:220/SPD()});
-    if(r==='E'){el.classList.add('edge');play('edge');popup(el,'Edge!','text');shake(4)}
+    if(r==='E'){el.classList.add('edge');play('edge');popup(el,'Edge!','text');shake(4);edgeLetters(el)}
   }).catch(()=>{c.face=r});
 }
 /* the toss written out in words on a cheque line, with the amount stamped in figures */
@@ -6076,6 +6232,7 @@ async function doCashIn(){
   setHB(`<span style="font-size:1.25em">${fmtN(total)}</span>`,null,null);juice($('#hname'));play('total');chequeLine(R.chips,R.mult,total);
   shake(clamp(Math.log10(Math.max(10,total))*2,2,14));
   await wait(550);
+  if(total>0)coinWrap(R.matched);
   const before=S.roundScore;let lastTick=0;
   await tween(before,before+total,650,v=>{const r=$('#rscore');if(r)odo(r,fmtN(v));const t=performance.now();if(t-lastTick>45){lastTick=t;play('tick')}});{const r=$('#rscore');if(r){r.classList.remove('inked');void r.offsetWidth;r.classList.add('inked')}}
   S.roundScore+=total;S.hands[R.type].played++;S.lastCall=S.call;S.tossNo++;S.lastType=R.type;S.stats.tosses++;
@@ -6199,7 +6356,7 @@ function enterCashout(){
   {const H=S.jokers.filter(j=>j.key==='dragonhoard');if(H.length&&S.money+lines.reduce((a,l)=>a+l.v,0)>=15)H.forEach(j=>{j.st.x=Math.round((j.st.x+.25)*100)/100;toast("<b>Dragon's Hoard</b> grows")})}
   {const cap=countEff('whale')?Infinity:(S.interestCap||5),intr=Math.min(Math.floor(Math.max(0,S.money)/5),cap);if(intr)lines.push({l:`Interest, $1 per $5 (${cap===Infinity?'no cap, The Whale':'max $'+cap})`,v:intr})}
   {const cut=houseCut(S.money);if(cut){lines.push({l:`The House's cut (${Math.round(HOUSE_CUT*100)}% of money over $${hoardFree()})`,v:-cut});if(!PS().houseCutSeen){PS().houseCutSeen=1;setTimeout(()=>houseSay('Carrying that much? I\'ll take a little off the top. Spend it, or lose it.',6500),700)}}}
-  S.cash={lines,total:lines.reduce((a,l)=>a+l.v,0),shown:0};S.screen='cashout';S.phase='idle';render();animateCashout();setTimeout(()=>play('stamp'),260);
+  S.cash={lines,total:lines.reduce((a,l)=>a+l.v,0),shown:0,boss:curBlind()&&curBlind().kind==='boss'&&BOSSES[curBlind().boss]&&!BOSSES[curBlind().boss].final?curBlind().boss:null,pn:0};S.screen='cashout';S.phase='idle';render();animateCashout();setTimeout(()=>play('stamp'),260);if(S.cash.boss)punchNotice();
 }
 async function animateCashout(){
   while(S&&S.screen==='cashout'&&S.cash.shown<S.cash.lines.length){await wait(320);if(!S||S.screen!=='cashout')return;S.cash.shown++;renderStage();play('note');setTimeout(()=>play('money'),60)}
@@ -6464,7 +6621,7 @@ async function makeShareCert(){
   g.strokeRect(78,78,W-156,H-156);
   /* vignettes: each Charm engraved in an oval around the border */
   const js=S.jokers.slice(0,12),spots=[];for(let i=0;i<6;i++){spots.push([120+i*(W-240)/5,52]);spots.push([120+i*(W-240)/5,H-52])}
-  for(let i=0;i<js.length;i++){const[x,y]=spots[i],d=JOKERS[js[i].key];g.save();g.beginPath();g.ellipse(x,y,22,22,0,0,7);g.fillStyle=RAR_TINT[d.r]||'#fff';g.fill();g.strokeStyle='#8a5a12';g.lineWidth=1.5;g.stroke();g.clip();
+  for(let i=0;i<js.length;i++){const[x,y]=spots[i],d=JOKERS[js[i].key];g.save();g.beginPath();g.ellipse(x,y,22,22,0,0,7);g.fillStyle=RAR_SOLID[d.r]||'#fff';g.fill();g.strokeStyle='#8a5a12';g.lineWidth=1.5;g.stroke();g.clip();
     const im=await loadImg(icon(js[i].key));if(im)g.drawImage(im,x-17,y-17,34,34);g.restore()}
   T('SHARE CERTIFICATE',W/2,128,13,'#a23b2a','center',mono);
   T('Call it.',W/2,190,64,'#1b2a4a','center',sc);
@@ -6496,7 +6653,7 @@ async function makeSummaryCard(){
   const stats=[['Best toss',fmtN(S.stats.best)],['Coins flipped',fmtN(S.stats.flips)],['Rounds',String(S.round)],['Money',`$${S.money}`]];
   stats.forEach(([a,b],i)=>{const x=24+i*150;g.fillStyle='#f8f3e6';g.fillRect(x,146,138,52);g.strokeStyle='rgba(31,77,58,.55)';g.lineWidth=1;g.strokeRect(x+.5,146.5,137,51);T(a,x+10,166,12,'#1f4d3a');T(b,x+10,190,20,'#1b2a4a')});
   T('Charms',24,226,13,'#1f4d3a');
-  const js=S.jokers.slice(0,10);for(let i=0;i<js.length;i++){const d=JOKERS[js[i].key],x=24+i*58;g.fillStyle=RAR_TINT[d.r]||RAR_TINT[1];g.beginPath();g.arc(x+22,256,22,0,7);g.fill();g.strokeStyle=(RAR_RING[d.r]||RAR_RING[1])[1];g.lineWidth=2;g.stroke();const im=await loadImg(icon(js[i].key));if(im)g.drawImage(im,x+6,240,32,32)}
+  const js=S.jokers.slice(0,10);for(let i=0;i<js.length;i++){const d=JOKERS[js[i].key],x=24+i*58;g.fillStyle=RAR_SOLID[d.r]||RAR_SOLID[1];g.beginPath();g.arc(x+22,256,22,0,7);g.fill();g.strokeStyle=(RAR_RING[d.r]||RAR_RING[1])[1];g.lineWidth=2;g.stroke();const im=await loadImg(icon(js[i].key));if(im)g.drawImage(im,x+6,240,32,32)}
   if(!js.length)T('None',24,262,14,'#5a5f6e');
   T('Coins',24,302,13,'#1f4d3a');
   const cs=S.purse.slice(0,14);for(let i=0;i<cs.length;i++){const im=await loadImg(coinArt(cs[i].type,'H'));if(im)g.drawImage(im,24+i*34,310,30,30)}
@@ -6766,6 +6923,23 @@ document.addEventListener('input',e=>{const t=e.target;
     if(t.dataset.vol==='m'){OPT.mvol=v;if(AU.mus)AU.mus.gain.setTargetAtTime(musGain(),AU.ctx.currentTime,.05)}
     else{OPT.svol=v;if(AU.sfx)AU.sfx.gain.value=sfxGain();const n=performance.now();if(n-volBlip>120){volBlip=n;audioInit();play('chip',3)}}
     saveOpt()}});
+/* ===== ultraviolet lamp: hold U (or press and hold the series line on a phone) to see the security features ===== */
+const UV_NOTES={play:'The coins remember every call.',shop:'Every price here was set by the House.',pack:'Sealed at the House Mint. Resealed twice.',blind:'The Boss was hired, not born.',
+  cashout:'The House always pays. Eventually.',event:'Nothing on this road is an accident.',choose:'Every road leads back to the table.',over:'Void where prohibited. Void everywhere else.'};
+function uvLamp(on){let fx=$('#uvfx');
+  if(on&&!fx){fx=document.createElement('div');fx.id='uvfx';fx.setAttribute('aria-hidden','true');fx.innerHTML='<i class="uvdark"></i><canvas></canvas><b class="uvser a"></b><b class="uvser b"></b><em class="uvnote"></em>';document.body.appendChild(fx)}
+  if(!fx)return;
+  if(on){const cv=fx.querySelector('canvas');if(cv.width!==innerWidth||cv.height!==innerHeight){cv.width=innerWidth;cv.height=innerHeight;const g=cv.getContext('2d'),cols=['#ff4fa0','#4fc3ff','#c6ff4f','#ffe14f'];g.lineCap='round';
+      for(let k=0;k<Math.round(innerWidth*innerHeight/9000);k++){const x=Math.random()*cv.width,y=Math.random()*cv.height,a=Math.random()*6.3,l=6+Math.random()*16;g.strokeStyle=cols[k%4];g.globalAlpha=.55+Math.random()*.45;g.lineWidth=1+Math.random()*.8;
+        g.beginPath();g.moveTo(x,y);g.quadraticCurveTo(x+Math.cos(a+.8)*l*.6,y+Math.sin(a+.8)*l*.6,x+Math.cos(a)*l,y+Math.sin(a)*l);g.stroke()}}
+    const scr=!S?'title':S.screen==='shop'&&S.pack?'pack':S.screen,ser=(S?seriesOf(S.ante):'A')+' '+String((S&&S.seed||PS().runs||7)*7919%100000000).padStart(8,'0')+' H';
+    fx.querySelector('.uvser.a').textContent=ser;fx.querySelector('.uvser.b').textContent=ser;fx.querySelector('.uvnote').textContent=UV_NOTES[scr]||'This note is not legal tender.'}
+  if(on!==document.body.classList.contains('uv')){document.body.classList.toggle('uv',on);if(on)play('tick')}}
+addEventListener('keydown',e=>{if((e.key==='u'||e.key==='U')&&!e.repeat&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!(e.target.closest&&e.target.closest('input,textarea')))uvLamp(true)});
+addEventListener('keyup',e=>{if(e.key==='u'||e.key==='U')uvLamp(false)});
+addEventListener('blur',()=>uvLamp(false));
+{let t=null;document.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('.lh-kick')){clearTimeout(t);t=setTimeout(()=>uvLamp(true),650)}});
+ const off=()=>{clearTimeout(t);t=null;uvLamp(false)};document.addEventListener('pointerup',off);document.addEventListener('pointercancel',off)}
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&document.activeElement&&document.activeElement.classList.contains('bigcoin')){e.preventDefault();titleToss()}});
 document.addEventListener('keydown',e=>{
   if(e.repeat||$('#boot')||$('#minifish')||$('.fanfare'))return;const tg=e.target;if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'))return;
@@ -6873,7 +7047,7 @@ function beginDrag(){
     // a flat stand-in is far cheaper to move than the full 3D coin
     const c=S.purse[+drag.item.dataset.idx],side=COINS[c.type].fixed||(c.face==='T'?'T':'H');
     g=document.createElement('div');g.className='ghost coinghost';g.style.width=g.style.height=r.width+'px';
-    g.style.setProperty('--art',`url(${coinArt(c.type,side)})`);g.innerHTML=coinMods(c);
+    g.style.setProperty('--art',`url(${coinFace(c.type,side,c)})`);g.innerHTML=coinMods(c);
   }else{
     g=drag.el.cloneNode(true);['id','data-act','data-tip','data-drag'].forEach(a=>g.removeAttribute(a));
     g.classList.add('ghost');g.classList.remove('sel','enter','juice','hov');g.style.width=r.width+'px';
