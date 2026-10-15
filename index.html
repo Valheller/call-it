@@ -1751,6 +1751,11 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
 
 /* the stage card fades in over the run certificate as it leaves, with no bare table in between */
 #stageintro{animation:sicross .35s ease-out both}@keyframes sicross{from{opacity:0}}
+
+/* the note line under the header is always there on desktop, so nothing below moves when a boss adds one */
+@media (min-width:761px){.lh-rows{min-height:26px;max-height:46px;overflow:hidden}.lh-rows.empty{border-top-color:transparent}}
+@media (max-width:760px){.lh-rows.empty{display:none}}
+#jokerbar .tray{overflow:visible}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1797,7 +1802,7 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.229</div>
+  <div class="gamever" aria-label="Version">v1.2.230</div>
 </div>
 
 <script>
@@ -4782,7 +4787,7 @@ function renderSide(){
    </div>
    <div class="lh-stamp"><b class="num gold" id="smoney">$${S.money}</b><span>On hand</span><em class="tix" id="stix">${tixTxt()}</em></div>
    <div class="s-btns lh-btns">${runChip()}<button class="btn small" data-act="runinfo">Run Info</button><button class="btn small" data-act="options">Options</button></div>
-  </div>${rows?`<div class="lh-rows">${rows}</div>`:''}`;
+  </div><div class="lh-rows ${rows?'':'empty'}">${rows}</div>`;
   updatePreview();
 }
 function setHB(name,chips,mult,bumpWhat){
@@ -4818,13 +4823,17 @@ function renderJokers(){
 }
 /* desktop: the Charm and Pocket columns run down the sides of the table; each sizes its stamps to the height it has */
 if(window.ResizeObserver){const ro=new ResizeObserver(()=>{if(S)sizeCharms()});addEventListener('DOMContentLoaded',()=>{});setTimeout(()=>{const m=$('#main');if(m)ro.observe(m)},0)}
+/* desktop: the Charm and Pocket columns. Their layout depends only on the number of slots and the window size,
+   so the stamps keep the same place and size from screen to screen (wagers, play, shop, boss notes) */
 function sizeCharms(){const desk=innerWidth>760;document.querySelectorAll('#jokerbar .tray').forEach(t=>{const c=t.querySelector('.cards');if(!c)return;
-  if(!desk){t.style.removeProperty('--jw');c.style.removeProperty('--cols');return}
-  const n=c.children.length||1,lab=t.querySelector('.tvl'),avail=t.clientHeight-(lab?lab.offsetHeight:0)-14,gap=10;
-  let best=null;for(const cols of [1,2,3]){const rows=Math.ceil(n/cols),w=Math.floor((avail-(rows-1)*gap)/rows)-26;if(!best||w>best.w+6)best={cols,w};if(w>=64)break}
-  c.style.setProperty('--cols',best.cols);let jw=Math.max(30,Math.min(76,best.w));t.style.setProperty('--jw',jw+'px');
-  /* then check what actually fits and step down until the column clears the footer */
-  for(let k=0;k<12&&jw>30&&c.getBoundingClientRect().bottom>t.getBoundingClientRect().bottom+1;k++){jw-=3;t.style.setProperty('--jw',jw+'px')}})}
+  if(!desk){t.style.removeProperty('--jw');c.style.removeProperty('--cols');delete t.dataset.lk;return}
+  const n=c.children.length||1,k=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--k'))||1,key=n+'|'+innerWidth+'|'+innerHeight;
+  if(t.dataset.lk!==key){t.dataset.lk=key;
+    /* room under the tallest header (with a boss note) and above the footer */
+    const avail=innerHeight/k-330,gap=10;
+    let best=null;for(const cols of [1,2,3]){const rows=Math.ceil(n/cols),w=Math.floor((avail-(rows-1)*gap)/rows)-26;if(!best||w>best.w+6)best={cols,w};if(w>=64)break}
+    t.dataset.cols=best.cols;t.dataset.jw=Math.max(30,Math.min(76,best.w))}
+  c.style.setProperty('--cols',t.dataset.cols);t.style.setProperty('--jw',t.dataset.jw+'px')})}
 function jokerSlot(j,i){
   const d=JOKERS[j.key],sel=S.selJoker===i&&canEdit(),n=S.jokers.length;
   const gj=(S.roll==='glitched'||j.key==='missingno')&&S.screen==='play'&&S.glitchJ&&S.glitchJ[j.id];
