@@ -1987,7 +1987,7 @@ body.uv #uvfx{opacity:1}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.247</div>
+  <div class="gamever" aria-label="Version">v1.2.248</div>
 </div>
 
 <script>
@@ -6621,6 +6621,13 @@ function chooseWay(i){
   if(w.t==='elite'){S.inElite=true;S.eliteBlind={kind:'elite',boss:w.boss,boss2:w.boss2,state:'select'};setTimeout(()=>{play('boss');shake(6)},50);startBlind();return}
 }
 /* every detour (and the shop) ends here: on to the next wager */
+/* a save can be taken mid-animation; on Continue, finish whatever was half-played so nothing waits on an animation that will never run */
+function resumeFix(){if(S.phase==='scoring'||S.phase==='tossing')S.phase='tossed';if(S.pack)S.pack.busy=false;
+  if(S.screen==='cashout'&&S.cash){S.cash.shown=S.cash.lines.length;S.cash.pn=99}
+  if(S.screen==='shop'&&!S.shop)genShop()}
+/* closed after the winning toss scored but before the payout: finish the win */
+function resumeWin(){if(S.screen!=='play'||!S.target)return;const won=S.duel?(S.duel.shown>=S.duel.n&&S.roundScore>S.target):S.roundScore>=S.target;
+  if(won)setTimeout(()=>{if(S&&S.screen==='play')blindWon()},450)}
 function goNext(){if(S.screen==='shop'&&!S.pawnshop&&!S.backroom&&!S.bigspender&&!S.treasure&&S.shop&&S.shop.upgrade&&!S.shop.upgrade.bought&&!upgLocked()&&!S.upgrades.includes(S.shop.upgrade.key))pawnLog('upg',{key:S.shop.upgrade.key,how:'passed'});
   S.pawnshop=false;S.bazaar=false;S.backroom=false;S.bigspender=false;S.treasure=false;S.pack=null;S.event=null;S.ways=null;S.selJoker=null;S.selCons=null;S.csel=[];S.screen='blind';render()}
 function endElite(won){
@@ -6904,7 +6911,7 @@ const ACT={
   boot(){bootGo()},
   fullscreen(){toggleFS()},
   play(){if(!PROF.tutorialDone){startTutorial();return}audioInit();showRollPick()},
-  cont(){const sv=savedRun();if(!sv||!sv.S)return;audioInit();modal=null;$('#overlay').hidden=true;S=migrate(sv.S);uid=sv.uid||1000;if(S.phase==='scoring'||S.phase==='tossing')S.phase='tossed';if(S.screen==='shop'&&!S.shop)genShop();render()},
+  cont(){const sv=savedRun();if(!sv||!sv.S)return;audioInit();modal=null;$('#overlay').hidden=true;S=migrate(sv.S);uid=sv.uid||1000;resumeFix();render();resumeWin()},
   daily(){audioInit();LB.rows=undefined;showModal(dailyModal);lbLoad(dayKey()).then(()=>{if(modal===dailyModal)showModal(dailyModal)})},
   dailystart(){const k=dayKey();if(PROF.daily[k])return;PROF.daily[k]={started:1};saveProf();openRoll(dailyRoll(k),{seed:hashStr(k),daily:k})},
   soundtest(){audioInit();showModal(soundTestModal)},
