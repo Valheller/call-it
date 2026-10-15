@@ -1864,7 +1864,7 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.233</div>
+  <div class="gamever" aria-label="Version">v1.2.234</div>
 </div>
 
 <script>
@@ -3083,24 +3083,6 @@ function hatBuf(sr,ft,ff,q,a,d){const key=[sr,ft,Math.round(ff/100),Math.round(q
         const t=i/sr,e=t<a?t/a:t<a+d?Math.exp(Math.log(1e-4)*(t-a)/d):0;out[i]=y*e}
       L.push(buf)}HATS.set(key,L)}
   return L[Math.floor(Math.random()*L.length)]}
-/* the soundtrack in Mint timbres: short notes become plucked music-box tines with a bell overtone,
-   long notes a soft reed organ, bass a felted piano-like thump. Timing and pitch are untouched */
-const DARK_MODES=new Set(['rival','showdown','general','endless','thehouse','tablerivals','drhouse','fatal']);
-function mintVoice(o,dest){const f=o.f,d=o.d??.2,v=o.v??.2,base={...o,bus:dest,wob:false},A=o.a??.004,mode=Music.mode;delete base.lp;delete base.q;
-  /* dark tracks: a mechanical piano over a reed-and-pipe organ, with the original bass kept underneath for weight */
-  if(DARK_MODES.has(mode)){
-    if(f<140){tone({...base,type:'sawtooth',lp:Math.min(o.lp||500,520),q:1,v:v*1.05});tone({...base,f:f/2,type:'sine',v:v*.5});return}
-    if(d<=.45&&A<.06){tone({...base,type:'triangle',a:.002,d:Math.max(.35,d*1.4),v:v*.95});tone({...base,f:f/2,type:'sine',a:.004,d:Math.max(.3,d),v:v*.22});tone({...base,type:'sawtooth',lp:1300,a:.002,d:Math.max(.2,d),v:v*.38});tone({...base,f:f*2,type:'sine',a:.001,d:.12,v:v*.15});return}
-    tone({...base,type:'sawtooth',lp:850,q:1.2,v:v*.9});tone({...base,f:f/2,type:'triangle',v:v*.5});tone({...base,f:f*2,type:'sine',v:v*.12});return}
-  /* the Drowned Fountain: a glass harmonica, soft sines that swell in */
-  if(mode==='fish'){if(f<140){tone({...base,type:'sine',d:Math.max(d,.4),v:v*.85});return}
-    tone({...base,type:'sine',a:Math.max(A,.03),d:Math.max(d,.5),v:v*.78});tone({...base,f:f*2,type:'sine',a:Math.max(A,.05),d:Math.max(d,.5)*.7,v:v*.12});return}
-  /* busy packs (Coin Pouch and friends): short, soft plucks that don't smear into each other */
-  const busy=mode==='coin';
-  if(f<140){tone({...base,type:'triangle',lp:900,a:Math.min(A,.01),d,v:v*.85});return}
-  if(d<=.45&&A<.06){if(busy){tone({...base,type:'sine',a:.002,d:Math.max(.18,d*1.1),v:v*.95});tone({...base,f:f*3,type:'sine',a:.001,d:.06,v:v*.12});return}
-    tone({...base,type:'sine',a:.002,d:Math.max(.4,d*1.6),v:v*1.15});tone({...base,f:f*3,f2:o.f2?o.f2*3:undefined,type:'sine',a:.001,d:.18,v:v*.32});tone({...base,f:f*5.4,type:'sine',a:.001,d:.07,v:v*.12});return}
-  tone({...base,type:'triangle',lp:1500,v:v*1.15});tone({...base,f:f*2,type:'sine',v:v*.28})}
 function tone(o){
   if(AU.rec){AU.rec.push(['tone',o]);return}
   const c=AU.ctx;if(!c)return;const LG=AU.lfoG,VG=AU.vibG;
@@ -3733,7 +3715,7 @@ const Music={step:0,next:0,timer:null,bpm:90,intense:false,mode:'main',prevLead:
     const sv={ctx:AU.ctx,lfoG:AU.lfoG,vibG:AU.vibG};
     AU.ctx=oc;AU.vibG=oc.createGain();AU.vibG.gain.value=28;const v=oc.createOscillator();v.frequency.value=5.5;v.connect(AU.vibG);v.start();
     AU.lfoG=oc.createGain();AU.lfoG.gain.value=10;const l=oc.createOscillator();l.frequency.value=.5;l.connect(AU.lfoG);l.start(0);
-    try{for(const[k,o]of notes){if(k==='tone'&&o.bus===B){mintVoice(o,oc.destination);continue}({tone,noise,fm})[k](o.bus===B?{...o,bus:oc.destination}:o)}}finally{Object.assign(AU,sv)}
+    try{for(const[k,o]of notes)({tone,noise,fm})[k](o.bus===B?{...o,bus:oc.destination}:o)}finally{Object.assign(AU,sv)}
     this.busy=true;const r0=performance.now();
     oc.startRendering().then(buf=>{const took=(performance.now()-r0)/1000;this.rt=[...this.rt.slice(-5),took];this.ahead=Math.min(8,Math.max(2.5,1+3*Math.max(...this.rt)));
       if(gen!==this.gen)return;this.busy=false;const c=AU.ctx,src=c.createBufferSource(),g=c.createGain();src.buffer=buf;src.connect(g);g.connect(AU.mus);
