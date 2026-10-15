@@ -1802,7 +1802,7 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.230</div>
+  <div class="gamever" aria-label="Version">v1.2.231</div>
 </div>
 
 <script>
@@ -4820,6 +4820,7 @@ function renderJokers(){
   const gap=(k,cls)=>Array.from({length:Math.max(0,k)},()=>`<div class="jgap ${cls||''}" aria-hidden="true"></div>`).join('');
   el.innerHTML=`<div class="tray ${hollow?'hollow':''}"><div class="tvl">Charms <b>${n}/${slots()}</b></div><div class="cards jrow vcol" style="--n:${Math.max(n,slots(),1)}">${S.jokers.map(jokerSlot).join('')}${gap(slots()-n)}</div></div>
    <div class="tray cons"><div class="tvl">Pocket <b>${S.cons.length}/${S.consSlots}</b></div><div class="cards vcol">${S.cons.map(consSlot).join('')}${gap(S.consSlots-S.cons.length,'sq')}</div></div>`;
+  sizeCharms();
 }
 /* desktop: the Charm and Pocket columns run down the sides of the table; each sizes its stamps to the height it has */
 if(window.ResizeObserver){const ro=new ResizeObserver(()=>{if(S)sizeCharms()});addEventListener('DOMContentLoaded',()=>{});setTimeout(()=>{const m=$('#main');if(m)ro.observe(m)},0)}
@@ -4828,12 +4829,12 @@ if(window.ResizeObserver){const ro=new ResizeObserver(()=>{if(S)sizeCharms()});a
 function sizeCharms(){const desk=innerWidth>760;document.querySelectorAll('#jokerbar .tray').forEach(t=>{const c=t.querySelector('.cards');if(!c)return;
   if(!desk){t.style.removeProperty('--jw');c.style.removeProperty('--cols');delete t.dataset.lk;return}
   const n=c.children.length||1,k=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--k'))||1,key=n+'|'+innerWidth+'|'+innerHeight;
-  if(t.dataset.lk!==key){t.dataset.lk=key;
+  const L=sizeCharms.c||(sizeCharms.c={}),tk=(t.classList.contains('cons')?'p':'c')+key;if(!L[tk]){
     /* room under the tallest header (with a boss note) and above the footer */
     const avail=innerHeight/k-330,gap=10;
     let best=null;for(const cols of [1,2,3]){const rows=Math.ceil(n/cols),w=Math.floor((avail-(rows-1)*gap)/rows)-26;if(!best||w>best.w+6)best={cols,w};if(w>=64)break}
-    t.dataset.cols=best.cols;t.dataset.jw=Math.max(30,Math.min(76,best.w))}
-  c.style.setProperty('--cols',t.dataset.cols);t.style.setProperty('--jw',t.dataset.jw+'px')})}
+    L[tk]={cols:best.cols,jw:Math.max(30,Math.min(76,best.w))}}
+  c.style.setProperty('--cols',L[tk].cols);t.style.setProperty('--jw',L[tk].jw+'px')})}
 function jokerSlot(j,i){
   const d=JOKERS[j.key],sel=S.selJoker===i&&canEdit(),n=S.jokers.length;
   const gj=(S.roll==='glitched'||j.key==='missingno')&&S.screen==='play'&&S.glitchJ&&S.glitchJ[j.id];
