@@ -1881,6 +1881,20 @@ body.uv #uvfx{opacity:1}
 
 /* tooltip tags are inked labels: dark text and rule over a pale wash of the item's own colour, readable whatever that colour is */
 #tip .tb{color:#1b2a4a!important;background-image:linear-gradient(rgba(251,248,239,.62),rgba(251,248,239,.62))!important;border:1.5px solid rgba(27,42,74,.7);font-family:var(--font-mono);font-size:11px!important;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:3px 10px!important}
+
+/* ===== weather bulletins: a printed slip with an engraved glyph, ink deepened from the weather's colour ===== */
+.wxbanner{--wi:color-mix(in srgb,var(--wc) 42%,#1b2a4a);display:flex!important;align-items:center;gap:12px;text-align:left!important;padding:8px 16px 8px 10px!important;margin:0 auto;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--wc) 22%,#fbf8ef),#fbf8ef 38%)!important;border:1px solid var(--wi)!important;outline:1px solid color-mix(in srgb,var(--wi) 45%,transparent);outline-offset:-4px;color:var(--ink)!important;box-shadow:0 2px 6px rgba(27,42,74,.08)}
+.wxring img{width:28px;height:28px;image-rendering:auto}
+.sicon.wxring{width:64px;height:64px}.sicon.wxring img{width:42px;height:42px}
+.wxring{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--wc) 30%,#fbf8ef);box-shadow:inset 0 0 0 1.5px var(--wi),inset 0 0 0 4px #fbf8ef,inset 0 0 0 5px color-mix(in srgb,var(--wi) 40%,transparent)}
+.wxic{width:24px;height:24px;fill:none;stroke:var(--wi,currentColor);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.wxk{font:600 9.5px/1 'IBM Plex Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--wi);opacity:.85;margin-bottom:4px}
+.wxd{font-size:15px;line-height:1.3;color:var(--ink)}
+.wxd b{display:inline;font-family:var(--font-sc);font-size:17px;color:var(--wi)!important;margin-right:8px}
+.wxshort{--wi:color-mix(in srgb,var(--wc) 40%,#1b2a4a);color:var(--wi)!important;display:inline-flex;align-items:center;gap:3px}
+.wxshort .wxic{width:12px;height:12px;stroke-width:2.6}
+@media (max-width:760px){.wxbanner{padding:6px 10px 6px 7px!important;gap:8px}.wxring{width:30px;height:30px}.wxring img{width:21px;height:21px}.wxk{font-size:8px}.wxd{font-size:12.5px}.wxd b{font-size:14px}}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1927,7 +1941,7 @@ body.uv #uvfx{opacity:1}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.242</div>
+  <div class="gamever" aria-label="Version">v1.2.243</div>
 </div>
 
 <script>
@@ -4718,7 +4732,19 @@ const WEATHER={
 const wx=k=>!!S&&S.weather===k;
 function rollWeather(ante){const w=rollWeather0(ante);if(w&&!(S.wxSeen=S.wxSeen||[]).includes(w))S.wxSeen.push(w);return w}
 function rollWeather0(ante){if(S.nextWeather&&ante>1){const w=S.nextWeather;S.nextWeather=null;return w}const always=S.roll==='stormchaser'||hasK('rainmaker');if(!always&&(ante<2||rand()>=.35))return null;return pick(Object.keys(WEATHER).filter(k=>k!==S.weather))}
-const wxBanner=()=>S.weather?`<div class="wxbanner" style="--wc:${WEATHER[S.weather].col}"><b>${WEATHER[S.weather].name}</b> · ${fmt(WEATHER[S.weather].desc)}</div>`:'';
+/* engraved weather glyphs, drawn in the weather's ink */
+const WX_IC={
+ windy:'<path d="M4 11h15a4 4 0 1 0-4-4M4 17h21a4 4 0 1 1-4 4M4 23h11"/>',
+ rain:'<path d="M9 17a6 6 0 0 1 1-11.9A8 8 0 0 1 25 8a5 5 0 0 1 0 9z"/><path d="M11 21l-2 5M17 21l-2 5M23 21l-2 5"/>',
+ sunshine:'<circle cx="16" cy="16" r="5.5"/><path d="M16 3v4M16 25v4M3 16h4M25 16h4M6.8 6.8l2.8 2.8M22.4 22.4l2.8 2.8M6.8 25.2l2.8-2.8M22.4 9.6l2.8-2.8"/>',
+ moonlit:'<path d="M20 5a11 11 0 1 0 7 17A9 9 0 0 1 20 5z"/><path d="M24 7l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/>',
+ mist:'<path d="M4 9c4-3 8 3 12 0s8 3 12 0M4 16c4-3 8 3 12 0s8 3 12 0M4 23c4-3 8 3 12 0s8 3 12 0"/>',
+ storm:'<path d="M9 16a6 6 0 0 1 1-11.9A8 8 0 0 1 25 7a5 5 0 0 1 0 9z"/><path d="M17 14l-4 7h5l-3 7"/>',
+ snow:'<path d="M16 3v26M4.7 9.5l22.6 13M4.7 22.5l22.6-13M13 5l3 3 3-3M13 27l3-3 3 3"/>',
+ rainbow:'<path d="M3 24a13 13 0 0 1 26 0M7 24a9 9 0 0 1 18 0M11 24a5 5 0 0 1 10 0"/>'};
+const wxGlyph=k=>`<svg class="wxic" viewBox="0 0 32 32" aria-hidden="true">${WX_IC[k]||''}</svg>`;
+const wxBanner=()=>{if(!S.weather)return '';const W=WEATHER[S.weather];
+  return `<div class="wxbanner" style="--wc:${W.col}"><span class="wxring"><img src="${wxIcon(S.weather)}" alt=""></span><div class="wxtxt"><div class="wxk">Weather bulletin · Stage ${S.ante}</div><div class="wxd"><b>${W.name}</b>${fmt(W.desc)}</div></div></div>`};
 
 /* ================= RUN STATE ================= */
 function newRun(roll='standard',o={}){
@@ -4994,7 +5020,7 @@ function renderSide(){
      <div class="fig"><i>Scored</i><b class="num" id="rscore">${fmtN(play?S.roundScore:0)}</b></div>
      <div class="fig"><i>Flips</i><b class="num blue" id="sflips">${S.screen==='play'?S.flipsLeft:S.baseFlips}</b></div>
      <div class="fig"><i>Re-flips</i><b class="num red" id="sreflips">${S.screen==='play'?S.reflipsLeft:S.baseReflips}</b></div>
-     <div class="fig ${W?'haswx':''}" data-tip="wx"><i>${W?`<span style="color:${W.col}">${W.short}</span>`:'Stage'}</i><b class="num">${S.ante}<small>/${STAGES}</small></b></div>
+     <div class="fig ${W?'haswx':''}" data-tip="wx"><i>${W?`<span class="wxshort" style="--wc:${W.col}">${wxGlyph(S.weather)}${W.short}</span>`:'Stage'}</i><b class="num">${S.ante}<small>/${STAGES}</small></b></div>
    </div>
    <div class="lh-stamp"><b class="num gold" id="smoney">$${S.money}</b><span>On hand</span><em class="tix" id="stix">${tixTxt()}</em></div>
    <div class="s-btns lh-btns">${runChip()}<button class="btn small" data-act="runinfo">Run Info</button><button class="btn small" data-act="options">Options</button></div>
@@ -5890,7 +5916,7 @@ const ROMAN=n=>{let o='';[[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']].forEach(([
 function stageIntro(){if(!S)return;if($('#ripstage:not(.out)')){setTimeout(stageIntro,80);return}const F=floorOf(S.ante),bb=(S.blinds||[]).find(b=>b.kind==='boss'),W=S.weather&&WEATHER[S.weather];
   let el=$('#stageintro');if(!el){el=document.createElement('div');el.id='stageintro';document.body.appendChild(el)}
   const boss=bb&&BOSSES[bb.boss]?`<div class="sicard" style="--cc:${BOSSES[bb.boss].col}"><div class="sicon" style="background:${BOSSES[bb.boss].col}">${bossSil(bb.boss)?`<img src="${bossSil(bb.boss)}" alt="">`:''}</div><div><div class="silbl">Boss</div><b>${BOSSES[bb.boss].name}</b><div class="sidesc">${bossDesc(bb)}</div></div></div>`:'';
-  const wx=W?`<div class="sicard" style="--cc:${W.col}"><div class="sicon wxi" style="background:${W.col}">${W.short||''}</div><div><div class="silbl">Weather</div><b>${W.name}</b><div class="sidesc">${fmt(W.desc)}</div></div></div>`:'';
+  const wx=W?`<div class="sicard" style="--cc:color-mix(in srgb,${W.col} 50%,#1b2a4a);--wc:${W.col}"><div class="sicon wxi wxring"><img src="${wxIcon(S.weather)}" alt=""></div><div><div class="silbl">Weather</div><b>${W.name}</b><div class="sidesc">${fmt(W.desc)}</div></div></div>`:'';
   const hide=b=>S.roll==='glitched'||b.kind==='rival'||b.boss==='general'||b.boss==='tablerivals';
   const ledger=(S.blinds||[]).slice(0,3).map(b=>`<div class="${b.kind==='boss'?'boss':''}"><div class="silbl">${b.kind==='boss'?'Boss wager':b.kind==='big'?'Big wager':b.kind==='rival'?'Rival':'Small wager'}</div><b data-n="${hide(b)?'':blindTarget(b)}">${hide(b)?'???':'0'}</b></div>`).join('');
   el.innerHTML=`<div class="sibox" style="--fc:${F.col}"><div class="sistage"><i></i><span>Series ${seriesOf(S.ante)} · Stage ${S.ante}${S.ante<=STAGES?` of ${STAGES}`:''}</span><i></i></div><div class="siname">${F.name}</div><div class="siline">${F.line||''}</div>
