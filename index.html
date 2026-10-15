@@ -1908,6 +1908,10 @@ body.uv #uvfx{opacity:1}
   #jokerbar .jacts .mv .btn:disabled{opacity:.35}
   #jokerbar .jslot.sel{transform:none!important}
 }
+
+/* the event badge sits half above the panel and floats; leave room so the scrolling table doesn't clip it */
+.evpanel{margin-top:30px!important}
+@media (max-width:760px){.evpanel{margin-top:24px!important}}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1954,7 +1958,7 @@ body.uv #uvfx{opacity:1}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.244</div>
+  <div class="gamever" aria-label="Version">v1.2.245</div>
 </div>
 
 <script>
@@ -5817,7 +5821,7 @@ const EVENTS={
  chapel:{mapOnly:1,avail:()=>false,title:'The Chapel',text:'A small chapel sits where the noise of the halls cannot reach. Candles burn for everyone who ever lost here.',
   choices:[{label:'Turn a curse into a blessing',ok:()=>S.jokers.some(purifiable),why:'None of your Charms carry a curse you can lift',run:()=>{const j=S.jokers.find(purifiable);const c=CURSES[j.curse].name;j.curse=null;delete j.left;j.wear=pick(['polished','patina','proof']);play('levelup');return `The {a:${c}} curse burns away, and your ${JOKERS[j.key].name} comes out {a:${WEARS[j.wear].name}}.`}},
    {label:'Pray for guidance ($4)',ok:()=>S.money>=4,why:'Not enough money',run:()=>{S.money-=4;const ks=HANDS.filter(h=>h.key!=='bust').map(h=>h.key).sort((a,b)=>S.hands[b].played-S.hands[a].played).slice(0,2);ks.forEach(k=>S.hands[k].level++);play('levelup');return `${ks.map(k=>'{a:'+HAND[k].name+'}').join(' and ')} each go up a level.`}},
-   {label:'Bless a coin',ok:()=>S.purse.some(c=>c.wear!=='proof'),why:'Every coin is already blessed',run:()=>{const c=pick(S.purse.filter(x=>x.wear!=='proof'));c.wear='proof';play('levelup');return `Your ${COINS[c.type].name} is now {a:Proof Finish}.`}}]},
+   {label:'Bless a coin (random Wear)',ok:()=>S.purse.some(c=>!c.wear),why:'Every coin already has a Wear',run:()=>{const c=pick(S.purse.filter(x=>!x.wear));c.wear=pickCoinWear();play('levelup');return `The candles gutter. Your ${COINS[c.type].name} comes back {a:${WEARS[c.wear].name}}.`}}]},
  prizecounter:{mapOnly:1,avail:()=>false,title:'The Prize Counter',text:()=>{const o=prizeOffer();return `A prize counter stands lit in the dark. Everything here costs Tickets, and nothing here can be bought with money. You have {a:${S.tickets||0} Tickets}.<br><br>${o.map(k=>`<b>${JOKERS[k].name}</b> (${JOKERS[k].tix} tickets): ${typeof JOKERS[k].desc==='function'?JOKERS[k].desc(null):JOKERS[k].desc}`).join('<br>')}`},
   get choices(){return [...prizeOffer().map(k=>({label:`${JOKERS[k].name} (${JOKERS[k].tix} tickets)`,ok:()=>(S.tickets||0)>=JOKERS[k].tix&&S.jokers.length<slots(),why:'Not enough Tickets, or no free Charm slot',run:()=>{S.tickets-=JOKERS[k].tix;addJoker(k,JOKERS[k].cost);play('win');return `You take the {a:${JOKERS[k].name}} off the shelf.`}})),
     {label:'Cash in 3 Tickets ($10)',ok:()=>(S.tickets||0)>=3,why:'Not enough Tickets',run:()=>{S.tickets-=3;S.money+=10;play('money');return 'The machine dispenses {$:$10}.'}},declineC('You save your Tickets for later.')]}},
@@ -5827,7 +5831,7 @@ const EVENTS={
    {label:'A free Upgrade',ok:()=>freeUpgrades().length>0,why:'No Upgrades left',run:()=>{const k=pick(freeUpgrades());S.upgrades.push(k);UPGRADES[k].apply();play('levelup');return `You earn the {a:${UPGRADES[k].name}} Upgrade: ${UPGRADES[k].desc}.`}}]},
  rivalwin:{mapOnly:1,avail:()=>false,title:'Duel Won',text:'You won the duel. Take one prize. They will be tougher next time.',
   choices:[{label:()=>`Double the stake ($${2*rivalStake()})`,run:()=>{const v=2*rivalStake();S.rival.lvl++;S.money+=v;play('money');return `You collect {$:$${v}}.`}},
-   {label:()=>purseUsed()<S.purseMax?`Their ${COINS[rivalCoin()].name}`:`Trade a coin for their ${COINS[rivalCoin()].name}`,tip:()=>'ctypep:'+rivalCoin(),ok:()=>purseUsed()<S.purseMax||S.purse.some(tradeable),why:'Your purse is full',run:()=>{if(purseUsed()>=S.purseMax){S.event.trading=true;return null}const t=rivalCoin();S.rival.lvl++;S.purse.push({...mkCoin(t),wear:'proof'});play('win');return `You take their {a:Proof Finish ${COINS[t].name}}.`}},
+   {label:()=>purseUsed()<S.purseMax?`Their ${COINS[rivalCoin()].name}`:`Trade a coin for their ${COINS[rivalCoin()].name}`,tip:()=>'ctypep:'+rivalCoin()+':'+rivalWear(),ok:()=>purseUsed()<S.purseMax||S.purse.some(tradeable),why:'Your purse is full',run:()=>{if(purseUsed()>=S.purseMax){S.event.trading=true;return null}const t=rivalCoin(),w=rivalWear();S.rival.lvl++;S.purse.push({...mkCoin(t),wear:w});play('win');return `You take their {a:${WEARS[w].name} ${COINS[t].name}}.`}},
    {label:()=>`Learn their ${HAND[rivalInfo().fav].name}`,run:()=>{const h=rivalInfo().fav;S.rival.lvl++;S.hands[h].level+=2;play('levelup');return `{a:${HAND[h].name}} goes up {a:2 levels}.`}}]},
  q_courier:{title:'The Courier',text:()=>`A courier who can\'t remember where they were going holds out a sealed coin. "Carry it to stage ${Math.min(STAGES,S.ante+2)} for me. Don\'t spend it, don\'t melt it."`,avail:()=>!hasQuest('courier')&&S.ante<=STAGES-2,
   choices:[{label:'Accept the quest',ok:()=>purseUsed()<S.purseMax,why:'Your purse is full',run:()=>{S.purse.push(mkCoin('sealed'));startQuest('courier');play('buy');return 'You tuck the {a:Sealed Coin} into your purse. Reward on delivery: {$:$20} and a Rare Charm.'}},declineC('You leave them still holding it out.')]},
@@ -6068,7 +6072,7 @@ function tipContent(spec){
   if(k==='brgood'){const o=S.shop&&S.shop.br&&S.shop.br[i];if(!o)return null;
     if(o.k==='fence')return `<div class="tn">Fence Something</div><div class="td">${fmt('Take {$:$10} for something you never ask about. A random Charm {r:rusts}')}</div>`;
     return `<div class="tn">Loaded Coins</div><div class="td">${fmt(`Two coins for your purse:<br><b>${COINS.loaded.name}</b>: ${COINS.loaded.desc}<br><b>A counterfeit</b>: a ${COINS.twohead.name} or ${COINS.twotail.name}. It always lands on that face and gives {c:+25} more Points when it scores`)}</div>`}
-  if(k==='ctype'||k==='ctypep')return COINS[a]&&cn(a,k==='ctypep'?{wear:'proof'}:null);
+  if(k==='ctype'||k==='ctypep')return COINS[a]&&cn(a,k==='ctypep'?{wear:spec.split(':')[2]||null}:null);
   if(k==='prize'){const key=S.event&&prizeOffer()[i];return key&&jt(key)}
   if(k==='goal'){const g=GOALS[i];if(!g)return null;const ok=isUnlocked(g.kind,g.key)&&!PROF.unlockAll||!!PROF.unlocked[g.kind+':'+g.key];
     return `<div class="tn">#${i+1} ${ok?goalName(g):'Locked'}</div><div class="td">${ok?'Unlocked: ':'To unlock: '}${g.desc}</div><span class="tb" style="background:${ok?'var(--green)':'var(--grey)'}">${{charm:'Charm',coin:'Coin',pack:'Pack',roll:'Roll'}[g.kind]}</span>`}
@@ -6584,10 +6588,12 @@ const RIVALS=Object.keys(RIVAL_OF);
 const rivalInfo=()=>RIVAL_OF[S.rival.name]||(S.rival.name=RIVALS[0],RIVAL_OF[RIVALS[0]]);
 /* a relic only once: if you already hold it, they hand over a Loonie instead */
 /* a full purse can swap one coin for the rival's coin (not a stacked coin or a quest coin) */
+/* the rival's coin comes with a random Wear, rolled once per reward so the tooltip and the coin agree */
+const rivalWear=()=>S.event.rw||(S.event.rw=pickCoinWear());
 const tradeable=c=>!stkGroup(c)&&!COINS[c.type].quest;
 function tradeCoin(i){const c=S.purse[i];if(!c||!tradeable(c))return;const t=rivalCoin(),old=COINS[c.type].name;
-  S.purse.splice(i,1);S.rival.lvl++;S.purse.push({...mkCoin(t),wear:'proof'});S.event.trading=false;play('win');
-  S.event.result=`You hand over your {a:${old}} and take their {a:Proof Finish ${COINS[t].name}}.`;render()}
+  S.purse.splice(i,1);S.rival.lvl++;S.purse.push({...mkCoin(t),wear:rivalWear()});S.event.trading=false;play('win');
+  S.event.result=`You hand over your {a:${old}} and take their {a:${WEARS[rivalWear()].name} ${COINS[t].name}}.`;render()}
 const rivalCoin=()=>{const c=rivalInfo().coin;return COINS[c].relic&&S.purse.some(x=>x.type===c)?'silver':c};
 /* rematches: a rival you've beaten before comes back sharper (+40% tosses) for a bigger stake */
 const isRematch=()=>!!S&&!!S.rival&&!!(PS().rivalsBeat||{})[S.rival.name];
