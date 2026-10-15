@@ -1694,6 +1694,26 @@ body{background-color:color-mix(in srgb,var(--paper) 93%,var(--ftint,var(--paper
 .fishm .flog span{font-family:var(--font-sc);color:var(--navy)}.fishm .flog .unk span{color:var(--ink-dim)}
 .fishm .flog .unk img{filter:brightness(0) opacity(.18)}
 .fishm .fstat{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--line)}
+
+/* the ledger header stays on one line on desktop: long figures shrink instead of wrapping the buttons onto a new row */
+@media (min-width:761px){
+  .lh{flex-wrap:nowrap}
+  .lh-id{flex:1 1 140px;min-width:110px}
+  .lh-target,.lh-toss,.lh-figs,.lh-stamp,.lh-btns{flex:0 1 auto;min-width:0}
+  .lh-toss{min-width:170px}
+  .fig{min-width:0}.fig .num{font-size:clamp(16px,1.8vw,28px);white-space:nowrap}
+  #side .s-target{font-size:clamp(20px,2.4vw,34px);white-space:nowrap}
+  .lh-btns{flex:none}
+}
+
+@media (min-width:761px){
+  .lh-id{min-width:min(230px,18vw)}
+  #side .lh-name{font-size:clamp(20px,2.2vw,34px)}
+  .fig .num{font-size:clamp(15px,1.6vw,28px)}
+  .lh-toss .cm .chips,.lh-toss .cm .mult{font-size:clamp(18px,1.9vw,30px);min-width:52px}
+}
+
+.fig i{white-space:nowrap}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1740,7 +1760,7 @@ body{background-color:color-mix(in srgb,var(--paper) 93%,var(--ftint,var(--paper
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.222</div>
+  <div class="gamever" aria-label="Version">v1.2.223</div>
 </div>
 
 <script>
@@ -4736,7 +4756,8 @@ function setHB(name,chips,mult,bumpWhat){
 }
 /* figures change like a numbering machine: each digit that moved rolls into place */
 function odo(el,txt){if(!el)return;const old=el.dataset.v!=null?el.dataset.v:el.textContent;el.dataset.v=txt;
-  if(reduced||old===txt||!/\d/.test(txt)){el.textContent=txt;return}
+  const now=performance.now(),fast=now-(+el.dataset.t||0)<160;el.dataset.t=now;
+  if(reduced||fast||old===txt||!/\d/.test(txt)){el.textContent=txt;return}
   const a=[...txt],b=[...old],off=b.length-a.length;el.innerHTML=a.map((ch,i)=>/\d/.test(ch)&&ch!==b[i+off]?`<span class="odr">${ch}</span>`:escH(ch)).join('')}
 function bump(el){if(!el)return;el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}
 function updatePreview(){
@@ -4759,6 +4780,7 @@ function renderJokers(){
    <div class="tray cons"><div class="tvl">Pocket <b>${S.cons.length}/${S.consSlots}</b></div><div class="cards vcol">${S.cons.map(consSlot).join('')}${gap(S.consSlots-S.cons.length,'sq')}</div></div>`;
 }
 /* desktop: the Charm and Pocket columns run down the sides of the table; each sizes its stamps to the height it has */
+if(window.ResizeObserver){const ro=new ResizeObserver(()=>{if(S)sizeCharms()});addEventListener('DOMContentLoaded',()=>{});setTimeout(()=>{const m=$('#main');if(m)ro.observe(m)},0)}
 function sizeCharms(){const desk=innerWidth>760;document.querySelectorAll('#jokerbar .tray').forEach(t=>{const c=t.querySelector('.cards');if(!c)return;
   if(!desk){t.style.removeProperty('--jw');c.style.removeProperty('--cols');return}
   const n=c.children.length||1,lab=t.querySelector('.tvl'),avail=t.clientHeight-(lab?lab.offsetHeight:0)-14,gap=10;
