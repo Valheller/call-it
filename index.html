@@ -1714,6 +1714,9 @@ body{background-color:color-mix(in srgb,var(--paper) 93%,var(--ftint,var(--paper
 }
 
 .fig i{white-space:nowrap}
+
+/* while a pick plays out, or once the picks are used, the rest of the pack can't be taken */
+.packview:has(.popts.locked) .pbtns .btn,.popts.locked .pbtns .btn{pointer-events:none;opacity:.45}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1760,7 +1763,7 @@ body{background-color:color-mix(in srgb,var(--paper) 93%,var(--ftint,var(--paper
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.223</div>
+  <div class="gamever" aria-label="Version">v1.2.224</div>
 </div>
 
 <script>
@@ -4970,7 +4973,7 @@ function packHTML(){
       <div class="pname">${name}</div><div class="pbtns">${btns}</div></div>`}).join('');
   return `<div class="panel packview" style="--pc:${info.col};--pk:rgb(${mintInk(hex2rgb(info.col)).join(',')})"><div class="packhead"><div><div class="ptitle" style="color:${info.col}">${packName(P)}</div>
     ${P.done?'<div class="lbl" style="max-width:62ch;line-height:1.35">Here\'s what was inside.</div>':''}</div>
-    ${P.done?'<button class="btn orange big" data-act="skippack">Continue</button>':'<button class="btn red" data-act="skippack">Skip</button>'}</div><div class="popts">${opts}</div></div>${purseHTML()}`;
+    ${P.done?'<button class="btn orange big" data-act="skippack">Continue</button>':'<button class="btn red" data-act="skippack">Skip</button>'}</div><div class="popts ${P.busy||P.picks<=0?'locked':''}">${opts}</div></div>${purseHTML()}`;
 }
 function renderOverlay(){
   const o=$('#overlay');
@@ -6426,11 +6429,14 @@ function envOpen(pk){if(reduced)return;const box=$('.popts');if(!box)return;cons
   e.innerHTML=`<i class="envback"></i><i class="envflap"></i><i class="envseal"><img src="${packIconFor(pk.kind,pk.size)}" alt=""></i><i class="envseal half"></i>`;
   document.body.appendChild(e);setTimeout(()=>play('tear'),260);setTimeout(()=>e.remove(),1000)}
 async function packPick(i,mode){
-  const P=S.pack;if(!P)return;const o=P.opts[i];if(!o||o.taken)return;
+  const P=S.pack;if(!P||P.busy||P.done||P.picks<=0)return;const o=P.opts[i];if(!o||o.taken)return;
+  /* one pick at a time: nothing else in the pack can be taken until this one has finished */
+  P.busy=true;try{
   if(PX[o.kind]){const X=PX[o.kind];if(X.block(o))return;o.taken=true;P.picks--;await X.take(o)}
   else if(o.kind==='coin'){if(purseUsed()>=S.purseMax)return;o.taken=true;P.picks--;if(o.qroll){let n=0;for(let k=0;k<o.qroll&&purseUsed()<S.purseMax;k++){S.purse.push(mkCoin('copper'));n++}if(n<o.qroll)S.money+=o.qroll-n;play('buy')}else if(o.pair){const g=uid++;S.purse.push({...mkCoin(o.type),stk:g},{...mkCoin(o.type),stk:g})}else S.purse.push({...mkCoin(o.type),wear:o.wear||null,defect:o.defect||null});play('buy')}
   else if(mode==='keep'){if(!consRoom())return;o.taken=true;P.picks--;const kc={kind:o.kind,key:o.key,hand:o.hand};if(!kc.key)delete kc.key;if(!kc.hand)delete kc.hand;S.cons.push(kc);play('buy')}
   else{const c={kind:o.kind,key:o.key,hand:o.hand};if(!c.key)delete c.key;if(!c.hand)delete c.hand;if(consBlock(c))return;o.taken=true;P.picks--;render();await applyCons(c)}
+  }finally{P.busy=false}
   if(S.pack&&S.pack.picks<=0){if(S.pack.opts.some(x=>x.kind==='myst'))S.pack.done=true;else S.pack=null}
   if(!S.pack&&S.treasure){goNext();return}
   render();
