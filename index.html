@@ -1592,6 +1592,14 @@ body{background-color:color-mix(in srgb,var(--paper) 93%,var(--ftint,var(--paper
 .blinds.ways .bcol.way:only-child{flex-basis:440px;max-width:440px}
 /* the table can still scroll when something is genuinely too tall, but never shows a scroll bar */
 #main{scrollbar-width:none}#main::-webkit-scrollbar{display:none}
+
+/* fast forward sits in the ledger's footer line, inside the frame, as an outlined mono tag */
+#ffbtn{font-family:var(--font-mono);font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;gap:6px;padding:4px 12px;background:var(--paper);color:var(--navy);border:1.5px solid var(--navy);box-shadow:none;
+  right:calc(30px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom))}
+#ffbtn .ffi{font-size:11px;letter-spacing:-3px}#ffbtn b{min-width:0}
+#ffbtn.on{background:var(--navy);color:var(--paper);box-shadow:none}
+#ffbtn:active{transform:translateY(1px);box-shadow:none}
+@media (max-width:700px){#ffbtn{right:calc(14px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom));font-size:11px;padding:4px 10px}}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1638,7 +1646,7 @@ body{background-color:color-mix(in srgb,var(--paper) 93%,var(--ftint,var(--paper
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.217</div>
+  <div class="gamever" aria-label="Version">v1.2.218</div>
 </div>
 
 <script>
