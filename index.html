@@ -1472,6 +1472,30 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
 .htable td:nth-child(2){font-family:var(--font-sc);font-weight:700;font-size:17px;color:var(--navy)}
 .htable .cmv span{background:none!important;font-family:var(--font-mono);font-weight:600;min-width:34px}
 .htable .cmv .c{color:var(--chips)!important}.htable .cmv .m{color:var(--mult)!important}
+
+/* the charm row as in the mockup: a vertical label, each Charm in a dotted stamp frame, and a dashed blank for every free slot */
+#jokerbar{gap:22px;align-items:stretch}
+#jokerbar .tray{background:none;border:0;padding:0;display:flex;align-items:center;gap:12px}
+.tvl{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--line);white-space:nowrap;align-self:center}
+.tvl b{font-weight:600;color:var(--navy);margin-top:6px}
+#jokerbar .cards{flex:1;justify-content:flex-start;padding:10px 0 4px;min-height:0}
+#jokerbar .tray.cons{flex:0 0 auto;min-width:0}#jokerbar .tray.cons .cards{flex:0 0 auto}
+#jokerbar .jslot::before,.jgap{content:'';width:calc(var(--jw) + 14px);height:calc(var(--jw) + 26px);box-sizing:border-box}
+#jokerbar .jslot::before{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin-top:-3px;border:2px dotted var(--line);background:var(--stamp);outline:4px solid var(--paper);z-index:-1;pointer-events:none}
+#jokerbar .jslot{isolation:isolate;padding:6px 7px 10px}
+.jgap{flex:none;border:1px dashed color-mix(in srgb,var(--line) 45%,transparent);align-self:center}
+#jokerbar .cards.jrow .jcard{width:min(var(--jw),calc((100cqw - (var(--n) - 1)*var(--cg)) / var(--n) - 14px))}
+#jokerbar .cards.jrow .jgap{width:min(calc(var(--jw) + 14px),calc((100cqw - (var(--n) - 1)*var(--cg)) / var(--n)));height:calc(min(var(--jw),calc((100cqw - (var(--n) - 1)*var(--cg)) / var(--n) - 14px)) + 26px)}
+#jokerbar .jslot.dragging::before{opacity:.4}
+.ghost.jslot::before{display:none}
+@media (max-width:760px){
+  #jokerbar{flex-direction:row;gap:10px}
+  #jokerbar .tray{gap:6px}.tvl{font-size:8px}
+  #jokerbar .jslot{padding:4px 4px 7px}
+  #jokerbar .jslot::before,.jgap{width:calc(var(--jw) + 8px);height:calc(var(--jw) + 16px)}
+  #jokerbar .cards.jrow .jcard{width:min(var(--jw),calc((100cqw - (var(--n) - 1)*var(--cg)) / var(--n) - 8px))}
+  #jokerbar .cards.jrow .jgap{height:calc(min(var(--jw),calc((100cqw - (var(--n) - 1)*var(--cg)) / var(--n) - 8px)) + 16px)}
+}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -1518,7 +1542,7 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.214</div>
+  <div class="gamever" aria-label="Version">v1.2.215</div>
 </div>
 
 <script>
@@ -4518,10 +4542,9 @@ function syncStats(){if(!S)return;if(S.money>(PS().maxMoney||0))PS().maxMoney=S.
 function renderJokers(){
   const el=$('#jokerbar');const n=S.jokers.length;
   const hollow=S.screen==='play'&&bossIs('hollow')&&!S.hollowFree;
-  el.innerHTML=`<div class="tray ${hollow?'hollow':''}"><div class="cards jrow" style="--n:${Math.max(n,1)}">${n?S.jokers.map(jokerSlot).join(''):'<div class="empty"></div>'}</div>
-   <div class="trayfoot"><span>Charms · drag to reorder</span><span>${n}/${slots()}</span></div></div>
-   <div class="tray cons"><div class="cards">${S.cons.length?S.cons.map(consSlot).join(''):'<div class="empty"></div>'}</div>
-   <div class="trayfoot"><span>Consumables</span><span>${S.cons.length}/${S.consSlots}</span></div></div>`;
+  const gap=(k,cls)=>Array.from({length:Math.max(0,k)},()=>`<div class="jgap ${cls||''}" aria-hidden="true"></div>`).join('');
+  el.innerHTML=`<div class="tray ${hollow?'hollow':''}"><div class="tvl">Charms <b>${n}/${slots()}</b></div><div class="cards jrow" style="--n:${Math.max(n,slots(),1)}">${S.jokers.map(jokerSlot).join('')}${gap(slots()-n)}</div></div>
+   <div class="tray cons"><div class="tvl">Pocket <b>${S.cons.length}/${S.consSlots}</b></div><div class="cards">${S.cons.map(consSlot).join('')}${gap(S.consSlots-S.cons.length,'sq')}</div></div>`;
 }
 function jokerSlot(j,i){
   const d=JOKERS[j.key],sel=S.selJoker===i&&canEdit(),n=S.jokers.length;
