@@ -1910,7 +1910,7 @@ body.uv #uvfx{opacity:1}
 }
 
 /* the event badge sits half above the panel and floats; leave room so the scrolling table doesn't clip it */
-.evpanel{margin-top:48px!important}
+.evpanel{margin-top:40px!important}
 @media (max-width:760px){.evpanel{margin-top:40px!important}}
 
 /* ===== face-down coins: one plain sealed token for every coin, so neither its shape, edge nor finish gives it away ===== */
@@ -2109,6 +2109,22 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
 .htable.keyt td.ds{color:var(--ink-dim)!important;font:600 10px/1.2 var(--font-mono);letter-spacing:.1em;text-transform:uppercase}
 .htable.keyt tr:hover td{background:#f3ecd8!important}
 .htable.keyt kbd{display:inline-block;white-space:nowrap;font:600 12px/1 var(--font-mono);color:#1b2a4a!important;background:linear-gradient(#ffffff,#ece5d3);border:1px solid #9aa3b0;border-bottom-width:3px;border-radius:4px;padding:4px 7px;box-shadow:0 1px 0 rgba(27,42,74,.15)}
+
+/* sweep fixes: readable tags, money, ticket prices */
+.ctag{color:#1b2a4a!important;background-image:linear-gradient(rgba(251,248,239,.62),rgba(251,248,239,.62))!important;border:1.5px solid rgba(27,42,74,.7);font-family:var(--font-mono);font-size:11px!important;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.k-money,#tip .td .k-money,.cdesc .k-money{color:#8f6209}
+.price.tixprice{color:#fff6e6!important}
+
+.s-rs{color:color-mix(in srgb,var(--sc) 58%,#1b1b1b)!important}
+
+/* sweep fixes (phone): telegram receipts, long wager targets, interest coupons */
+#toasts .toast.rcpt:has(.tghead) .rhead{display:none}
+#toasts .tghead{display:block;font:600 9px/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase;color:#a23b2a;border-bottom:1px dashed rgba(27,42,74,.35);padding-bottom:5px;margin-bottom:6px}
+#toasts .tgbody{display:block;font:600 12px/1.35 var(--font-mono);letter-spacing:.06em;color:var(--ink)}
+.bcol.wcheq .btgt .tv{white-space:nowrap;font-size:clamp(14px,min(28px,4.6vw),28px)}
+@media (max-width:760px){.cpline{flex-wrap:wrap}.cpline .v{flex-wrap:nowrap}.coupons{flex-wrap:nowrap;max-width:none}.cline .coupon{width:16px;height:22px;margin-left:-3px}.cline .coupon small{display:none}.cline .coupon b{font-size:8px!important}}
+
+@media (max-width:760px){.lh .ovp{display:none}}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -2155,7 +2171,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.255</div>
+  <div class="gamever" aria-label="Version">v1.2.256</div>
 </div>
 
 <script>
@@ -3204,7 +3220,10 @@ const pickCurse=(k,pool)=>{const ok=(pool||Object.keys(CURSES)).filter(c=>c!=='i
 const purifiable=j=>!!j.curse&&j.curse!=='inflation',noSell=j=>cursed(j,'bound')||j.curse==='inflation'||j.key==='cursedidol';
 const inflN=()=>S?S.jokers.filter(j=>j.curse==='inflation').length:0;
 const inflMult=()=>S&&!S.bigspender&&inflN()?1+inflN()*Math.max(0,S.money)/50:1;
-const curseBadge=(c,left)=>`<i class="cbadge" style="--cc:${CURSES[c].col}">${c==='fleeting'?(left??5):CURSES[c].letter}</i>`;
+/* deepen a bright item colour into a readable ink for text on paper */
+const inkOf=c=>`color-mix(in srgb,${c} 58%,#1b1b1b)`;
+const lightCol=c=>{try{const[r,g,b]=hex2rgb(c);return .2126*r+.7152*g+.0722*b>130}catch(e){return false}};
+const curseBadge=(c,left)=>`<i class="cbadge" style="--cc:${CURSES[c].col};${lightCol(CURSES[c].col)?'color:#1b1b1b':''}">${c==='fleeting'?(left??5):CURSES[c].letter}</i>`;
 const STAKES=[null,
  {name:'Copper Stake',col:'#c87533',desc:'Base difficulty'},
  {name:'Silver Stake',col:'#9aa3ab',desc:'Wager targets are {a:25%} higher'},
@@ -3213,7 +3232,7 @@ const STAKES=[null,
  {name:'Diamond Stake',col:'#7fd6ff',desc:'One random coin lands {a:face down} every toss'},
  {name:'Obsidian Stake',col:'#6a4a8a',desc:'Remaining Flips pay {r:nothing} at cash-out'},
 ];
-const stakeDesc=n=>STAKES.slice(1,n+1).map((x,i)=>`<div><b style="color:${x.col}">${x.name}</b>: ${fmt(x.desc)}</div>`).join('');
+const stakeDesc=n=>STAKES.slice(1,n+1).map((x,i)=>`<div><b style="color:${inkOf(x.col)}">${x.name}</b>: ${fmt(x.desc)}</div>`).join('');
 const SECOND_BOSS=['anchor','tax','pinch','toll','shroud','fog','rust','gale','frost','miser','thief','reflection'];
 /* FATAL ERROR swaps in a new corruption before every toss, and shows it in advance */
 const FATAL_POOL=['eclipse','undertow','tax','pinch','whim','hollow','rust','toll','gale','shroud','fog','frost','gravity','reflection','miser','blackcat','clock'];
@@ -3246,7 +3265,7 @@ function houseSay(t,ms=5000){if(S&&S.tut)return;if(introUp()){setTimeout(()=>hou
   const plain=String(t).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim(),
     msg=plain.toUpperCase().replace(/[.!?]+(\s|$)/g,' STOP ').replace(/\s+/g,' ').trim().replace(/(STOP)?$/,m=>m||' STOP').trim();
   toast(`<span class="tghead">Telegram · The House</span><span class="tgbody" aria-label="${escH(plain)}"></span>`,ms+msg.length*22,true,'say');
-  const box=[...document.querySelectorAll('#saybox .tgbody')].pop();if(!box)return;
+  const box=[...document.querySelectorAll('#saybox .tgbody, #toasts .tgbody')].filter(b=>!b.textContent).pop();if(!box)return;
   if(reduced){box.textContent=msg;return}let k=0;const step=()=>{if(!box.isConnected)return;k=Math.min(msg.length,k+2);box.textContent=msg.slice(0,k);if(k%6<2&&msg[k-1]!==' ')play('type');if(k<msg.length)setTimeout(step,22)};step()}
 const HOUSE_MD=['Did you try the medicine drug?','you are stupid','don\'t care','more mouse bites!','I am very smart.'];
 function drSay(t,ms=4200){if(introUp()){setTimeout(()=>drSay(t,ms),300);return}toast(`<b style="color:var(--cyan)">House</b> · ${t||pick(HOUSE_MD)}`,ms,false,'say')}
@@ -4605,7 +4624,7 @@ const SPR_Q=["..........","..11111...",".11...11..",".....11...","....11....",".
 
 /* ---- option handlers for the new pack contents ---- */
 const PX={
- charm:{name:o=>JOKERS[o.key].name+(o.wear?`<br><small style="color:var(--money)">${WEARS[o.wear].name}</small>`:'')+(o.curse?`<br><small style="color:${CURSES[o.curse].col}">${CURSES[o.curse].name}</small>`:''),
+ charm:{name:o=>JOKERS[o.key].name+(o.wear?`<br><small style="color:var(--money)">${WEARS[o.wear].name}</small>`:'')+(o.curse?`<br><small style="color:${inkOf(CURSES[o.curse].col)}">${CURSES[o.curse].name}</small>`:''),
   face:o=>`<div class="jin" style="--jbg:${JOKERS[o.key].bg};${rarVars(o.key)}">${IMG(icon(o.key))}</div>${o.curse?curseBadge(o.curse):''}`,
   block:()=>S.jokers.length>=slots()?'No room for a Charm':null,
   take:o=>{addJoker(o.key,JOKERS[o.key].cost);const nj=S.jokers[S.jokers.length-1];if(o.wear)nj.wear=o.wear;if(o.curse){nj.curse=o.curse;if(o.curse==='fleeting')nj.left=5}PS().buys[o.key]=(PS().buys[o.key]||0)+1;play('buy');if(JOKERS[o.key].r===5)play('unlock')}},
@@ -5577,7 +5596,7 @@ function renderOverlay(){
   }else if(S&&S.screen==='win'){
     o.innerHTML=`<div class="overlay"><div class="panel endpanel"><h1 style="color:var(--money)">You Win!</h1>
       <div class="lbl">You cleared all ${STAGES} stages on ${STAKES[S.stake].name}.</div>
-      ${S.flags.newStake?`<div class="row" style="justify-content:center"><span>New: <b style="color:${STAKES[S.flags.newStake].col}">${STAKES[S.flags.newStake].name}</b> unlocked for the ${ROLLS[S.roll].name}</span></div>`:''}
+      ${S.flags.newStake?`<div class="row" style="justify-content:center"><span>New: <b style="color:${inkOf(STAKES[S.flags.newStake].col)}">${STAKES[S.flags.newStake].name}</b> unlocked for the ${ROLLS[S.roll].name}</span></div>`:''}
       ${S.daily?shareBox():''}
       <div class="row"><span>Best toss</span><b>${fmtN(S.stats.best)}</b></div>
       <div class="row"><span>Coins flipped</span><b>${fmtN(S.stats.flips)}</b></div>
@@ -5602,7 +5621,7 @@ function runInfoModal(){
   if(RI_TAB==='upgrades'){const U=S?S.upgrades.filter(k=>UPGRADES[k]):[];
     return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${U.length?`<div class="upglist">${U.map(k=>{const u=UPGRADES[k];return `<div class="upgrow"><div class="cic tile" style="--jbg:#5d3d94">${IMG(upgIcon(k))}</div><div><div class="cname">${u.name}${u.req?' <small class="k-a">II</small>':''}</div><div class="ds">${fmt(u.desc)}</div></div></div>`}).join('')}</div>`:'<div class="cdesc" style="text-align:center;padding:20px 0">No Upgrades yet. The shop sells one each stage.</div>'}</div><div class="optfoot"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`}
   if(RI_TAB==='book')return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${passbookHTML()}</div><div class="optfoot" style="display:flex;gap:10px;justify-content:center"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
-  if(RI_TAB==='run')return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${S?questsHTML():''}${S&&S.seed?`<div class="lbl" style="text-align:center;margin:2px 0 6px">Seed <b style="color:var(--navy);letter-spacing:.08em">${S.seed}</b> <button class="btn tiny" data-act="copyseed">Copy</button></div>`:''}${S&&S.pool?`<div class="lbl" style="text-align:center;margin:0 0 4px">This run's pool: <b>${S.pool.charm.length}</b> Charms · <b>${S.pool.coin.length}</b> coins · <b>${S.pool.rune.length}</b> Runes · <b>${S.pool.spirit.length}</b> Spirits · <b>${S.pool.alm.length}</b> Almanacs</div><div class="poolgrid">${S.pool.charm.map(k=>`<span class="cic charm" style="--jbg:${JOKERS[k].bg};${rarVars(k)}" title="${JOKERS[k].name}">${IMG(icon(k))}</span>`).join('')}</div><div class="poolgrid">${S.pool.coin.map(t=>`<span class="cic coinc" title="${COINS[t].name}">${coinIcon(t)}</span>`).join('')}${S.pool.rune.map(k=>`<span class="cic" title="${RUNES[k].name}">${IMG(consInfo({kind:'rune',key:k}).icon)}</span>`).join('')}${S.pool.spirit.map(k=>`<span class="cic" title="${SPIRITS[k].name}">${IMG(consInfo({kind:'spirit',key:k}).icon)}</span>`).join('')}</div>`:''}${S&&ROLLS[S.roll]?`<div class="lbl" style="text-align:center;margin:-6px 0 8px">Playing the <b style="color:var(--navy)">${rollName(S.roll)}</b> on <b style="color:${STAKES[S.stake].col}">${STAKES[S.stake].name}</b>${S.daily?' (Daily Toss)':''}: ${fmt(ROLLS[S.roll].desc)}</div>`:''}<div class="lbl" style="text-align:center;margin:-4px 0 10px">Collection: ${Object.keys(JOKERS).length} Charms · ${ALM_ALL().length} Almanacs · ${Object.keys(RUNES).length} Runes · ${Object.keys(SPIRITS).length} Spirits</div>
+  if(RI_TAB==='run')return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${S?questsHTML():''}${S&&S.seed?`<div class="lbl" style="text-align:center;margin:2px 0 6px">Seed <b style="color:var(--navy);letter-spacing:.08em">${S.seed}</b> <button class="btn tiny" data-act="copyseed">Copy</button></div>`:''}${S&&S.pool?`<div class="lbl" style="text-align:center;margin:0 0 4px">This run's pool: <b>${S.pool.charm.length}</b> Charms · <b>${S.pool.coin.length}</b> coins · <b>${S.pool.rune.length}</b> Runes · <b>${S.pool.spirit.length}</b> Spirits · <b>${S.pool.alm.length}</b> Almanacs</div><div class="poolgrid">${S.pool.charm.map(k=>`<span class="cic charm" style="--jbg:${JOKERS[k].bg};${rarVars(k)}" title="${JOKERS[k].name}">${IMG(icon(k))}</span>`).join('')}</div><div class="poolgrid">${S.pool.coin.map(t=>`<span class="cic coinc" title="${COINS[t].name}">${coinIcon(t)}</span>`).join('')}${S.pool.rune.map(k=>`<span class="cic" title="${RUNES[k].name}">${IMG(consInfo({kind:'rune',key:k}).icon)}</span>`).join('')}${S.pool.spirit.map(k=>`<span class="cic" title="${SPIRITS[k].name}">${IMG(consInfo({kind:'spirit',key:k}).icon)}</span>`).join('')}</div>`:''}${S&&ROLLS[S.roll]?`<div class="lbl" style="text-align:center;margin:-6px 0 8px">Playing the <b style="color:var(--navy)">${rollName(S.roll)}</b> on <b style="color:${inkOf(STAKES[S.stake].col)}">${STAKES[S.stake].name}</b>${S.daily?' (Daily Toss)':''}: ${fmt(ROLLS[S.roll].desc)}</div>`:''}<div class="lbl" style="text-align:center;margin:-4px 0 10px">Collection: ${Object.keys(JOKERS).length} Charms · ${ALM_ALL().length} Almanacs · ${Object.keys(RUNES).length} Runes · ${Object.keys(SPIRITS).length} Spirits</div>
     </div><div class="optfoot" style="display:flex;gap:10px;justify-content:center"><button class="btn green" data-act="collection">Collection</button><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
   return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">
     <table class="htable rateb">${HAND_GROUPS.map(([g,ks])=>`<tr class="hgrp"><td colspan="4">${g}</td></tr>`+ks.map(k=>HAND[k]).map(h=>{const pl=S?S.hands[h.key].played:0;const hv=S?handLv(h.key):{chips:h.chips,mult:h.mult,lv:1,mast:0};const lv=hv.lv,c=hv.chips,m=hv.mult;
@@ -6183,7 +6202,7 @@ function recordsModal(){
       ${list('Rolls played',fav(rollsPlayed,6),(k,v)=>ROLLS[k]?`<div class="row"><span>${ROLLS[k].name}</span><b>${v}${rollsWon[k]?` · ${rollsWon[k]} won`:''}${PROF.stakes[k]?` <small style="color:${STAKES[PROF.stakes[k]].col}">★${PROF.stakes[k]}</small>`:''}</b></div>`:'')}
       ${list('Bosses beaten most',fav(st.bossBeat,6),(k,v)=>BOSSES[k]?`<div class="row"><span class="srow">${bossSil(k)?`<img src="${bossSil(k)}" alt="" style="background:${BOSSES[k].col};border-radius:2px">`:''}${BOSSES[k].name}</span><b>${v}</b></div>`:'')}
     </div>`}
-  else if(REC_TAB==='history')body=PROF.history.length?`<table class="htable">${PROF.history.map(h=>`<tr><td class="lv">${new Date(h.t).toLocaleDateString()}</td><td><div>${ROLLS[h.roll]?rollName(h.roll):h.roll}${h.daily?' · Daily':''}</div><div class="ds" style="color:${STAKES[h.stake||1].col}">${STAKES[h.stake||1].name}</div></td>
+  else if(REC_TAB==='history')body=PROF.history.length?`<table class="htable">${PROF.history.map(h=>`<tr><td class="lv">${new Date(h.t).toLocaleDateString()}</td><td><div>${ROLLS[h.roll]?rollName(h.roll):h.roll}${h.daily?' · Daily':''}</div><div class="ds" style="color:${inkOf(STAKES[h.stake||1].col)}">${STAKES[h.stake||1].name}</div></td>
       <td><div style="color:${h.won?'var(--money)':'var(--mult)'}">${h.won?'Won':'Stage '+h.stage}</div><div class="ds">${h.won?'':h.boss}</div></td><td class="cmv">${fmtN(h.best)}</td>
       <td><div class="histch">${h.charms.slice(0,6).map(k=>JOKERS[k]?`<img src="${icon(k)}" alt="${JOKERS[k].name}" title="${JOKERS[k].name}">`:'').join('')}</div></td></tr>`).join('')}</table>`:'<div class="cdesc" style="text-align:center">No finished runs yet.</div>';
   else{const done=g=>isUnlocked(g.kind,g.key)&&!PROF.unlockAll||!!PROF.unlocked[g.kind+':'+g.key],n=GOALS.filter(done).length;
@@ -6397,7 +6416,7 @@ function startBlind(){
   S.roundScore=0;S.wagerReflips=0;S.dcUsed=[];S.rubyUsed=false;S.houseOwned=[];S.chronoUsed=false;S.matchLit=0;S.aceUsed=0;S.rfd=[];S.wcalls=[];S.wedges=0;if(S.contract)setTimeout(()=>toast(`Contract: <b>${CONTRACTS[S.contract.key].name}</b>. ${CONTRACTS[S.contract.key].desc}`),400);S.phase='idle';S.results=[];S.selected=[];S.csel=[];S.call=null;S.selJoker=null;S.selCons=null;S.tossNo=0;S.usedTypes=[];
   S.purse.forEach(c=>{c.fog=false;if(c.face==='E')c.face='H'});
   render();
-  if(S.boss){play('boss');shake(6);if(BOSSES[S.boss].final)showdownIntro();else setTimeout(()=>popup($('#callb'),BOSSES[S.boss].name,'huge'),150)}
+  if(S.boss){play('boss');shake(6);const bn=BOSSES[S.boss].name;if(BOSSES[S.boss].final)showdownIntro();else setTimeout(()=>popup($('#callb'),bn,'huge'),150)}
   if(S.duel)rivalTurn();
   if(S.boss==='house')setTimeout(()=>houseSay('So. You want to play against me. Sit down.',6000),2600);
   
