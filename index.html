@@ -2083,6 +2083,18 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
 @keyframes vdial{from{transform:rotate(-300deg)}to{transform:rotate(0)}}
 @keyframes vbolt{to{transform:translate(var(--dx,0),var(--dy,0));opacity:.4}}
 @keyframes vswing{to{transform:rotateY(-105deg);opacity:.2}}
+
+/* ===== boot: the House vault door ===== */
+.bootvault{position:relative;width:clamp(200px,44vmin,380px);height:clamp(200px,44vmin,380px);perspective:1400px;animation:bootidle 2.4s ease-in-out infinite}
+#boot.go .bootvault{animation:none}
+#boot .vdoor,#boot .vdoor *{animation-play-state:paused!important}
+#boot.go .vdoor,#boot.go .vdoor *{animation-play-state:running!important}
+#boot .vdoor{animation-duration:.6s!important;animation-timing-function:cubic-bezier(.45,0,.75,.5)!important}
+@keyframes vswingboot{to{transform:rotateY(-108deg);opacity:.15}}
+#boot .vdoor{animation-name:vswingboot!important}
+#boot.land .boottxt{position:absolute;left:0;right:0;top:50%;translate:0 -50%;font-size:clamp(40px,9vmin,80px)!important;z-index:3}
+#boot.land .bootvault{z-index:2}
+#boot.land .boottxt{transition:opacity .4s .4s!important}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -2105,7 +2117,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
 <div id="showdown" hidden></div>
 <div id="overlay" hidden></div>
 <div id="boot"><div class="bootin">
-  <div class="bootcoin"><div class="bootspin"><div class="bootface"><img alt=""></div></div></div>
+  <div class="bootvault"><div class="vdoor"><i class="vb b1"></i><i class="vb b2"></i><i class="vb b3"></i><i class="vb b4"></i><div class="vring"></div><div class="vdial"><b></b></div><div class="vwheel"><i></i><i></i><i></i></div></div></div>
   <div class="boottxt">The House is open</div>
   <button class="btn big orange" id="bootbtn" data-act="boot">Tap to begin</button>
   <div class="bootnote">Sound on. Best with headphones</div>
@@ -2129,7 +2141,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.251</div>
+  <div class="gamever" aria-label="Version">v1.2.252</div>
 </div>
 
 <script>
@@ -6191,16 +6203,6 @@ function showdownIntro(){
 }
 function updateStreakLine(){const e=$('#streakline');if(!e)return;const P=PS();
   e.innerHTML=`${P.bestStage?`Best run · Stage ${P.bestStage}&nbsp;&nbsp;·&nbsp;&nbsp;`:''}Win streak · ${P.streak||0}${(P.bestStreak||0)>(P.streak||0)?` (best ${P.bestStreak})`:''}`}
-/* Play: the title coin becomes the House vault door. The dial spins, the bolts slide back and it swings open */
-function vaultOpen(cb){const bc=$('.bigcoin');if(reduced||!bc||vaultOpen.busy){cb();return}vaultOpen.busy=true;const r=bc.getBoundingClientRect(),sz=Math.max(r.width,r.height)*1.15;
-  const v=document.createElement('div');v.className='vault';v.setAttribute('aria-hidden','true');v.style.cssText=`left:${r.left+r.width/2-sz/2}px;top:${r.top+r.height/2-sz/2}px;width:${sz}px;height:${sz}px`;
-  v.innerHTML='<div class="vdoor"><i class="vb b1"></i><i class="vb b2"></i><i class="vb b3"></i><i class="vb b4"></i><div class="vring"></div><div class="vdial"><b></b></div><div class="vwheel"><i></i><i></i><i></i></div></div>';
-  /* the coin turns edge-on and the door turns in from behind it, as if the vault door were the coin's reverse */
-  const T0=330,ease='cubic-bezier(.5,0,.5,1)';
-  bc.animate([{transform:'rotateY(0deg)'},{transform:'rotateY(90deg)'}],{duration:T0/2,easing:'ease-in',fill:'forwards'});play('toss');
-  document.body.appendChild(v);v.animate([{transform:'rotateY(-90deg)',opacity:1},{transform:'rotateY(-90deg)',offset:.5},{transform:'rotateY(0deg)'}],{duration:T0,easing:ease,fill:'backwards'});
-  setTimeout(()=>play('tick'),T0);setTimeout(()=>play('tick'),T0+180);setTimeout(()=>play('stamp'),T0+420);setTimeout(()=>play('slide'),T0+560);
-  setTimeout(()=>{v.remove();vaultOpen.busy=false;bc.animate([{transform:'rotateY(-90deg)'},{transform:'rotateY(0deg)'}],{duration:260,easing:'ease-out'});cb()},T0+980)}
 /* the title coin can be flipped for fun */
 let titleBusy=false,titleRun={f:null,n:0};
 let titleTok=0,titleAnim=null;
@@ -7084,7 +7086,7 @@ function skipBlind(){
 const ACT={
   boot(){bootGo()},
   fullscreen(){toggleFS()},
-  play(){if(!PROF.tutorialDone){startTutorial();return}audioInit();vaultOpen(showRollPick)},
+  play(){if(!PROF.tutorialDone){startTutorial();return}audioInit();showRollPick()},
   cont(){const sv=savedRun();if(!sv||!sv.S)return;audioInit();modal=null;$('#overlay').hidden=true;S=migrate(sv.S);uid=sv.uid||1000;resumeFix();render();resumeWin()},
   daily(){audioInit();LB.rows=undefined;showModal(dailyModal);lbLoad(dayKey()).then(()=>{if(modal===dailyModal)showModal(dailyModal)})},
   dailystart(){const k=dayKey();if(PROF.daily[k])return;PROF.daily[k]={started:1};saveProf();openRoll(dailyRoll(k),{seed:hashStr(k),daily:k})},
@@ -7470,9 +7472,10 @@ function bootEnd(){const el=$('#boot');if(!el||bootStage>=2)return;bootStage=2;e
 function bootGo(){
   if(bootStage)return bootStage===1&&bootEnd();bootStage=1;audioInit();if(AU.mus)AU.mus.gain.value=0;const el=$('#boot');
   if(reduced){bootJingle(1);el.classList.add('land');$('.boottxt').textContent='Call it.';setTimeout(bootEnd,1600);return}
-  el.classList.add('go');bootJingle(0);
-  setTimeout(()=>{if(bootStage!==1)return;el.classList.add('land');$('.boottxt').textContent='Call it.';bootJingle(1);shake(3)},1250);
-  setTimeout(bootEnd,2700);
+  /* the House vault opens: the dial and wheel spin, the bolts slide back, the door swings wide and the House lets you in */
+  el.classList.add('go');bootJingle(0);play('tick');setTimeout(()=>play('tick'),330);setTimeout(()=>play('tick'),520);setTimeout(()=>play('stamp'),760);
+  setTimeout(()=>{if(bootStage!==1)return;play('slide');el.classList.add('land');$('.boottxt').textContent='Call it.';bootJingle(1);shake(3)},940);
+  setTimeout(bootEnd,1700);
 }
 /* a tap anywhere on the boot screen starts the intro */
 $('#boot').addEventListener('click',e=>{if(!e.target.closest('#bootbtn'))bootGo()});
