@@ -2071,14 +2071,14 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
 .vdoor{position:absolute;inset:0;border-radius:50%;transform-origin:0% 50%;
   background:repeating-radial-gradient(circle at 50% 50%,rgba(255,255,255,.06) 0 2px,transparent 2px 7px),radial-gradient(circle at 38% 32%,#e8ecf0,#a9b3bd 45%,#6d7884 80%,#4b5560);
   box-shadow:inset 0 0 0 6px #4b5560,inset 0 0 0 9px #c9d0d6,inset 0 0 0 11px #4b5560,0 8px 22px rgba(27,42,74,.35);
-  animation:vswing .38s cubic-bezier(.5,0,.8,.6) .6s forwards}
+  animation:vswing .38s cubic-bezier(.5,0,.8,.6) .93s forwards}
 .vring{position:absolute;inset:22%;border-radius:50%;box-shadow:inset 0 0 0 3px #4b5560,inset 0 0 0 5px #dfe4e8}
-.vdial{position:absolute;inset:38%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#f4f6f8,#8e98a3);box-shadow:0 0 0 2px #3b4450;animation:vdial .5s cubic-bezier(.3,.6,.4,1) both}
+.vdial{position:absolute;inset:38%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#f4f6f8,#8e98a3);box-shadow:0 0 0 2px #3b4450;animation:vdial .5s cubic-bezier(.3,.6,.4,1) .33s both}
 .vdial b{position:absolute;left:50%;top:6%;width:3px;height:30%;margin-left:-1.5px;background:#a23b2a;border-radius:2px}
-.vwheel{position:absolute;inset:14%;animation:vdial .55s cubic-bezier(.3,.6,.4,1) .05s both reverse}
+.vwheel{position:absolute;inset:14%;animation:vdial .55s cubic-bezier(.3,.6,.4,1) .38s both reverse}
 .vwheel i{position:absolute;left:50%;top:0;bottom:0;width:6%;margin-left:-3%;background:linear-gradient(90deg,#5a6470,#c9d0d6,#5a6470);border-radius:4px}
 .vwheel i:nth-child(2){rotate:60deg}.vwheel i:nth-child(3){rotate:120deg}
-.vb{position:absolute;width:16%;height:7%;background:linear-gradient(#d9dee3,#7d8792);border-radius:2px;box-shadow:0 0 0 1px #3b4450;animation:vbolt .2s ease-in .42s forwards}
+.vb{position:absolute;width:16%;height:7%;background:linear-gradient(#d9dee3,#7d8792);border-radius:2px;box-shadow:0 0 0 1px #3b4450;animation:vbolt .2s ease-in .75s forwards}
 .vb.b1{left:-6%;top:46.5%;--dx:40%}.vb.b2{right:-6%;top:46.5%;--dx:-40%}.vb.b3{left:42%;top:-2%;width:7%;height:16%;--dy:40%}.vb.b4{left:42%;bottom:-2%;width:7%;height:16%;--dy:-40%}
 @keyframes vdial{from{transform:rotate(-300deg)}to{transform:rotate(0)}}
 @keyframes vbolt{to{transform:translate(var(--dx,0),var(--dy,0));opacity:.4}}
@@ -2129,7 +2129,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.250</div>
+  <div class="gamever" aria-label="Version">v1.2.251</div>
 </div>
 
 <script>
@@ -6195,8 +6195,12 @@ function updateStreakLine(){const e=$('#streakline');if(!e)return;const P=PS();
 function vaultOpen(cb){const bc=$('.bigcoin');if(reduced||!bc||vaultOpen.busy){cb();return}vaultOpen.busy=true;const r=bc.getBoundingClientRect(),sz=Math.max(r.width,r.height)*1.15;
   const v=document.createElement('div');v.className='vault';v.setAttribute('aria-hidden','true');v.style.cssText=`left:${r.left+r.width/2-sz/2}px;top:${r.top+r.height/2-sz/2}px;width:${sz}px;height:${sz}px`;
   v.innerHTML='<div class="vdoor"><i class="vb b1"></i><i class="vb b2"></i><i class="vb b3"></i><i class="vb b4"></i><div class="vring"></div><div class="vdial"><b></b></div><div class="vwheel"><i></i><i></i><i></i></div></div>';
-  document.body.appendChild(v);play('tick');setTimeout(()=>play('tick'),180);setTimeout(()=>play('stamp'),420);setTimeout(()=>play('slide'),560);
-  setTimeout(()=>{v.remove();vaultOpen.busy=false;cb()},980)}
+  /* the coin turns edge-on and the door turns in from behind it, as if the vault door were the coin's reverse */
+  const T0=330,ease='cubic-bezier(.5,0,.5,1)';
+  bc.animate([{transform:'rotateY(0deg)'},{transform:'rotateY(90deg)'}],{duration:T0/2,easing:'ease-in',fill:'forwards'});play('toss');
+  document.body.appendChild(v);v.animate([{transform:'rotateY(-90deg)',opacity:1},{transform:'rotateY(-90deg)',offset:.5},{transform:'rotateY(0deg)'}],{duration:T0,easing:ease,fill:'backwards'});
+  setTimeout(()=>play('tick'),T0);setTimeout(()=>play('tick'),T0+180);setTimeout(()=>play('stamp'),T0+420);setTimeout(()=>play('slide'),T0+560);
+  setTimeout(()=>{v.remove();vaultOpen.busy=false;bc.animate([{transform:'rotateY(-90deg)'},{transform:'rotateY(0deg)'}],{duration:260,easing:'ease-out'});cb()},T0+980)}
 /* the title coin can be flipped for fun */
 let titleBusy=false,titleRun={f:null,n:0};
 let titleTok=0,titleAnim=null;
