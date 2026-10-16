@@ -2182,7 +2182,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.264</div>
+  <div class="gamever" aria-label="Version">v1.2.265</div>
 </div>
 
 <script>
@@ -2686,8 +2686,8 @@ Object.assign(JOKERS,{
   desc:'Gain a random {a:Rune} after winning a {a:Boss} wager (if you have room)'},
  prizewheel:{name:'Prize Wheel',r:2,cost:6,bg:'#3a1a3a',p:{1:'#fe5f55',2:'#ffd34d',3:'#0b9bff',4:'#ffffff'},s:["...1122...","..112222..",".11142222.",".33344111.",".33342111.",".3333.111.","..33..11..","....44....","...4444...",".........."],
   desc:'At the start of each wager, win {a:+1} Flip, {a:+1} Re-flip or {$:$3}',wager:j=>{const x=rand();if(x<1/3)S.flipsLeft++;else if(x<2/3)S.reflipsLeft++;else S.money+=3}},
- rainmaker:{name:'Rainmaker',r:2,cost:6,bg:'#1e2a3a',p:{1:'#a8b4ba',2:'#ffd34d'},s:["..1111....",".111111.1.","11111111..","..........",".2..2..2..","..2..2..2.",".2..2..2..","..2..2..2.","..........",".........."],
-  desc:()=>`Every stage has weather. {m:+3} Mult for each kind of weather you\'ve seen this run {d:(Currently +${S?3*(S.wxSeen||[]).length:0} Mult)}`,end:(c,e)=>{const n=(S.wxSeen||[]).length;if(n)e('mult',3*n)}},
+ rainmaker:{name:'Floor Manager',r:2,cost:6,bg:'#1e2a3a',p:{1:'#9aa0a6',2:'#f2e6c8',3:'#1b2a4a',4:'#c8102e'},s:["...11.....",".2222222..",".2333332..",".2222222..",".2333.42..",".2222222..",".2333332..",".2222222..","..........",".........."],
+  desc:()=>`Every stage has a floor condition. {m:+3} Mult for each kind you\'ve seen this run {d:(Currently +${S?3*(S.wxSeen||[]).length:0} Mult)}`,end:(c,e)=>{const n=(S.wxSeen||[]).length;if(n)e('mult',3*n)}},
  chimneysweep:{name:'Chimney Sweep',r:2,cost:6,bg:'#22222a',p:{1:'#3a3a3a',2:'#c9a06a',3:'#e8a878'},s:["....11....","...1111...","..111111..","...3333...","...3133...","...3333...","....22....","....22....","...2222...",".........."],
   desc:'{a:1 in 3} chance at the end of each wager to sweep a {a:Curse} off one of your Charms. Shaking his hand is lucky'},
  oddsocks:{name:'Odd Socks',r:1,cost:4,bg:'#ffe0ea',p:{1:'#fe5f55',2:'#0b9bff',3:'#ffffff'},s:[".11....22.",".13....23.",".11....22.",".13....23.",".11....22.",".111..222.","1111.2222.","111..222..","..........",".........."],
@@ -2772,8 +2772,8 @@ Object.assign(JOKERS,{
   desc:'Coins with a {a:Wear} give {m:+5} Mult when they score',coin:(c,i,e)=>{if(c.purse[i].wear)e('mult',5)}},
  alloy:{name:'Alloy',r:3,cost:8,bg:'#8a2a8a',p:{1:'#9be7ff',2:'#ff8fe0',3:'#ffffff'},s:["..........","..111222..",".11112222.",".11132222.",".11112222.",".11112222.",".11112222.","..111222..","..........",".........."],
   desc:'Adds {m:Mult} equal to {a:10%} of your current Points',end:(c,e)=>{const m=Math.floor(c.st.chips/10);if(m)e('mult',m)}},
- barometer:{name:'Barometer',r:3,cost:8,bg:'#3a5a7a',p:{1:'#c9a06a',2:'#f5e3c0',3:'#c8102e'},s:["...1111...","..122221..",".12222321.",".12223221.",".12232221.",".12222221.","..122221..","...1111...","..........",".........."],
-  desc:'{x:X1.75} Mult while the stage has {a:weather}. {m:+10} Mult when it doesn\'t',end:(c,e)=>{if(S.weather)e('xmult',1.75);else e('mult',10)}},
+ barometer:{name:'Floor Report',r:3,cost:8,bg:'#3a5a7a',p:{1:'#c9a06a',2:'#f5e3c0',3:'#c8102e'},s:["...1111...","..122221..",".12222321.",".12223221.",".12232221.",".12222221.","..122221..","...1111...","..........",".........."],
+  desc:'{x:X1.75} Mult while the stage has a {a:floor condition}. {m:+10} Mult when it doesn\'t',end:(c,e)=>{if(S.weather)e('xmult',1.75);else e('mult',10)}},
  landslide:{name:'Landslide',r:3,cost:8,bg:'#4a4a8a',p:{1:'#c9a06a',2:'#8a6239',3:'#5a3a22'},s:["..........","1.........","11........","121.......","1121......","12221.....","112221....","1222221...","3333333333",".........."],
   desc:'{m:+5} Mult for each coin that scores beyond the {a:third}',end:(c,e)=>{if(c.count>3)e('mult',5*(c.count-3))}},
  wildcard:{name:'Wild Card',r:3,cost:8,bg:'#3a3a3a',p:{1:'#ffffff',2:'#ff5f6d',3:'#0b9bff',4:'#ffd34d'},s:["..........",".11111111.",".12111131.",".11111111.",".11144111.",".11144111.",".11111111.",".13111121.",".11111111.",".........."],
@@ -3483,6 +3483,7 @@ const sfx={
   total(){noise({ft:'lowpass',ff:900,ff2:120,d:.5,v:.3});tone({f:98,f2:49,d:.5,v:.32});[523,659,784].forEach(f=>tone({f,type:'triangle',d:.5,v:.05,t:.03}))},
   tick(){tone({f:2000+Math.random()*400,type:'square',lp:3000,d:.015,v:.025})},
   unlock(){[0,4,7,12,16,19].forEach((n,i)=>tone({t:i*.07,f:523.25*Math.pow(2,n/12),type:'triangle',d:.4,v:.11}));[0,.12,.24].forEach((t,i)=>tone({t:.45+t,f:2093*Math.pow(2,i*4/12),type:'sine',d:.5,v:.05}));noise({t:.42,d:.6,v:.05,ft:'highpass',ff:6000})},
+  surge(){for(let k=0;k<4;k++)noise({ft:'bandpass',ff:2400+k*900,q:6,d:.04,v:.12,t:k*.05});tone({f:120,d:.35,v:.07,type:'sawtooth'})},
   thunder(){noise({d:1.4,v:.32,ft:'lowpass',ff:520,ff2:90,a:.01});noise({t:.05,d:.25,v:.18,ft:'bandpass',ff:1800})},
   fanfare(){const C=[[0,4,7],[5,9,12],[7,11,14],[12,16,19]];C.forEach((ch,k)=>ch.forEach(n=>tone({t:k*.28,f:392*Math.pow(2,n/12),type:k===3?'sawtooth':'square',d:k===3?1.4:.26,v:.06,lp:2400})));
     [0,2,4,5,7,9,11,12].forEach((n,i)=>tone({t:1.2+i*.05,f:1046.5*Math.pow(2,n/12),type:'triangle',d:.3,v:.06}))},
@@ -4502,7 +4503,7 @@ const IMG=src=>`<img src="${src}" alt="" draggable="false">`;
 /* ================= MORE PACKS ================= */
 Object.assign(PACKS,{
  charm:   {name:'Charm Pack',col:'#e8c14a',bg:'#4a3a10',what:'Charms',word:'Charms',w:12,n:{normal:[2,1],jumbo:[4,1],mega:[4,2]}},
- forecast:{name:'Forecast Pack',col:'#7ac8e8',bg:'#16364a',what:'forecasts',word:'Forecast',w:5,sizes:['normal','jumbo']},
+ forecast:{name:'Tip-off Pack',col:'#7ac8e8',bg:'#16364a',what:'tip-offs',word:'Tip-off',w:5,sizes:['normal','jumbo']},
  contract:{name:'Contract Pack',col:'#c9b48a',bg:'#3a3022',what:'contracts',word:'Contract',w:5,sizes:['normal']},
  mint:    {name:'Mint Pack',col:'#4bd18f',bg:'#163a2a',what:'coin finishes',word:'Mint',w:5,sizes:['normal','jumbo']},
  workshop:{name:'Workshop Pack',col:'#d99a5a',bg:'#3a2618',what:'Charm finishes',word:'Workshop',w:4,sizes:['normal','jumbo']},
@@ -4522,7 +4523,7 @@ KIND_INFO.glitch='Corrupted goods, all {a:boosted}.';
 Object.assign(PACKS.coin,{w:18});Object.assign(PACKS.almanac,{w:18});Object.assign(PACKS.rune,{w:16});Object.assign(PACKS.spirit,{w:6});
 Object.assign(KIND_INFO,{
  charm:'Pick a Charm straight from the pack.',
- forecast:'Choose the weather for the {a:next stage}.',
+ forecast:'Choose the floor conditions for the {a:next stage}.',
  contract:'Take on a bounty for your {a:next wager}.',
  mint:'Apply a Wear or Defect to {a:one coin}.',
  workshop:'Apply a Wear to {a:one Charm}.',
@@ -4629,15 +4630,15 @@ function settleContract(){
 
 /* ---- weather icons for Forecast Packs ---- */
 const WX_ART={
- clear:{p:{1:'#ffd34d',2:'#ffa21f'},s:["....2.....","..2...2...","....11....",".2.1111.2.","..111111..",".2.1111.2.","....11....","..2...2...","....2.....",".........."]},
- windy:{p:{1:'#d9f0f2'},s:["..........","111111....","......1...","11111111..","..........","..1111111.","........1.","1111111...","..........",".........."]},
- rain:{p:{1:'#c9ced6',2:'#6a9ae6'},s:["...111....","..11111...",".1111111..","111111111.","..........",".2..2..2..","2..2..2...","..2..2..2.","..........",".........."]},
- sunshine:{p:{1:'#ffd34d',2:'#ffe9a8'},s:["2...2...2.",".2..2..2..","...111....","22.1111.22","...1111...",".2.111..2.","2...2...2.","..........","..........",".........."]},
- moonlit:{p:{1:'#e8e0ff',2:'#c9a4ff'},s:["...111..2.","..11.....2",".11.......",".11.......",".11.....2.",".111......","..1111....","...111....","..........",".........."]},
- mist:{p:{1:'#c4d0d6'},s:["..........","1111.1111.","..........",".111111.11","..........","11.1111111","..........",".1111.111.","..........",".........."]},
- storm:{p:{1:'#8a8a9a',2:'#fff27a'},s:["...111....","..11111...",".1111111..","111111111.","....22....","...22.....","..2222....","....22....","...2......",".........."]},
- snow:{p:{1:'#ffffff'},s:["....1.....",".1..1..1..","..1.1.1...","...111....","1111111111","...111....","..1.1.1...",".1..1..1..","....1.....",".........."]},
- rainbow:{p:{1:'#ff5f6d',2:'#ffd34d',3:'#4bd18f',4:'#0b9bff'},s:["..........","..111111..",".12222221.","1233333321","1234444321","123....321","12......21","1........1","..........",".........."]},
+ clear:{p:{1:'#ffffff',2:'#ffd34d'},s:["....2.....","....1.....","2..111..2.","..11111...","1111111111","..11111...","...111....","2..1.1..2.","..........",".........."]},
+ windy:{p:{1:'#8a96a3',2:'#2c343e',3:'#d9f0f2'},s:["11111111..","12121212..","11111111..","12121212..","11111111..","..........","3333.333..","..3333333.","333.3333..",".........."]},
+ rain:{p:{1:'#cfe6f2',2:'#d99a3a'},s:["..........","1111111...",".12221....","..121.....","...1......","...1......","..111.2...","......22..","...222222.",".........."]},
+ sunshine:{p:{1:'#8a6a2a',2:'#ffe9a8',3:'#ffd34d',4:'#9aa0a6'},s:["....1.....","..2.1.2...","...333....",".2333332..","..33333...","..33333...","...333....","...444....","...444....",".........."]},
+ moonlit:{p:{1:'#f2e6c8',2:'#c9a4ff',3:'#ffd34d',4:'#8a6a2a'},s:["....2.....","...232....","....3.....","...111....","...111....","...111....","...111....","..44444...","..........",".........."]},
+ mist:{p:{1:'#7a4a1c',2:'#ff8a3a',3:'#c4c0b8',4:'#c9a020'},s:["......3.3.",".....3.3..","......3.3.",".....3....","..........","1114111122","1114111122","..........","..........",".........."]},
+ storm:{p:{1:'#fff27a',2:'#7fb0e8'},s:["....111.2.","...111....","..111...2.",".1111111..","....111...","...111....","..111.....","2.11......","..........",".........."]},
+ snow:{p:{1:'#c9a020',2:'#e8f4ff',3:'#1b2a4a'},s:["...11.....","..1111....",".222222...","2...3..2..","2...3..2..","2...333.2.","2......2..",".222222...","..........",".........."]},
+ rainbow:{p:{1:'#ffd34d',2:'#ffffff'},s:["1.....1.2.","11...11...","11...11...","11...11..2","11...11...",".11.11....","..111.....","..........","..........",".........."]},
 };
 const wxIcon=k=>sprite('wx-'+k,WX_ART[k]||WX_ART.clear);
 const SPR_Q=["..........","..11111...",".11...11..",".....11...","....11....","....11....","..........","....11....","....11....",".........."];
@@ -4648,10 +4649,10 @@ const PX={
   face:o=>`<div class="jin" style="--jbg:${JOKERS[o.key].bg};${rarVars(o.key)}">${IMG(icon(o.key))}</div>${o.curse?curseBadge(o.curse):''}`,
   block:()=>S.jokers.length>=slots()?'No room for a Charm':null,
   take:o=>{addJoker(o.key,JOKERS[o.key].cost);const nj=S.jokers[S.jokers.length-1];if(o.wear)nj.wear=o.wear;if(o.curse){nj.curse=o.curse;if(o.curse==='fleeting')nj.left=5}PS().buys[o.key]=(PS().buys[o.key]||0)+1;play('buy');if(JOKERS[o.key].r===5)play('unlock')}},
- wx:{name:o=>o.key==='clear'?'Clear Skies':WEATHER[o.key].name,face:o=>`<div class="jin" style="--jbg:#16364a">${IMG(wxIcon(o.key))}</div>`,
-  tip:o=>o.key==='clear'?`<div class="tn">Clear Skies</div><div class="td">Clears the weather from this stage right away.</div>`:`<div class="tn">${WEATHER[o.key].name}</div><div class="td">Next stage's weather: ${fmt(WEATHER[o.key].desc)}</div><span class="tb" style="background:${WEATHER[o.key].col};color:#1a1a1a">Forecast</span>`,
-  block:o=>o.key==='clear'&&!S.weather?'The sky is already clear':null,
-  take:o=>{if(o.key==='clear'){S.weather=null;toast('The clouds part. <b>Clear skies</b> this stage')}else{S.nextWeather=o.key;toast(`Forecast: <b style="color:${WEATHER[o.key].col}">${WEATHER[o.key].name}</b> next stage`)}play('levelup')}},
+ wx:{name:o=>o.key==='clear'?'Clean-up Crew':WEATHER[o.key].name,face:o=>`<div class="jin" style="--jbg:#16364a">${IMG(wxIcon(o.key))}</div>`,
+  tip:o=>o.key==='clear'?`<div class="tn">Clean-up Crew</div><div class="td">Clears this stage's floor condition right away.</div>`:`<div class="tn">${WEATHER[o.key].name}</div><div class="td">Next stage's floor: ${fmt(WEATHER[o.key].desc)}</div><span class="tb" style="background:${WEATHER[o.key].col};color:#1a1a1a">Tip-off</span>`,
+  block:o=>o.key==='clear'&&!S.weather?'The floor is already quiet':null,
+  take:o=>{if(o.key==='clear'){S.weather=null;toast('The crew sweeps through. <b>A quiet floor</b> this stage')}else{S.nextWeather=o.key;toast(`Tip-off: <b style="color:${WEATHER[o.key].col}">${WEATHER[o.key].name}</b> next stage`)}play('levelup')}},
  contract:{name:o=>CONTRACTS[o.key].name,face:o=>`<div class="jin" style="--jbg:#3a3022">${IMG(contractIcon(o.key))}</div>`,
   tip:o=>`<div class="tn">${CONTRACTS[o.key].name}</div><div class="td">Next wager: ${CONTRACTS[o.key].desc}.<br>Reward: ${fmt(CONTRACTS[o.key].reward)}</div><span class="tb" style="background:#a8743a">Contract</span>${S.contract?`<div class="tkind">Replaces ${CONTRACTS[S.contract.key].name}</div>`:''}`,
   block:()=>null,take:o=>{S.contract={key:o.key};toast(`Contract taken: <b>${CONTRACTS[o.key].name}</b>`);play('buy')}},
@@ -4779,7 +4780,7 @@ const GOALS=[
  {kind:'roll',key:'wide',desc:'Have 8 coins in your purse',test:()=>!!S&&S.purse.length>=8},
  {kind:'roll',key:'gilded',desc:'Own a coin with both Wear and a Defect',test:()=>!!S&&S.purse.some(c=>c.wear&&c.defect)},
  {kind:'pack',key:'glitch',desc:'Defeat House, the Glitched Roll\'s first Endless final boss',test:()=>(PS().drHouseWins||0)>=1},
- {kind:'roll',key:'stormchaser',desc:'See 3 kinds of stage weather',test:()=>Object.keys(PS().wx||{}).length>=3},
+ {kind:'roll',key:'stormchaser',desc:'See 3 kinds of floor condition',test:()=>Object.keys(PS().wx||{}).length>=3},
  {kind:'roll',key:'fusion',desc:'Score 10,000 in one toss',test:()=>PS().bestToss>=10000},
  {kind:'roll',key:'chaos',desc:'Win a run',test:()=>PS().wins>=1},
  {kind:'roll',key:'majority',desc:'Score a Whiff',test:()=>(PS().types.whiff||0)>=1},
@@ -4829,7 +4830,7 @@ const GOALS=[
  {kind:'charm',key:'threeleaf',desc:'Toss 10 Busts or Whiffs (across all runs)',test:()=>(PS().types.bust||0)+(PS().types.whiff||0)>=10},
  {kind:'charm',key:'tarot',desc:'Use 25 Runes (across all runs)',test:()=>PS().runes>=25},
  {kind:'charm',key:'prizewheel',desc:'Skip 5 wagers (across all runs)',test:()=>PS().skips>=5},
- {kind:'charm',key:'rainmaker',desc:'See 4 kinds of weather (across all runs)',test:()=>Object.keys(PS().wx||{}).length>=4},
+ {kind:'charm',key:'rainmaker',desc:'See 4 kinds of floor condition (across all runs)',test:()=>Object.keys(PS().wx||{}).length>=4},
  {kind:'charm',key:'chimneysweep',desc:'Own 2 cursed Charms at once',test:()=>!!S&&S.jokers.filter(j=>j.curse).length>=2},
  {kind:'charm',key:'oddsocks',desc:'Score a Split Streak',test:()=>(PS().types.split||0)>=1},
  {kind:'charm',key:'ladyluck',desc:'Win 25 wagers (across all runs)',test:()=>PS().wagers>=25},
@@ -4977,32 +4978,33 @@ const stingTier=t=>HANDS.length-1-HANDS.findIndex(h=>h.key===t);
 
 
 /* ================= STAGE WEATHER ================= */
+/* floor conditions: what the House is like on the floor this stage (internal keys keep their old weather names) */
 const WEATHER={
- windy:   {name:'Windy',short:'Windy',col:'#9fd3d8',desc:'Coins land on their {a:edge} far more often (1 in 12)'},
- rain:    {name:'Rain',short:'Rain',col:'#6a9ae6',desc:'Wet coins slip: {r:1 in 10} land on the face you didn\'t call'},
- sunshine:{name:'Sunshine',short:'Sunny',col:'#ffd34d',desc:'Coins that score on {a:Heads} give {m:+2} Mult'},
- moonlit: {name:'Moonlit Night',short:'Moonlit',col:'#c9a4ff',desc:'Coins that score on {a:Tails} give {m:+2} Mult'},
- mist:    {name:'Mist',short:'Mist',col:'#c4d0d6',desc:'The first toss of every wager lands face down'},
- storm:   {name:'Thunderstorm',short:'Storm',col:'#9a8ae6',desc:'Each toss, lightning strikes one coin: {x:X2} Mult if it scores'},
- snow:    {name:'Snowfall',short:'Snow',col:'#e8f4ff',desc:'{a:+1} Flip but {r:-1} Re-flip every wager'},
- rainbow: {name:'Rainbow',short:'Rainbow',col:'#ff8fab',desc:'Lucky chances are {a:twice} as likely'},
+ windy:   {name:'Vents on Full',short:'Vents',col:'#9fd3d8',desc:'The air conditioning roars: coins land on their {a:edge} far more often (1 in 12)'},
+ rain:    {name:'Spilled Drinks',short:'Spills',col:'#d99a3a',desc:'The felt is sticky: {r:1 in 10} coins slip onto the face you didn\'t call'},
+ sunshine:{name:'House Lights Up',short:'Lights up',col:'#ffd34d',desc:'Every face is lit: coins that score on {a:Heads} give {m:+2} Mult'},
+ moonlit: {name:'Lights Down',short:'Lights low',col:'#c9a4ff',desc:'After hours: coins that score on {a:Tails} give {m:+2} Mult'},
+ mist:    {name:'Cigar Smoke',short:'Smoke',col:'#c4bfb4',desc:'Thick smoke over the table: the first toss of every wager lands face down'},
+ storm:   {name:'Power Surge',short:'Surge',col:'#9a8ae6',desc:'The wiring sparks: each toss one coin is zapped, {x:X2} Mult if it scores'},
+ snow:    {name:'Rush Hour',short:'Rush',col:'#e8f4ff',desc:'The dealers hurry you along: {a:+1} Flip but {r:-1} Re-flip every wager'},
+ rainbow: {name:'Lucky Night',short:'Lucky',col:'#ff8fab',desc:'Something in the air: lucky chances are {a:twice} as likely'},
 };
 const wx=k=>!!S&&S.weather===k;
 function rollWeather(ante){const w=rollWeather0(ante);if(w&&!(S.wxSeen=S.wxSeen||[]).includes(w))S.wxSeen.push(w);return w}
 function rollWeather0(ante){if(S.nextWeather&&ante>1){const w=S.nextWeather;S.nextWeather=null;return w}const always=S.roll==='stormchaser'||hasK('rainmaker');if(!always&&(ante<2||rand()>=.35))return null;return pick(Object.keys(WEATHER).filter(k=>k!==S.weather))}
 /* engraved weather glyphs, drawn in the weather's ink */
 const WX_IC={
- windy:'<path d="M4 11h15a4 4 0 1 0-4-4M4 17h21a4 4 0 1 1-4 4M4 23h11"/>',
- rain:'<path d="M9 17a6 6 0 0 1 1-11.9A8 8 0 0 1 25 8a5 5 0 0 1 0 9z"/><path d="M11 21l-2 5M17 21l-2 5M23 21l-2 5"/>',
- sunshine:'<circle cx="16" cy="16" r="5.5"/><path d="M16 3v4M16 25v4M3 16h4M25 16h4M6.8 6.8l2.8 2.8M22.4 22.4l2.8 2.8M6.8 25.2l2.8-2.8M22.4 9.6l2.8-2.8"/>',
- moonlit:'<path d="M20 5a11 11 0 1 0 7 17A9 9 0 0 1 20 5z"/><path d="M24 7l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/>',
- mist:'<path d="M4 9c4-3 8 3 12 0s8 3 12 0M4 16c4-3 8 3 12 0s8 3 12 0M4 23c4-3 8 3 12 0s8 3 12 0"/>',
- storm:'<path d="M9 16a6 6 0 0 1 1-11.9A8 8 0 0 1 25 7a5 5 0 0 1 0 9z"/><path d="M17 14l-4 7h5l-3 7"/>',
- snow:'<path d="M16 3v26M4.7 9.5l22.6 13M4.7 22.5l22.6-13M13 5l3 3 3-3M13 27l3-3 3 3"/>',
- rainbow:'<path d="M3 24a13 13 0 0 1 26 0M7 24a9 9 0 0 1 18 0M11 24a5 5 0 0 1 10 0"/>'};
+ windy:'<rect x="4" y="4" width="16" height="10" rx="1"/><path d="M4 9h16M8 4v10M12 4v10M16 4v10M5 20h12M9 25h18M5 29h10"/>',
+ rain:'<path d="M5 5h16l-6 8v6M15 19l-2 2M8 27c4-2 10-2 18 0"/><path d="M22 21c0 2 2 3 2 3s2-1 2-3-2-4-2-4-2 2-2 4z"/>',
+ sunshine:'<path d="M16 4v3M10 7l2 2M22 7l-2 2"/><path d="M11 18a5 5 0 1 1 10 0c0 2-2 3-2 5h-6c0-2-2-3-2-5z"/><path d="M13 26h6M14 29h4"/>',
+ moonlit:'<path d="M16 3c2 2 2 4 0 6-2-2-2-4 0-6z"/><rect x="12" y="11" width="8" height="15" rx="1"/><path d="M8 28h16"/>',
+ mist:'<rect x="3" y="20" width="22" height="5" rx="1"/><path d="M25 20v5M27 22.5h2"/><path d="M20 16c-2-2 2-4 0-6s2-4 0-6"/>',
+ storm:'<path d="M18 3l-9 14h6l-3 12 11-16h-6l4-10z"/>',
+ snow:'<circle cx="16" cy="18" r="10"/><path d="M13 4h6M16 4v4M16 18l4-4M16 18V12"/>',
+ rainbow:'<path d="M8 4v12a8 8 0 0 0 16 0V4"/><path d="M5 4h6M21 4h6"/>'};
 const wxGlyph=k=>`<svg class="wxic" viewBox="0 0 32 32" aria-hidden="true">${WX_IC[k]||''}</svg>`;
 const wxBanner=()=>{if(!S.weather)return '';const W=WEATHER[S.weather];
-  return `<div class="wxbanner" style="--wc:${W.col}"><span class="wxring"><img src="${wxIcon(S.weather)}" alt=""></span><div class="wxtxt"><div class="wxk">Weather bulletin · Stage ${S.ante}</div><div class="wxd"><b>${W.name}</b>${fmt(W.desc)}</div></div></div>`};
+  return `<div class="wxbanner" style="--wc:${W.col}"><span class="wxring"><img src="${wxIcon(S.weather)}" alt=""></span><div class="wxtxt"><div class="wxk">Floor notice · Stage ${S.ante}</div><div class="wxd"><b>${W.name}</b>${fmt(W.desc)}</div></div></div>`};
 
 /* ================= RUN STATE ================= */
 function newRun(roll='standard',o={}){
@@ -5760,7 +5762,7 @@ const ROLLS={
  wide:{name:'Wide Roll',paper:'#c96a8a',band:'#ffe0ea',cap:'silver',desc:'Start with {a:7} Quarters. Your purse holds {a:3} more coins. {r:-1} Charm slot',apply:()=>{S.purseMax+=3;S.purse.push(mkCoin('copper'),mkCoin('copper'));S.jokerSlots--}},
  gilded:{name:'Gilded Roll',paper:'#e8c14a',band:'#fff6d0',cap:'glass',desc:'Every starting coin is {a:Polished} ({c:+50} Points when it scores)',apply:()=>{S.purse.forEach(c=>c.wear='polished')}},
  fusion:{name:'Fusion Roll',paper:'#8a2a8a',band:'#9be7ff',cap:'quicksilver',desc:'Points and Mult are {a:balanced} (averaged) before every toss scores. Wager targets are {r:X2}'},
- stormchaser:{name:'Stormchaser Roll',paper:'#3a5a7a',band:'#bfe6ff',cap:'silver',desc:'Every stage has {a:weather}, starting at stage 1. Earn {$:$2} after every wager for braving it'},
+ stormchaser:{name:'Rough Night Roll',paper:'#3a5a7a',band:'#bfe6ff',cap:'silver',desc:'Every stage has a {a:floor condition}, starting at stage 1. Earn {$:$2} after every wager for putting up with it'},
  majority:{name:'Majority Roll',paper:'#4a4a8a',band:'#e6e6ff',cap:'denarius',desc:'You never call. Each toss scores whichever face came up {a:most} (ties go to Heads)'},
  mirror:{name:'Mirror Roll',challenge:1,paper:'#9fb4c8',band:'#eef6ff',cap:'silver',desc:'{a:Challenge.} Every {r:Re-flip} turns your call over, so the coins you kept can stop scoring. Calls are mirrored too: call Heads and Tails scores'},
  oneshot:{name:'Sudden Death Roll',challenge:1,paper:'#2a2a2a',band:'#ff4b2b',cap:'steel',desc:'{a:Challenge.} Every toss must score at least {r:a quarter} of the target, or the run ends on the spot. Wager targets are {a:X0.75}'},
@@ -6235,7 +6237,7 @@ const ROMAN=n=>{let o='';[[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']].forEach(([
 function stageIntro(){if(!S)return;if($('#ripstage:not(.out)')){setTimeout(stageIntro,80);return}const F=floorOf(S.ante),bb=(S.blinds||[]).find(b=>b.kind==='boss'),W=S.weather&&WEATHER[S.weather];
   let el=$('#stageintro');if(!el){el=document.createElement('div');el.id='stageintro';document.body.appendChild(el)}
   const boss=bb&&BOSSES[bb.boss]?`<div class="sicard" style="--cc:${BOSSES[bb.boss].col}"><div class="sicon" style="background:${BOSSES[bb.boss].col}">${bossSil(bb.boss)?`<img src="${bossSil(bb.boss)}" alt="">`:''}</div><div><div class="silbl">Boss</div><b>${BOSSES[bb.boss].name}</b><div class="sidesc">${bossDesc(bb)}</div></div></div>`:'';
-  const wx=W?`<div class="sicard" style="--cc:color-mix(in srgb,${W.col} 50%,#1b2a4a);--wc:${W.col}"><div class="sicon wxi wxring"><img src="${wxIcon(S.weather)}" alt=""></div><div><div class="silbl">Weather</div><b>${W.name}</b><div class="sidesc">${fmt(W.desc)}</div></div></div>`:'';
+  const wx=W?`<div class="sicard" style="--cc:color-mix(in srgb,${W.col} 50%,#1b2a4a);--wc:${W.col}"><div class="sicon wxi wxring"><img src="${wxIcon(S.weather)}" alt=""></div><div><div class="silbl">On the floor</div><b>${W.name}</b><div class="sidesc">${fmt(W.desc)}</div></div></div>`:'';
   const hide=b=>S.roll==='glitched'||b.kind==='rival'||b.boss==='general'||b.boss==='tablerivals';
   const ledger=(S.blinds||[]).slice(0,3).map(b=>`<div class="${b.kind==='boss'?'boss':''}"><div class="silbl">${b.kind==='boss'?'Boss wager':b.kind==='big'?'Big wager':b.kind==='rival'?'Rival':'Small wager'}</div><b data-n="${hide(b)?'':blindTarget(b)}">${hide(b)?'???':'0'}</b></div>`).join('');
   el.innerHTML=`<div class="sibox" style="--fc:${F.col}">${ovpHTML()}<div class="sistage"><i></i><span>Series ${seriesOf(S.ante)} · Stage ${S.ante}${S.ante<=STAGES?` of ${STAGES}`:''}</span><i></i></div><div class="siname">${F.name}</div><div class="siline">${F.line||''}</div>
@@ -6366,7 +6368,7 @@ function tipContent(spec){
     return `<div class="tn">${packName(p)}</div><div class="td">Open it and choose <span class="k-a">${c.picks}</span> of ${c.n} ${PACKS[p.kind].what}.<br><br>${fmt(KIND_INFO[p.kind])}</div><span class="tb" style="background:${PACKS[p.kind].col}">Pack</span>`}
   if(k==='wx'){const W=S.weather&&WEATHER[S.weather];const bb=(S.blinds||[]).find(b=>b.kind==='boss');
     const boss=bb&&BOSSES[bb.boss]?`<div class="tboss">${bossSil(bb.boss)?`<img src="${bossSil(bb.boss)}" alt="" style="background:${BOSSES[bb.boss].col}">`:''}<div><div class="tn" style="color:${BOSSES[bb.boss].col}">Boss: ${BOSSES[bb.boss].name}</div><div class="td">${bossDesc(bb)}</div></div></div>`:'';
-    return (W?`<div class="tn">${W.name}</div><div class="td">${fmt(W.desc)}</div><span class="tb" style="background:${W.col};color:#1a1a1a">Stage ${S.ante} weather</span>`:`<div class="tn">Stage ${S.ante} of 8</div><div class="td">Clear skies this stage.</div>`)+boss}
+    return (W?`<div class="tn">${W.name}</div><div class="td">${fmt(W.desc)}</div><span class="tb" style="background:${W.col};color:#1a1a1a">Stage ${S.ante} floor</span>`:`<div class="tn">Stage ${S.ante} of 8</div><div class="td">A quiet floor this stage.</div>`)+boss}
   if(k==='runroll'){const r=ROLLS[S.roll],st=STAKES[S.stake]||STAKES[1];
     return `<div class="tn">${rollName(S.roll)}</div><div class="td">${fmt(r.desc)}</div>${S.daily?`<span class="tb" style="background:var(--purple)">Daily Toss</span>`:r.challenge?`<span class="tb" style="background:var(--mult)">Challenge Roll</span>`:`<span class="tb" style="background:${st.col};color:#1a1a1a">${st.name}</span><div class="td" style="margin-top:4px">${stakeDesc(S.stake)}</div>`}${S.seed?`<div class="tkind">Seed ${S.seed}</div>`:''}`}
   if(k==='hand'){const h=HAND[a];if(!h)return '';const hv=S?handLv(a):null,ex=HAND_EX[a]||[1];
@@ -6474,7 +6476,7 @@ async function doCall(call){
   await Promise.all(S.purse.map((c,i)=>animateToss(i,i*70)));
   if(S.whimI>=0){const el=$('#c'+S.whimI);if(el)popup(el,'Whim!','miss')}
   if(S.catI>=0){const el=$('#c'+S.catI);if(el)popup(el,'Crossed','miss')}
-  if(wx('storm')&&S.purse[S.bolt]){const el=$('#c'+S.bolt);if(el){el.classList.add('bolted');popup(el,'Struck!','text')}if(window.wxFlash)wxFlash();play('thunder');shake(5)}
+  if(wx('storm')&&S.purse[S.bolt]){const el=$('#c'+S.bolt);if(el){el.classList.add('bolted');popup(el,'Zapped!','text')}if(window.wxFlash)wxFlash();play('surge');shake(5)}
   S.stats.flips+=S.purse.length;
   S.phase='tossed';refreshTable();updatePreview();scheduleSave();
 }
@@ -6700,7 +6702,7 @@ function enterCashout(){
   const goose=countEff('goose')*Math.min(10,Math.floor(Math.max(0,S.roundScore-S.target)/1000));if(goose)lines.push({l:'Golden Goose',v:goose});
   const rust=S.jokers.filter(j=>cursed(j,'rusted')).length;if(rust)lines.push({l:'Rusted Charms',v:-rust});
   const rent=S.jokers.filter(j=>cursed(j,'rented')).length*3;if(rent)lines.push({l:'Rent on Charms',v:-rent});
-  if(S.roll==='stormchaser')lines.push({l:'Stormchaser bonus',v:2});
+  if(S.roll==='stormchaser')lines.push({l:'Rough Night bonus',v:2});
   const tithe=countEff('tithe');if(tithe)lines.push({l:'Tithe',v:-tithe});
   const devil=countEff('devilsbargain')*2;if(devil)lines.push({l:"Devil's Bargain",v:-devil});
   for(let k=0;k<countEff('wishingcoin');k++)if(consRoom()&&rand()<odds(1/3)){S.cons.push(randAlmanac());toast('<b>Wishing Coin</b>: your wish comes true')}
@@ -7487,24 +7489,30 @@ document.addEventListener('dragstart',e=>e.preventDefault());
 (function wxFX(){
   const cv=$('#wx');if(!cv)return;const g=cv.getContext('2d');let W=0,H=0,P=[],cur=null,flash=0,t=0;
   const size=()=>{W=cv.width=Math.ceil(innerWidth/2);H=cv.height=Math.ceil(innerHeight/2);init(cur)};
-  const init=k=>{P=[];const n={rain:150,storm:190,snow:110,windy:45,mist:12,moonlit:70}[k]||0;for(let i=0;i<n;i++)P.push({x:Math.random()*W,y:Math.random()*H,v:Math.random(),s:Math.random()})};
+  const init=k=>{P=[];const n={rain:26,storm:0,snow:0,windy:45,mist:12,moonlit:40,rainbow:50}[k]||0;for(let i=0;i<n;i++)P.push({x:Math.random()*W,y:Math.random()*H,v:Math.random(),s:Math.random()})};
   window.wxFlash=()=>{flash=1};addEventListener('resize',size);size();
   const frame=()=>{requestAnimationFrame(frame);
     const k=S&&S.weather&&S.screen!=='over'&&S.screen!=='win'&&!reduced?S.weather:null;
     if(k!==cur){cur=k;init(k);g.clearRect(0,0,W,H)}
     if(!k&&!flash)return;t+=1/60;g.clearRect(0,0,W,H);
-    if(k==='rain'||k==='storm'){g.strokeStyle='rgba(170,200,255,.38)';g.lineWidth=1;g.beginPath();
-      for(const p of P){p.y+=5+p.v*5;p.x-=1.4;if(p.y>H+10){p.y=-10;p.x=Math.random()*W*1.15}g.moveTo(p.x,p.y);g.lineTo(p.x+2,p.y-7-p.v*5)}g.stroke();
-      if(k==='storm'&&Math.random()<.0025){flash=.7;setTimeout(()=>play('thunder'),300+Math.random()*700)}}
-    else if(k==='snow'){g.fillStyle='rgba(255,255,255,.75)';for(const p of P){p.y+=.35+p.v*.7;p.x+=Math.sin(t*1.3+p.s*6)*.35;if(p.y>H){p.y=-3;p.x=Math.random()*W}const z=p.v>.6?2:1;g.fillRect(p.x|0,p.y|0,z,z)}}
-    else if(k==='windy'){g.strokeStyle='rgba(225,245,235,.28)';g.beginPath();for(const p of P){p.x+=3.5+p.v*4;p.y+=Math.sin(t*2+p.s*9)*.5;if(p.x>W+50){p.x=-50;p.y=Math.random()*H}g.moveTo(p.x,p.y);g.lineTo(p.x-18-p.v*24,p.y)}g.stroke();
-      g.fillStyle='rgba(200,170,90,.6)';for(let i=0;i<8;i++){const p=P[i];g.fillRect((p.x*1.3)%W|0,p.y|0,2,1)}}
-    else if(k==='mist'){for(const p of P){p.x+=.12+p.v*.2;if(p.x>W+140)p.x=-140;const r=70+p.s*90,gr=g.createRadialGradient(p.x,p.y,0,p.x,p.y,r);gr.addColorStop(0,'rgba(225,232,236,.13)');gr.addColorStop(1,'rgba(225,232,236,0)');g.fillStyle=gr;g.fillRect(p.x-r,p.y-r,r*2,r*2)}}
-    else if(k==='moonlit'){for(const p of P){const a=.2+.4*Math.sin(t*2+p.s*20);if(a>0){g.fillStyle=`rgba(235,225,255,${a})`;g.fillRect(p.x|0,(p.y*.65)|0,1,1)}}
-      g.fillStyle='rgba(240,235,255,.16)';g.beginPath();g.arc(W*.86,H*.13,18,0,7);g.fill();g.fillStyle='rgba(240,235,255,.22)';g.beginPath();g.arc(W*.86,H*.13,12,0,7);g.fill()}
-    else if(k==='sunshine'){g.save();g.translate(W*.08,-H*.06);g.rotate(t*.04);for(let i=0;i<12;i++){g.rotate(Math.PI/6);g.fillStyle='rgba(255,225,130,.045)';g.beginPath();g.moveTo(0,0);g.lineTo(W*1.6,-50);g.lineTo(W*1.6,50);g.fill()}g.restore()}
-    else if(k==='rainbow'){['#ff5f6d','#ffa21f','#ffd34d','#4bd18f','#0b9bff','#9a6fdc'].forEach((c,i)=>{g.strokeStyle=c;g.globalAlpha=.13;g.lineWidth=5;g.beginPath();g.arc(W/2,H*1.15,H*.98-i*5,Math.PI,2*Math.PI);g.stroke()});g.globalAlpha=1}
-    if(flash>0){g.fillStyle=`rgba(232,236,255,${flash*.55})`;g.fillRect(0,0,W,H);flash*=.86;if(flash<.02)flash=0}
+    /* spilled drinks: slow amber drips running down from the top edge */
+    if(k==='rain'){for(const p of P){p.y+=.6+p.v*1.4;if(p.y>H+8){p.y=-8-Math.random()*H*.6;p.x=Math.random()*W}g.fillStyle='rgba(200,140,40,.32)';g.beginPath();g.ellipse(p.x,p.y,1.4+p.s,2.6+p.s*1.6,0,0,7);g.fill();g.fillStyle='rgba(200,140,40,.12)';g.fillRect(p.x-.6,p.y-14,1.2,12)}}
+    /* power surge: the house lights flicker, a fault sparks now and then */
+    else if(k==='storm'){if(Math.random()<.004){flash=.6;setTimeout(()=>play('surge'),60)}if(Math.random()<.02){g.fillStyle='rgba(20,20,40,.10)';g.fillRect(0,0,W,H)}}
+    /* rush hour: nothing falls; the room just moves faster */
+    else if(k==='snow'){}
+    /* vents on full: cool air streams from the ceiling vents */
+    else if(k==='windy'){g.strokeStyle='rgba(225,245,235,.28)';g.beginPath();for(const p of P){p.x+=3.5+p.v*4;p.y+=Math.sin(t*2+p.s*9)*.5;if(p.x>W+50){p.x=-50;p.y=Math.random()*H}g.moveTo(p.x,p.y);g.lineTo(p.x-18-p.v*24,p.y)}g.stroke()}
+    /* cigar smoke: warm grey drifting haze */
+    else if(k==='mist'){for(const p of P){p.x+=.12+p.v*.2;p.y-=.03;if(p.x>W+140)p.x=-140;if(p.y<-100)p.y=H+100;const r=70+p.s*90,gr=g.createRadialGradient(p.x,p.y,0,p.x,p.y,r);gr.addColorStop(0,'rgba(205,198,185,.15)');gr.addColorStop(1,'rgba(205,198,185,0)');g.fillStyle=gr;g.fillRect(p.x-r,p.y-r,r*2,r*2)}}
+    /* lights down: the room dims at the edges, a few candle points flicker */
+    else if(k==='moonlit'){const gr=g.createRadialGradient(W/2,H/2,Math.min(W,H)*.3,W/2,H/2,Math.max(W,H)*.75);gr.addColorStop(0,'rgba(20,14,40,0)');gr.addColorStop(1,'rgba(20,14,40,.22)');g.fillStyle=gr;g.fillRect(0,0,W,H);
+      for(const p of P){const a=.25+.35*Math.sin(t*3+p.s*20);if(a>0){g.fillStyle=`rgba(255,214,140,${a})`;g.fillRect(p.x|0,(p.y*.9)|0,1,1)}}}
+    /* house lights up: spotlights sweep from above */
+    else if(k==='sunshine'){g.save();g.translate(W*.5,-H*.1);g.rotate(Math.sin(t*.25)*.25);for(let i=-2;i<=2;i++){g.fillStyle='rgba(255,225,130,.05)';g.beginPath();g.moveTo(0,0);g.lineTo(i*W*.22-W*.08,H*1.2);g.lineTo(i*W*.22+W*.08,H*1.2);g.fill()}g.restore()}
+    /* lucky night: gold glitter twinkling in the air */
+    else if(k==='rainbow'){for(const p of P){const a=Math.max(0,Math.sin(t*2.2+p.s*30));if(a>.55){g.fillStyle=`rgba(255,214,90,${(a-.55)*1.6})`;const x=p.x|0,y=p.y|0;g.fillRect(x-1,y,3,1);g.fillRect(x,y-1,1,3)}}}
+    if(flash>0){g.fillStyle=`rgba(232,236,255,${flash*.45})`;g.fillRect(0,0,W,H);flash*=.86;if(flash<.02)flash=0}
   };requestAnimationFrame(frame);
 })();
 /* the Glitched Roll's name never settles into readable text */
