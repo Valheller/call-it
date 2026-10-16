@@ -2171,7 +2171,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.256</div>
+  <div class="gamever" aria-label="Version">v1.2.257</div>
 </div>
 
 <script>
@@ -6480,7 +6480,10 @@ async function doReflip(){
 function inkPrint(el,c,r){if(reduced||!el)return;const hit=S&&S.call&&scores(r,S.call);const d=COINS[c.type],side=d.fixed||(r==='T'?'T':'H');
   const m=document.createElement('i');m.className='inkprint '+(hit?'hit':'smudge');if(hit)m.style.setProperty('--art',`url(${coinFace(c.type,side,c)})`);
   el.appendChild(m);setTimeout(()=>m.remove(),1500)}
-function animateToss(i,delay){
+/* a coin's toss always settles: if its animation never reports finishing (a re-render mid-flight, a backgrounded tab), the face lands anyway once its time is up */
+function animateToss(i,delay){const c=S.purse[i],r=S.results[i];
+  return Promise.race([animateToss0(i,delay),new Promise(res=>setTimeout(()=>{if(c&&c.face!==r)c.face=r;res()},(delay+900)/Math.sqrt(SPD())+600))])}
+function animateToss0(i,delay){
   const el=$('#c'+i);const c=S.purse[i],r=S.results[i];
   if(!el){c.face=r;return Promise.resolve()}
   const spin=el.querySelector('.spin'),lift=el.querySelector('.lift');
