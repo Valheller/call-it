@@ -2129,6 +2129,13 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
 #saybox .toast.saytoast{background-image:linear-gradient(90deg,#a23b2a 0 6px,transparent 6px)!important}
 #saybox .tghead{display:block;border-bottom:1px solid rgba(27,42,74,.18);padding-bottom:4px;margin-bottom:5px}
 #saybox{bottom:calc(46px + env(safe-area-inset-bottom))!important}
+
+/* Proof Finish on Charms: a dark mirror field behind the icon, a frosted rim and a glint that sweeps across now and then */
+.jin:has(> .w-proof),.cic:has(> .w-proof){background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.55),transparent 34%),linear-gradient(135deg,#8796ad 0%,#3e4b63 46%,#5f6d85 62%,#2b364b 100%)!important;box-shadow:inset 0 0 0 3px rgba(235,240,248,.85),inset 0 0 0 5px rgba(140,155,175,.6)!important}
+.jin:has(> .w-proof) img,.cic:has(> .w-proof) img{filter:drop-shadow(0 0 1.5px rgba(255,255,255,.95)) drop-shadow(0 0 3px rgba(255,255,255,.5)) saturate(.85) brightness(1.15)}
+.w-proof{background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.75) 47%,rgba(255,255,255,.15) 52%,transparent 60%) 140% 0/300% 100% no-repeat!important;mix-blend-mode:screen!important;opacity:1!important;animation:proofglint 3.6s ease-in-out infinite!important}
+@keyframes proofglint{0%,55%{background-position:140% 0}85%,100%{background-position:-40% 0}}
+@media (prefers-reduced-motion:reduce){.w-proof{animation:none!important;background-position:60% 0!important}}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -2175,7 +2182,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.261</div>
+  <div class="gamever" aria-label="Version">v1.2.262</div>
 </div>
 
 <script>
