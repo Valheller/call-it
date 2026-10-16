@@ -1976,13 +1976,13 @@ body.uv #uvfx{opacity:1}
 .billband{position:absolute;left:44%;top:-4px;bottom:-4px;width:30px;background:#c84a3a;color:#fbf7ec;writing-mode:vertical-rl;font:700 7px/30px var(--font-mono);letter-spacing:.08em;text-align:center;font-style:normal;box-shadow:0 1px 3px rgba(0,0,0,.3);animation:billin .3s ease-out .9s backwards;transform:none}
 
 /* ===== Run Info: rate board ===== */
-.htable{border-spacing:0 3px!important}
-.htable td{background:#1e2a3a!important;color:#e9e1c8!important;padding:5px 9px!important}
-.htable tr[data-tip]:hover td{background:#26364a!important}
-.htable .hgrp td{background:none!important;color:var(--seal)!important;font-family:var(--font-mono)}
-.htable .lv{color:#9fb0c4!important;font-family:var(--font-mono);font-size:12px}
-.htable .cmv{text-align:right}
-.htable .cmv .x{color:#9fb0c4;margin:0 6px;font-weight:400}
+.htable.rateb{border-spacing:0 3px!important}
+.htable.rateb td{background:#1e2a3a!important;color:#e9e1c8!important;padding:5px 9px!important}
+.htable.rateb tr[data-tip]:hover td{background:#26364a!important}
+.htable.rateb .hgrp td{background:none!important;color:var(--seal)!important;font-family:var(--font-mono)}
+.htable.rateb .lv{color:#9fb0c4!important;font-family:var(--font-mono);font-size:12px}
+.htable.rateb .cmv{text-align:right}
+.htable.rateb .cmv .x{color:#9fb0c4;margin:0 6px;font-weight:400}
 .flap{display:inline-flex;gap:2px}
 .flap i{display:inline-block;width:15px;height:22px;line-height:22px;text-align:center;font:700 15px/22px var(--font-mono);font-style:normal;color:#fbf7ec;border-radius:2px;
   background:linear-gradient(#2c3e57 0 49%,#0e1724 49% 51%,#24344a 51%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.4)}
@@ -2103,6 +2103,12 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
 #boot.land .boottxt{color:#f3e6bf!important;text-shadow:0 2px 12px rgba(0,0,0,.6)!important}
 #boot .bootrays{background:repeating-conic-gradient(rgba(255,214,140,.14) 0 9deg,transparent 9deg 18deg)!important}
 #boot .vdoor{box-shadow:inset 0 0 0 6px #4b5560,inset 0 0 0 9px #c9d0d6,inset 0 0 0 11px #4b5560,0 0 0 10px #1b222b,0 0 0 12px #3a444f,0 18px 50px rgba(0,0,0,.6)}
+
+/* keyboard shortcuts: a paper table with real key caps (not the dark rate-board style) */
+.htable.keyt td{background:#fbf7ec!important;color:var(--ink)!important;border-bottom:1px solid var(--rule)}
+.htable.keyt td.ds{color:var(--ink-dim)!important;font:600 10px/1.2 var(--font-mono);letter-spacing:.1em;text-transform:uppercase}
+.htable.keyt tr:hover td{background:#f3ecd8!important}
+.htable.keyt kbd{display:inline-block;white-space:nowrap;font:600 12px/1 var(--font-mono);color:#1b2a4a!important;background:linear-gradient(#ffffff,#ece5d3);border:1px solid #9aa3b0;border-bottom-width:3px;border-radius:4px;padding:4px 7px;box-shadow:0 1px 0 rgba(27,42,74,.15)}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -2149,7 +2155,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.254</div>
+  <div class="gamever" aria-label="Version">v1.2.255</div>
 </div>
 
 <script>
@@ -5599,7 +5605,7 @@ function runInfoModal(){
   if(RI_TAB==='run')return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">${S?questsHTML():''}${S&&S.seed?`<div class="lbl" style="text-align:center;margin:2px 0 6px">Seed <b style="color:var(--navy);letter-spacing:.08em">${S.seed}</b> <button class="btn tiny" data-act="copyseed">Copy</button></div>`:''}${S&&S.pool?`<div class="lbl" style="text-align:center;margin:0 0 4px">This run's pool: <b>${S.pool.charm.length}</b> Charms · <b>${S.pool.coin.length}</b> coins · <b>${S.pool.rune.length}</b> Runes · <b>${S.pool.spirit.length}</b> Spirits · <b>${S.pool.alm.length}</b> Almanacs</div><div class="poolgrid">${S.pool.charm.map(k=>`<span class="cic charm" style="--jbg:${JOKERS[k].bg};${rarVars(k)}" title="${JOKERS[k].name}">${IMG(icon(k))}</span>`).join('')}</div><div class="poolgrid">${S.pool.coin.map(t=>`<span class="cic coinc" title="${COINS[t].name}">${coinIcon(t)}</span>`).join('')}${S.pool.rune.map(k=>`<span class="cic" title="${RUNES[k].name}">${IMG(consInfo({kind:'rune',key:k}).icon)}</span>`).join('')}${S.pool.spirit.map(k=>`<span class="cic" title="${SPIRITS[k].name}">${IMG(consInfo({kind:'spirit',key:k}).icon)}</span>`).join('')}</div>`:''}${S&&ROLLS[S.roll]?`<div class="lbl" style="text-align:center;margin:-6px 0 8px">Playing the <b style="color:var(--navy)">${rollName(S.roll)}</b> on <b style="color:${STAKES[S.stake].col}">${STAKES[S.stake].name}</b>${S.daily?' (Daily Toss)':''}: ${fmt(ROLLS[S.roll].desc)}</div>`:''}<div class="lbl" style="text-align:center;margin:-4px 0 10px">Collection: ${Object.keys(JOKERS).length} Charms · ${ALM_ALL().length} Almanacs · ${Object.keys(RUNES).length} Runes · ${Object.keys(SPIRITS).length} Spirits</div>
     </div><div class="optfoot" style="display:flex;gap:10px;justify-content:center"><button class="btn green" data-act="collection">Collection</button><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
   return `<div class="overlay"><div class="panel modal optm"><h2>Run Info</h2>${tabs}<div class="optbody">
-    <table class="htable">${HAND_GROUPS.map(([g,ks])=>`<tr class="hgrp"><td colspan="4">${g}</td></tr>`+ks.map(k=>HAND[k]).map(h=>{const pl=S?S.hands[h.key].played:0;const hv=S?handLv(h.key):{chips:h.chips,mult:h.mult,lv:1,mast:0};const lv=hv.lv,c=hv.chips,m=hv.mult;
+    <table class="htable rateb">${HAND_GROUPS.map(([g,ks])=>`<tr class="hgrp"><td colspan="4">${g}</td></tr>`+ks.map(k=>HAND[k]).map(h=>{const pl=S?S.hands[h.key].played:0;const hv=S?handLv(h.key):{chips:h.chips,mult:h.mult,lv:1,mast:0};const lv=hv.lv,c=hv.chips,m=hv.mult;
     const was=RATE_SEEN[h.key],fl=was&&was!==c+'x'+m;RATE_SEEN[h.key]=c+'x'+m;
     return `<tr data-tip="hand:${h.key}"><td class="lv">lvl.${lv}</td><td>${h.name}${hv.mast?` <span class="k-m" style="font-size:12px">+${hv.mast*(S&&S.mastM||1)}</span>`:''}</td><td class="cmv ${fl?'flip':''}">${flapDigits(c,'c')}<b class="x">×</b>${flapDigits(m,'m')}</td><td class="lv">#${pl}</td></tr>`}).join('')).join('')}</table>
     </div><div class="optfoot" style="display:flex;gap:10px;justify-content:center"><button class="btn green" data-act="collection">Collection</button><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
