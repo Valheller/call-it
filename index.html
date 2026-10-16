@@ -1,7 +1,7 @@
 <meta charset="utf-8">
 <title>Call it.</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="description" content="A coin-flip roguelike. Call it, toss your purse, chain Points × Mult, and beat eight stages of wagers.">
+<meta name="description" content="A coin-flip roguelike. Call it, toss your purse, chain Points × Mult, and work your way down through a casino that mints its own money.">
 <meta name="theme-color" content="#efe8d6">
 <meta property="og:title" content="Call it.">
 <meta property="og:description" content="A coin-flip roguelike. Call Heads or Tails, chain Points × Mult, and beat eight stages of wagers.">
@@ -2170,7 +2170,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     <div class="w" style="--sh:#9a6c08;--sh2:#4d3604"><span style="--i:0">C</span><span style="--i:1">a</span><span style="--i:2">l</span><span style="--i:3">l</span></div>
     <div class="w" style="--sh:#6f7a83;--sh2:#363d43"><span style="--i:5">i</span><span style="--i:6">t</span><span class="fishdot" data-act="fishdot" style="--i:7;--sh:#8a4f1e;--sh2:#45270e">.</span></div>
   </div>
-  <div class="mintsub">Legal tender of the House · Series One</div>
+  <div class="mintsub">Legal tender of the House · Struck in its own mint</div>
   <div class="serial s1" aria-hidden="true">A 07734 C</div><div class="serial s2" aria-hidden="true">A 07734 C</div>
   <div class="titlebtns">
     <div class="trow">
@@ -2182,7 +2182,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.265</div>
+  <div class="gamever" aria-label="Version">v1.2.266</div>
 </div>
 
 <script>
@@ -3259,15 +3259,18 @@ function setMajority(){const h=S.results.filter(r=>r==='H'||r==='E').length,t=S.
 /* eight stages; targets climb steeply so the last ones keep up with a snowballing run */
 const STAGES=8;
 /* every stage is a floor of the House, with its own name, colour and tempo */
+/* the House is a casino that strikes its own money: four public floors, then staff-only floors down to its treasury */
 const FLOORS=[
- {name:'The Penny Slots',col:'#c87533',line:'Everyone starts at the penny slots. Welcome back.'},
+ {name:'The Penny Slots',col:'#c87533',line:'Everyone starts at the penny slots. Every coin here was struck downstairs.'},
  {name:'The Card Room',col:'#2e7d4f',line:'The cards remember every hand you have ever played.'},
  {name:'The Velvet Lounge',col:'#8a2a4a',line:'Sit. Stay a while. Stay forever.'},
- {name:'The Roulette Floor',col:'#c8102e',line:'Round and round it goes.'},
- {name:'The Hall of Mirrors',col:'#7fa8c8',line:'Which one of you is playing?'},
- {name:'The Vault',col:'#b8901f',line:'Every coin ever lost ends up down here eventually.'},
- {name:'The High Tables',col:'#5d3d94',line:'Few get this far. Fewer leave.'},
+ {name:'The Roulette Floor',col:'#c8102e',line:'Round and round it goes. The only way out is down.'},
+ {name:'The Counting Room',col:'#7fa8c8',line:'Staff only. This is where the House counts what it takes from you.'},
+ {name:'The Press Hall',col:'#b8901f',line:'The presses never stop. Every coin you have ever lost was struck in here.'},
+ {name:'The Vault',col:'#5d3d94',line:'Every coin ever lost ends up down here eventually.'},
  {name:'The House Itself',col:'#6a6a7a',line:'You have come all this way to see me. Good.'}];
+/* the House remarks on it the first time a run reaches each of its money floors */
+const FLOOR_SAY={5:'Staff only past this door. You are off the casino floor now.',6:'Hear that? The presses. I do not win your money. I make it.',7:'The vault. Everything anyone has ever lost to me is in here.'};
 const seriesOf=a=>a<=STAGES?'ABCDEFGH'[a-1]:'Z';
 const floorOf=a=>a<=STAGES?FLOORS[a-1]:{name:`Sub-basement ${a-STAGES}`,col:'#3a1a1a',line:'Below the House, there is only more House.'};
 const introUp=()=>!!$('#ripstage')||!!(($('#stageintro')||{}).hidden===false);
@@ -5726,7 +5729,7 @@ function saveCodeModal(){
 function creditsModal(){
   return `<div class="overlay"><div class="panel modal credm"><h2>Credits</h2>
     <div class="credwin"><div class="credroll">
-      <div class="ct">Call it.</div><div class="cs">A coin-flip roguelike</div>
+      <div class="ct">Call it.</div><div class="cs">A coin-flip roguelike</div><div class="cs" style="font-style:italic;max-width:30ch;margin:6px auto 0">The House runs the tables, strikes the coins and keeps the vault. Everything you win, it made.</div>
       <div class="ch">Made by</div><div class="cn">Claude</div><div class="cr">by Anthropic<br>Design · Code · Pixel art · Music · Writing</div>
       <div class="ch">Inspired by</div><div class="cn">Balatro</div>
       <div class="cn" style="font-size:19px;margin-top:6px">LocalThunk</div><div class="cr">Creator of Balatro</div>
@@ -6199,7 +6202,7 @@ function dailyModal(){
     <div class="nexch">${lbHTML()}</div>
     <div style="text-align:center;margin-top:10px"><button class="btn orange" data-act="closemodal">Back</button></div></div></div>`;
 }
-const DAILY_COLS=['The House reminds patrons that every coin is fair, and every table is the House\'s.','Weather over the Penny Slots: clear, with a chance of losing streaks by evening.','Lost and found: one lucky Quarter, answers to Heads. Reward offered.','The Mint reports record output. Economists are advised not to ask where the metal comes from.','Overheard at the Velvet Lounge: "Just one more toss." Nobody has left since.','Today\'s rate: one call, one coin, no refunds. The House regrets nothing.'];
+const DAILY_COLS=['The House reminds patrons that every coin is fair, and every table is the House\'s.','Weather over the Penny Slots: clear, with a chance of losing streaks by evening.','Rumour has it the House has never bought a coin in its life. It strikes its own, three floors down.','Lost and found: one lucky Quarter, answers to Heads. Reward offered.','The Mint reports record output. Economists are advised not to ask where the metal comes from.','Overheard at the Velvet Lounge: "Just one more toss." Nobody has left since.','Today\'s rate: one call, one coin, no refunds. The House regrets nothing.'];
 /* ================= RECORDS ================= */
 let REC_TAB='stats';
 function recordsModal(){
@@ -6234,7 +6237,7 @@ function recordsModal(){
 }
 /* new stage: a ledger page with the floor name, the stage's three targets, its boss and any weather, sealed with the stage number */
 const ROMAN=n=>{let o='';[[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']].forEach(([v,c])=>{while(n>=v){o+=c;n-=v}});return o};
-function stageIntro(){if(!S)return;if($('#ripstage:not(.out)')){setTimeout(stageIntro,80);return}const F=floorOf(S.ante),bb=(S.blinds||[]).find(b=>b.kind==='boss'),W=S.weather&&WEATHER[S.weather];
+function stageIntro(){if(!S)return;{const L=FLOOR_SAY[S.ante];if(L&&!(S.floorSaid=S.floorSaid||[]).includes(S.ante)){S.floorSaid.push(S.ante);setTimeout(()=>{if(S)houseSay(L,6000)},600)}}if($('#ripstage:not(.out)')){setTimeout(stageIntro,80);return}const F=floorOf(S.ante),bb=(S.blinds||[]).find(b=>b.kind==='boss'),W=S.weather&&WEATHER[S.weather];
   let el=$('#stageintro');if(!el){el=document.createElement('div');el.id='stageintro';document.body.appendChild(el)}
   const boss=bb&&BOSSES[bb.boss]?`<div class="sicard" style="--cc:${BOSSES[bb.boss].col}"><div class="sicon" style="background:${BOSSES[bb.boss].col}">${bossSil(bb.boss)?`<img src="${bossSil(bb.boss)}" alt="">`:''}</div><div><div class="silbl">Boss</div><b>${BOSSES[bb.boss].name}</b><div class="sidesc">${bossDesc(bb)}</div></div></div>`:'';
   const wx=W?`<div class="sicard" style="--cc:color-mix(in srgb,${W.col} 50%,#1b2a4a);--wc:${W.col}"><div class="sicon wxi wxring"><img src="${wxIcon(S.weather)}" alt=""></div><div><div class="silbl">On the floor</div><b>${W.name}</b><div class="sidesc">${fmt(W.desc)}</div></div></div>`:'';
