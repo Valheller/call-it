@@ -343,7 +343,7 @@ body.badges .face::before{display:block}
 .t-sanddollar{--rim:#a8946a;--hi:#fff2d8}.t-firstdime{--rim:#3a3a2a;--hi:#a8a888}.t-bellwether{--rim:#6a4818;--hi:#ffe08a}.t-foil{--rim:#8a6a14;--hi:#fff2b0}.t-lucky{--rim:#a8862a;--hi:#f0d27a}.t-sealed{--rim:#4a0a0e;--hi:#e04050}.t-sixpence{--rim:#5f666c;--hi:#e6eaed}.t-drachma{--rim:#6c6a5a;--hi:#e6e0c4}.t-peso{--rim:#7a5a14;--hi:#e2c15a}.t-krona{--rim:#8a6a1c;--hi:#eccf6a}.t-pog{--rim:#2a2a6a;--hi:#ff8f9a}.t-crypto{--rim:#8a5a0a;--hi:#ffb04a}.t-steel{--rim:#7d8790;--hi:#d9b44a}.t-glass{--rim:#c99a2c;--hi:#fff2b0}
 .t-bronze{--rim:#6b4219;--hi:#c99a5a}.t-loaded{--rim:#c9a227;--hi:#3e2f5c}.t-quicksilver{--rim:#8a6f1f;--hi:#d6b24c}
 .t-penny{--rim:#6b3218;--hi:#e09a64}.t-denarius{--rim:#6f7a83;--hi:#d9dee2}.t-hope{--rim:#1a2a5a;--hi:#6f9be0}.t-ecu{--rim:#7a5a14;--hi:#f0d27a}
-.t-twohead{--rim:#7a6a40;--hi:#d8cfa4}.t-twotail{--rim:#4f6a8a;--hi:#b8cbe0}
+.t-twohead{--rim:#7a6a40;--hi:#d8cfa4}.t-twotail{--rim:#1f4f86;--hi:#7fb0e8}.t-sixpence{--rim:#8a939a;--hi:#ffffff}.t-drachma{--rim:#8a6e2c;--hi:#e6cc80}
 .coinimg{width:64%;filter:drop-shadow(0 1px 0 color-mix(in srgb,var(--line) 22.0%,transparent))}
 .hint{color:var(--ink-dim);font-size:15px;text-align:center;min-height:18px;max-width:46ch}
 .controls{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;padding-bottom:6px}
@@ -2182,7 +2182,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.262</div>
+  <div class="gamever" aria-label="Version">v1.2.263</div>
 </div>
 
 <script>
@@ -4365,7 +4365,8 @@ function coinArt(type,side){
   switch(type){
     case 'copper':{const K=skinNow().c;disc(15.5,K[0]);disc(14.5,K[1]);ring(12.5,K[2]);reed(14.6,K[3]);h?profile(K[4],K[5]):eagle(K[4]);break}
     case 'twohead':disc(15.5,'#6e6038');disc(14.5,'#d8cfa4');ring(12.5,'#b0a679');reed(14.6,'#9a8f62');profile('#a2976a','#fff8d8');break;
-    case 'twotail':disc(15.5,'#3f5672');disc(14.5,'#b8cbe0');ring(12.5,'#8ea6c2');reed(14.6,'#7d93ad');eagle('#6f86a3');break;
+    /* the fake: blue-steel plating and a dashed, badly-milled rim, so it never passes for a real Quarter */
+    case 'twotail':disc(15.5,'#1f4f86');disc(14.5,'#7fb0e8');for(let k=0;k<20;k++){g.save();g.translate(C,C);g.rotate(k*TAU/20);rect(-1.4,-14.4,2.8,2,'#1f4f86');g.restore()}eagle('#2a62a5');break;
     case 'silver':ngon(11,15.8,'#6b5a24');ngon(11,14.6,'#d6c27a');ngon(11,12.4,'#c4ad5c');
       if(h)profile('#8f7a36','#f4e7b0');else{ell(15,17,7,3.5,'#5a4a1c');disc(2.6,'#5a4a1c',21,13);poly([[23,12],[28,14],[23,15]],'#5a4a1c');rect(6,22,20,1,'#7a6a34');rect(9,24,14,1,'#7a6a34')}break;
     case 'platinum':disc(15.5,'#7a3e06');disc(14.5,'#e8961c');reed(14.6,'#b8640e');ring(12,'#c97a14');
@@ -4415,8 +4416,11 @@ function coinArt(type,side){
     case 'quicksilver':disc(15.5,'#6e5714');disc(14.5,'#d6b24c');ring(10.5,'#8a6f1f');dots(12.6,'#8a6f1f',16);
       if(h){rect(15,10,2,8,'#3a2a0a');disc(3,'#c8102e',16,10);rect(10,18,12,4,'#3a2a0a')}
       else{["..1....1..","...1..1...","..111111..",".11.11.11.","1111111111","1.111111.1","1.1....1.1","...11.11.."].forEach((row,y)=>[...row].forEach((ch,x)=>{if(ch==='1')rect(11+x,12+y,1,1,'#3a2a0a')}))}break;
-    case 'sixpence':disc(15.5,'#5f666c');disc(14.5,'#d9dee2');ring(12.5,'#aab2b8');reed(14.6,'#9aa2a8');if(h)profile('#a9b1b7','#f2f4f5');else text('6D',16,16,'#6f777d',11);break;
-    case 'drachma':lumpy(15.5,'#6c6a5a',.8,18);lumpy(14,'#d9d4b8',.6,18);if(h)profile('#a8a28a','#f2eed8');else{ell(16,16,6.5,8,'#9a9478');disc(2.2,'#f2eed8',13.5,13.5);disc(2.2,'#f2eed8',18.5,13.5);disc(1,'#3a3a2a',13.5,13.5);disc(1,'#3a3a2a',18.5,13.5);poly([[15,16],[17,16],[16,18.5]],'#c9a020');poly([[10,10],[12.5,8],[13,11]],'#9a9478');poly([[22,10],[19.5,8],[19,11]],'#9a9478')}break;
+    /* the sixpence: a small, bright white-silver coin with a beaded border and a crowned head */
+    case 'sixpence':disc(13,'#4f565c');disc(12.2,'#fbfcfd');dots(10.6,'#7d868d',28);
+      if(h){g.save();g.translate(C,C+1);g.scale(.74,.74);g.translate(-C,-C);profile('#8c959c','#ffffff');poly([[12.5,6.5],[13.5,3.5],[15,5.5],[16.5,2.8],[18,5.5],[19.5,3.5],[20.5,6.5]],'#c9a020');g.restore()}else text('6D',16,16,'#5c656c',10);break;
+    /* the drachma: hammered antique silver gone gold with age, Athena in a crested helmet on the front */
+    case 'drachma':lumpy(15.5,'#5a4a22',.8,18);lumpy(14,'#d6b968',.6,18);if(h){profile('#9a7f38','#f6e7b4');poly([[11,9],[13,4],[18,3],[23,6],[22,9],[17,7.5],[13,10]],'#7a6026');poly([[14,4],[16,1.5],[21,2],[23,4.5],[19,3.6]],'#a23b2a')}else{ell(16,16,6.5,8,'#9a9478');disc(2.2,'#f2eed8',13.5,13.5);disc(2.2,'#f2eed8',18.5,13.5);disc(1,'#3a3a2a',13.5,13.5);disc(1,'#3a3a2a',18.5,13.5);poly([[15,16],[17,16],[16,18.5]],'#c9a020');poly([[10,10],[12.5,8],[13,11]],'#9a9478');poly([[22,10],[19.5,8],[19,11]],'#9a9478')}break;
     case 'peso':disc(15.5,'#7a5a14');disc(14.5,'#d9b44a');reed(14.6,'#b8962f');disc(10,'#7a8086');disc(9.2,'#cfd5da');if(h)text('$',16,16.5,'#6a7076',14);else{poly([[16,9],[21,15],[16,23],[11,15]],'#9aa0a6');disc(2,'#cfd5da',16,15)}break;
     case 'krona':disc(15.5,'#8a6a1c');disc(14.5,'#e2c15a');ring(12.5,'#b8962f');if(h){poly([[9,21],[9,12],[12.5,16],[16,9.5],[19.5,16],[23,12],[23,21]],'#a8862a');rect(9,21,14,2,'#8a6a1c');[12.5,16,19.5].forEach(x=>disc(1.2,'#fff2b0',x,x===16?9.5:13))}else text('1KR',16,16,'#8a6a1c',9);break;
     case 'pog':disc(15.5,'#2a2a6a');disc(14.5,'#ff5f6d');disc(11.5,'#ffd34d');disc(8,'#4bd18f');disc(4.5,'#0b9bff');if(h)text('POG',16,16.5,'#1a1a3a',9);else for(let k=0;k<8;k++){const a=k*Math.PI/4;rect(16+Math.cos(a)*9-1,16+Math.sin(a)*9-1,2,2,'#1a1a3a')}break;
