@@ -434,7 +434,7 @@ body.badges .face::before{display:block}
 .w-patina{background:radial-gradient(circle at 28% 72%,rgba(63,190,150,.85),transparent 50%),radial-gradient(circle at 74% 24%,rgba(90,210,170,.7),transparent 42%),rgba(40,150,115,.4);mix-blend-mode:hard-light;opacity:.7}
 .w-proof{background:linear-gradient(135deg,rgba(255,255,255,.6),rgba(200,210,228,.1) 38%,rgba(30,42,74,.28) 55%,rgba(255,255,255,.45) 80%);mix-blend-mode:overlay} /* Charms: a mirror-and-frost wash (coins get proof struck into their art) */
 @keyframes huecycle{to{filter:hue-rotate(360deg)}}
-.w-brushed{background:repeating-linear-gradient(90deg,rgba(255,255,255,.28) 0 1px,transparent 1px 3px);mix-blend-mode:overlay;opacity:.9}
+.w-brushed{background:repeating-linear-gradient(0deg,rgba(255,255,255,.55) 0 1.5px,transparent 1.5px 3px,rgba(0,0,0,.12) 3px 4px,transparent 4px 6px),repeating-linear-gradient(0deg,rgba(255,255,255,.25) 0 9%,transparent 9% 17%);mix-blend-mode:overlay;opacity:1}
 .w-holo{background:linear-gradient(135deg,rgba(255,95,109,.55),rgba(255,211,77,.45),rgba(75,209,143,.45),rgba(11,155,255,.5),rgba(201,164,255,.55)) 0 0/300% 300%;mix-blend-mode:screen;opacity:.75;animation:holoshift 3s ease-in-out infinite alternate}
 @keyframes holoshift{to{background-position:100% 100%}}
 /* Weightless coins: inverted like a photo negative, with a dashed halo (each face and edge piece separately, so the 3D flip keeps working) */
@@ -2175,7 +2175,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.260</div>
+  <div class="gamever" aria-label="Version">v1.2.261</div>
 </div>
 
 <script>
@@ -4470,7 +4470,9 @@ function applyFinish(cv,wear){const W=cv.width,g=cv.getContext('2d'),F=artField(
     else if(wear==='antique'){ /* dark in the recesses, worn bright on the high points */
       if(fm[p]){const t=Math.max(0,r-.35)*.55;R*=1-t;G*=1-t*1.1;B*=1-t*1.35}else{R=R*.78+60*.22;G=G*.74+40*.26;B=B*.66+18*.34}
       if(r<.42){const t=(.42-r)*.6;R+=(255-R)*t;G+=(240-G)*t;B+=(210-B)*t}}
-    else if(wear==='brushed'){if(fm[p]){const t=((y*7+((x*13)%5))%6)<2?.82:1.04;R*=t;G*=t;B*=t}}
+    else if(wear==='brushed'){ /* bold horizontal brush strokes: bands of varying brightness that survive being shrunk to table size */
+      const band=Math.floor(y/(W/48)),hsh=(band*2654435761>>>0)%1000/1000,str=Math.floor((x+band*37)/(W/6))%2;
+      const t=.72+.5*hsh+(str?.06:-.06),k=fm[p]?1:.35,m=1+(t-1)*k;R=R*m+18*k;G=G*m+20*k;B=B*m+26*k}
     else if(wear==='holo'){if(fm[p]){const h=((x+y)/W*360+r*120)%360,k=.26,[hr,hg,hb]=hslRgb(h);R=R*(1-k)+hr*k;G=G*(1-k)+hg*k;B=B*(1-k)+hb*k}}
     d[q]=Math.max(0,Math.min(255,R));d[q+1]=Math.max(0,Math.min(255,G));d[q+2]=Math.max(0,Math.min(255,B))}
   g.putImageData(im,0,0);return cv}
