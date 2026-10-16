@@ -338,12 +338,12 @@ body.badges .face::before{display:block}
 @keyframes dropin{from{transform:translateY(-60px) scale(.6);opacity:0}}
 .coin.shatter .lift{animation:shatter .5s ease-in forwards}
 @keyframes shatter{to{transform:scale(1.5) rotate(25deg);opacity:0;filter:brightness(2)}}
-.t-copper{--rim:var(--skrim,#7d8790);--hi:var(--skhi,#e3e7ea)}.t-silver{--rim:#6b5a24;--hi:#d6c27a}.t-platinum{--rim:#7a3e06;--hi:#e8961c}
+.t-copper{--rim:var(--skrim,#7d8790);--hi:var(--skhi,#e3e7ea)}.t-silver{--rim:#6b5a24;--hi:#d6c27a}.t-platinum{--rim:#6a2a04;--hi:#d9661a}
 .t-ruby{--rim:#c22630;--hi:#ffffff}.t-gold{--rim:#9a6f10;--hi:#f5cf55}.t-jade{--rim:#2b5e48;--hi:#7cc4a4}
 .t-sanddollar{--rim:#a8946a;--hi:#fff2d8}.t-firstdime{--rim:#3a3a2a;--hi:#a8a888}.t-bellwether{--rim:#6a4818;--hi:#ffe08a}.t-foil{--rim:#8a6a14;--hi:#fff2b0}.t-lucky{--rim:#a8862a;--hi:#f0d27a}.t-sealed{--rim:#4a0a0e;--hi:#e04050}.t-sixpence{--rim:#5f666c;--hi:#e6eaed}.t-drachma{--rim:#6c6a5a;--hi:#e6e0c4}.t-peso{--rim:#7a5a14;--hi:#e2c15a}.t-krona{--rim:#8a6a1c;--hi:#eccf6a}.t-pog{--rim:#2a2a6a;--hi:#ff8f9a}.t-crypto{--rim:#8a5a0a;--hi:#ffb04a}.t-steel{--rim:#7d8790;--hi:#d9b44a}.t-glass{--rim:#c99a2c;--hi:#fff2b0}
 .t-bronze{--rim:#6b4219;--hi:#c99a5a}.t-loaded{--rim:#c9a227;--hi:#3e2f5c}.t-quicksilver{--rim:#8a6f1f;--hi:#d6b24c}
 .t-penny{--rim:#6b3218;--hi:#e09a64}.t-denarius{--rim:#6f7a83;--hi:#d9dee2}.t-hope{--rim:#1a2a5a;--hi:#6f9be0}.t-ecu{--rim:#7a5a14;--hi:#f0d27a}
-.t-twohead{--rim:#7a6a40;--hi:#d8cfa4}.t-twotail{--rim:#1f4f86;--hi:#7fb0e8}.t-sixpence{--rim:#8a939a;--hi:#ffffff}.t-drachma{--rim:#8a6e2c;--hi:#e6cc80}
+.t-twohead{--rim:#4f5a1e;--hi:#c9d17a}.t-twotail{--rim:#1f4f86;--hi:#7fb0e8}.t-sixpence{--rim:#8a939a;--hi:#ffffff}.t-drachma{--rim:#8a6e2c;--hi:#e6cc80}
 .coinimg{width:64%;filter:drop-shadow(0 1px 0 color-mix(in srgb,var(--line) 22.0%,transparent))}
 .hint{color:var(--ink-dim);font-size:15px;text-align:center;min-height:18px;max-width:46ch}
 .controls{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;padding-bottom:6px}
@@ -2182,7 +2182,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.263</div>
+  <div class="gamever" aria-label="Version">v1.2.264</div>
 </div>
 
 <script>
@@ -4364,13 +4364,15 @@ function coinArt(type,side){
   const stamp=(x,y,c)=>{rect(x,y,5,1,c);rect(x+2,y,1,5,c);rect(x,y+4,5,1,c)};
   switch(type){
     case 'copper':{const K=skinNow().c;disc(15.5,K[0]);disc(14.5,K[1]);ring(12.5,K[2]);reed(14.6,K[3]);h?profile(K[4],K[5]):eagle(K[4]);break}
-    case 'twohead':disc(15.5,'#6e6038');disc(14.5,'#d8cfa4');ring(12.5,'#b0a679');reed(14.6,'#9a8f62');profile('#a2976a','#fff8d8');break;
+    /* the other fake: greenish brass, the same dashed counterfeit rim, and a two-faced bust looking both ways */
+    case 'twohead':disc(15.5,'#4f5a1e');disc(14.5,'#c9d17a');for(let k=0;k<20;k++){g.save();g.translate(C,C);g.rotate(k*TAU/20);rect(-1.4,-14.4,2.8,2,'#4f5a1e');g.restore()}
+      g.save();g.translate(C-5,C+1.5);g.scale(.6,.6);g.translate(-C,-C);profile('#6b7424','#f4f7c8');g.restore();g.save();g.translate(C+5,C+1.5);g.scale(-.6,.6);g.translate(-C,-C);profile('#6b7424','#f4f7c8');g.restore();break;
     /* the fake: blue-steel plating and a dashed, badly-milled rim, so it never passes for a real Quarter */
     case 'twotail':disc(15.5,'#1f4f86');disc(14.5,'#7fb0e8');for(let k=0;k<20;k++){g.save();g.translate(C,C);g.rotate(k*TAU/20);rect(-1.4,-14.4,2.8,2,'#1f4f86');g.restore()}eagle('#2a62a5');break;
     case 'silver':ngon(11,15.8,'#6b5a24');ngon(11,14.6,'#d6c27a');ngon(11,12.4,'#c4ad5c');
-      if(h)profile('#8f7a36','#f4e7b0');else{ell(15,17,7,3.5,'#5a4a1c');disc(2.6,'#5a4a1c',21,13);poly([[23,12],[28,14],[23,15]],'#5a4a1c');rect(6,22,20,1,'#7a6a34');rect(9,24,14,1,'#7a6a34')}break;
-    case 'platinum':disc(15.5,'#7a3e06');disc(14.5,'#e8961c');reed(14.6,'#b8640e');ring(12,'#c97a14');
-      if(h)profile('#a8560c','#ffd890','#7a3e06');else{ell(15,17,6,3,'#7a3e06');[10,12,18,20].forEach(x=>rect(x,19,1,5,'#7a3e06'));poly([[19,16],[21,10],[24,11],[22,17]],'#7a3e06');ell(23,10,2,1.5,'#7a3e06');rect(22,5,1,4,'#7a3e06');rect(24,5,1,4,'#7a3e06')}break;
+      if(h){const L=[[16,4],[17.6,8.6],[20.6,7],[19.6,11.6],[24.6,10.6],[23,14.2],[26,15.4],[21.4,19],[22.4,21.4],[17.2,20.6],[17,26],[15,26],[14.8,20.6],[9.6,21.4],[10.6,19],[6,15.4],[9,14.2],[7.4,10.6],[12.4,11.6],[11.4,7],[14.4,8.6]];poly(L,'#b0221e');rect(15.5,20,1,6,'#7a1612')}else{ell(15,17,7,3.5,'#5a4a1c');disc(2.6,'#5a4a1c',21,13);poly([[23,12],[28,14],[23,15]],'#5a4a1c');rect(6,22,20,1,'#7a6a34');rect(9,24,14,1,'#7a6a34')}break;
+    case 'platinum':disc(15.5,'#6a2a04');disc(14.5,'#d9661a');dots(13,'#8a3a08',36);
+      if(h)profile('#8a3a08','#ffc890','#3a1602');else{ell(15,17,6,3,'#7a3e06');[10,12,18,20].forEach(x=>rect(x,19,1,5,'#7a3e06'));poly([[19,16],[21,10],[24,11],[22,17]],'#7a3e06');ell(23,10,2,1.5,'#7a3e06');rect(22,5,1,4,'#7a3e06');rect(24,5,1,4,'#7a3e06')}break;
     case 'ruby':disc(15.5,'#8e1820');disc(14.5,'#c22630');
       for(let k=0;k<8;k++){g.save();g.translate(C,C);g.rotate(k*TAU/8);rect(-2,-15,4,4,'#f4f4f4');g.restore()}
       disc(9.5,'#ffffff');disc(8.5,'#e04450');
@@ -4390,8 +4392,9 @@ function coinArt(type,side){
     case 'steel':disc(15.5,'#6f7a83');disc(14.5,'#c9ced3');disc(9.6,'#9a7a24');disc(8.8,'#d9b44a');
       if(h){dots(12,'#6f7a83',12);ell(16,16,3,4.5,'#9a7a24');rect(15,10,2,2,'#9a7a24')}
       else{text('2',13,17,'#6b5216',14);rect(19,11,4,2,'#9a7a24');rect(20,15,3,2,'#9a7a24');rect(19,19,4,2,'#9a7a24');dots(12,'#6f7a83',12)}break;
-    case 'glass':lumpy(15.8,'#a87c1c',.5,36);disc(13.4,'#e8c14a');
-      if(h)profile('#c99a2c','#fff2b0');else{ell(16,16,4.5,7.5,'#7a4a1c');rect(16,9,1,15,'#5a3412');rect(13,12,1,8,'#9a6428');rect(19,12,1,8,'#9a6428')}break;
+    /* chocolate in gold foil: crinkled foil, peeled back at one side to show the chocolate */
+    case 'glass':lumpy(15.8,'#a87c1c',.5,36);disc(13.4,'#e8c14a');for(let k=0;k<9;k++){g.save();g.translate(C,C);g.rotate(k*.7+.3);poly([[0,0],[2,-13],[5,-12]],k%2?'#fff0a8':'#c9961e');g.restore()}
+      if(h){poly([[17,4],[29,10],[29,22],[22,28],[17,28]],'#5a3012');poly([[17,4],[19,9],[17,14],[20,19],[17,28]],'#f5d76a');ell(24,16,2.4,4,'#7a4a1c');rect(19,23,7,1,'#3a1c08')}else{ell(16,16,4.5,7.5,'#7a4a1c');rect(16,9,1,15,'#5a3412');rect(13,12,1,8,'#9a6428');rect(19,12,1,8,'#9a6428')}break;
     case 'sanddollar':{lumpy(15.6,'#b8a07a',.6,24);disc(14.4,'#e9dcc0');for(let k=0;k<60;k++){const x=3+(k*31)%27,y=3+(k*47+5)%27;if(Math.hypot(x+.5-C,y+.5-C)<13)rect(x,y,1,1,k%3?'#dccca8':'#f6eedc')}
       for(let k=0;k<5;k++){const a=-Math.PI/2+k*TAU/5;ell(16+Math.cos(a)*6.5,16+Math.sin(a)*6.5,1.6,4.2,'#b8a07a',a+Math.PI/2);ell(16+Math.cos(a)*6.5,16+Math.sin(a)*6.5,.7,3.2,'#d8c8a2',a+Math.PI/2)}
       disc(1.6,'#a08a60');if(!h)for(let k=0;k<5;k++){const a=-Math.PI/2+(k+.5)*TAU/5;ell(16+Math.cos(a)*11,16+Math.sin(a)*11,1.2,2.4,'#9a8458',a+Math.PI/2)}}break;
