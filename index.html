@@ -2171,7 +2171,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.257</div>
+  <div class="gamever" aria-label="Version">v1.2.258</div>
 </div>
 
 <script>
@@ -3226,7 +3226,7 @@ const lightCol=c=>{try{const[r,g,b]=hex2rgb(c);return .2126*r+.7152*g+.0722*b>13
 const curseBadge=(c,left)=>`<i class="cbadge" style="--cc:${CURSES[c].col};${lightCol(CURSES[c].col)?'color:#1b1b1b':''}">${c==='fleeting'?(left??5):CURSES[c].letter}</i>`;
 const STAKES=[null,
  {name:'Copper Stake',col:'#c87533',desc:'Base difficulty'},
- {name:'Silver Stake',col:'#9aa3ab',desc:'Wager targets are {a:25%} higher'},
+ {name:'Silver Stake',col:'#9aa3ab',desc:'Wager targets are {a:25%} higher from Stage 2'},
  {name:'Gold Stake',col:'#e0b030',desc:'Every boss has a {a:second} effect'},
  {name:'Platinum Stake',col:'#b8c6d8',desc:'Shop Charms can be {a:Rented} ($1 to buy, lose $3 each wager)'},
  {name:'Diamond Stake',col:'#7fd6ff',desc:'One random coin lands {a:face down} every toss'},
@@ -3305,7 +3305,7 @@ const blindChip=b=>b.kind==='boss'&&bossSil(b.boss)?`<img class="bsil" src="${bo
 function markSeen(kind,k){const P=PS(),key=kind==='boss'?'seenBoss':'seenRival';P[key]=P[key]||{};if(!P[key][k]){P[key][k]=1;saveProf()}}
 const blindLetter=b=>b.kind==='rival'?'R':b.kind==='elite'?'E':b.kind==='boss'?BOSSES[b.boss].name.replace('The ','')[0]:b.kind==='small'?'S':'B';
 const blindReward=b=>b.kind==='rival'?2:b.kind==='elite'?6:b.kind==='small'?3:b.kind==='big'?4:5;
-const blindTarget=b=>b.kind==='rival'?0:Math.round(anteBase(S.ante)*(b.kind==='small'?1:b.kind==='big'?1.5:b.kind==='elite'?2.5:bossMult(b.boss))*(S.roll==='fusion'?2:S.roll==='glitched'?(b.gx||1.5):S.roll==='oneshot'?.75:1)*(S.stake>=2?1.25:1));
+const blindTarget=b=>b.kind==='rival'?0:Math.round(anteBase(S.ante)*(b.kind==='small'?1:b.kind==='big'?1.5:b.kind==='elite'?2.5:bossMult(b.boss))*(S.roll==='fusion'?2:S.roll==='glitched'?(b.gx||1.5):S.roll==='oneshot'?.75:1)*(S.stake>=2&&S.ante>=2?1.25:1));
 const infl=()=>S&&S.roll==='inflation'?Math.floor((S.ante||1)/2):0;
 const price=c=>Math.max(1,Math.round(c*S.discount))+infl();
 /* tier I upgrades cost $10, tier II $15, slow burners $7 */
@@ -6403,6 +6403,8 @@ function startBlind(){
   const watch=countEff('watch');
   S.flipsLeft=bossIs('needle')?1:Math.max(1,S.baseFlips-countEff('cursed')+watch+countEff('pressedpenny')+(b.kind==='boss'?countEff('hourglass'):0));
   S.reflipsLeft=(bossHas('noRe')||watch)?0:Math.max(0,S.baseReflips+countEff('spare')-countEff('brokenmirror'));
+  /* a gentler first stage: one extra Re-flip in every Stage 1 wager, so a run isn't lost to luck before any real choice */
+  if(S.ante===1&&!S.tut&&!bossHas('noRe')&&!watch)S.reflipsLeft++;
   if(b.kind==='rival'){S.flipsLeft=3;if(rivalInfo().style==='rules')S.reflipsLeft=0;startDuel(false)}else S.duel=null;
   if(wx('snow')){S.flipsLeft++;S.reflipsLeft=Math.max(0,S.reflipsLeft-1)}
   S.boss2=(S.boss&&b.boss2)||null;if(S.boss==='fatal')fatalCorrupt();
@@ -6914,7 +6916,7 @@ function startDuel(boss){
   if(!boss&&S.rival)markSeen('rival',S.rival.name);if(boss&&S.boss==='tablerivals')RIVALS.forEach(r=>markSeen('rival',r));
   const rm=!boss&&isRematch(),n=boss?S.flipsLeft:3,base=boss?anteBase(S.ante)*4/n:anteBase(S.ante)*(.45+.12*S.rival.lvl)*(rm?1.4:1),table=boss&&S.boss==='tablerivals';
   if(rm)setTimeout(()=>toast(`<b style="color:var(--orange)">Rematch!</b> ${S.rival.name} remembers losing to you, and came back sharper`,4500),400);
-  S.duel={rm,shown:0,score:0,sal:0,n,bust:Math.floor(rand()*n),base:base*(S.stake>=2?1.25:1),general:!!boss,table,order:table?[...RIVALS].sort(()=>rand()-.5):null};S.target=0;
+  S.duel={rm,shown:0,score:0,sal:0,n,bust:Math.floor(rand()*n),base:base*(S.stake>=2&&S.ante>=2?1.25:1),general:!!boss,table,order:table?[...RIVALS].sort(()=>rand()-.5):null};S.target=0;
 }
 function rivalTurn(){
   const D=S.duel;if(!D||D.shown>=D.n)return;const v=rivalToss(),r=v/D.base;D.shown++;D.score+=v;S.target=D.score;
