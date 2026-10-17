@@ -2182,7 +2182,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.266</div>
+  <div class="gamever" aria-label="Version">v1.2.267</div>
 </div>
 
 <script>
@@ -3486,6 +3486,7 @@ const sfx={
   total(){noise({ft:'lowpass',ff:900,ff2:120,d:.5,v:.3});tone({f:98,f2:49,d:.5,v:.32});[523,659,784].forEach(f=>tone({f,type:'triangle',d:.5,v:.05,t:.03}))},
   tick(){tone({f:2000+Math.random()*400,type:'square',lp:3000,d:.015,v:.025})},
   unlock(){[0,4,7,12,16,19].forEach((n,i)=>tone({t:i*.07,f:523.25*Math.pow(2,n/12),type:'triangle',d:.4,v:.11}));[0,.12,.24].forEach((t,i)=>tone({t:.45+t,f:2093*Math.pow(2,i*4/12),type:'sine',d:.5,v:.05}));noise({t:.42,d:.6,v:.05,ft:'highpass',ff:6000})},
+  spark(){noise({ft:'bandpass',ff:4200,q:5,d:.035,v:.05});noise({ft:'bandpass',ff:5600,q:6,d:.025,v:.035,t:.05})},
   surge(){for(let k=0;k<4;k++)noise({ft:'bandpass',ff:2400+k*900,q:6,d:.04,v:.12,t:k*.05});tone({f:120,d:.35,v:.07,type:'sawtooth'})},
   thunder(){noise({d:1.4,v:.32,ft:'lowpass',ff:520,ff2:90,a:.01});noise({t:.05,d:.25,v:.18,ft:'bandpass',ff:1800})},
   fanfare(){const C=[[0,4,7],[5,9,12],[7,11,14],[12,16,19]];C.forEach((ch,k)=>ch.forEach(n=>tone({t:k*.28,f:392*Math.pow(2,n/12),type:k===3?'sawtooth':'square',d:k===3?1.4:.26,v:.06,lp:2400})));
@@ -6479,7 +6480,7 @@ async function doCall(call){
   await Promise.all(S.purse.map((c,i)=>animateToss(i,i*70)));
   if(S.whimI>=0){const el=$('#c'+S.whimI);if(el)popup(el,'Whim!','miss')}
   if(S.catI>=0){const el=$('#c'+S.catI);if(el)popup(el,'Crossed','miss')}
-  if(wx('storm')&&S.purse[S.bolt]){const el=$('#c'+S.bolt);if(el){el.classList.add('bolted');popup(el,'Zapped!','text')}if(window.wxFlash)wxFlash();play('surge');shake(5)}
+  if(wx('storm')&&S.purse[S.bolt]){const el=$('#c'+S.bolt);if(el){el.classList.add('bolted');popup(el,'Zapped!','text')}play('spark')}
   S.stats.flips+=S.purse.length;
   S.phase='tossed';refreshTable();updatePreview();scheduleSave();
 }
@@ -7501,7 +7502,8 @@ document.addEventListener('dragstart',e=>e.preventDefault());
     /* spilled drinks: slow amber drips running down from the top edge */
     if(k==='rain'){for(const p of P){p.y+=.6+p.v*1.4;if(p.y>H+8){p.y=-8-Math.random()*H*.6;p.x=Math.random()*W}g.fillStyle='rgba(200,140,40,.32)';g.beginPath();g.ellipse(p.x,p.y,1.4+p.s,2.6+p.s*1.6,0,0,7);g.fill();g.fillStyle='rgba(200,140,40,.12)';g.fillRect(p.x-.6,p.y-14,1.2,12)}}
     /* power surge: the house lights flicker, a fault sparks now and then */
-    else if(k==='storm'){if(Math.random()<.004){flash=.6;setTimeout(()=>play('surge'),60)}if(Math.random()<.02){g.fillStyle='rgba(20,20,40,.10)';g.fillRect(0,0,W,H)}}
+    /* power surge: no ambient effect; only the zapped coin shows it */
+    else if(k==='storm'){}
     /* rush hour: nothing falls; the room just moves faster */
     else if(k==='snow'){}
     /* vents on full: cool air streams from the ceiling vents */
