@@ -2189,7 +2189,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.268</div>
+  <div class="gamever" aria-label="Version">v1.2.269</div>
 </div>
 
 <script>
@@ -2354,6 +2354,9 @@ const polterPairs=()=>{const free={},out=[];S.purse.forEach((c,i)=>{if(stkGroup(
 const stkGroup=c=>!!S&&!!c&&!!c.stk&&S.purse.filter(x=>x.stk===c.stk).length>=2?c.stk:null;
 const purseCnt=()=>`${purseUsed()}/${S.purseMax}`;
 const syncPurseCnt=()=>{if(S)document.querySelectorAll('.purse').forEach(p=>p.dataset.count=purseCnt())};
+/* a Weightless coin or Charm takes up no space, so it always fits */
+const fitsCoin=o=>!!o&&o.wear==='weightless'||purseUsed()<S.purseMax;
+const fitsCharm=o=>!!o&&o.wear==='weightless'||S.jokers.length<slots();
 const purseUsed=()=>S.purse.length-S.purse.filter(c=>c.wear==='weightless').length-new Set(S.purse.filter(c=>stkGroup(c)).map(c=>c.stk)).size;
 function applyStacks(){const seen={};S.purse.forEach((c,i)=>{const g=stkGroup(c);if(!g)return;if(g in seen)S.results[i]=S.results[seen[g]];else seen[g]=i})}
 
@@ -4658,7 +4661,7 @@ const SPR_Q=["..........","..11111...",".11...11..",".....11...","....11....",".
 const PX={
  charm:{name:o=>JOKERS[o.key].name+(o.wear?`<br><small style="color:var(--money)">${WEARS[o.wear].name}</small>`:'')+(o.curse?`<br><small style="color:${inkOf(CURSES[o.curse].col)}">${CURSES[o.curse].name}</small>`:''),
   face:o=>`<div class="jin" style="--jbg:${JOKERS[o.key].bg};${rarVars(o.key)}">${IMG(icon(o.key))}</div>${o.curse?curseBadge(o.curse):''}`,
-  block:()=>S.jokers.length>=slots()?'No room for a Charm':null,
+  block:o=>!fitsCharm(o)?'No room for a Charm':null,
   take:o=>{addJoker(o.key,JOKERS[o.key].cost);const nj=S.jokers[S.jokers.length-1];if(o.wear)nj.wear=o.wear;if(o.curse){nj.curse=o.curse;if(o.curse==='fleeting')nj.left=5}PS().buys[o.key]=(PS().buys[o.key]||0)+1;play('buy');if(JOKERS[o.key].r===5)play('unlock')}},
  wx:{name:o=>o.key==='clear'?'Clean-up Crew':WEATHER[o.key].name,face:o=>`<div class="jin" style="--jbg:#16364a">${IMG(wxIcon(o.key))}</div>`,
   tip:o=>o.key==='clear'?`<div class="tn">Clean-up Crew</div><div class="td">Clears this stage's floor condition right away.</div>`:`<div class="tn">${WEATHER[o.key].name}</div><div class="td">Next stage's floor: ${fmt(WEATHER[o.key].desc)}</div><span class="tb" style="background:${WEATHER[o.key].col};color:#1a1a1a">Tip-off</span>`,
@@ -4711,8 +4714,8 @@ function mystShow(it){
 function grantMystery(it){
   if(it.kind==='cash'){S.money+=it.v;return `<b>$${it.v}</b>`}
   if(it.kind==='junk'){S.money+=1;return 'some pocket lint, and {$:$1}'}
-  if(it.kind==='coin'){if(purseUsed()<S.purseMax){S.purse.push({...mkCoin(it.type),wear:it.wear||null});return `a <b>${COINS[it.type].name}</b>`}S.money+=4;return `a ${COINS[it.type].name}, but your purse is full, so you sell it for $4`}
-  if(it.kind==='charm'){if(S.jokers.length<slots()){addJoker(it.key,JOKERS[it.key].cost);return `the <b>${JOKERS[it.key].name}</b> Charm`}S.money+=5;return `${JOKERS[it.key].name}, but you have no room, so you sell it for $5`}
+  if(it.kind==='coin'){if(fitsCoin(it)){S.purse.push({...mkCoin(it.type),wear:it.wear||null});return `a <b>${COINS[it.type].name}</b>`}S.money+=4;return `a ${COINS[it.type].name}, but your purse is full, so you sell it for $4`}
+  if(it.kind==='charm'){if(fitsCharm(it)){addJoker(it.key,JOKERS[it.key].cost);if(it.wear)S.jokers[S.jokers.length-1].wear=it.wear;return `the <b>${JOKERS[it.key].name}</b> Charm`}S.money+=5;return `${JOKERS[it.key].name}, but you have no room, so you sell it for $5`}
   const nm=consInfo(it).name;if(consRoom()){S.cons.push(it);return `<b>${nm}</b>`}S.money+=3;return `${nm}, but you have no room, so you sell it for $3`}
 function genPackOpts(pk,n){
   const opts=[],k=pk.kind,uniq=(f,key)=>{let v,t=0;do{v=f();t++}while(opts.some(o=>o[key]===v[key]&&o.kind===v.kind)&&t<30);opts.push(v)};
@@ -5512,7 +5515,7 @@ const slotPrice=o=>S.shop&&o===S.shop.jokers[0]&&countEff('goldenticket')?0:gp(o
 /* each reroll in the same shop costs 50% more than the last: $5, $8, $11, $17, $25, $38... */
 const rerollCost=()=>countEff('cornucopia')||(S.freeRR||0)>0||(S.upgrades.includes('surplus2')&&!(S.shop.rolls||0))?0:Math.max(0,Math.ceil((Math.round(S.shop.reroll*1.25**(S.shop.rolls||0))-countEff('thrifty')+infl())*inflMult()));
 function charmCardHTML(o,i){
-  const p=slotPrice(o),full=S.jokers.length>=slots();
+  const p=slotPrice(o),full=!fitsCharm(o);
   if(o.kind==='spirit'){const ci=consInfo(o),room=consRoom();
     return `<div class="scard ${o.bought?'gone':''}"><div class="price ${S.roll==='glitched'?'gprice':''}">$${p}</div>
       <button class="jcard tile ck-${o.kind}" data-tip="shopj:${i}" data-drag="shop" data-sk="j:${i}" aria-label="${ci.name}"><div class="jin" style="--jbg:${ci.bg};--dl:${-i*.9}s">${IMG(ci.icon)}<span class="lab">${ci.short}</span></div></button>
@@ -5538,7 +5541,7 @@ const pawnable=c=>!!c&&!COINS[c.type].quest&&!stkGroup(c);
 /* buying back always costs at least $1 more than the broker paid, so nothing can be cycled for profit */
 function pawnPrice(o){const base=o.kind==='charm'?JOKERS[o.key].cost:o.kind==='coin'?Math.max(2,(COINS[o.type].cost||1)+2+(o.wear?2:0)+(o.defect?2:0)):o.kind==='cons'?(consInfo(o.c).cost||4):upgCost({key:o.key});
   return gp(null,Math.max(base,(o.paid||0)+1))}
-function pawnRoom(o){return o.kind==='charm'?(S.jokers.length<slots()?'':'No room'):o.kind==='coin'?(purseUsed()<S.purseMax?'':'Purse full'):o.kind==='cons'?(consRoom()?'':'No room'):(S.upgrades.includes(o.key)?'Owned':UPGRADES[o.key].req&&!S.upgrades.includes(UPGRADES[o.key].req)?'Needs '+UPGRADES[UPGRADES[o.key].req].name:'')}
+function pawnRoom(o){return o.kind==='charm'?(fitsCharm(o)?'':'No room'):o.kind==='coin'?(fitsCoin(o)?'':'Purse full'):o.kind==='cons'?(consRoom()?'':'No room'):(S.upgrades.includes(o.key)?'Owned':UPGRADES[o.key].req&&!S.upgrades.includes(UPGRADES[o.key].req)?'Needs '+UPGRADES[UPGRADES[o.key].req].name:'')}
 function pawnCardHTML(o,i){const p=pawnPrice(o),why=pawnRoom(o);let face,name;
   if(o.kind==='charm'){const d=JOKERS[o.key];name=d.name;face=`<button class="jcard" data-tip="pawn:${i}" aria-label="${d.name}"><div class="jin" style="--jbg:${d.bg};${rarVars(o.key)}">${IMG(icon(o.key))}${o.wear&&o.wear!=='weightless'?`<i class="wfx w-${o.wear}"></i>`:''}</div></button>`}
   else if(o.kind==='coin'){name=COINS[o.type].name;face=`<button class="jcard pwcoin" data-tip="pawn:${i}" aria-label="${name}">${coinIcon(o.type,o)}</button>`}
@@ -5593,7 +5596,7 @@ function packHTML(){
       btns=o.taken?`<div class="mystres">You got ${o.res||m.name}</div>`:'<div class="mystres missed">Not picked</div>'}
     else if(PX[o.kind]){const X=PX[o.kind];name=X.name(o);why=X.block(o);face=X.face(o);
       btns=P.done?'':`<button class="btn green small" data-act="ppick" data-arg="${i},take" ${why?'disabled':''}>${o.kind==='myst'?'Reveal':'Take'}</button>`}
-    else if(o.kind==='coin'){const full=purseUsed()>=S.purseMax;name=o.qroll?`Roll of ${o.qroll} Quarters<br><small style="color:var(--money)">Extras that don't fit pay $1 each</small>`:(o.pair?'Stack of 2 ':'')+COINS[o.type].name+(o.pair?`<br><small style="color:var(--money)">Pre-stacked: one purse space</small>`:modName(o)?`<br><small style="color:var(--money)">${modName(o)}</small>`:'');
+    else if(o.kind==='coin'){const full=o.qroll?purseUsed()>=S.purseMax:!fitsCoin(o);name=o.qroll?`Roll of ${o.qroll} Quarters<br><small style="color:var(--money)">Extras that don't fit pay $1 each</small>`:(o.pair?'Stack of 2 ':'')+COINS[o.type].name+(o.pair?`<br><small style="color:var(--money)">Pre-stacked: one purse space</small>`:modName(o)?`<br><small style="color:var(--money)">${modName(o)}</small>`:'');
       face=`<div class="jin" style="--jbg:#2b3a3d">${coinIcon(o.type,o)}</div>`;
       btns=`<button class="btn green small" data-act="ppick" data-arg="${i},take" ${full?'disabled':''}>${full?'Purse full':'Take'}</button>`}
     else{const ci=consInfo(o);name=ci.name;why=consBlock(o);
@@ -6138,7 +6141,7 @@ const EVENTS={
    {label:'A free Upgrade',ok:()=>freeUpgrades().length>0,why:'No Upgrades left',run:()=>{const k=pick(freeUpgrades());S.upgrades.push(k);UPGRADES[k].apply();play('levelup');return `You earn the {a:${UPGRADES[k].name}} Upgrade: ${UPGRADES[k].desc}.`}}]},
  rivalwin:{mapOnly:1,avail:()=>false,title:'Duel Won',text:'You won the duel. Take one prize. They will be tougher next time.',
   choices:[{label:()=>`Double the stake ($${2*rivalStake()})`,run:()=>{const v=2*rivalStake();S.rival.lvl++;S.money+=v;play('money');return `You collect {$:$${v}}.`}},
-   {label:()=>purseUsed()<S.purseMax?`Their ${COINS[rivalCoin()].name}`:`Trade a coin for their ${COINS[rivalCoin()].name}`,tip:()=>'ctypep:'+rivalCoin()+':'+rivalWear(),ok:()=>purseUsed()<S.purseMax||S.purse.some(tradeable),why:'Your purse is full',run:()=>{if(purseUsed()>=S.purseMax){S.event.trading=true;return null}const t=rivalCoin(),w=rivalWear();S.rival.lvl++;S.purse.push({...mkCoin(t),wear:w});play('win');return `You take their {a:${WEARS[w].name} ${COINS[t].name}}.`}},
+   {label:()=>fitsCoin({wear:rivalWear()})?`Their ${COINS[rivalCoin()].name}`:`Trade a coin for their ${COINS[rivalCoin()].name}`,tip:()=>'ctypep:'+rivalCoin()+':'+rivalWear(),ok:()=>fitsCoin({wear:rivalWear()})||S.purse.some(tradeable),why:'Your purse is full',run:()=>{if(!fitsCoin({wear:rivalWear()})){S.event.trading=true;return null}const t=rivalCoin(),w=rivalWear();S.rival.lvl++;S.purse.push({...mkCoin(t),wear:w});play('win');return `You take their {a:${WEARS[w].name} ${COINS[t].name}}.`}},
    {label:()=>`Learn their ${HAND[rivalInfo().fav].name}`,run:()=>{const h=rivalInfo().fav;S.rival.lvl++;S.hands[h].level+=2;play('levelup');return `{a:${HAND[h].name}} goes up {a:2 levels}.`}}]},
  q_courier:{title:'The Courier',text:()=>`A courier who can\'t remember where they were going holds out a sealed coin. "Carry it to stage ${Math.min(STAGES,S.ante+2)} for me. Don\'t spend it, don\'t melt it."`,avail:()=>!hasQuest('courier')&&S.ante<=STAGES-2,
   choices:[{label:'Accept the quest',ok:()=>purseUsed()<S.purseMax,why:'Your purse is full',run:()=>{S.purse.push(mkCoin('sealed'));startQuest('courier');play('buy');return 'You tuck the {a:Sealed Coin} into your purse. Reward on delivery: {$:$20} and a Rare Charm.'}},declineC('You leave them still holding it out.')]},
@@ -6150,7 +6153,7 @@ const EVENTS={
   choices:[{label:'Accept the quest',run:()=>{startQuest('hunter');return 'Reward: a {p:Legendary} Charm, or {$:$20} if you have no room.'}},declineC('"Suit yourself."')]},
  caravan:{title:'Lost and Found',text:'A lost-and-found window glows in the dark, stocked with things nobody ever came back for. The attendant gestures: take one.',
   choices:[{label:()=>`A Charm: ${JOKERS[evOffer().k].name}`,ok:()=>S.jokers.length<slots(),why:'No room for a Charm',run:()=>{const k=evOffer().k;addJoker(k,JOKERS[k].cost);play('buy');return `You take the {a:${JOKERS[k].name}}. ${JOKERS[k].desc&&typeof JOKERS[k].desc==='string'?JOKERS[k].desc:''}`}},
-   {label:()=>`A ${COINS[evOffer().c].name} with ${WEARS[evOffer().w].name}`,ok:()=>purseUsed()<S.purseMax,why:'Your purse is full',run:()=>{const o=evOffer();S.purse.push({...mkCoin(o.c),wear:o.w});play('buy');return `You take a {a:${WEARS[o.w].name} ${COINS[o.c].name}}.`}},
+   {label:()=>`A ${COINS[evOffer().c].name} with ${WEARS[evOffer().w].name}`,ok:()=>fitsCoin({wear:evOffer().w}),why:'Your purse is full',run:()=>{const o=evOffer();S.purse.push({...mkCoin(o.c),wear:o.w});play('buy');return `You take a {a:${WEARS[o.w].name} ${COINS[o.c].name}}.`}},
    {label:'Two Almanacs',ok:()=>consRoom(),why:'No room for consumables',run:()=>{for(let k=0;k<2&&consRoom();k++)S.cons.push(randAlmanac());play('buy');return 'You take two {a:Almanacs}.'}}]},
  tinkerer:{title:'The Machinist',text:'Behind the slot machines, someone has been repairing the same broken die for centuries. "I can strike something new into one of your coins."',
   choices:[{label:'Add a Defect to a coin (free)',ok:()=>S.purse.some(c=>!c.defect),why:'All your coins already have a Defect',run:()=>{const c=pick(S.purse.filter(x=>!x.defect));c.defect=pickDefect();play('levelup');return `Your ${COINS[c.type].name} now has {a:${DEFECTS[c.defect].name}}: ${DEFECTS[c.defect].desc}.`}},
@@ -7072,8 +7075,8 @@ function buyJoker(i,useNow){
     if(consRoom()&&!useNow){S.cons.push(al);render();juice($('#cs'+(S.cons.length-1)))}
     else{render();applyCons(al)}
     return}
-  if(S.jokers.length>=slots())return;
-  spend(p);o.bought=true;if(S.bigspender)S.bigBought=true;addJoker(o.key,p);{const nj=S.jokers[S.jokers.length-1];if(o.curse){nj.curse=o.curse;if(o.curse==='fleeting')nj.left=5}}PS().buys[o.key]=(PS().buys[o.key]||0)+1;play('buy');render();juice($('#jk'+(S.jokers.length-1)));
+  if(!fitsCharm(o))return;
+  spend(p);o.bought=true;if(S.bigspender)S.bigBought=true;addJoker(o.key,p);{const nj=S.jokers[S.jokers.length-1];if(o.wear)nj.wear=o.wear;if(o.curse){nj.curse=o.curse;if(o.curse==='fleeting')nj.left=5}}PS().buys[o.key]=(PS().buys[o.key]||0)+1;play('buy');render();juice($('#jk'+(S.jokers.length-1)));
 }
 const hbHidden=()=>{const h=$('#hbox');return !h||!h.offsetParent};
 async function levelMany(keys,times=1){
@@ -7128,7 +7131,7 @@ async function packPick(i,mode){
   /* one pick at a time: nothing else in the pack can be taken until this one has finished */
   P.busy=true;try{
   if(PX[o.kind]){const X=PX[o.kind];if(X.block(o))return;o.taken=true;P.picks--;await X.take(o)}
-  else if(o.kind==='coin'){if(purseUsed()>=S.purseMax)return;o.taken=true;P.picks--;if(o.qroll){let n=0;for(let k=0;k<o.qroll&&purseUsed()<S.purseMax;k++){S.purse.push(mkCoin('copper'));n++}if(n<o.qroll)S.money+=o.qroll-n;play('buy')}else if(o.pair){const g=uid++;S.purse.push({...mkCoin(o.type),stk:g},{...mkCoin(o.type),stk:g})}else S.purse.push({...mkCoin(o.type),wear:o.wear||null,defect:o.defect||null});play('buy')}
+  else if(o.kind==='coin'){if(!fitsCoin(o)&&!o.qroll)return;if(o.qroll&&purseUsed()>=S.purseMax)return;o.taken=true;P.picks--;if(o.qroll){let n=0;for(let k=0;k<o.qroll&&purseUsed()<S.purseMax;k++){S.purse.push(mkCoin('copper'));n++}if(n<o.qroll)S.money+=o.qroll-n;play('buy')}else if(o.pair){const g=uid++;S.purse.push({...mkCoin(o.type),stk:g},{...mkCoin(o.type),stk:g})}else S.purse.push({...mkCoin(o.type),wear:o.wear||null,defect:o.defect||null});play('buy')}
   else if(mode==='keep'){if(!consRoom())return;o.taken=true;P.picks--;const kc={kind:o.kind,key:o.key,hand:o.hand};if(!kc.key)delete kc.key;if(!kc.hand)delete kc.hand;S.cons.push(kc);play('buy')}
   else{const c={kind:o.kind,key:o.key,hand:o.hand};if(!c.key)delete c.key;if(!c.hand)delete c.hand;if(consBlock(c))return;o.taken=true;P.picks--;render();await applyCons(c)}
   }finally{P.busy=false}
@@ -7363,7 +7366,7 @@ function dropZones(d){
     else{const p=slotPrice(o);
       if(o.kind==='almanac'){if(consRoom())Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':''});Z.push({act:'buyuse',pos:'side',label:'Buy and Use',sub:`$${p}`,col:'var(--orange)',why:money<p?'Not enough money':''})}
       else if(o.kind==='spirit')Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':!consRoom()?'No room':''});
-      else Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':S.jokers.length>=slots()?'No free Charm slot':''})}}
+      else Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':!fitsCharm(o)?'No free Charm slot':''})}}
   else if(d.kind==='charm'){const j=S.jokers[+d.item.dataset.idx];if(j&&canEdit()&&S.roll!=='hoarder'&&!noSell(j)&&!JOKERS[j.key].artifact)Z.push({act:'sell',pos:'side',label:S.pawnshop?'Pawn':'Sell',sub:`$${charmSell(j)}`,col:'var(--money-d)'})}
   else if(d.kind==='cons'){const c=S.cons[+d.item.dataset.idx];if(c&&canEdit()){const why=consBlock(c,true);Z.push({act:'use',pos:'side',label:'Use',col:'var(--chips-d)',why:why||''});if(S.roll!=='hoarder')Z.push({act:'sell',pos:'side',label:S.pawnshop?'Pawn':'Sell',sub:`$${consSell(c)}`,col:'var(--money-d)'})}}
   else if(d.kind==='coin'&&S.screen==='shop'){const c=S.purse[+d.item.dataset.idx];if(c&&canMelt())Z.push({act:'melt',pos:'side',label:'Melt',sub:`$${(coinDef(c).meltVal||1)+3*countEff('recycler')}`,col:'var(--mult-d)',why:S.purse.length<=PURSE_MIN?`Purse needs ${PURSE_MIN} coins`:''})}
