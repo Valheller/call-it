@@ -2136,6 +2136,13 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
 .w-proof{background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.75) 47%,rgba(255,255,255,.15) 52%,transparent 60%) 140% 0/300% 100% no-repeat!important;mix-blend-mode:screen!important;opacity:1!important;animation:proofglint 3.6s ease-in-out infinite!important}
 @keyframes proofglint{0%,55%{background-position:140% 0}85%,100%{background-position:-40% 0}}
 @media (prefers-reduced-motion:reduce){.w-proof{animation:none!important;background-position:60% 0!important}}
+
+/* boot: the vault opens about a quarter slower than the in-game version */
+#boot .vdial{animation-duration:.62s!important;animation-delay:.41s!important}
+#boot .vwheel{animation-duration:.69s!important;animation-delay:.48s!important}
+#boot .vb{animation-duration:.25s!important;animation-delay:.94s!important}
+#boot .vdoor{animation-duration:.75s!important;animation-delay:1.16s!important}
+#boot.land .boottxt{transition:opacity .5s .5s!important}
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -2182,7 +2189,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.267</div>
+  <div class="gamever" aria-label="Version">v1.2.268</div>
 </div>
 
 <script>
@@ -7544,9 +7551,9 @@ function bootGo(){
   if(bootStage)return bootStage===1&&bootEnd();bootStage=1;audioInit();if(AU.mus)AU.mus.gain.value=0;const el=$('#boot');
   if(reduced){bootJingle(1);el.classList.add('land');$('.boottxt').textContent='Call it.';setTimeout(bootEnd,1600);return}
   /* the House vault opens: the dial and wheel spin, the bolts slide back, the door swings wide and the House lets you in */
-  el.classList.add('go');bootJingle(0);play('tick');setTimeout(()=>play('tick'),330);setTimeout(()=>play('tick'),520);setTimeout(()=>play('stamp'),760);
-  setTimeout(()=>{if(bootStage!==1)return;play('slide');el.classList.add('land');$('.boottxt').textContent='Call it.';bootJingle(1);shake(3)},940);
-  setTimeout(bootEnd,1700);
+  el.classList.add('go');bootJingle(0);play('tick');setTimeout(()=>play('tick'),410);setTimeout(()=>play('tick'),650);setTimeout(()=>play('stamp'),950);
+  setTimeout(()=>{if(bootStage!==1)return;play('slide');el.classList.add('land');$('.boottxt').textContent='Call it.';bootJingle(1);shake(3)},1175);
+  setTimeout(bootEnd,2125);
 }
 /* a tap anywhere on the boot screen starts the intro */
 $('#boot').addEventListener('click',e=>{if(!e.target.closest('#bootbtn'))bootGo()});
