@@ -1427,7 +1427,12 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
   .lshop.noup{grid-template-areas:"btn btn" "ch ch" "pk pk"}
   .lshop .shopbtns{justify-content:center}.lshop .btn.reroll{font-size:14px;padding:6px 12px}
   .sdesc{display:none}.sname{font-size:13px}.certbox{padding:10px 8px}.certbox b{font-size:18px}.certbox .certd{font-size:12px}
-  .lshop:not(.brshop) .sect.pk .jcard.tile{width:88px}
+  .lshop:not(.brshop) .sect.pk .jcard.tile{width:76px}
+  .lshop .sect.pk .shelf{gap:8px}.lshop .sect.pk .scard{max-width:calc(50% - 4px);min-width:0}.lshop .sect.pk .sname{font-size:12px;line-height:1.1}
+  .lshop .slbl{font-size:10px;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lshop .shelf{padding-top:6px}
+  .lshop .certbox .certd{display:none}.lshop .certbox{padding:8px 6px;gap:4px}.lshop .certbox b{font-size:16px;line-height:1.1}
+  /* bought cards hold their place on desktop; on a phone they'd leave a tall empty block above the purse */
+  .lshop .scard.gone{display:none}
 }
 
 /* title, as in the mockup: Play / Continue are filled, the rest are outlined; a mono line of records underneath */
@@ -2189,7 +2194,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.269</div>
+  <div class="gamever" aria-label="Version">v1.2.270</div>
 </div>
 
 <script>
