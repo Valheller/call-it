@@ -2194,7 +2194,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.271</div>
+  <div class="gamever" aria-label="Version">v1.2.272</div>
 </div>
 
 <script>
@@ -2418,9 +2418,10 @@ const JOKERS={
   s:["...1111...","..1....1..",".1......1.",".1......1.",".1......1.",".1......1.","..1....24.","...1111...","..........",".........."],
   desc:j=>`Gains {x:X0.5} Mult per {a:Clean Sweep} scored {d:(Currently X${j?j.st.x:1})}`,
   end:(c,e,j,copy)=>{if(!copy&&c.type==='sweep'){j.st.x+=.5;e('text','Upgrade!')} if(j.st.x>1)e('xmult',j.st.x)}},
- onedge:{name:'On Edge',r:2,cost:6,bg:'#2a3742',p:{1:'#c9d3d8',2:'#7f8f99',3:'#ffd34d'},
+ onedge:{name:'On Edge',r:2,cost:6,bg:'#2a3742',p:{1:'#c9d3d8',2:'#7f8f99',3:'#ffd34d'},init:{x:1},
   s:["..........","....3.....","...333....","....3.....","..........","1111111111","2222222222","..........","..........",".........."],
-  desc:'Coins land on their {a:edge} 1 in 12 times. Edge coins always score with {x:X2} Mult'},
+  desc:j=>`Coins land on their {a:edge} 1 in 12 times. Gains {x:X0.2} Mult {a:permanently} for every coin that lands on its edge {d:(Currently X${j&&j.st&&j.st.x?+j.st.x.toFixed(1):1})}`,
+  end:(c,e,j,copy)=>{j.st=j.st||{x:1};const n=c.res.filter(r=>r==='E').length;if(!copy&&n){j.st.x=Math.round((j.st.x+.2*n)*10)/10;e('text','Upgrade!')}if(j.st.x>1)e('xmult',j.st.x)}},
  piggy:{name:'Piggy Bank',r:1,cost:4,bg:'#ffc0cf',p:{1:'#ff8fab',2:'#d4567a',4:'#2a2a2a',3:'#ffd34d'},
   s:["....33....","..........",".1111111..","111111111.","1141111122","1111111112","111111111.",".1.1.1.1..","..........",".........."],
   desc:'Earn {$:$2} at the end of each wager'},
@@ -3147,7 +3148,7 @@ const BOSSES={
  needle:  {name:'The Needle',  col:'#6f7d2f', mult:1, desc:'Only 1 Flip this wager'},
  pinch:   {name:'The Pinch',   col:'#c2557a', halve:1, desc:'Base Points and Mult are halved'},
  whim:    {name:'The Whim',    col:'#d46a2a', desc:'After each toss, one coin that landed on your call flips over'},
- hollow:  {name:'The Hollow',  col:'#4d4f5c', desc:'All Charms are disabled until you sell one'},
+ hollow:  {name:'The Hollow',  col:'#4d4f5c', desc:'All Charms are disabled until you sell one. You can sell Charms during this wager'},
  rust:    {name:'The Rust',    col:'#9a4f2a', desc:'Every coin acts like a plain Quarter'},
  toll:    {name:'The Toll',    col:'#b8901f', desc:'Each Re-flip costs $2'},
  gale:    {name:'The Gale',    col:'#5aa3b8', desc:'Re-flips toss every coin, not just the ones you pick'},
@@ -3371,6 +3372,8 @@ const hasK=k=>ownKeys().includes(k),nK=k=>ownKeys().filter(x=>x===k).length;
 const hasOn=k=>!!S&&S.jokers.some((j,i)=>{const t=resolveJ(i);return t>=0&&S.jokers[t].key===k&&jOn(j)&&jOn(S.jokers[t])});
 /* a real shop counter (not a treasure chest, which borrows the shop screen); Consumables only sell here */
 const inShop=()=>!!S&&S.screen==='shop'&&!S.treasure;
+/* Charms sell at a shop too, except The Hollow lets you sell mid-wager to break its hold */
+const canSellCharm=()=>inShop()||!!S&&S.screen==='play'&&bossIs('hollow');
 const canEdit=()=>S&&S.phase!=='scoring'&&S.phase!=='tossing'&&S.screen!=='over';
 const ctype=c=>S&&S.screen==='play'&&bossIs('rust')?'copper':S&&S.screen==='play'&&S.roll==='glitched'&&S.glitch&&S.glitch[c.id]?S.glitch[c.id]:c.type;
 const coinDef=c=>COINS[ctype(c)];
@@ -5358,7 +5361,7 @@ function jokerSlot(j,i){
   const gj=(S.roll==='glitched'||j.key==='missingno')&&S.screen==='play'&&S.glitchJ&&S.glitchJ[j.id];
   return `<div class="jslot ${sel?'sel':''} ${gj?'jglitch':''} ${!jOn(j)?'stolen':''} ${d.r===5?'fabled':d.r===4?'legend':''}" data-idx="${i}"><i class="jnum" aria-hidden="true">${i+1}</i><button class="jcard" id="jk${i}" data-act="joker" data-arg="${i}" data-drag="charm" data-tip="joker:${i}" aria-label="${d.name}">
    <div class="jin ${j.wear==='weightless'?'weightless':''}" style="--jbg:${d.bg};--dl:${-(i*.7)}s;${rarVars(j.key)}">${IMG(icon(j.key))}${j.wear&&j.wear!=='weightless'?`<i class="wfx w-${j.wear}"></i>`:''}</div>${j.curse?curseBadge(j.curse,j.left):''}</button>
-   ${sel&&!touchUI()?`<div class="jacts">${noSell(j)?`<span class="why">${CURSES[j.curse].name}</span>`:`${S.roll==='hoarder'?'':`<button class="btn green tiny" data-act="sell" data-arg="${i}">${S.pawnshop?'Pawn':'Sell'} $${charmSell(j)}</button>`}`}
+   ${sel&&!touchUI()?`<div class="jacts">${noSell(j)?`<span class="why">${CURSES[j.curse].name}</span>`:`${S.roll==='hoarder'||!canSellCharm()?'':`<button class="btn green tiny" data-act="sell" data-arg="${i}">${S.pawnshop?'Pawn':'Sell'} $${charmSell(j)}</button>`}`}
    <div class="mv"><button class="btn tiny" data-act="move" data-arg="${i},-1" ${i===0||cursed(j,'bound')?'disabled':''} aria-label="Move earlier" title="Move earlier">&lsaquo;</button><button class="btn tiny" data-act="move" data-arg="${i},1" ${i===n-1||cursed(j,'bound')?'disabled':''} aria-label="Move later" title="Move later">&rsaquo;</button></div></div>`:''}</div>`;
 }
 function consSlot(c,i){
@@ -7210,7 +7213,7 @@ const ACT={
     if(S&&S.roll==='glitched'&&consRoom()&&rand()<.2){S.cons.push({...c});render();const el=$('#cs'+(S.cons.length-1));if(el){popup(el,'Glitch! It came back','text');juice(el)}play('glitch');return}
     render()},
   sellcons(a){const i=+a,c=S.cons[i];if(!c||S.roll==='hoarder'||!inShop())return;const got=consSell(c);S.money+=got;pawnLog('cons',{c,paid:got,how:S.pawnshop?'pawned':'sold'});S.cons.splice(i,1);S.selCons=null;play('money');if(S.screen==='play'){renderJokers();syncStats()}else render()},
-  sell(a){const i=+a,j=S.jokers[i];if(!j||!canEdit()||noSell(j)||S.roll==='hoarder')return;PS().sold++;const got=charmSell(j);S.money+=got;S.jokers.splice(i,1);pawnLog('charm',{key:j.key,wear:j.wear||null,paid:got,how:S.pawnshop?'pawned':'sold'});S.selJoker=null;play('sell');S.lastSold=j.key;if(S.screen==='play'&&bossIs('hollow')&&!S.hollowFree){S.hollowFree=true;setTimeout(()=>toast('<b>The Hollow</b> lets go. Your Charms wake up.'),300);renderJokers()}if(j.key==='confession'){const c=S.jokers.find(purifiable);if(c){const nm=CURSES[c.curse].name;c.curse=null;delete c.left;toast(`You feel <b>forgiven</b>. Your ${JOKERS[c.key].name} is free of <b>${nm}</b>.`)}else toast('You feel <b>forgiven</b>.')}
+  sell(a){const i=+a,j=S.jokers[i];if(!j||!canEdit()||!canSellCharm()||noSell(j)||S.roll==='hoarder')return;PS().sold++;const got=charmSell(j);S.money+=got;S.jokers.splice(i,1);pawnLog('charm',{key:j.key,wear:j.wear||null,paid:got,how:S.pawnshop?'pawned':'sold'});S.selJoker=null;play('sell');S.lastSold=j.key;if(S.screen==='play'&&bossIs('hollow')&&!S.hollowFree){S.hollowFree=true;setTimeout(()=>toast('<b>The Hollow</b> lets go. Your Charms wake up.'),300);renderJokers()}if(j.key==='confession'){const c=S.jokers.find(purifiable);if(c){const nm=CURSES[c.curse].name;c.curse=null;delete c.left;toast(`You feel <b>forgiven</b>. Your ${JOKERS[c.key].name} is free of <b>${nm}</b>.`)}else toast('You feel <b>forgiven</b>.')}
     if(j.key==='hydra')for(let k=0;k<2&&S.jokers.length<slots();k++){const nk=rollJokerKey(1);addJoker(nk,JOKERS[nk].cost)}
     if(S.screen==='play'){renderJokers();syncStats()}else render()},
   move(a){const[i,d]=a.split(',').map(Number),k=i+d;if(k<0||k>=S.jokers.length||cursed(S.jokers[i],'bound')||cursed(S.jokers[k],'bound'))return;[S.jokers[i],S.jokers[k]]=[S.jokers[k],S.jokers[i]];S.selJoker=k;renderJokers()},
@@ -7375,7 +7378,7 @@ function dropZones(d){
       if(o.kind==='almanac'){if(consRoom())Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':''});Z.push({act:'buyuse',pos:'side',label:'Buy and Use',sub:`$${p}`,col:'var(--orange)',why:money<p?'Not enough money':''})}
       else if(o.kind==='spirit')Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':!consRoom()?'No room':''});
       else Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':!fitsCharm(o)?'No free Charm slot':''})}}
-  else if(d.kind==='charm'){const j=S.jokers[+d.item.dataset.idx];if(j&&canEdit()&&S.roll!=='hoarder'&&!noSell(j)&&!JOKERS[j.key].artifact)Z.push({act:'sell',pos:'side',label:S.pawnshop?'Pawn':'Sell',sub:`$${charmSell(j)}`,col:'var(--money-d)'})}
+  else if(d.kind==='charm'){const j=S.jokers[+d.item.dataset.idx];if(j&&canEdit()&&canSellCharm()&&S.roll!=='hoarder'&&!noSell(j)&&!JOKERS[j.key].artifact)Z.push({act:'sell',pos:'side',label:S.pawnshop?'Pawn':'Sell',sub:`$${charmSell(j)}`,col:'var(--money-d)'})}
   else if(d.kind==='cons'){const c=S.cons[+d.item.dataset.idx];if(c&&canEdit()){const why=consBlock(c,true);Z.push({act:'use',pos:'side',label:'Use',col:'var(--chips-d)',why:why||''});if(S.roll!=='hoarder'&&inShop())Z.push({act:'sell',pos:'side',label:S.pawnshop?'Pawn':'Sell',sub:`$${consSell(c)}`,col:'var(--money-d)'})}}
   else if(d.kind==='coin'&&S.screen==='shop'){const c=S.purse[+d.item.dataset.idx];if(c&&canMelt())Z.push({act:'melt',pos:'side',label:'Melt',sub:`$${(coinDef(c).meltVal||1)+3*countEff('recycler')}`,col:'var(--mult-d)',why:S.purse.length<=PURSE_MIN?`Purse needs ${PURSE_MIN} coins`:''})}
   return Z}
