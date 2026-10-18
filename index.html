@@ -1932,6 +1932,8 @@ body.uv #uvfx{opacity:1}
 
 /* ===== the Pawnshop ===== */
 .lshop.pawnshop .sect.ch .shelf{flex-wrap:wrap;gap:14px 16px}
+/* the buy-back shelf gets most of the width so a full stock fits on one row and the purse stays on screen */
+@media (min-width:761px){.lshop.panel.pawnshop{grid-template-columns:minmax(0,3.2fr) minmax(200px,1fr)}.lshop.pawnshop .sect.ch .shelf{flex-wrap:nowrap;gap:10px;justify-content:space-evenly}.lshop.pawnshop .scard.pawnc{flex:1 1 0;min-width:0;max-width:124px}.lshop.pawnshop .scard.pawnc .sname{font-size:14px}.lshop.pawnshop .sect.pk .pwnote{font-size:15px}.lshop.pawnshop .sect.ch .shelf{align-items:stretch}.lshop.pawnshop .scard.pawnc>.btn{margin-top:auto}}
 .lshop.pawnshop .scard.pawnc{max-width:118px}
 .lshop.pawnshop .scard.pawnc .sname i{display:block;font:600 9px/1.2 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--seal);font-style:normal}
 .lshop.pawnshop .jcard.pwcoin{background:none;border:0;box-shadow:none;width:clamp(56px,5.6vw,72px);aspect-ratio:1;padding:0}
@@ -2194,7 +2196,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.272</div>
+  <div class="gamever" aria-label="Version">v1.2.273</div>
 </div>
 
 <script>
