@@ -2194,7 +2194,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.270</div>
+  <div class="gamever" aria-label="Version">v1.2.271</div>
 </div>
 
 <script>
@@ -3369,6 +3369,8 @@ const countEff=k=>effKeys().filter(x=>x===k).length;
 const ownKeys=()=>S?S.jokers.map((j,i)=>{const t=resolveJ(i);return t<0?null:S.jokers[t].key}):[];
 const hasK=k=>ownKeys().includes(k),nK=k=>ownKeys().filter(x=>x===k).length;
 const hasOn=k=>!!S&&S.jokers.some((j,i)=>{const t=resolveJ(i);return t>=0&&S.jokers[t].key===k&&jOn(j)&&jOn(S.jokers[t])});
+/* a real shop counter (not a treasure chest, which borrows the shop screen); Consumables only sell here */
+const inShop=()=>!!S&&S.screen==='shop'&&!S.treasure;
 const canEdit=()=>S&&S.phase!=='scoring'&&S.phase!=='tossing'&&S.screen!=='over';
 const ctype=c=>S&&S.screen==='play'&&bossIs('rust')?'copper':S&&S.screen==='play'&&S.roll==='glitched'&&S.glitch&&S.glitch[c.id]?S.glitch[c.id]:c.type;
 const coinDef=c=>COINS[ctype(c)];
@@ -5363,7 +5365,7 @@ function consSlot(c,i){
   const ci=consInfo(c),sel=S.selCons===i&&canEdit();
   let acts='';
   if(sel){const why=consBlock(c,true);
-    acts=`<div class="jacts"><button class="btn green tiny" data-act="usecons" data-arg="${i}" ${why?'disabled':''}>Use</button>${S.roll==='hoarder'?'':`<button class="btn tiny" data-act="sellcons" data-arg="${i}">Sell $${ci.sell}</button>`}</div>`}
+    acts=`<div class="jacts"><button class="btn green tiny" data-act="usecons" data-arg="${i}" ${why?'disabled':''}>Use</button>${S.roll==='hoarder'||!inShop()?'':`<button class="btn tiny" data-act="sellcons" data-arg="${i}">${S.pawnshop?'Pawn':'Sell'} $${consSell(c)}</button>`}</div>`}
   return `<div class="jslot ${sel?'sel':''}" data-idx="${i}"><button class="jcard tile ck-${c.kind}" id="cs${i}" data-act="cons" data-arg="${i}" data-drag="cons" data-tip="cons:${i}" aria-label="${ci.name}">
     <div class="jin" style="--jbg:${ci.bg};--dl:${-(i*.9)}s">${IMG(ci.icon)}</div></button>${acts}</div>`;
 }
@@ -7207,7 +7209,7 @@ const ACT={
   async usecons(a){const i=+a,c=S.cons[i];if(!c||consBlock(c,true))return;S.cons.splice(i,1);S.selCons=null;renderJokers();await applyCons(c,true);
     if(S&&S.roll==='glitched'&&consRoom()&&rand()<.2){S.cons.push({...c});render();const el=$('#cs'+(S.cons.length-1));if(el){popup(el,'Glitch! It came back','text');juice(el)}play('glitch');return}
     render()},
-  sellcons(a){const i=+a,c=S.cons[i];if(!c||S.roll==='hoarder')return;const got=consSell(c);S.money+=got;pawnLog('cons',{c,paid:got,how:S.pawnshop?'pawned':'sold'});S.cons.splice(i,1);S.selCons=null;play('money');if(S.screen==='play'){renderJokers();syncStats()}else render()},
+  sellcons(a){const i=+a,c=S.cons[i];if(!c||S.roll==='hoarder'||!inShop())return;const got=consSell(c);S.money+=got;pawnLog('cons',{c,paid:got,how:S.pawnshop?'pawned':'sold'});S.cons.splice(i,1);S.selCons=null;play('money');if(S.screen==='play'){renderJokers();syncStats()}else render()},
   sell(a){const i=+a,j=S.jokers[i];if(!j||!canEdit()||noSell(j)||S.roll==='hoarder')return;PS().sold++;const got=charmSell(j);S.money+=got;S.jokers.splice(i,1);pawnLog('charm',{key:j.key,wear:j.wear||null,paid:got,how:S.pawnshop?'pawned':'sold'});S.selJoker=null;play('sell');S.lastSold=j.key;if(S.screen==='play'&&bossIs('hollow')&&!S.hollowFree){S.hollowFree=true;setTimeout(()=>toast('<b>The Hollow</b> lets go. Your Charms wake up.'),300);renderJokers()}if(j.key==='confession'){const c=S.jokers.find(purifiable);if(c){const nm=CURSES[c.curse].name;c.curse=null;delete c.left;toast(`You feel <b>forgiven</b>. Your ${JOKERS[c.key].name} is free of <b>${nm}</b>.`)}else toast('You feel <b>forgiven</b>.')}
     if(j.key==='hydra')for(let k=0;k<2&&S.jokers.length<slots();k++){const nk=rollJokerKey(1);addJoker(nk,JOKERS[nk].cost)}
     if(S.screen==='play'){renderJokers();syncStats()}else render()},
@@ -7364,7 +7366,8 @@ let drag=null,suppressClick=false;
 /* ---- shop drag & drop: drop zones for Buy, Buy & Use, Sell, Use and Melt ---- */
 function shopItemOf(sk){const [t,i]=sk.split(':');const sh=S.shop;if(t==='j')return{t,i:+i,o:sh.jokers[+i]};if(t==='p')return{t,i:+i,o:sh.packs[+i]};return{t:'u',o:sh.upgrade}}
 function dropZones(d){
-  if(!S||S.pack)return[];const Z=[],money=S.money;
+  /* inside a pack only your Charms can be sold, and only when the pack was opened at a shop counter */
+  if(!S||S.pack&&!(d.kind==='charm'&&inShop()))return[];const Z=[],money=S.money;
   if(d.kind==='shop'){if(S.screen!=='shop')return[];const it=shopItemOf(d.el.dataset.sk),o=it.o;if(!o||o.bought)return[];
     if(it.t==='p'){const p=packPrice(o);Z.push({act:'buy',pos:'top',label:'Open',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':''})}
     else if(it.t==='u'){const p=gp(o,upgCost(o));Z.push({act:'buy',pos:'top',label:'Redeem',sub:`$${p}`,col:'var(--purple)',why:upgLocked()?'One Upgrade per stage':money<p?'Not enough money':''})}
@@ -7373,7 +7376,7 @@ function dropZones(d){
       else if(o.kind==='spirit')Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':!consRoom()?'No room':''});
       else Z.push({act:'buy',pos:'top',label:'Buy',sub:`$${p}`,col:'var(--green)',why:money<p?'Not enough money':!fitsCharm(o)?'No free Charm slot':''})}}
   else if(d.kind==='charm'){const j=S.jokers[+d.item.dataset.idx];if(j&&canEdit()&&S.roll!=='hoarder'&&!noSell(j)&&!JOKERS[j.key].artifact)Z.push({act:'sell',pos:'side',label:S.pawnshop?'Pawn':'Sell',sub:`$${charmSell(j)}`,col:'var(--money-d)'})}
-  else if(d.kind==='cons'){const c=S.cons[+d.item.dataset.idx];if(c&&canEdit()){const why=consBlock(c,true);Z.push({act:'use',pos:'side',label:'Use',col:'var(--chips-d)',why:why||''});if(S.roll!=='hoarder')Z.push({act:'sell',pos:'side',label:S.pawnshop?'Pawn':'Sell',sub:`$${consSell(c)}`,col:'var(--money-d)'})}}
+  else if(d.kind==='cons'){const c=S.cons[+d.item.dataset.idx];if(c&&canEdit()){const why=consBlock(c,true);Z.push({act:'use',pos:'side',label:'Use',col:'var(--chips-d)',why:why||''});if(S.roll!=='hoarder'&&inShop())Z.push({act:'sell',pos:'side',label:S.pawnshop?'Pawn':'Sell',sub:`$${consSell(c)}`,col:'var(--money-d)'})}}
   else if(d.kind==='coin'&&S.screen==='shop'){const c=S.purse[+d.item.dataset.idx];if(c&&canMelt())Z.push({act:'melt',pos:'side',label:'Melt',sub:`$${(coinDef(c).meltVal||1)+3*countEff('recycler')}`,col:'var(--mult-d)',why:S.purse.length<=PURSE_MIN?`Purse needs ${PURSE_MIN} coins`:''})}
   return Z}
 function showZones(d){
