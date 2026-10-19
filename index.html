@@ -1878,6 +1878,12 @@ html,body,#stage{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scro
 .pnotice .hole{position:absolute;left:calc(var(--x)*9px);top:calc(var(--y)*9px);width:6px;height:6px;border-radius:50%;background:transparent;transition:background .08s}
 .pnotice .hole.on{background:var(--bg,#e9dfc7);box-shadow:inset 0 1.5px 1px rgba(0,0,0,.45),0 .5px 0 rgba(255,255,255,.7)}
 
+/* phones: a smaller punch card, so the cash-out fits without scrolling */
+@media (max-width:760px){.pnotice{padding:4px 10px 8px;margin-bottom:6px}.pnhead{margin:3px 0 3px}.pnbody{font-size:15px;gap:8px}.pnbody img{width:24px;height:24px}
+  .pnholes{height:calc(7*6px);width:calc((var(--cols) + 1)*6px);margin-top:5px}.pnotice .hole{left:calc(var(--x)*6px);top:calc(var(--y)*6px);width:4px;height:4px}
+  /* a long Charm row gets short: keep just the count so the label isn't clipped */
+  #jokerbar .tray.many .tvw{display:none}
+  .panel.cash{padding:12px 16px;gap:4px}.cash h2{font-size:21px;margin-bottom:0;padding-bottom:3px}.cline{padding:2px 0}.cline .l{font-size:15px}.cline .v{font-size:16px}.cash .btn.big{padding:8px 12px}}
 /* ===== edge lettering, shown when a coin lands on its edge ===== */
 .edgering{position:absolute;inset:-14%;width:128%;height:128%;z-index:7;pointer-events:none;overflow:visible;animation:edgering 2.6s ease-out forwards}
 .edgering text{font:600 7.4px 'IBM Plex Mono',monospace;letter-spacing:.06em;fill:var(--gold,#8a5a12);paint-order:stroke;stroke:#fbf7ec;stroke-width:1.6px}
@@ -2206,7 +2212,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.276</div>
+  <div class="gamever" aria-label="Version">v1.2.277</div>
 </div>
 
 <script>
@@ -5351,7 +5357,7 @@ function renderJokers(){
   const el=$('#jokerbar');const n=S.jokers.length;
   const hollow=S.screen==='play'&&bossIs('hollow')&&!S.hollowFree;
   const gap=(k,cls)=>Array.from({length:Math.max(0,k)},()=>`<div class="jgap ${cls||''}" aria-hidden="true"></div>`).join('');
-  el.innerHTML=`<div class="tray ${hollow?'hollow':''}"><div class="tvl">Charms <b>${n}/${slots()}</b></div><div class="cards jrow vcol" style="--n:${Math.max(n,slots(),1)}">${S.jokers.map(jokerSlot).join('')}${gap(slots()-n)}</div></div>
+  el.innerHTML=`<div class="tray ${hollow?'hollow':''} ${Math.max(n,slots())>6?'many':''}"><div class="tvl"><span class="tvw">Charms </span><b>${n}/${slots()}</b></div><div class="cards jrow vcol" style="--n:${Math.max(n,slots(),1)}">${S.jokers.map(jokerSlot).join('')}${gap(slots()-n)}</div></div>
    <div class="tray cons"><div class="tvl">Pocket <b>${S.cons.length}/${S.consSlots}</b></div><div class="cards vcol">${S.cons.map(consSlot).join('')}${gap(S.consSlots-S.cons.length,'sq')}</div></div>`;
   sizeCharms();
 }
