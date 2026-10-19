@@ -1434,6 +1434,15 @@ body::before{content:'';position:fixed;top:calc(5px + env(safe-area-inset-top));
   .lshop .certbox .certd{display:none}.lshop .certbox{padding:8px 6px;gap:4px}.lshop .certbox b{font-size:16px;line-height:1.1}
   /* bought cards hold their place on desktop; on a phone they'd leave a tall empty block above the purse */
   .lshop .scard.gone{display:none}
+  /* with the Upgrade sold out, its column would only hold the stamp: give the packs the full width instead */
+  .lshop.upgone{grid-template-areas:"btn btn" "ch ch" "pk pk"}.lshop.upgone .sect.up{display:none}
+  .lshop.upgone .sect.pk .scard,.lshop.noup .sect.pk .scard,.lshop.pk3 .sect.pk .scard{max-width:calc(33.3% - 6px)}
+  /* three packs and an Upgrade for sale: packs get the full width and the certificate becomes one slim row */
+  .lshop.pk3{grid-template-areas:"btn btn" "ch ch" "pk pk" "up up"}
+  .lshop.pk3 .sect.up .shelf{justify-content:center;padding-top:2px}.lshop.pk3 .sect.up .slbl{display:none}.lshop.pk3 .certbox{flex:1 1 auto;min-width:0}.lshop.pk3 .certbox b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lshop.pk3 .sect.pk .sname{font-size:11px}
+  .lshop.pk3:not(.brshop) .sect.pk .jcard.tile,.lshop.upgone:not(.brshop) .sect.pk .jcard.tile{width:68px}.lshop.pk3 .scard.cert .price{font-size:13px;padding:3px 6px}.lshop.pk3 .scard.cert .btn{padding:6px 10px}.lshop.pk3 .scard.cert{gap:6px}
+  .lshop.pk3 .scard.cert{flex-direction:row;align-items:center;gap:10px;max-width:none}
+  .lshop.pk3 .certbox{flex-direction:row;align-items:center;gap:8px;padding:4px 10px}.lshop.pk3 .certbox>i{display:none}.lshop.pk3 .certbox .certic img{width:28px;height:28px}.lshop.pk3 .certbox b{font-size:15px}
 }
 
 /* title, as in the mockup: Play / Continue are filled, the rest are outlined; a mono line of records underneath */
@@ -2197,7 +2206,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.275</div>
+  <div class="gamever" aria-label="Version">v1.2.276</div>
 </div>
 
 <script>
@@ -5584,7 +5593,8 @@ function shopHTML(){
       return `<div class="scard ${o.bought?'gone':''}"><div class="price">${L?'$'+p:'+$10'}</div><button class="jcard tile" data-tip="brgood:${i}" aria-label="${L?'Loaded coins':'Fence something'}"><div class="jin" style="--jbg:${L?'#3a1414':'#2a2410'};--dl:${-i*.8}s">${L?coinIcon('loaded'):IMG(sprite('fence',SPR_FENCE))}<span class="lab">${L?'Loaded':'Fence'}</span></div></button>
       <button class="btn ${L?'green':'red'} small" data-act="brbuy" data-arg="${i}" ${dis?'disabled':''}>${L&&!room&&!o.bought?'No room':L?'Buy':'Take'}</button><div class="pcap">${L?"A Magician's Coin and a counterfeit":'Easy money'}</div></div>`}).join('');
   const noup=!!(S.backroom||S.bigspender),items=sh.jokers.length+(S.backroom?(sh.br||[]).length:sh.packs.length)+(noup?0:1);
-  return `<div class="panel shop lshop ${S.backroom?'brshop':S.bigspender?'bsshop':''} ${noup?'noup':''}"><div class="shopbtns">
+  const upgone=!noup&&(upgLocked()||!u||u.bought);
+  return `<div class="panel shop lshop ${S.backroom?'brshop':S.bigspender?'bsshop':''} ${noup?'noup':''} ${upgone?'upgone':''} ${!noup&&!upgone&&sh.packs.length>2?'pk3':''}"><div class="shopbtns">
       <button class="btn reroll" data-act="reroll" ${S.money<rerollCost()?'disabled':''}>Reroll · <span class="mono">$${rerollCost()}</span></button>
       <button class="btn red big" data-act="nextround">${S.backroom||S.bigspender?'Leave':'Next Round'}</button></div>
       <div class="sect ch"><div class="slbl">${S.roll==='ghost'?'Spirits · Stamps':'Charms · Stamps'}</div><div class="shelf">${sh.jokers.map(charmCardHTML).join('')}</div></div>
