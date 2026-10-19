@@ -856,7 +856,8 @@ body:has(#boot:not(.gone)) #title{visibility:hidden}
   .callbanner{font-size:15px;min-height:20px}
   .callbanner b{font-size:17px}
   .purse{padding-top:52px;padding-bottom:10px}
-  .hint{font-size:12px;min-height:0}
+  /* fixed two-line height so the purse doesn't jump when the hint comes and goes, and clear of the tray's brass rail */
+  .hint{font-size:12px;line-height:15px;min-height:30px;margin-top:8px}
   .controls{gap:8px;padding-bottom:7px}
   .shop,.packview,.bcol,.panel{margin-bottom:6px}
   .btn.big{font-size:18px;padding:10px 12px;min-width:104px}
@@ -2196,7 +2197,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.274</div>
+  <div class="gamever" aria-label="Version">v1.2.275</div>
 </div>
 
 <script>
@@ -5422,7 +5423,7 @@ function sizeCoins(){
   if(p.id==='purse'){let r=p.querySelector('.trayrail');if(!r){r=document.createElement('div');r.className='trayrail';r.setAttribute('aria-hidden','true');p.appendChild(r)}
     const used=purseUsed(),max=Math.max(S.purseMax,used);if(r.dataset.k!==used+'/'+max){r.dataset.k=used+'/'+max;r.innerHTML=Array.from({length:max},(_,k)=>`<i class="${k<used?'on':''}"></i>`).join('')}}
   /* keep room on the right for the n/max counter, which hangs past the last coin */
-  const n=Math.max(5,S.purse.length),ph=innerWidth<=760,w=st.clientWidth-8-(ph?30:36);
+  const n=Math.max(5,S.purse.length),ph=innerWidth<=760,w=st.clientWidth-8-(ph?40:36);
   /* the fuller the purse, the tighter the coins sit: a fifth of a coin apart at 5 coins, almost touching from 13 */
   const g=Math.max(.03,.2-(n-5)*.022);p.style.setProperty('--pg',g);
   const cs=Math.max(ph?20:30,Math.min(S.screen==='shop'||S.screen==='event'?(innerWidth<=760?46:62):96,Math.floor(w/(n+(n-1)*g))));
