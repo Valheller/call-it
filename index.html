@@ -2196,7 +2196,7 @@ body.endless #wmark{filter:hue-rotate(-20deg) saturate(1.4)}
     </div>
   </div>
   <div class="bestlines"><div class="lbl" id="bestline"></div><div class="lbl" id="streakline"></div></div>
-  <div class="gamever" aria-label="Version">v1.2.273</div>
+  <div class="gamever" aria-label="Version">v1.2.274</div>
 </div>
 
 <script>
@@ -5421,10 +5421,11 @@ function sizeCoins(){
   p.style.setProperty('--n',Math.max(1,S.purse.length));
   if(p.id==='purse'){let r=p.querySelector('.trayrail');if(!r){r=document.createElement('div');r.className='trayrail';r.setAttribute('aria-hidden','true');p.appendChild(r)}
     const used=purseUsed(),max=Math.max(S.purseMax,used);if(r.dataset.k!==used+'/'+max){r.dataset.k=used+'/'+max;r.innerHTML=Array.from({length:max},(_,k)=>`<i class="${k<used?'on':''}"></i>`).join('')}}
-  const n=Math.max(5,S.purse.length),w=st.clientWidth-8;
+  /* keep room on the right for the n/max counter, which hangs past the last coin */
+  const n=Math.max(5,S.purse.length),ph=innerWidth<=760,w=st.clientWidth-8-(ph?30:36);
   /* the fuller the purse, the tighter the coins sit: a fifth of a coin apart at 5 coins, almost touching from 13 */
   const g=Math.max(.03,.2-(n-5)*.022);p.style.setProperty('--pg',g);
-  const cs=Math.max(30,Math.min(S.screen==='shop'||S.screen==='event'?(innerWidth<=760?46:62):96,Math.floor(w/(n+(n-1)*g))));
+  const cs=Math.max(ph?20:30,Math.min(S.screen==='shop'||S.screen==='event'?(innerWidth<=760?46:62):96,Math.floor(w/(n+(n-1)*g))));
   p.style.setProperty('--cs',cs+'px');
   /* desktop: if the table still runs past the footer, shrink the coins (and the gap above them) until it fits */
   const m=$('#main'),sh=$('#stage .lshop');if(m&&innerWidth>760){let c=cs,k=0;p.classList.remove('tight');if(sh)sh.classList.remove('compact','compact2');
